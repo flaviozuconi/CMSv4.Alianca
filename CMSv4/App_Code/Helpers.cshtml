@@ -123,7 +123,7 @@
 @helper Recaptcha(bool required = true, string dataCallBackFunction = "", string hiddenName = "Recaptcha")
 {
     <input type="hidden" name="@hiddenName" id="@hiddenName" required>
-    <div id="div_@hiddenName" class="g-recaptcha" @(!string.IsNullOrEmpty(dataCallBackFunction) ? "data-callback=" + dataCallBackFunction : "") data-sitekey="@System.Configuration.ConfigurationManager.AppSettings["BRASKEM.GOOGLE.RECAPTCHA.KEY.SITE"]"></div>
+    <div id="div_@hiddenName" class="g-recaptcha" @(!string.IsNullOrEmpty(dataCallBackFunction) ? "data-callback=" + dataCallBackFunction : "") data-sitekey="@System.Configuration.ConfigurationManager.AppSettings["CMS.GOOGLE.RECAPTCHA.KEY.SITE"]"></div>
 }
 
 @helper PainelConfirma(string titulo, string mensagem, string divName = "painel_confirma", string cssClass = "alert-warning", string funcaoJsConfirma = "suaFuncaoJs();", Permissao? permissao = null)

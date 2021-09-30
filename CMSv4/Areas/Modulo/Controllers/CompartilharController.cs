@@ -200,7 +200,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                             .Replace("[[TITULO]]", titulo);
 
                 BLEmail.Enviar(
-                        String.Format("Braskem | {0} compartilhou com você!", nome),
+                        String.Format("{0} compartilhou com você!", nome),
                         emailAmigo,
                         htmlEmail
                     );

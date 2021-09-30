@@ -3,7 +3,7 @@
         <li class="dropdown languages">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon icon-globe"></span> @BLIdioma.Atual.Sigla</a>
             <ul class="dropdown-menu" role="menu">
-                <li class="title">Sites Braskem</li>
+                <li class="title">Sites</li>
                 @foreach (var item in Model.FindAll(e=>e.inativo==false))
                 {
                      @:<li><a href="@(item.url)">@item.texto</a></li>

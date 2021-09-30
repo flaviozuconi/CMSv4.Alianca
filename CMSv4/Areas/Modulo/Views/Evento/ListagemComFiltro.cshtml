@@ -11,8 +11,7 @@
     }
 }
 <div id="eventos_@Model.Repositorio">
-    <p>@T("Ao longo do ano a Braskem participa de uma série de eventos do setor químico e petroquímico, além de promover ações e patrocínios.")</p>
-
+   
     <!-- mol-filter-bar -->
     <div class="filter-bar">
         <div class="row">
@@ -20,7 +19,7 @@
                 <h2>@T("Filtrar por:")</h2>
             </div>
             <div class="col-sm-6 col-lg-5 gutter-h">
-                <select name="anobraskem_@Model.Repositorio" id="anobraskem_@Model.Repositorio" class="selectpicker" data-style="btn-secondary">
+                <select name="ano_@Model.Repositorio" id="ano_@Model.Repositorio" class="selectpicker" data-style="btn-secondary">
                     <option value="">@T("Ano")</option>
 
                     @foreach (var item in lstAnos.OrderByDescending(x => x.DataInicio.Value.Year).Select(x => x.DataInicio.Value.Year).Distinct())
@@ -37,7 +36,7 @@
                 </select>
             </div>
             <div class="col-sm-6 col-lg-5 gutter-h">
-                <button id="btnPesquisarEventoBraskem_@Model.Repositorio" class="btn btn-md btn-default">@T("Pesquisar")</button>
+                <button id="btnPesquisarEvento_@Model.Repositorio" class="btn btn-md btn-default">@T("Pesquisar")</button>
             </div>
         </div>
     </div>

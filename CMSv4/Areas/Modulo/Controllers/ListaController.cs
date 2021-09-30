@@ -695,7 +695,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                 BLEmail.Enviar
                     (
-                        String.Format("Braskem | {0} compartilhou uma notícia com você!", Nome),
+                        String.Format("{0} compartilhou uma notícia com você!", Nome),
                         EmailAmigo,
                         BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailCompartilhar)
                             .Replace("[[nome_amigo]]", NomeAmigo)

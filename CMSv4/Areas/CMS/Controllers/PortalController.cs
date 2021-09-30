@@ -332,55 +332,7 @@ namespace CMSApp.Areas.CMS.Controllers
         }
         #endregion
 
-        #region WebConfig
-        //[CheckPermission(global::Permissao.Visualizar)]
-        //public ActionResult WebConfig(string senha)
-        //{
-        //    try
-        //    {
-        //        ////var key_provider = "VM2_Braskem_Provider";
-
-        //        //////Não foi possível utilizar a criacao de chave rsa
-        //        ////CriarChaveRSA(key_provider, 1024, Server.MapPath("/Portal/Principal")); //Cria chave caso não haja
-
-        //        //var config = WebConfigurationManager.OpenWebConfiguration(Request.ApplicationPath);
-        //        //var provider = "RsaProtectedConfigurationProvider"; //DataProtectionConfigurationProvider
-
-        //        //var connectionStrings = config.GetSection("connectionStrings").SectionInformation;
-        //        //var appSettings = config.GetSection("appSettings").SectionInformation;
-        //        //var smtp = config.GetSection("system.net/mailSettings/smtp").SectionInformation;
-
-        //        //connectionStrings.ForceSave = true;
-        //        //appSettings.ForceSave = true;
-        //        //smtp.ForceSave = true;
-
-        //        //if (string.IsNullOrEmpty(senha)) //Criptografa
-        //        //{
-        //        //    connectionStrings.ProtectSection(provider);
-        //        //    appSettings.ProtectSection(provider);
-        //        //    smtp.ProtectSection(provider);
-
-        //        //    config.SaveAs(Path.Combine(Server.MapPath("/Portal/principal/"), "web_prod.config"), System.Configuration.ConfigurationSaveMode.Full);
-        //        //}
-        //        //else //Descriptografa
-        //        //{
-        //        //    connectionStrings.UnprotectSection();
-        //        //    appSettings.UnprotectSection();
-        //        //    smtp.UnprotectSection();
-
-        //        //    config.SaveAs(Path.Combine(Server.MapPath("/Portal/principal/"), "web_prod_des.config"), System.Configuration.ConfigurationSaveMode.Full);
-        //        //}
-
-        //        return View("Senha", "OK" as object);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return View("Senha", ex.Message as object);
-        //    }
-
-        //}
-        #endregion
-
+       
         #region Desativar
 
         [CheckPermission(global::Permissao.Excluir)]

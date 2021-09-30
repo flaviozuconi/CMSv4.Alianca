@@ -5,14 +5,7 @@
     var urlControler = string.Format("/cms/{0}/FaleConoscoAdmin", portal.Diretorio);
     var urlSalvar = urlControler + "/FormularioConfiguracaiEnvioEmail";
 
-    var modelDefaultBraskem = new MLFaleConoscoConfiguracaoEnvioEmail();
-    modelDefaultBraskem.From = "Braskem@braskem.com.br";
-    modelDefaultBraskem.Host = "200.185.31.81";
-    modelDefaultBraskem.Port = 25;
-    modelDefaultBraskem.UserName = "braskem@braskem.com.br";
-    modelDefaultBraskem.Password = "braskem";
-    modelDefaultBraskem.SubjectEncoding = "ISO-8859-1";
-    modelDefaultBraskem.DefaultCredential = true;
+   
 
     var modelDefaultVM2 = new MLFaleConoscoConfiguracaoEnvioEmail();
     modelDefaultVM2.From = "homologacao@vm2.com.br";
@@ -36,7 +29,7 @@
             <input type="hidden" value="1" name="Codigo" />
 
             <div class="form-group col-md-12">
-                <input type="button" class="btn btn-red" value="@TAdm("Config Braskem")" id="btnBraskem"/>
+                
                 <input type="button" class="btn btn-blue" value="@TAdm("Config VM2")" id="btnVM2"/>
             </div>
             
@@ -100,14 +93,7 @@
 
     <script type="text/javascript">
 
-        $("#btnBraskem").click(function () {
-            $("input[name=From]").val('@Html.Raw(modelDefaultBraskem.From)');
-            $("input[name=Host]").val("@modelDefaultBraskem.Host");
-            $("input[name=Port]").val("@modelDefaultBraskem.Port");
-            $("input[name=UserName]").val("@modelDefaultBraskem.UserName");
-            $("input[name=Password]").val("@modelDefaultBraskem.Password");
-            $("input[name=SubjectEncoding]").val("@modelDefaultBraskem.SubjectEncoding");
-        });
+    
 
         $("#btnVM2").click(function () {
             $("input[name=From]").val('@Html.Raw(modelDefaultVM2.From)');

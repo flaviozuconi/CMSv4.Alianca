@@ -3,7 +3,7 @@
 @{
     var portal = BLPortal.Atual;
 
-    
+    var query = !string.IsNullOrEmpty(Request.Url.Query) && !Request.Url.Query.StartsWith("http", StringComparison.CurrentCultureIgnoreCase) ? Request.Url.Query : "";
 }
 
 <ul class="list-inline language-list jq-teste">
@@ -14,15 +14,15 @@
         switch (item.Key)
         {
             case "pt-BR": 
-                <li><a href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("Português")</a></li>
+                <li><a href="@Portal.ResolveUrl(item.Value, portal)@(query)">@T("Português")</a></li>
                 break;
 
             case "en-US":
-                <li><a href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("Inglês")</a></li>
+                <li><a href="@Portal.ResolveUrl(item.Value, portal)@(query)">@T("Inglês")</a></li>
                 break;
 
             case "es-MX":
-                <li><a href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("Espanhol")</a></li>
+                <li><a href="@Portal.ResolveUrl(item.Value, portal)@(query)">@T("Espanhol")</a></li>
                 break;
         }
     }

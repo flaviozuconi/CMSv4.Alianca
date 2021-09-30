@@ -124,23 +124,7 @@ namespace Framework.Utilities
                 smtp.Timeout = 999999;
                 #endregion
 
-                try
-                {
-                    //Reply To
-                    var portal = BLPortal.Atual;
-                    if (!assunto.Contains("Log de Erros - Braskem") && portal != null)
-                    {
-                        string strRetorno = BLConfiguracao.Reply(portal.Nome);
-                        if (!String.IsNullOrWhiteSpace(strRetorno))
-                        {
-                            mensagem.ReplyToList.Add(new MailAddress(strRetorno.Split('|')[0], strRetorno.Split('|')[1]));
-                        }
-                    }
-                }
-                catch
-                {
-                }
-
+                
                 //Reply To
                 if (!string.IsNullOrEmpty(sendReplyTo))
                 {

@@ -675,23 +675,7 @@ namespace Framework.Utilities
             }
 
         }
-
-        #region Reply
-        /// <summary>
-        /// Retorna o reply e-mail | nome
-        /// </summary>
-        /// <param name="pstrNomePortal">Nome do portal</param>
-        /// <returns>reply</returns>
-        public static string Reply(string pstrNomePortal)
-        {
-            string strChave = String.Format("Braskem.Reply.{0}",pstrNomePortal);
-            if (ConfigurationManager.AppSettings[strChave] != null)
-                return (string)new StringConverter().ConvertTo(ConfigurationManager.AppSettings[strChave], typeof(string));
-
-            return String.Empty;
-        }
-        #endregion
-
+                
         #region Locais Replicacao
 
         /// <summary>

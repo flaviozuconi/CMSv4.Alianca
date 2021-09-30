@@ -1963,6 +1963,7 @@
     <Content Include="Areas\Modulo\Views\Lista\Informativos.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Script.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\ScheduleAdmin\Index.cshtml" />
+    <Content Include="Areas\Modulo\Views\Lista\Taxas.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />

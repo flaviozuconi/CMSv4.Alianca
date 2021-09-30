@@ -865,7 +865,7 @@ namespace CMSv4.BusinessLayer
 
                 #endregion
 
-                if (!string.IsNullOrEmpty(seo.Url)) AdicionarLinkAoHead("canonical", seo.Url);
+                //if (!string.IsNullOrEmpty(seo.Url)) AdicionarLinkAoHead("canonical", seo.Url);
 
                 if (!string.IsNullOrEmpty(seo.Titulo)) AdicionarMetaAoHead("itemprop", "name", seo.Titulo);
 
@@ -1197,8 +1197,8 @@ namespace CMSv4.BusinessLayer
             if (meta.Contains("name=\"twitter:url\""))
                 return "name=\"twitter:url\"";
 
-            if (meta.Contains("rel=\"canonical\""))
-                return "rel=\"canonical\"";
+            //if (meta.Contains("rel=\"canonical\""))
+            //    return "rel=\"canonical\"";
 
             return string.Empty;
         }

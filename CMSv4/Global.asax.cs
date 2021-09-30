@@ -26,6 +26,23 @@ namespace CMSApp
         protected void Application_BeginRequest()
         {           
             Redirecionar();
+            //string[] headers = { "Server", "X-AspNetMvc-Version" };
+            //if (!Response.HeadersWritten)
+            //{
+            //    Response.AddOnSendingHeaders((c) =>
+            //    {
+            //        if (c != null && c.Response != null && c.Response.Headers != null)
+            //        {
+            //            foreach (string header in headers)
+            //            {
+            //                if (c.Response.Headers[header] != null)
+            //                {
+            //                    c.Response.Headers.Remove(header);
+            //                }
+            //            }
+            //        }
+            //    });
+            //}
         }
 
         private void Redirecionar()

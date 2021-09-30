@@ -90,7 +90,7 @@ namespace CMSApp.Controllers
                 if (pagina.Https.GetValueOrDefault()) //Página só pode ser exibida sob protocolo ssl
                 {
                     var urlRequisitada = Request.Url.ToString();
-                    
+
                     if (Request.Url.Scheme.Equals("http", StringComparison.InvariantCultureIgnoreCase) && /*não possuir https*/
                         urlRequisitada.IndexOf("http://localhost", StringComparison.InvariantCultureIgnoreCase) == -1 && /*não é localhost*/
                         urlRequisitada.IndexOf("homolog.co", StringComparison.InvariantCultureIgnoreCase) == -1) /*não é homolog.co*/
@@ -177,7 +177,7 @@ namespace CMSApp.Controllers
                 ViewBag.Schema = seo.Schema;
 
                 Renderizar(portal, pagina, ref caminhoView, ref caminhoLayout);
-
+                SetHeaders();
                 return Content(BLConteudoHelper.RenderViewToString(this, caminhoView, caminhoLayout, pagina));
             }
             catch (Exception ex)
@@ -192,6 +192,68 @@ namespace CMSApp.Controllers
         }
 
         #endregion
+
+        private void SetHeaders()
+        {
+            var cp = StringComparison.CurrentCultureIgnoreCase;
+            try
+            {
+                var configuracoes = BLCmsConfiguracao.Listar();
+                var headerConfig = configuracoes.Find(o => o.Chave.Equals("headers-config", cp));
+                if (headerConfig == null || string.IsNullOrEmpty(headerConfig.Valor))
+                    return;
+
+                var headers = headerConfig.Valor.Split('|');
+
+                foreach (var hd in headers)
+                {
+                    var value = configuracoes.Find(o => o.Chave.Equals(hd, cp));
+                    if (value != null && !string.IsNullOrEmpty(value.Valor))
+                    {
+                        if (Response.Headers.AllKeys.Contains(hd))
+                            Response.Headers.Remove(hd);
+
+                        Response.Headers.Add(value.Chave, value.Valor);
+                    }
+                }
+
+                //Response.Headers.Add("X-Frame-Options", "SAMEORIGIN");
+                //Response.Headers.Add("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+                //Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+                //Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                //Response.Headers.Add("Referrer-Policy", "strict-origin");            
+                //Response.Headers.Add("Content-Security-Policy", "");
+
+                //Response.Headers.Remove("X-Powered-By");
+                //Response.Headers.Remove("X-AspNet-Version");
+                //Response.Headers.Remove("X-AspNetMvc-Version");
+                //Response.Headers.Remove("Server");    
+                var headersremove = configuracoes.Find(o => o.Chave.Equals("headers-remove", cp));
+                if (headersremove == null || string.IsNullOrEmpty(headersremove.Valor))
+                    return;
+
+                if (!Response.HeadersWritten)
+                {
+                    Response.AddOnSendingHeaders((c) =>
+                    {
+                        if (c != null && c.Response != null && c.Response.Headers != null)
+                        {
+                            foreach (string header in headersremove.Valor.Split('|'))
+                            {
+                                if (c.Response.Headers[header] != null)
+                                {
+                                    c.Response.Headers.Remove(header);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+            }
+        }
 
         #region Obter Url's
 

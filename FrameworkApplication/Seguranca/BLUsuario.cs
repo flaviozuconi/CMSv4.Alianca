@@ -42,7 +42,7 @@ namespace Framework.Utilities
                 //cookie adicional para manter logado o usuário, por causa do relay do servidor, pode perder a autenticação em poucos minutos
                 MLCookie authCookie = new MLCookie();
 
-                authCookie.Nome = "BRASKEM_ADMIN_AUX";
+                authCookie.Nome = "CMS_ADMIN_AUX";
                 authCookie.Expires = DateTime.Now.AddDays(1);
                 authCookie.Valores = new List<MLCookieValores>() { new MLCookieValores() {
                     Chave = "key",
@@ -67,11 +67,11 @@ namespace Framework.Utilities
         }
 
         /// <summary>
-        /// Realiza a autenticação do usuário por Cookie para quando houver modificação da aplicação (Relay) de Braskem
+        /// Realiza a autenticação do usuário por Cookie para quando houver modificação da aplicação (Relay) de cms
         /// </summary>
         private static bool AutenticarUsuarioCookie()
         {
-            var cookie = BLCookie.Carregar("BRASKEM_ADMIN_AUX");
+            var cookie = BLCookie.Carregar("CMS_ADMIN_AUX");
 
             //validar se o cookie existe e tem valor
             if (cookie == null | cookie.Valores.Count == 0 || string.IsNullOrWhiteSpace(cookie.Valores[0].Valor))
@@ -255,7 +255,7 @@ namespace Framework.Utilities
             FormsAuthentication.SignOut();
             if (HttpContext.Current != null && HttpContext.Current.Session != null) HttpContext.Current.Session.Clear();
 
-            var cookie = BLCookie.Carregar("BRASKEM_ADMIN_AUX");
+            var cookie = BLCookie.Carregar("CMS_ADMIN_AUX");
 
             if (cookie != null)
             {

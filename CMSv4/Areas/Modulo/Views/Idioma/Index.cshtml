@@ -3,7 +3,7 @@
     var idiomaAtual = (string)ViewBag.IdiomaAtual ?? "pt-BR";
     var portal = BLPortal.Atual;
     var idiomaDisplay = "pt";
-
+    var query = !string.IsNullOrEmpty(Request.Url.Query) && !Request.Url.Query.StartsWith("http", StringComparison.CurrentCultureIgnoreCase) ? Request.Url.Query : "";
 
     switch (idiomaAtual.ToUpper())
     {
@@ -33,15 +33,15 @@
                 switch (item.Key.ToUpper())
                 {
                     case "PT-BR":
-                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("pt")</a>
+                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(query)">@T("pt")</a>
                         break;
 
                     case "EN-US":
-                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("en")</a>
+                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(query)">@T("en")</a>
                         break;
 
                     case "ES-MX":
-                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("es")</a>
+                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(query)">@T("es")</a>
                         break;
                 }
             }

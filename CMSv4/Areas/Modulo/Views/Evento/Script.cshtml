@@ -125,9 +125,9 @@
 
     //evento-lista-com-filtro
     $(document).ready(function () {
-        $("#btnPesquisarEventoBraskem_@Model.Repositorio").click(function () {
+        $("#btnPesquisarEvento_@Model.Repositorio").click(function () {
             var semetre = $("#semestre_@(Model.Repositorio)").val();
-            var ano = $("#anobraskem_@(Model.Repositorio)").val();
+            var ano = $("#ano_@(Model.Repositorio)").val();
 
             //Definir Parametros de busca por data para paginação
             $("#hdnAnoSelecionado_@Model.Repositorio").val(ano);

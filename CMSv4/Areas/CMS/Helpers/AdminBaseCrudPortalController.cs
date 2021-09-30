@@ -42,7 +42,7 @@ public abstract class AdminBaseCRUDPortalController<TModelLista, TModelGravar> :
 
         [CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
         [HttpPost]
-        [ValidateInput(false)]
+        //[ValidateInput(false)]
         public virtual ActionResult Item(TModelGravar model)
         {
             SetCodigoPortal(model);
