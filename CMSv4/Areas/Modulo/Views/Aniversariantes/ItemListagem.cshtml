@@ -1,0 +1,62 @@
+﻿@model List<MLColaboradorPublico>
+@{
+    var portal = BLPortal.Atual;
+    var listaClientes = new List<List<MLColaboradorPublico>>();
+    while (Model.Count > 0)
+    {
+        if (Model.Count > 2)
+        {
+            listaClientes.Add(Model.GetRange(0, 3));
+
+            Model.RemoveRange(0, 3);
+        }
+        else
+        {
+            listaClientes.Add(Model.GetRange(0, Model.Count));
+            Model.RemoveRange(0, Model.Count);
+        }
+    }
+}
+
+@for (int i = 0; i < listaClientes.Count; i++)
+{
+    <div class="col-sm-12">
+        @for (int j = 0; j < listaClientes[i].Count; j++)
+        {
+            string _src = "";
+            if (!String.IsNullOrEmpty(listaClientes[i][j].Foto))
+            {
+                _src = string.Format("{0}/thumb/{1}/Clientes/120/120/{2}/", Portal.Url(), portal.Diretorio, listaClientes[i][j].NomeImagem);
+            }
+            else
+            {
+                _src = string.Format("{0}/content/img/no-img.png", Portal.Url());
+            }
+
+            <div class="col-xs-4">
+                <div class="media imgJQ" data-index="@((3 * i) + j)" style="@(((3 * i) + j) > 11 ? "display: none" : "")">
+                    <img alt="@listaClientes[i][j].Nome" src="@_src" width="80" height="80" class="pull-left img-circle" />
+                    <div class="media-body">
+                        <strong>@String.Format("{0:dd/MM}", listaClientes[i][j].DataNascimento.Value)</strong><br />
+                        @listaClientes[i][j].Nome<br />
+                        @listaClientes[i][j].Empresa
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (listaClientes.Count > 4)
+{
+    <div class="col-sm-12 text-center">
+        <a href="javascript:;" class="vejaMaisJQ" title="@T("Veja Mais")">@T("Veja Mais")</a>
+    </div>
+}
+
+@if (listaClientes.Count == 0)
+{
+    <div class="col-sm-12 text-center">
+        @T("Nenhum registro encontrado")
+    </div>
+}

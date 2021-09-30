@@ -1,0 +1,25 @@
+﻿@{
+    var portal = BLPortal.Atual;
+    
+    if (portal.Codigo == 1)
+    {
+        Layout = "/portal/principal/layouts/_BraskemCMS.cshtml";
+	}
+    else
+    {
+        Layout = "/portal/ri/layouts/_LayoutRI.cshtml";
+    }
+}
+
+<div class="panel panel-danger panel--not-found">
+    <div class="panel-heading">
+        <h2 class="panel-title"><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> Página não encontrada</h2>
+    </div>
+    <div class="panel-body">
+        <h3>Erro 404</h3>
+        <p>A página que você tentou acessar não foi encontrada, ela pode ter sido removida ou a URL estar errada.</p>
+    </div>
+    <div class="panel-footer">
+        <a href="/" class="btn btn-default">Voltar para Home</a>
+    </div>
+</div>

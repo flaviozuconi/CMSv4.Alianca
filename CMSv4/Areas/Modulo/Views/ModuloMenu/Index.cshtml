@@ -1,0 +1,9 @@
+﻿@model  MLModuloMenuModulo
+@try
+{
+    @Html.Action("ListarPublico", "ModuloMenu", new { model = Model })
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

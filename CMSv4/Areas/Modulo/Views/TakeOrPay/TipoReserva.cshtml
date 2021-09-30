@@ -1,0 +1,74 @@
+﻿@model MLModuloTakeOrPay
+@{
+    Layout = "";
+}
+
+<div class="container" id="Etapa3_1" style="display: none;">
+    <div class="step-three">
+        <h3 class="step-title">Qual o seu tipo de contratação do Embarque Certo?</h3>
+        <form>
+            <div class="form-row">
+                <div class="form-group col-24">
+                    <div class="form-radio">
+                        <div class="radio">
+                            <input type="radio" name="tipoReserva" id="sim" autocomplete="off">
+                            <label for="sim"></label>
+                        </div>
+                        <label for=""><strong>Regular</strong> – desejo reservar espaço de forma regular para os próximos meses.</label>
+                    </div>
+                    <div class="form-radio">
+                        <div class="radio">
+                            <input type="radio" name="tipoReserva" id="nao" autocomplete="off">
+                            <label for="nao"></label>
+                        </div>
+                        <label for=""><strong>Spot</strong> – desejo reservar somente para navio, viagem e direção específicos.</label>
+                    </div>
+                    <div class="form-group error" id="divErroEtapa3_1" style="display: none;">
+                        <span class="error">Selecione uma opção.</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="step-btns">
+            <a href="javascript:void(0);" class="btn btn-default" id="btnVoltarEtapa2">Voltar</a>
+            <a href="javascript:void(0);" class="btn btn-navy" id="btnAvancarEtapa3_2">Avançar</a>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="Etapa3_2" style="display: none;">
+    <div class="step-three">
+        <h3 class="step-title">O seu volume de Embarque Certo<br>será semanal ou mensal?</h3>
+        <form>
+            <div class="form-row">
+                <div class="form-group col-24">
+                    <div class="form-radio">
+                        <div class="radio">
+                            <input type="radio" name="frequencia" id="semanal" autocomplete="off">
+                            <label for="semanal"></label>
+                        </div>
+                        <label for=""><strong>Semanal</strong></label>
+                    </div>
+                    <div class="form-radio">
+                        <div class="radio">
+                            <input type="radio" name="frequencia" id="mensal" autocomplete="off">
+                            <label for="mensal"></label>
+                        </div>
+                        <label for=""><strong>Mensal</strong></label>
+                    </div>
+                    <div class="form-group error" id="divErroEtapa3_2" style="display: none;">
+                        <span class="error">Selecione uma opção.</span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="step-btns">
+            <a href="javascript:void(0);" class="btn btn-default" id="btnVoltarEtapa3_1">Voltar</a>
+            <a href="javascript:void(0);" class="btn btn-navy" id="btnAvancarEtapa4">Avançar</a>
+        </div>
+    </div>
+</div>
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptDadosCadastrais", new { model = Model }));
+}

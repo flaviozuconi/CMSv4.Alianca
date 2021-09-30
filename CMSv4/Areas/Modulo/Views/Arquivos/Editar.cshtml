@@ -1,0 +1,141 @@
+﻿@model MLModuloArquivos
+@{
+    Layout = "";
+    var portal = BLPortal.Atual;
+}
+
+<div class="form-group col-md-12">
+    <label>@T("Pastas")</label><br />
+    @Html.ListBox("CodigosCategoriaArquivo", ((IEnumerable<SelectListItem>)ViewBag.Pastas))
+</div>
+<div class="form-group col-md-6">
+    <label>@T("Visualização")</label><br />
+    @Html.DropDownList("NomeView", ((IEnumerable<SelectListItem>)ViewBag.Views))
+</div>
+<div class="form-group col-md-6" id="titulo" @(Model.NomeView != "lista" ? "col-md-12" : "col-md-6"))>
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Nome")" value="@Model.Titulo"/>
+</div>
+<div class="form-group col-md-6" id="divTipoPaginacao" @(Model.NomeView != "Listagem" ? "style=display:none;" : "")>
+    <label>@T("Tipo de Paginação")</label>
+    <select name="TipoPaginacao" class="form-control" id="TipoPaginacao">
+        <option value="Paginacao" @(Model.TipoPaginacao == "Paginacao" ? "selected" : "")>@T("Paginação")</option>
+        <option value="VerMais" @(Model.TipoPaginacao == "VerMais" ? "selected" : "")>@T("Botão Ver Mais")</option>
+    </select>
+</div>
+<div class="form-group col-md-6">
+    <label>@T("Url Detalhe")</label>
+    <input type="text" class="form-control" name="UrlDetalhe" id="UrlDetalhe" placeholder="@T("Url Detalhe")" value="@Model.UrlDetalhe" />
+    @Helpers.BuscarPaginas("UrlDetalhe", portal.Diretorio, portal.Codigo)
+</div>
+<div class="form-group col-md-6">
+    <label>@T("Url Lista")</label>
+    <input type="text" class="form-control" name="UrlLista" id="UrlLista" placeholder="@T("Url Lista")" value="@Model.UrlLista" />
+    @Helpers.BuscarPaginas("UrlLista", portal.Diretorio, portal.Codigo)
+</div>
+<div class="form-group col-md-4">
+    <label>@T("Quantidade")</label>
+    <input type="text" class="form-control" id="Quantidade" name="Quantidade" maxlength="4" value="@Model.Quantidade" placeholder="@T("Quantidade")" onkeypress="return somenteNumeros(event);" />
+</div>
+<div class="clearfix"></div>
+<div class="col-md-8">
+    <fieldset>
+        <legend>Ordenação</legend>
+        <div class="form-group col-md-6">
+            @Html.CheckBox("OrdenarData", (Model.OrdenarData ?? false)) &nbsp
+            <label>@T("Por data")</label>
+        </div>
+        <div class="form-group col-md-6">
+            @Html.CheckBox("OrdenarDesc", (Model.OrdenarDesc ?? false)) &nbsp
+            <label>@T("Decrescente")</label>
+        </div>
+    </fieldset>
+</div>
+
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+
+    $(document).ready(function () {
+        if ($("#NomeView option:selected").val() == "listagemano") {
+            $("#Quantidade").rules("remove", "required");
+        }
+        else {
+            $("#Quantidade").rules("add", "required");
+        }
+
+        $("#NomeView").change(function () {
+            if ($(this).val() == "listagemano") {
+                $("#Quantidade").rules("remove", "required");
+            }
+            else {
+                $("#Quantidade").rules("add", "required");
+            }
+
+            if ($(this).val() == "listagem" || $(this).val() == "listagemano") {
+
+                if ($(this).val() == "listagem") {
+                    $("#divTipoPaginacao").show();
+                }
+                else {
+                    $("#divTipoPaginacao").hide();
+                }
+                
+                $("#titulo").attr("class", "form-group col-md-6");
+            }
+            else {
+                $("#divTipoPaginacao").hide();
+                $("#titulo").attr("class", "form-group col-md-12");
+            }
+        });
+    });
+
+    // Valida o multiselect
+    $.validator.addMethod("validateCategoria", function (value, element) {
+
+        try {
+            return $(element).multiselect("getChecked").length > 0;
+        }
+        catch (ex) {
+            return (value != '');
+        }
+    });
+
+    // Modify validation settings
+    $.extend(true, settings, {
+        rules: {
+            "Quantidade": { number: true, required: true },
+            "UrlDetalhe": { maxlength: 250 },
+            "UrlLista": { maxlength: 250 },
+            CodigosCategoriaArquivo: "required validateCategoria"
+        },
+        messages: {
+            CodigosCategoriaArquivo: "@T("Selecione uma pasta.")",
+            Quantidade: "@T("Informe a quantidade.")"
+        },
+        ignore: ":hidden:not('select[name=CodigosCategoriaArquivo]')"
+    });
+
+    $('select[name=CodigosCategoriaArquivo]').multiselect({
+        selectAllText: '@T("Todos")',
+        selectAllValue: '0',
+        includeSelectAllOption: true,
+        nonSelectedText: '@T("Nenhuma selecionada")'
+    });
+
+    $('select[name=NomeView]').multiselect({
+        selectAllText: '@T("Todos")',
+        selectAllValue: '0',
+        includeSelectAllOption: true,
+        nonSelectedText: '@T("Nenhuma selecionada")'
+    });
+
+    ///Retorna as propriedades de um objeto json
+    var getKeys = function (obj) {
+        var keys = [];
+        aert(keys);
+        for (var key in obj) {
+            keys.push(key);
+        }
+        return keys;
+    }
+</script>

@@ -1,0 +1,42 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    Layout = "";
+}
+<div class="modal-header">
+    <h4 class="modal-title" id="standardModalLabel">@TAdm("Propriedades") (@(ViewData["nomeModulo"]))</h4>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+</div>
+<div class="modal-body clearfix">
+    <form id="propriedade" method="post">
+        <input type="hidden" name="CodigoPagina" value="@ViewData["codigoPagina"]" />
+        <input type="hidden" name="Repositorio" value="@ViewData["Repositorio"]" />
+        <div id="contentPropertiesModal">
+
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-white" data-dismiss="modal">@TAdm("Fechar")</button>
+    <button type="button" id="salvarModulo" class="btn btn-green">@TAdm("Salvar")</button>
+</div>
+<script type="text/javascript">
+    $.validator.setDefaults({
+        highlight: function (element) {
+            $(element).closest('.form-group').addClass('has-error');
+        },
+        unhighlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-error');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block'
+    });
+    $.validator.addMethod(
+            "regex",
+            function (value, element, regexp) {
+                var re = new RegExp(regexp);
+                return this.optional(element) || re.test(value);
+            },
+            $.validator.messages.remote
+    );
+    $('#propriedade').validate({});
+</script>

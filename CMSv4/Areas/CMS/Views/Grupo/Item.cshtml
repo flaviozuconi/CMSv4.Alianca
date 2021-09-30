@@ -1,0 +1,90 @@
+﻿@model  MLGrupo
+@{
+    var urlLista = "/admin/grupo";
+    var termoVisualizar = T("Visualizar");
+    var termoModificar = T("Modificar");
+    var termoExcluir = T("Modificar e Excluir");
+    var funcionalidades = (List<MLFuncionalidade>)ViewBag.Funcionalidades ?? new List<MLFuncionalidade>();
+
+    funcionalidades = funcionalidades.OrderBy(a => a.Nome).ToList();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/group_key" /> @TAdm("Grupos")</h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-12">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+            </div>
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+            <fieldset class="col-md-12">
+                <legend>@TAdm("Funcionalidade")</legend>
+                @for (int i = 0; i < funcionalidades.Count; i++)
+                {
+                    var itemId = "funcionalidade_" + funcionalidades[i].Codigo;
+                    var item = Model.Permissoes.Find(o => o.CodigoFuncionalidade == funcionalidades[i].Codigo) ?? new MLGrupoItemPermissao();
+                    var nivel = 0;
+
+                    if (item.Excluir.GetValueOrDefault()) { nivel = 3; }
+                    else if (item.Modificar.GetValueOrDefault()) { nivel = 2; }
+                    else if (item.Visualizar.GetValueOrDefault()) { nivel = 1; }
+
+                    <div class="form-group col-sm-6 col-md-6">
+                        <label>@funcionalidades[i].Nome</label><br />
+                        <select name="@string.Format("[{0}].NivelPermissao", i)" class="form-control" id="@itemId" onchange="$('#@itemId').css('color', $('#@itemId option[value=' + $('#@itemId').val() + ']').css('color'))">
+                            <option value="0">-</option>
+                            <option value="1" style="color: black;" @(nivel == 1 ? "selected" : "")>@termoVisualizar</option>
+                            <option value="2" style="color: blue;" @(nivel == 2 ? "selected" : "")>@termoModificar</option>
+                            <option value="3" style="color: red;" @(nivel == 3 ? "selected" : "")>@termoExcluir</option>
+                        </select>
+                        <input type="hidden" name="@string.Format("[{0}].CodigoFuncionalidade", i)" value="@funcionalidades[i].Codigo" />
+                    </div>
+                }
+            </fieldset>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+
+        </form>
+
+    </div>
+</div>
+
+
+@section scripts{
+
+    <script type="text/javascript">
+
+        $('form').validate({
+            rules: {
+                Nome: { required: true, maxlength: 50 }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $('select').multiselect({ buttonClass: 'btn btn-white' });
+
+    </script>
+}

@@ -1,0 +1,10 @@
+﻿@model MLMenuItemModulo
+@{
+    var portal = BLPortal.Atual;
+}
+@foreach (var item in Model.Filhos)
+{
+    <a class="dropdown-item @item.Css" href="@Portal.ResolveUrl(item.Href, portal)" target="@(item.AbrirNovaPagina.GetValueOrDefault() ? "_blank" : "_top")">
+        @Html.Raw(item.Nome)
+    </a>
+}

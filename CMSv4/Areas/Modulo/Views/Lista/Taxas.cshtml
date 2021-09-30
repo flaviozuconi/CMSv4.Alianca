@@ -1,0 +1,50 @@
+﻿@model  List<MLListaConteudoPublicoListagem>
+@{
+    var modulo = (MLModuloLista)ViewData["modulo"] ?? new MLModuloLista();
+    var conteudo = new MLListaConteudoPublicoListagem();
+    if (Model.Count > 0)
+    {
+        conteudo = Model[0];
+    }
+    else
+    {
+        var lista = BLLista.ListarPublico(modulo, 1, codigoIdioma: 1);
+
+        if (lista.Count > 0)
+        {
+            conteudo = lista[0];
+        }
+    }
+    modulo.Titulo = modulo.Titulo ?? T("Taxas de câmbio");
+}
+@if (conteudo.Codigo.HasValue)
+{
+    <!--Taxa-->
+    <div class="modal modal-atendimento fade" id="modalTaxa" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span class="icon icon-plus">
+
+                    </span>
+                </button>
+                <h2 class="title">
+                    @modulo.Titulo
+                </h2>
+                <p>
+                    @T("Data:") @(conteudo.Data.Value.ToString(T("dd-MMM-yyyy")).ToLower())
+                </p>
+                <p>
+                    <strong>@T("Frete")</strong><br />
+                    US$ 1 = R$ @(conteudo.Titulo)<br />
+                    EUR 1 = R$ @(conteudo.Extra1)
+                </p>
+                <p>
+                    <strong>@T("Bagagem")</strong><br />
+                    US$ 1 = R$ @(conteudo.Extra2)<br />
+                    EUR 1 = R$ @(conteudo.Extra3)
+                </p>
+            </div>
+        </div>
+    </div>
+}

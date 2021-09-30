@@ -1,0 +1,27 @@
+﻿@model List<MLListaConteudoPublicoListagem>
+@{
+    var portal = BLPortal.Atual;
+    var urldetalhe = ViewBag.UrlDetalhe != null ? ViewBag.UrlDetalhe.ToString() : "";
+    var _verMais = T("Ver mais");
+}
+@foreach (var item in Model)
+{
+    <div class="col-xs-24 col-md-12">
+        <section class="post-box-left news-post">
+            <a href="@Portal.ResolveUrl(string.IsNullOrEmpty(urldetalhe) ? item.Url : string.Format("{0}/{1}",urldetalhe,item.UrlOriginal), portal)">
+                @if (!String.IsNullOrWhiteSpace(item.Imagem))
+                {
+                    <figure>
+                        <img src="@Portal.Url()/thumb/@BLPortal.Atual.Diretorio/Listas/@item.Codigo/210/175/capa@(item.Imagem)/">
+                    </figure>
+                }
+                <article>
+                    <time datetime="@item.Data.Value.ToString(T("dd-MM-yyyy"))">@item.Data.Value.ToString(T("dd-MM-yyyy"))</time>
+                    <h3>@item.Titulo</h3>
+                    <p>@item.Chamada</p>
+                    <span class="btn btn-link unpad">@_verMais <b class="icon icon-chevron-right"></b></span>
+                </article>
+            </a>
+        </section>
+    </div>
+}

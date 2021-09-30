@@ -1,0 +1,39 @@
+﻿@model MLModuloMenuModulo
+@{
+    Layout = "";
+    var menus = (List<MLMenuModulo>)ViewData["menus"] ?? new List<MLMenuModulo>();
+    List<string> lstTipos = new List<string>();
+    lstTipos.Add("TopoSite");  
+}
+
+<div class="form-group col-md-24">
+    <label>@T("Menu")</label>
+    <select name="CodigoMenu" class="form-control">
+        @foreach (var item in menus)
+        {
+            <option value="@item.Codigo" @(item.Codigo == Model.CodigoMenu ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+</div>
+
+<div class="form-group col-md-12">
+    <label>@T("Tipo")</label>
+    <select name="View" class="form-control">
+        @foreach (string item in lstTipos)
+        {
+            <option value="@item" @(item == Model.View ? "selected" : "")>@item</option>
+        }
+    </select>
+</div>
+
+<div class="form-group col-md-12">
+    <label>@T("Class")</label>
+    <input type="text" id="ClasseCSS" name="ClasseCSS" value="@Model.ClasseCSS" class="form-control" />
+</div>
+
+<div class="form-group col-md-24">
+    <label>@T("Adicional")</label>
+    <input type="text" id="Adicional" name="Adicional" value="@Model.Adicional" class="form-control" />
+</div>
+
+

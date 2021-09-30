@@ -1,0 +1,169 @@
+﻿@model MLModuloLogin
+@{
+    var portal = BLPortal.Atual;
+}
+<!-- PAGE LEVEL PLUGIN SCRIPTS -->
+
+<script src="~/Content/js/plugins/validate/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+    $('#Login_@Model.Repositorio').validate({
+        //errorPlacement: function (error, element) { },
+        onkeyup: false,
+        highlight: function (element) {
+            $(element).closest(".form-group").addClass("has-error");
+        },
+        unhighlight: function (element) {
+            $(element).closest(".form-group").removeClass("has-error");
+        },
+        rules: {
+            "email_@Model.Repositorio": { required: true, email: true },
+            "senha_@Model.Repositorio": { required: true }
+        },
+        messages: {
+            "email_@Model.Repositorio": {
+                email: "E-mail inválido",
+                required: "@T("Informe o Login ou E-mail")"
+            },
+            "senha_@Model.Repositorio": "@T("Informe a Senha")"
+        },
+        errorPlacement: function(error, element) {
+            var placement = $(element).parent('.input-group');
+
+            if (placement) {
+                $(error).addClass('help-block').insertAfter(placement)
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+    $('#EsqueciSenha_@Model.Repositorio').validate({
+        //errorPlacement: function (error, element) { },
+        onkeyup: false,
+        highlight: function (element) {
+            $(element).closest(".form-group").addClass("has-error");
+        },
+        unhighlight: function (element) {
+            $(element).closest(".form-group").removeClass("has-error");
+        },
+        rules: {
+            "email_esquecisenha_@Model.Repositorio": { required: true, email: true }
+        },
+        messages: {
+            "email_esquecisenha_@Model.Repositorio": {
+                email: "E-mail inválido",
+                required: "@T("Informe o Login ou E-mail")"
+            }
+        },
+        errorPlacement: function (error, element) {
+            var placement = $(element).parent('.input-group');
+
+            if (placement) {
+                $(error).addClass('help-block').insertAfter(placement)
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+    $('.jq-key-press-enter').keypress(function (e) {
+        if (e.which == 13) {
+            $(this).closest('form').next(".jq-btn-submit").click();
+        }
+    });
+
+    //callback handler for form submit
+    $("#btnLogin_@Model.Repositorio").click(function () {
+        var valido = $("#Login_@Model.Repositorio").valid();
+
+        if (valido) {
+            var formURL = "@Portal.UrlCms(portal)/ModuloLogin/Autenticar";
+            var button = $(this);
+            $("#divInfo_@Model.Repositorio").hide();
+            button.addClass("disabled");
+
+            $.ajax({
+                url: formURL,
+                type: "POST",
+                data: {
+                    usuario: $("#email_@Model.Repositorio").val(),
+                    password: $("#senha_@Model.Repositorio").val()
+                },
+                success: function (data, textStatus, jqXHR) {
+                    if (data.success) {
+                        var urlRetorno = "@Model.UrlRetorno";
+                        if (urlRetorno)
+                            window.location.href = urlRetorno;
+                        else {
+                            window.location.href = "/@BLPortal.Atual.Diretorio";
+                        }
+                    }
+                    else {
+                        $("#senha_@Model.Repositorio").val("");
+
+                        if (data.msg != null) {
+                            $("#divInfo_@Model.Repositorio").html(data.msg).fadeIn();
+                        }
+                    }
+
+                    button.removeClass("disabled");
+                }
+            });
+        }
+    })
+
+    function submitNovaSenha@(Model.Repositorio)() {
+        $("#divInfoEsqueciSenha_@Model.Repositorio").html("");
+
+        var button = $("#btnEsqueciSenha_@Model.Repositorio");
+
+        if ($("#EsqueciSenha_@Model.Repositorio").valid()) {
+            button.addClass("disabled");
+
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/ModuloLogin/EsqueciSenha",
+                beforeSend: function(){
+                    $("#divInfoEsqueciSenha_@Model.Repositorio").html("<div class='alert alert-warning'>@T("Enviando nova senha, por favor aguarde...")</div>");
+                    $("#divInfoEsqueciSenha_@Model.Repositorio").show();
+                },
+                data: {
+                    nomeUsuario: $("#email_esquecisenha_@Model.Repositorio").val(),
+                    urlLogin: "@Model.UrlPaginaLogin"
+                },
+                success: function (data) {
+                    $("#email_esquecisenha_@Model.Repositorio").val("");
+
+                    if (data != null && data.success) {
+                        $("#divInfoEsqueciSenha_@Model.Repositorio").html("<div class='alert alert-success'>@T("Uma nova senha foi enviada para seu email.")</div>");
+                    }
+                    else {
+                        if (data.msg) {
+                            $("#divInfoEsqueciSenha_@Model.Repositorio").html("<div class='alert alert-danger'>" + data.msg + "</div>");
+                        }
+                        else {
+                            $("#divInfoEsqueciSenha_@Model.Repositorio").html("<div class='alert alert-danger'>@T("Não foi possível enviar uma nova senha.")</div>");
+                        }
+                    }
+
+                    button.removeClass("disabled");
+                },
+                error: function (err) {
+                    $("#divInfoEsqueciSenha_@Model.Repositorio").html("<div class='alert alert-success'>@T("Não foi possível enviar nova senha, tente novamente mais tarde.")</div>");
+                }
+            });
+        }
+    }
+
+    function voltar_login@(Model.Repositorio)() {
+        $("#divLogin_@Model.Repositorio").show();
+        $("#divEsqueciSenha_@Model.Repositorio").hide();
+    }
+
+    function esqueci_senha@(Model.Repositorio)() {
+        $("#divInfoEsqueciSenha_@Model.Repositorio").html("");
+        $("#divLogin_@Model.Repositorio").hide();
+        $("#divEsqueciSenha_@Model.Repositorio").show();
+    }
+</script>

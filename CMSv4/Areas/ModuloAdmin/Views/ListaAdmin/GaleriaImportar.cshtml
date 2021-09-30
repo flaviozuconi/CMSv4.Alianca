@@ -1,0 +1,15 @@
+﻿@model MLListaConteudoImagem
+
+@{
+    var diretorio = Convert.ToString(ViewData["diretorioGaleria"]);
+}
+
+<input name="incluir" data-file="@Model.Imagem" type="button" class="btn btn-link" value="@TAdm("importar")" onclick="incluirImagem($(this));" />
+@if (AdminHelper.CheckPermission(Permissao.Excluir))
+{
+<input name="excluir" data-file="@Model.Imagem" type="button" class="btn btn-link" style="color: red;" value="@TAdm("excluir")" onclick="excluirImagem($(this));" />    
+}
+<div class="galeria-imagem-container" onclick="$(this).next('.galeria-imagem-botoes').toggle();" >
+    <small> @Model.Imagem </small>
+    <img src="@diretorio/@Model.Imagem"/>
+</div>

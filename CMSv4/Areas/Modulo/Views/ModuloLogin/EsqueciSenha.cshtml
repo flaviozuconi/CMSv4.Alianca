@@ -1,0 +1,47 @@
+﻿@model MLModuloLogin
+
+<div class="logar" id="divLogin_@Model.Repositorio">
+    <h2>@T("Recuperação de senha")</h2>
+
+    <div id="msg_@Model.Repositorio"></div>
+
+    <form accept-charset="UTF-8" role="form" method="POST" id="AlterarSenha_@Model.Repositorio">
+        <div id="msg_@Model.Repositorio"></div>
+
+        <div class="form-group">
+            <label class="sr-only" for="exampleInputAmount">Email</label>
+            <div class="input-group">
+                <div class="input-group-addon"><span class="icon icon-locked"></span></div>
+                <input class="form-control" placeholder="@T("Nova senha")" id="senha_@Model.Repositorio" name="senha_@Model.Repositorio" type="password" autofocus />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="sr-only" for="exampleInputAmount">Email</label>
+            <div class="input-group">
+                <div class="input-group-addon"><span class="icon icon-locked"></span></div>
+                <input class="form-control" placeholder="@T("Confirmar Nova Senha")" id="senhaConfirmar_@Model.Repositorio" name="senhaConfirmar_@Model.Repositorio" type="password" />
+            </div>
+        </div>
+    </form>
+
+    <input type="button" id="btnNovaSenha_@Model.Repositorio" class="btn btn-default btn-block" value="@T("Enviar")" />
+</div>
+
+@try
+{
+    bool addScripts = TempData["AddScripts"] != null ? Convert.ToBoolean(TempData["AddScripts"]) : false;
+
+    if (addScripts)
+    {
+        @Html.Partial("ScriptEsqueciSenha", Model)
+    }
+    else
+    {
+        BLConteudo.AdicionarJavaScript(Html.Partial("ScriptEsqueciSenha", Model));
+    }
+}
+catch (Exception ex)
+{
+
+}

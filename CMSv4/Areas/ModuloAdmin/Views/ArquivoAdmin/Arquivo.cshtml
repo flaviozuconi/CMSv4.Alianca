@@ -1,0 +1,110 @@
+﻿@{
+    var regex = new System.Text.RegularExpressions.Regex(@"\d+");
+    var baseUrl = regex.Replace(Request.Url.AbsolutePath, string.Empty).Remove((Request.Url.AbsolutePath.Length - 8));
+    var urlEditar = baseUrl + "/arquivoitem";
+    var urlLista = baseUrl + "/listararquivos?codigocategoria=" + Request["codigocategoria"];
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/file_extension_zip" />
+                @T("Arquivos")</h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            { 
+                <a class="btn btn-green" href="@(urlEditar + "?codigocategoria=" + ViewBag.CodigoCategoria)">@T("Adicionar")</a> 
+            }
+            @Helpers.BotaoExcluir(T("Excluir"))
+            <a class="btn btn-orange" href="@baseUrl">@T("Voltar")</a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body">
+        @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), baseUrl + "/excluirarquivos")
+
+        <div class="table-responsive">
+            <div id="filter">
+                @Helpers.ComboIdiomas(PortalAtual.Obter.CodigoIdioma, false)
+            </div>
+            <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                <thead>
+                    <tr>
+                        <th>@T("Nome")</th>
+                        <th>@T("Título")</th>
+                        <th style="width: 70px;">@T("Data")</th>
+                        <th style="width: 100px;">@T("Idiomas Relacionados")</th>
+                        <th style="width: 50px;">@T("Destaque")</th>
+                        <th style="width: 50px;">@T("Ativo")</th>
+                        <th style="width: 50px;">@T("Excluir")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            scrollToTop();
+
+            $("#CodigoIdioma").change(function () {
+                $('#lista').DataTable().ajax.reload();
+            });
+
+            $('#lista').dataTable({
+                "ajax": { "url": "@urlLista", "data": function (d) { d.CodigoIdioma = $("#CodigoIdioma").val(); } },
+                "order": [[0, "desc"]],
+                "columns": [
+                    {
+                        "data": "Nome",
+                        "render": function (data, type, row) {
+                            if (data == null) { data = ''; }
+                            return '<a href="@urlEditar.TrimEnd('/')?codigo=' + row.Codigo + '&codigocategoria=' + row.CodigoCategoria + '">' + data.replace('.resource', '') + '</a>';
+                        }
+                    },
+                    @Helpers.ColunaEditar("Titulo", urlEditar, "Codigo", "CodigoCategoria"),
+                    @Helpers.ColunaEditarData("Data", urlEditar, "Codigo", "CodigoCategoria"),
+                    {
+                        "data": "SiglaIdioma",
+                        "bSortable": false,
+                        "render": function (data, type, row) {
+                            if (data == null) { data = ''; }
+
+                            var links = '';
+                            var arrIdiomas = (row.IdiomasCadastrados || "").split(',');
+                            if (arrIdiomas.length > 0 && arrIdiomas[0]) {
+                                for (var i = 0; i < arrIdiomas.length; i++) {
+                                    if (arrIdiomas[i]) {
+                                        var arrIdiomaSigla = arrIdiomas[i].split(':');
+                                        var css = arrIdiomaSigla[2] ? 'blue' : 'label-default';
+                                        var title = arrIdiomaSigla[2] ? 'Cadastrado' : 'Não cadastrado';
+
+                                        if (arrIdiomaSigla[2]) {
+                                            links += '<a class="label ' + css + ' tooltip-idioma" data-toggle="tooltip" data-placement="bottom" href="@urlEditar.TrimEnd('/')?codigocategoria=' + row.CodigoCategoria + '&codigo=' + arrIdiomaSigla[2] + '" title="' + title + '">' + arrIdiomaSigla[1] + '</a> ';
+                                        }
+                                        else {
+                                            links += '<a class="label ' + css + ' tooltip-idioma" data-toggle="tooltip" data-placement="bottom" href="@urlEditar.TrimEnd('/')?codigoidioma=' + arrIdiomaSigla[0] + '&codigobase=' + (row.CodigoBase || row.Codigo) + '&codigocategoria=' + row.CodigoCategoria + '" title="' + title + '">' + arrIdiomaSigla[1] + '</a> ';
+                                        }
+                                    }
+                                }
+                            }
+
+                            return links;
+                        }
+                    },
+                    @Helpers.ColunaEditarBoolean("Destaque", urlEditar, "Codigo", "CodigoCategoria", "Sim", "Não"),
+                    @Helpers.ColunaEditarBoolean("Ativo", urlEditar, "Codigo", "CodigoCategoria", "Sim", "Não"),
+                    @Helpers.ColunaExcluir("Codigo")
+                ]
+            }
+        );
+        });
+
+    </script>
+
+}

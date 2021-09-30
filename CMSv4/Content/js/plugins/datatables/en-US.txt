@@ -1,0 +1,23 @@
+﻿{
+    "emptyTable":     "No records found",
+    "info":           "Displaying _START_ to _END_ | Total: _TOTAL_",
+    "infoEmpty":      "",
+    "infoFiltered":   "(Total without filter: _MAX_)",
+    "infoPostFix":    "",
+    "thousands":      ",",
+    "lengthMenu":     "_MENU_",
+    "loadingRecords": "Loading...",
+    "processing":     "Processing...",
+    "search":         "Search:",
+    "zeroRecords":    "No records found",
+    "paginate": {
+        "first": "First",
+        "last": "Last",
+        "next": "Next",
+        "previous": "Back"
+    },
+    "aria": {
+        "sortAscending":  ": Enable to sort",
+        "sortDescending": ": Enable to sort"
+    }
+}

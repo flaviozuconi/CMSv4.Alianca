@@ -1,0 +1,16 @@
+﻿@using VM2.PageSpeed.Model
+
+@model MLPageSpeedViewModel
+
+<div class="text-center">
+    <input id="knobPerformance" class="knob" data-fgColor="@Model.BestPractices.ScoreColor" data-thickness=".2" readonly value="@Model.BestPractices.Score" data-width="120" data-height="120" data-linecap="round">
+    <h2 class="category-title">@TAdm("Best Practices")</h2>
+</div>
+
+<div class="row row-bottom-space">
+    @HelpersPageSpeed.Audits(Model.BestPractices.Audits, "bestpractices")
+</div>
+
+<div class="row">
+    @HelpersPageSpeed.PassedAudits(Model.BestPractices.Passed)
+</div>

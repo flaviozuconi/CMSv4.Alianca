@@ -1,0 +1,13 @@
+﻿@model  MLModuloLista
+@try
+{
+    if (Model.NomeView != ViewData["action"].ToString())
+    {
+        @Html.Action(ViewData["action"].ToString(), ViewData["controller"].ToString(), new { model = Model, nomeView = Model.NomeView })
+    }
+    else
+    {
+        @Html.Action(ViewData["action"].ToString(), ViewData["controller"].ToString(), new { model = Model })
+    }
+}
+catch (Exception ex) { ApplicationLog.ErrorLog(ex); }

@@ -1,0 +1,69 @@
+﻿@model MLFaleConoscoPadrao
+@{
+    var portal = PortalAtual.Obter;
+    var urlControler = string.Format("/cms/{0}/FaleConoscoAdmin", portal.Diretorio);
+    var urlLista = urlControler + "/Mensagens";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/pop_mail" /> @TAdm("Fale Conosco - Mensagens")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <div class="form-group col-md-4">
+                <label>@TAdm("Data Cadastro")</label>
+                <input type="text" class="form-control" name="DataCadastro" value="@Model.DataCadastro.Value.ToString("dd/MM/yyyy HH:mm")">
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Assunto")</label>
+                <input type="text" class="form-control" name="Assunto" value="@Model.Assunto">
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome">
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Email")</label>
+                <input type="text" class="form-control" name="Email" value="@Model.Email">
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Destinatario")</label>
+                <input type="text" class="form-control" name="Destinatario" value="@Model.Destinatario">
+            </div>
+
+            <div class="form-group col-md-2">
+                <label>@TAdm("DDD")</label>
+                <input type="text" class="form-control" name="DDD" value="@Model.DDD">
+            </div>
+
+            <div class="form-group col-md-4">
+                <label>@TAdm("Fone")</label>
+                <input type="text" class="form-control" name="Fone" value="@Model.Fone">
+            </div>
+
+            <div class="form-group col-md-12">
+                <label>@TAdm("Mensagem")</label>
+                <textarea class="form-control" name="Mensagem" rows="5">@Model.Mensagem</textarea>
+                
+            </div>
+
+            <div class="form-group col-md-12">
+                <label>@TAdm("Outros Campos")</label>
+                <textarea data-editor="html" name="XML" style="height: 400px; width: 100%;">@Model.XML</textarea>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script type="text/javascript">
+            disableForm();
+    </script>
+}

@@ -1,0 +1,70 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    var urlIndex = string.Format("/cms/{0}/GaleriaAdmin/", portal.Diretorio);
+    var urlListar = string.Format("/cms/{0}/GaleriaAdmin/ListarArquivos?codigogaleria={1}", portal.Diretorio, Request["codigogaleria"]);
+    var urlEditar = string.Format("/cms/{0}/GaleriaAdmin/ArquivoItem", portal.Diretorio);
+    var urlExcluir = string.Format("/cms/{0}/GaleriaAdmin/ExcluirArquivo", portal.Diretorio);
+    var urlRelacionados = string.Format("/cms/{0}/GaleriaAdmin/Editar/", portal.Diretorio);
+    var salvo = (bool?)TempData["Salvo"] ?? false;
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/images" /> @TAdm("Arquivos de Galeria")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            {
+                <a class="btn btn-green" href="@string.Concat(urlEditar, "?codigogaleria=", Request.QueryString["CodigoGaleria"])">@TAdm("Adicionar")</a>
+            }
+            @Helpers.BotaoExcluir(T("Excluir"))
+            <a class="btn btn-orange" href="@urlIndex">@TAdm("Voltar")</a>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body">
+        @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), urlExcluir)
+        <div class="table-responsive">
+            <div id="filter">
+                @Helpers.ComboIdiomas(PortalAtual.Obter.CodigoIdioma, false)
+            </div>
+            <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                <thead>
+                    <tr>
+                        <th>@TAdm("Texto")</th>
+                        <th style="width: 100px;">@TAdm("Tipo")</th>
+                        <th style="width: 100px;">@TAdm("Data")</th>
+                        <th style="width: 50px;">@TAdm("Destaque")</th>
+                        <th style="width: 50px;">@TAdm("Excluir")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#CodigoIdioma").change(function () {
+                $('#lista').DataTable().ajax.reload();
+            });
+
+            $('#lista').dataTable({
+                "ajax": { "url": "@urlListar", "data": function (d) { d.CodigoIdioma = $("#CodigoIdioma").val(); } },
+                "order": [[0, "desc"]],
+                "columns": [
+                    @Helpers.ColunaEditar("Texto", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditar("TipoLabel", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditarData("Data", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditarBoolean("Destaque", urlEditar, "Codigo", "Sim", "Não"),
+                    @Helpers.ColunaExcluir("Codigo")
+                ]
+            }
+        );
+        });
+
+    </script>
+}

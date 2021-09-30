@@ -1,0 +1,45 @@
+﻿@model MLMenuCompletoModulo
+@{
+    var portal = BLPortal.Atual;
+
+    var urlatual = ViewData["urlatual"].ToString();
+}
+<ul class="@ViewBag.Classe">
+    @foreach (var item in Model.ItensMenu)
+    {
+        bool urlAtiva = !string.IsNullOrEmpty(urlatual) && !string.IsNullOrEmpty(item.Href) && item.Href.ToLower().Contains(urlatual.ToLower());
+        bool novaJanela = item.AbrirNovaPagina.GetValueOrDefault();
+        string css = "";
+        string cssactive = !string.IsNullOrEmpty(urlatual) && item.Href.ToLower().Contains(urlatual.ToLower()) ? "active" : "";
+
+        if (!string.IsNullOrEmpty(item.Css))
+        {
+            css = item.Css;
+        }
+        if (!string.IsNullOrEmpty(cssactive))
+        {
+            css += (string.IsNullOrEmpty(css) ? "" : " ") + cssactive;
+        }
+
+        if (item.Filhos != null && item.Filhos.Count > 0)
+        {
+            <li class="menu-item dropdown @css">
+                <a href="@Portal.ResolveUrl(item.Href, portal)" class="menu-link">
+                    @Html.Raw(item.Nome)
+                </a>
+                <div class="dropdown-menu">
+                    @Html.Partial("TopoSiteItem", item)
+                </div>
+            </li>
+        }
+        else
+        {
+            <li class="menu-item @css">
+                <a href="@Portal.ResolveUrl(item.Href, portal)" class="menu-link" target="@(novaJanela ? "_blank" : "_top")">
+                    @Html.Raw(item.Nome)
+                </a>
+            </li>
+        }
+    }
+
+</ul>

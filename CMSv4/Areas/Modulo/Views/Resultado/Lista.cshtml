@@ -1,0 +1,29 @@
+﻿@model  List<MLResultado>
+@{
+    var modulo = (MLModuloResultado)ViewData["modulo"];
+    var portal = BLPortal.Atual;
+}
+
+@{ if (Model != null && Model.Count > 0)
+ {
+     foreach (var item in Model)
+     {
+         var legenda = item.Trimestre + (item.Idioma.HasValue && item.Idioma == 1 ? "T" : "Q") + item.Ano.ToString().Substring(2, 2);
+        <text>
+            <!-- div para loop de resultados -->
+            <div class="box-result">
+                <h2 class="box-result--title">@legenda</h2>
+                <div class="box-result--body">
+                    <p>@item.Chamada</p>
+                    @*verificar como sera route para cada portal*@
+                    <a href="@Portal.Url(Portal.UrlDiretorio(portal), modulo.UrlDetalhe, string.Concat("?id=", item.Codigo))" class="box-result--link">
+                        @T("Ver mais")
+                        <span class="icon icon-chevron-right"></span>
+                    </a>
+                </div>
+            </div>
+            <!-- /div para loop de resultados -->
+        </text>
+     }
+ }
+}

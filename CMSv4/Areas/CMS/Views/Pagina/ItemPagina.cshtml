@@ -1,0 +1,31 @@
+﻿@model MLPaginaAdmin
+
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/pagina", portal.Diretorio);
+    Layout = "";
+
+    var modoVisualizacao = Request.QueryString["edit"] == null;
+}
+@if (modoVisualizacao)
+{
+    @Html.Action("visualizar", "conteudo", new { area = "CMS", id = Model.Codigo, edit = 1 })
+}
+else
+{
+    @Html.Action("visualizar", "conteudo", new { area = "CMS", id = Model.Codigo, TempLayout = ViewBag.TempLayout, TempTemplate = ViewBag.TempTemplate })
+}
+<!-- Modal de Propriedades -->
+<div class="modal modal-flex fade" id="propertiesModal" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+        </div>
+    </div>
+</div>
+<link href="~/Content/css/modal.css" rel="stylesheet" />
+<script src="~/Content/js/plugins/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+<script src="~/Content/js/plugins/validate/jquery.validate.js"></script>
+<script src="~/Content/js/plugins/validate/messages_pt_br.js"></script>
+<script src="~/Content/js/plugins/validate/additional-methods.js"></script>
+<!-- /.modal -->

@@ -1,0 +1,37 @@
+﻿@model MLMenuCompletoModulo
+@{
+    var portal = BLPortal.Atual;
+}
+<ul class="nav-footer">
+    @foreach (var item in Model.ItensMenu)
+    {
+        bool novaJanela = item.AbrirNovaPagina.GetValueOrDefault();
+
+        <li>
+            @if (item.Filhos != null && item.Filhos.Count > 0)
+            {
+                <a href="@Portal.ResolveUrl(item.Href, portal)" target="@(novaJanela ? "_blank" : "_top")">
+                    @Html.Raw(item.Nome)
+                </a>
+                <ul>
+                    @foreach (var filho in item.Filhos)
+                    {
+                        novaJanela = filho.AbrirNovaPagina.GetValueOrDefault();
+        
+                        <li>
+                            <a href="@Portal.ResolveUrl(filho.Href, portal)" target="@(novaJanela ? "_blank" : "_top")">
+                                @Html.Raw(filho.Nome)
+                            </a>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <a href="@Portal.ResolveUrl(item.Href, portal)" target="@(novaJanela ? "_blank" : "_top")">
+                    @Html.Raw(item.Nome)
+                </a>
+            }
+        </li>
+    }
+</ul>

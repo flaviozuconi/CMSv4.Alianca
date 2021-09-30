@@ -1,0 +1,228 @@
+﻿@model MLListaConfig
+@{
+    var portal = PortalAtual.Obter;
+
+    var urlEditar = string.Format("/cms/{0}/listaadmin/item", portal.Diretorio);
+    var urlVincular = string.Format("/cms/{0}/listaadmin/vincular", portal.Diretorio);
+    var salvo = Request.QueryString["salvo"] != null && Convert.ToBoolean(Request.QueryString["salvo"]);
+    var urlUpload = Request.Url.AbsolutePath + "/uploadimagem";
+
+    var json = Json.Decode(Model.Configuracao);
+    var showData = false;
+    var showChamada = false;
+
+    for (var i = 0; i < json.config.Length; i++)
+    {
+        if (json.config[i].campo == "Data") { showData = true; }
+        if (json.config[i].campo == "Chamada") { showChamada = true; }
+    }
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title"><h4><img src="@(Model.Icone ?? "~/iconpack.axd/16/group_key")" /> @TAdm(Model.Nome)</h4></div>
+        <div class="portlet-widgets">
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            {<a class="btn btn-green" href="@urlEditar?idLista=@Model.Codigo">@TAdm("Adicionar")</a>}
+            @Helpers.BotaoExcluir(T("Excluir"))
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body">
+        @if (salvo)
+        {
+            <div class="alert alert-success">
+                @TAdm("Registro salvo com sucesso!")
+            </div>
+        }
+
+        @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), Request.Url.AbsolutePath + "/excluir")
+        <div class="table-responsive">
+            <div class="table-responsive">
+                <div id="filter">
+
+                    @Helpers.ComboIdiomas(PortalAtual.Obter.CodigoIdioma, false)
+                </div>
+                <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                    <thead>
+                        <tr>
+                            @if (showData)
+                            {
+                                <th style="width: 70px;">@TAdm("Data")</th>}
+                            <th>@TAdm("Título")</th>
+                            <th style="width: 50px;">@TAdm("Editado")</th>
+                            <th style="width: 50px;">@TAdm("Publicado")</th>
+                            <th style="width: 50px;">@TAdm("Destaque")</th>
+                            <th style="width: 100px;">@TAdm("Idiomas Relacionados")</th>
+                            <th style="width: 50px;">@TAdm("Ativo")</th>
+                            <th style="width: 50px;">@TAdm("Excluir")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section head {
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+}
+
+@section scripts {
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+
+    <script type="text/javascript">
+
+        $("#CodigoIdioma").change(function () {
+            $('#lista').DataTable().ajax.reload();
+        });
+
+        function limitarTexto(texto, tamanho) {
+            if (texto && texto.length > tamanho) {
+                return texto.substr(0, tamanho) + "...";
+            }
+            else {
+                return texto;
+            }
+        }
+
+        /*
+         * TITULO
+         */
+        function showTitulo(data, type, row) {
+            @if (showChamada)
+                {
+                    <text>
+            if (row.Chamada) {
+                return '<a href="@urlEditar.TrimEnd('/')/' + row.Codigo + '"><b>' + data + '</b><br/><small>' + limitarTexto(row.Chamada, 150) + '</small><br/>' + (row.Url != null ? '<small style="color: green;">' + row.Url + '</small>' : '') + '</a>';
+            }
+            else {
+                return '<a href="@urlEditar.TrimEnd('/')/' + row.Codigo + '"><b>' + data + '</b><br /><small style="color: green;">' + (row.Url != null ? '<small style="color: green;">' + row.Url + '</small>' : '') + '</small></a>';
+            }
+            </text>
+                }
+                else
+                {
+                    <text>
+            return '<a href="@urlEditar.TrimEnd('/')/' + row.Codigo + '">' + data + '</a>';
+            </text>
+                }
+        }
+
+        /*
+         * IMAGEM DE CAPA
+         */
+        function showImage(data, type, row) {
+            var img = '';
+            if (data) { img = '<img src="' + data + '" style="width: 100%;" />'; }
+
+            var codigo = row.Codigo;
+            return '<form action="/file" method="post" class="dropzone">' + img + '<input type="hidden" name="id" value="' + codigo + '" /><div class="fallback"><input type="file" name="file"/></div></form>';
+        }
+
+        /*
+        *   DATA TABLES
+        */
+        $(document).ready(function () {
+            $('#lista').dataTable(
+                {
+                    "ajax": { "url": "/cms/@portal.Diretorio/ListaAdmin/Listar", "data": function (d) { d.CodigoIdioma = $("#CodigoIdioma").val(); d.idLista = '@Model.Codigo' } },
+                    "order": [[0, "desc"]],
+                    "columns": [
+                        @if (showData)
+                        {
+                            @:@Helpers.ColunaEditarDataHora("Data", urlEditar, "Codigo"),
+                                }
+                        { "data": "Titulo", "render": function (data, type, row) { return showTitulo(data, type, row); } },
+                        @Helpers.ColunaEditarBoolean("Editado", urlEditar, "Codigo", "Sim", "Não"),
+                        {
+                            "data": "Publicado", "render": function (data, type, row) {
+                                if (row.Publicado) {
+                                    if (row.DataPublicacao != null) {
+                                        var dtPublicacao = new Date(parseInt(row.DataPublicacao.substr(6)));
+                                        var dtHoje = new Date();
+
+                                        if (dtPublicacao > dtHoje) {
+                                            return "<small>@("Agendado para ")<br />" + moment(dtPublicacao).format('DD/MM/YYYY HH:mm:ss') + "</small>";
+                                        }
+                                        else {
+                                            return "@("Sim")";
+                                        }
+                                    }
+                                    else {
+                                        return "@("Sim")";
+                                    }
+                                }
+                                else {
+                                    return "@("Não")";
+                                }
+                            }
+                        },
+                        @Helpers.ColunaEditarBoolean("Destaque", urlEditar, "Codigo", "Sim", "Não"),
+                        {
+                             "data": "SiglaIdioma",
+                             "bSortable": false,
+                             "render": function (data, type, row) {
+                                 if (data == null) { data = ''; }
+
+                                 var links = '';
+                                 var arrIdiomas = (row.IdiomasCadastrados || "").split(',');
+                                 if (arrIdiomas.length > 0 && arrIdiomas[0]) {
+                                     for (var i = 0; i < arrIdiomas.length; i++) {
+                                         if (arrIdiomas[i]) {
+                                             var arrIdiomaSigla = arrIdiomas[i].split(':');
+                                             var css = arrIdiomaSigla[2] ? 'blue' : 'label-default';
+                                             var title = arrIdiomaSigla[2] ? '@TAdm("Cadastrado")' : '@TAdm("Não cadastrado")';
+
+                                             if (arrIdiomaSigla[2]) {
+                                                 links += '<a class="label ' + css + ' tooltip-idioma" data-toggle="tooltip" data-placement="bottom" href="@urlEditar.TrimEnd('/')/' + arrIdiomaSigla[2] + '?idLista=@Model.Codigo" title="' + title + '">' + arrIdiomaSigla[1] + '</a> ';
+                                             }
+                                             else {
+                                                 links += '<a class="label ' + css + ' tooltip-idioma" data-toggle="tooltip" data-placement="bottom" href="@urlVincular.TrimEnd('/')?CodigoIdioma=' + arrIdiomaSigla[0] + '&CodigoLista=@Model.Codigo&CodigoBase=' + (row.CodigoBase || row.Codigo) + '" title="' + title + '">' + arrIdiomaSigla[1] + '</a> ';
+                                             }
+                                         }
+                                     }
+                                 }
+
+                                 return links;
+                             }
+                         },
+                        @Helpers.ColunaEditarBoolean("Ativo", urlEditar, "Codigo", "Sim", "Não"),
+                        @Helpers.ColunaExcluir("Codigo")
+                    ],
+                    "aoColumnDefs": [
+                        { "sClass": "center", "aTargets": [3, 4] }
+                    ]
+                }
+            );
+
+            /*
+            *   UPLOAD DA CAPA DA NOTICIA
+            */
+            $('#lista').on('draw.dt', function () {
+                $("form").dropzone({
+                    url: "@urlUpload",
+                    acceptedFiles: "image/*",
+                    uploadMultiple: false,
+                    dictDefaultMessage: "Upload",
+                    processing: function (file) { $(this.element).find('.dz-success').remove(); },
+                    complete: function (file) {
+                        $(this.element).find('img').remove();
+                        var id = $(this.element).find('input[name=id]').val();
+                        $(this.element).prepend('<img src="/Portal/@(portal.Diretorio)/Arquivos/listas/' + id + '/capa/' + file.name + '" style="width: 100%;" />');
+
+                        $(file.previewElement).remove();
+                    }
+                });
+            });
+        });
+
+        function toDate(data) {
+            var regex = /(\d{2})\/(\d{2})\/(\d{4})/;
+            var arr = regex.exec(data);
+
+            return +arr[3] + '-' + +arr[2] + '-' + +arr[1]
+
+        }
+    </script>
+}

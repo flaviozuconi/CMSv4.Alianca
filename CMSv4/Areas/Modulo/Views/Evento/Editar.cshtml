@@ -1,0 +1,80 @@
+﻿@model MLModuloEventos
+@{
+    Layout = "";
+    var views =  new List<string>();
+    views.Add("Listagem");
+    views.Add("Calendario");
+    views.Add("DestaqueRotator");
+    views.Add("ListagemComFiltro");
+    views.Add("Detalhe");
+    var portal = BLPortal.Atual;
+}
+
+<div class="form-group col-md-18">
+    <label>@T("Visualização")</label>
+    <select name="NomeView" class="form-control" id="NomeView">
+        <option value="" selected>@T("Selecione")</option>
+        @foreach (var item in views)
+        {
+            <option value="@item" @(item == Model.NomeView ? "selected" : "")>@item</option>
+        }
+    </select>
+</div>
+
+<div class="form-group col-md-6 text-right" id="divQuantidade">
+    <label>@T("Quantidade")</label>
+    <input type="text" class="form-control" name="Quantidade" maxlength="4" value="@Model.Quantidade">
+</div>
+
+<div class="clearfix"></div>
+
+<div class="form-group col-md-24" id="titulo">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Nome")" value="@Model.Titulo">
+</div>
+
+<div class="form-group col-md-24">
+    <label>@T("Url Lista")</label>
+    <input type="text" class="form-control" name="UrlLista" id="UrlLista" placeholder="@T("Url Lista")" value="@Model.UrlLista">
+    @Helpers.BuscarPaginas("UrlLista", portal.Diretorio, portal.Codigo)
+</div>
+
+<div class="form-group col-md-24">
+    <label>@T("Url Detalhe")</label>
+    <input type="text" class="form-control" name="UrlDetalhe" id="UrlDetalhe" placeholder="@T("Url Detalhe")" value="@Model.UrlDetalhe">
+    @Helpers.BuscarPaginas("UrlDetalhe", portal.Diretorio, portal.Codigo)
+</div>
+
+<input type="hidden" name="DataRegistro" value="@DateTime.Now" />
+
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+
+    $.extend(true, settings, {
+        rules: {
+            "NomeView": { required: true },
+            "Quantidade": { number: true },
+            "UrlLista": { required: true, maxlength: 250 },
+            "UrlDetalhe": { required: true, maxlength: 250 }
+        }
+    });
+
+    $(document).ready(function () {
+        if ($("#NomeView option:selected").val() == "Listagem") {
+            $("#UrlLista").rules("remove", "required");
+        }
+        else {
+            $("#UrlLista").rules("add", "required");
+        }
+    });
+
+    $("#NomeView").change(function () {
+        var valor = $(this).find("option:selected").val();
+        if (valor == "Listagem") {
+            $("#UrlLista").rules("remove", "required");
+        }
+        else {
+            $("#UrlLista").rules("add", "required");
+        }
+    });
+</script>

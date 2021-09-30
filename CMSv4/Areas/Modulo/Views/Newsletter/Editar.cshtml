@@ -1,0 +1,29 @@
+﻿@model MLModuloNewsletterEdicao
+
+@{ 
+    List<string> lstTipos = new List<string>();
+    lstTipos.Add("Formulario");
+    lstTipos.Add("LetsTalkPackaging/Formulario");
+    lstTipos.Add("Labs/Formulario");
+
+    //Opção default para os módulos configurados antes da melhoria
+    if(string.IsNullOrWhiteSpace(Model.View))
+    {
+        Model.View = "Formulario";
+    }
+}
+
+<div class="form-group col-md-24">
+    <label>@T("Menu")</label>
+    <select name="View" class="form-control">
+        @foreach (var item in lstTipos)
+        {
+            <option value="@item" @(item == Model.View ? "selected" : "")>@item</option>
+        }
+    </select>
+</div>
+
+<div class="form-group col-md-12">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Nome")" value="@Model.Titulo">
+</div>

@@ -1,0 +1,16 @@
+﻿@model  List<MLDicionarios>
+<thead>
+    <tr>
+        <td><strong>@T("Termo")</strong></td>
+        <td><strong>@T("Definição")</strong></td>
+    </tr>
+</thead>
+<tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Termo</td>
+            <td>@item.Definicao</td>
+        </tr>
+    }
+</tbody>

@@ -1,0 +1,13 @@
+﻿@model MLModuloLogin
+@{
+    Layout = "~/areas/cms/views/shared/_masterexternas.cshtml";
+    TempData["AddScripts"] = true;
+}
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="login-banner text-center">
+        </div>
+        @Html.Action("Index", "ModuloLogin", new { codigoPagina = Model.CodigoPagina, repositorio = Model.Repositorio })
+    </div>
+</div>

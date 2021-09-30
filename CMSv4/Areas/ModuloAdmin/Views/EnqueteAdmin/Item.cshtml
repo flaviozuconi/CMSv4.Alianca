@@ -1,0 +1,312 @@
+﻿@model MLEnquete
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/EnqueteAdmin", portal.Diretorio);
+    var urlIncluir = string.Format("/cms/{0}/EnqueteAdmin/opcao", portal.Diretorio);
+    var urlRemover = string.Format("/cms/{0}/EnqueteAdmin/removeropcao", portal.Diretorio);
+    var urlResultado = string.Format("/cms/{0}/EnqueteAdmin/resultado", portal.Diretorio);
+    var urlExportar = string.Format("/cms/{0}/EnqueteAdmin/exportar?codigo={1}", portal.Diretorio, Model.Codigo);
+    var opcoes = ViewData["Opcoes"] != null ? (List<MLEnqueteOpcao>)ViewData["Opcoes"] : new List<MLEnqueteOpcao>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/radiobutton_group" />
+                @TAdm("Enquete")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+
+        @if (Model.Codigo.HasValue)
+        {
+            <ul class="nav nav-tabs">
+                <li class="active"><a href="#cadastro" data-toggle="tab">@TAdm("Cadastro")</a></li>
+                <li><a href="#galeria" data-toggle="tab" onclick="showResultados();"><span class="glyphicon glyphicon-list-alt"></span>@TAdm("Resultados")</a></li>
+            </ul>
+        }
+
+        <div class="tab-content">
+
+            <div id="cadastro" class="tab-pane active">
+                <form method="post" class="form-vertical" role="form">
+                    <input type="hidden" value="@Model.Codigo" name="Codigo" />
+                    <div class="form-group col-md-9">
+                        * <label>@TAdm("Título")</label>
+                        <textarea class="form-control" rows="5" name="Titulo" placeholder="@TAdm("Título")">@Model.Titulo</textarea>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <div class="form-group col-md-12">
+                            <label>@TAdm("Início")</label>
+                            <input type="text" class="form-control data" name="DataInicio" id="DataInicio" maxlength="16" value="@(Model.DataInicio.HasValue ? Model.DataInicio.Value.ToString("dd/MM/yyyy") : "")">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>@TAdm("Término")</label>
+                            <input type="text" class="form-control data" name="DataTermino" id="DataTermino" maxlength="16" value="@(Model.DataTermino.HasValue ? Model.DataTermino.Value.ToString("dd/MM/yyyy") : "")">
+                        </div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+                    </div>
+                    <div class="col-md-12">
+                        <fieldset>
+                            <legend>Opções</legend>
+                            <div class="form-group col-md-12">
+                                <textarea class="form-control" rows="2" id="TituloOpcao" name="TituloOpcaoNovo" placeholder="@TAdm("Opção")"></textarea>
+                                <a class="btn btn-link" name="adicionar" onclick="incluirOpcao($(this));"><img src="/iconpack.axd/16/add" />@TAdm(" adicionar opção")</a>
+                            </div>
+
+                            <ul id="opcoes" class="ui-sortable col-md-12">
+                                @{
+                                    foreach (var opcao in opcoes)
+                                    {
+                                        <li class="form-group col-md-6 opcoes-item">
+                                            @Html.Partial("Opcao", opcao)
+                                        </li>
+                                    }
+                                }
+                            </ul>
+
+                        </fieldset>
+                    </div>
+
+                    <div class="form-group col-md-12 text-right">
+                        <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                        @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                        {
+                            <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                        }
+                    </div>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+                    }
+                </form>
+            </div>
+            @if (Model.Codigo.HasValue)
+            {
+                <div id="galeria" class="col-md-12 tab-pane">
+                    <div class="col-md-12">
+                        <div class="flot-chart">
+                            <div class="flot-chart-content" style="width: 800px; height: 200px;" id="flot-chart-pie"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label>@TAdm("Total de Respostas")</label>
+                        <span class="badge orange" id="totalrespostas">9</span>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <button class="btn btn-white" onclick="exportarExcel();" title="@TAdm("Exportar Analítico")">
+                            @TAdm("Exportar Analítico")
+                        </button>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <div id="toolbar"></div>
+                            <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                                <thead>
+                                    <tr>
+                                        <th>@TAdm("Título")</th>
+                                        <th style="width: 60px;">@TAdm("Votos")</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+</div>
+@section head {
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.theme.css" rel="stylesheet" />
+}
+
+@section scripts{
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="~/Content/js/jquery.sortable.min.js"></script>
+    <script src="~/Content/js/plugins/browser/jquery.browser.min.js"></script>
+    <script src="~/Content/js/plugins/flot/jquery.flot.js"></script>
+    <script src="~/Content/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+    <script src="~/Content/js/plugins/flot/jquery.flot.resize.js"></script>
+    <script src="~/Content/js/plugins/flot/jquery.flot.pie.js"></script>
+
+
+    <script type="text/javascript">
+        $("#DataInicio, #DataTermino").blur(function () {
+            if ($(this).val() == "__/__/____") {
+                $(this).val("");
+            }
+        });
+
+        $("#DataInicio, #DataTermino").on('change', function (e) {
+            var validator = $("form").validate();
+            validator.element("#DataTermino");
+        });
+
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                if ($("#DataInicio").val() == "__/__/____") {
+                    $("#DataInicio").val("");
+                }
+
+                if ($("#DataTermino").val() == "__/__/____") {
+                    $("#DataTermino").val("");
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            $('#DataInicio').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: false, scrollTime: false, scrollInput: false
+            });
+            $('#DataTermino').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: false, scrollTime: false, scrollInput: false
+            });
+            $('#opcoes').sortable();
+        });
+
+        $('form').validate({
+            rules: {
+                Titulo: { required: true, maxlength: 500 },
+                @*DataInicio: { comparedata: { elementcompare: 'DataTermino', expr: '<=', msg: '@T("Data de Início deve ser menor ou igual a Data de Término.")' } },*@
+                DataTermino: { comparedata: { elementcompare: 'DataInicio', expr: '>=', msg: '@T("Data de Término deve ser maior ou igual a Data de Início.")' } }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        function toDate(valor) {
+            if (!valor) {
+                return "";
+            }
+
+            return new Date(valor.replace(/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})/, "$2/$1/$3 $4:$5"));
+        }
+
+        function removerMask(valor) {
+            if (valor.indexOf("_") > -1) {
+                return "";
+            }
+
+            return valor;
+        }
+
+        function incluirOpcao(botao) {
+            var texto = $('#TituloOpcao').val();
+            $('.form-group').removeClass('has-error');
+            $('.jqerr').remove();
+
+            if (texto == "") {
+                $(botao.parent('.form-group')[0]).addClass('has-error');
+                $(botao.parent('.form-group')[0]).append("<span class='help-block jqerr'>@TAdm("Insira uma opção!")</span>");
+                $('.jqerr').css('display', 'inline');
+                return;
+            }
+
+            $.post('@urlIncluir', { CodigoEnquete: '@Model.Codigo', Titulo: texto },
+                function (response) {
+                    if (response.msg) {
+                        $(botao.parent('.form-group')[0]).addClass('has-error');
+                        $(botao.parent('.form-group')[0]).append("<span class='help-block jqerr'>" + response.msg + "</span>");
+                        $('.jqerr').css('display', 'inline');
+                    } else {
+                        $('#opcoes').append('<li class="form-group col-md-6 opcoes-item">' + response + '</li>');
+                        $('#TituloOpcao').val("")
+                    }
+                }
+            );
+        }
+        function removerOpcao(botao, codigo) {
+
+            $('.form-group').removeClass('has-error');
+            $('.jqerr').remove();
+            $.post(
+                '@urlRemover', { Codigo: codigo },
+                function (response) {
+                    if (response.Sucesso)
+                        $(botao.parents('li.opcoes-item')[0]).remove();
+                    else {
+                        $(botao.parent('.form-group')[0]).addClass('has-error');
+                        $(botao.parent('.form-group')[0]).append("<span class='help-block jqerr'>" + response.msg + "</span>");
+                        $('.jqerr').css('display', 'inline');
+
+                    }
+                }
+            );
+
+        }
+    </script>
+    @if (!Model.Codigo.HasValue) { return; }
+
+    <script type="text/javascript">
+        function showResultados() {
+
+            $.post(
+              '@urlResultado', { Codigo: '@Model.Codigo' },
+                function (response) {
+                    if (response.success) {
+                        var plotObj = $.plot($("#flot-chart-pie"), response.data, {
+                            series: {
+                                pie: {
+                                    show: true
+                                }
+                            },
+                            grid: {
+                                hoverable: true
+                            },
+                            tooltip: true,
+                            tooltipOpts: {
+                                content: "%p.0%", // show percentages, rounding to 2 decimal places
+                                shifts: {
+                                    x: 20,
+                                    y: 0
+                                },
+                                defaultTheme: false
+                            }
+                        });
+
+                        if ($.fn.dataTable.isDataTable('#lista')) {
+                            table = $('#lista').DataTable();
+                            table.destroy();
+                        }
+
+                        $('#lista').dataTable(
+                        {
+                            "data": response.data,
+                            "serverSide": false,
+                            "searching": false,
+                            "columns": [
+                                @Helpers.Coluna("Titulo"),
+                                @Helpers.Coluna("QuantidadeVotos")
+                            ]
+                        });
+                        $('#totalrespostas').html(response.recordsTotal);
+                    }
+                }
+            );
+        }
+
+        function exportarExcel() {
+            document.getElementById('downloader').src = '@urlExportar';
+
+
+        }
+
+    </script>
+}
+<iframe id="downloader" style="display:none;"></iframe>

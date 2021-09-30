@@ -1,0 +1,97 @@
+﻿@model MLBannerArquivo
+@{
+    Layout = null;
+    var portal = PortalAtual.Obter;
+    var diretorio = Convert.ToString(ViewData["diretorioGaleria"]);
+    var urlTitulo = Model.Url;
+
+    if(urlTitulo.Length > 40)
+    {
+        urlTitulo = urlTitulo.Substring(0, 39) + "...";
+    }
+
+    //Para relacionar arquivos com Hover, associar imagens a suas respectivas versões Mobile e/ou Tablet
+    var listaBanner = (List<MLBannerArquivo>)ViewData["ListaArquivos"] ?? new List<MLBannerArquivo>();
+}
+
+<div class="galeria-imagem-div">
+    <small><strong id="nomeImagem_@Model.Codigo">@(Model.Titulo ?? urlTitulo)</strong></small>
+    
+    <iframe name="iframe_@(Model.Codigo ?? 0)" id="iframe_@(Model.Codigo ?? 0)" src="@Model.Url" class="iframe" frameBorder="0" marginwidth="0" marginheight="0" hspace="0" vspace="0" scrolling="no"></iframe>
+    
+    <div class="galeria-imagem-botoes">
+        <button type="button" name="editar" class="btn btn-blue btn-sm" data-toggle="modal" data-target="#editar_@Model.Codigo" title="@TAdm("Editar")" onclick="scrollToTop(100);"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+        <button type="button" name="remover" class="btn btn-default btn-sm" onclick="@string.Format("removerImagem($(this),'{0}');", Model.Codigo)" title="@TAdm("Remover")"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+    </div>
+</div>
+@if (Model.Codigo.HasValue)
+{
+    <div class="modal modal-flex fade not-sortable" id="editar_@Model.Codigo" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <form class="modal-content" name="formArquivoItemIframe" id="form_@Model.Codigo" enctype="multipart/form-data" method="post" action="/cms/@portal.Diretorio/banneradmin/arquivoitem">
+                <input type="hidden" name="Codigo" value="@Model.Codigo" />
+                <input type="hidden" name="CodigoBanner" value="@Model.CodigoBanner" />
+                <input type="hidden" name="CodigoTipo" value="@Model.CodigoTipo" />
+
+                <div class="modal-body clearfix">
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Título")</label>
+                        <input type="text" class="form-control" name="Titulo" value="@Model.Titulo" maxlength="250">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>CSS Class</label>
+                        <input type="text" class="form-control" name="CssClass1" value="@Model.CssClass1" maxlength="200">
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <label>@TAdm("Url")</label>
+
+                        <input type="text" class="form-control" name="Url" value="@Model.Url" maxlength="500">
+                    </div>
+                    @*<div class="form-group col-md-12">
+                        <label>@TAdm("Texto")</label>
+                        <textarea class="form-control" name="Texto" style="height: 80px;">@Model.Texto</textarea>
+                    </div>*@
+                    @*<div class="form-group col-md-6">
+                        <label>@TAdm("Tag Analytics")</label>
+                        <input type="text" class="form-control" name="TagGA" value="@Model.TagGA" maxlength="50">
+                        <small>@TAdm("Nome único para a imagem.")</small>
+                    </div>*@
+                    
+                    <div class="clearfix"></div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Início")</label>
+                        <input type="text" class="form-control data DataInicio" name="DataInicio" id="DataInicio@(Model.Codigo)" maxlength="16" value="@(Model.DataInicio.HasValue ? Model.DataInicio.Value.ToString("dd/MM/yyyy HH:mm") : "")">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Término")</label>
+                        <input type="text" class="form-control data DataTermino" name="DataTermino" id="DataTermino@(Model.Codigo)" maxlength="16" value="@(Model.DataTermino.HasValue ? Model.DataTermino.Value.ToString("dd/MM/yyyy HH:mm") : "")">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        @Html.CheckBox("Ativo", (Model.Ativo.HasValue ? Model.Ativo.Value : false)) @TAdm("Ativo")
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">@TAdm("Fechar")</button>
+                    <button type="button" class="btn btn-green" name="btnsalvarImagem" onclick="return SalvarIframe($(this));">@TAdm("Salvar")</button>
+                </div>
+            </form>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <div class="modal modal-flex fade not-sortable" id="img_@Model.Codigo" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body form-group" style="text-align: center;">
+                    <img src="@diretorio/@Model.Imagem" border="0" alt="" style="width: 500px;" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@TAdm("Fechar")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

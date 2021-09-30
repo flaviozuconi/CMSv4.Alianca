@@ -1,0 +1,84 @@
+﻿@model List<MLPortal>
+@{
+    Layout = "~/areas/cms/views/shared/_masterexternasenus.cshtml";
+    var email = Request["email"] ?? "";
+    var usuario = BLUsuario.ObterLogado();
+}
+
+<div class="header" style="min-height:50px;"></div>
+
+<div class="row login--header">
+    <div class="col-xs-12 col-md-2 col-md-offset-1 text-right">
+        <h1>CMS</h1>
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <div class="form-group">
+            <input type="text" class="form-control input-lg portal--search" id="" placeholder="Filter portals">
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-3">
+        <figure class="brand"><img src="~/content/css/img/logo.png" class="logo-vm2" alt="logo" /></figure>
+        <a href="/cms/sair" class="close" aria-label="Close"><span aria-hidden="true">&times;</span> <b>Logout</b></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+
+        @if (Model.Count > 0)
+        {
+            if (usuario.Portais.Count == 0)
+            {
+                <div class="login--subheader">
+                    <h2 class="text-center">@TAdm("Escolha o portal")</h2>
+                    <p class="small">@TAdm("Nenhum portal disponível para este usuário.")</p>
+                </div>
+            }
+            else
+            {
+                <div class="login--subheader">
+                    <h2 class="text-center">@TAdm("Escolha o portal")</h2>
+                    <p class="small text-center">@TAdm("Selecione um dos portais registrados para começar a gerenciamento de conteúdo.")</p>
+                </div>
+
+                <ul class="list-rounded portal--list">
+
+                    @foreach (var portal in Model)
+                    {
+                        if (usuario.Portais.Count > 0 && usuario.Portais.Find(x => x.CodigoPortal == portal.Codigo) != null)
+                        {
+                            <li>
+
+                                <a href="@(string.Format("/cms/{0}", portal.Diretorio.ToLower()))" target="_top">
+                                    <span>@portal.Nome</span>
+                                </a>
+                            </li>
+                        }
+                    }
+
+                </ul>
+            }
+
+
+        }
+        else
+        {
+            <p class="small">@TAdm("There is still no registered portal, create a new portal to start content management.")</p>
+        }
+    </div>
+</div>
+
+<div class="copy">
+    <ul class="list-inline">
+        <li>Copyright © 2017 - Agência VM2</li>
+        <li>
+            <a href="/termos-de-uso">Termos de Uso</a>
+        </li>
+        <li>
+            <a href="/politica-de-privicidade">Política de Privacidade</a>
+        </li>
+    </ul>
+    <a href="http://www.vm2.com.br" class="vm2" title="Agência VM2">
+        <span class="icon icon-vm2"></span>
+        <span class="sr-only">Agência VM2</span>
+    </a>
+</div>

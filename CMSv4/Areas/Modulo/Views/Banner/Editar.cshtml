@@ -1,0 +1,112 @@
+﻿@model MLModuloBanner
+@{
+    Layout = "";
+
+    //ocultar os seguintes arquivos
+    var arquivosOcultos = new string[] { "index", "script", "editar" };
+    //listar views do diretório
+    var viewsInDir = (from e in Directory.GetFiles(Server.MapPath(string.Format("~/Areas/Modulo/Views/{0}", ViewContext.Controller.ValueProvider.GetValue("controller").RawValue)), "*.cshtml")
+                      //regra para ocultação de views principais
+                      where Array.IndexOf(arquivosOcultos, Path.GetFileNameWithoutExtension(e).ToLower()) == -1
+                      select Path.GetFileNameWithoutExtension(e));
+    
+    var banners = (List<MLBanner>)ViewData["banners"] ?? new List<MLBanner>();
+}
+
+<div class="form-group col-md-12 bannerJQ">
+    <label>@T("Tipo de Banner")</label>
+    <select name="View" class="form-control" id="View" required>
+        <option value="" selected>@T("Selecione")</option>
+
+        @foreach (var item in viewsInDir)
+        {
+            <option value="@item" @(item == Model.View ? "selected" : "")>@item</option>
+        }
+
+    </select>
+</div>
+
+<div class="form-group col-md-12 selectBannerJQ">
+    <label>@T("Banner")</label>
+    <select name="CodigoBanner" required class="form-control">
+        <option value="" selected>@T("Selecione")</option>
+
+        @foreach (var item in banners)
+        {
+            <option value="@item.Codigo" @(item.Codigo == Model.CodigoBanner ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+</div>
+
+<div class="form-group col-md-24">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control dimensaoJQ" name="Titulo" maxlength="100" value="@Model.Titulo">
+</div>
+
+<div id="Rotator" class="viewJQ" style="display:none;">
+    <div class="form-group col-md-12">
+        @Html.CheckBox("ApresentarDescricao", (Model.ApresentarDescricao.HasValue ? Model.ApresentarDescricao.Value : true)) <label for="ApresentarDescricao">@T("Exibir Descrição")</label>
+    </div>
+
+    <div class="form-group col-md-12">
+        @Html.CheckBox("ApresentarIndice", (Model.ApresentarIndice.HasValue ? Model.ApresentarIndice.Value : true)) <label for="ApresentarIndice">@T("Apresentar Indice")</label>
+    </div>
+
+    <div class="form-group col-md-12">
+        @Html.CheckBox("Autoplay", (Model.Autoplay.HasValue ? Model.Autoplay.Value : true)) <label for="Autoplay">@T("Passar imagens automaticamente")</label>
+    </div>
+
+    <div class="form-group col-md-12">
+        @Html.CheckBox("Redimensionar", (Model.Redimensionar.HasValue ? Model.Redimensionar.Value : true)) <label for="Redimensionar">@T("Redimensionar Imagens")</label>
+    </div>
+</div>
+
+<div id="Home" class="viewJQ" style="display:none;">
+    <div class="form-group col-md-24">
+        @Html.CheckBox("ApresentarSetas", (Model.ApresentarSetas.HasValue ? Model.ApresentarSetas.Value : true)) <label for="ApresentarSetas">@T("Apresentar Setas")</label>
+</div>
+</div>
+
+<div id="Lateral" class="viewJQ">
+    <div class="form-group col-md-12">
+        <label>@T("Altura (em Pixel)")</label>
+        <input type="text" class="form-control dimensaoJQ" name="Altura" maxlength="4" value="@Model.Altura">
+    </div>
+
+    <div class="form-group col-md-12">
+        <label>@T("Largura (em Pixel)")</label>
+        <input type="text" class="form-control dimensaoJQ" name="Largura" maxlength="4" value="@Model.Largura">
+    </div>
+</div>
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+
+    // Modify validation settings
+    $.extend(true, settings, {
+        rules: {
+            "Altura": { number: true },
+            "Largura": { number: true }
+        }
+    });
+
+    $(document).ready(function () {
+        $("#View").on("change", function () {
+
+            $(".viewJQ").hide();
+
+            if ($(this).val() == "Rotator") {
+                $("#Rotator").show();
+                $("#Home").show();
+
+            }
+            else if ($(this).val()   == "Lateral") {
+                $("#Lateral").show();
+            }
+            else if ($(this).val() == "Home") {
+                $("#Home").show();
+            }
+        });
+
+        $("#" + "@Model.View").show();
+    });
+</script>

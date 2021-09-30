@@ -1,0 +1,73 @@
+﻿@{
+    Layout = null;
+    var codigoElementos = ViewBag.codigoElementos;
+    var portal = BLPortal.Atual;
+}
+
+<style type="text/css">
+    .result {
+        background-color: yellow;
+    }
+</style>
+
+
+<script src="~/Content/js/highlight.min.js"></script>
+<script type="text/javascript">
+    jQuery.expr[":"].Contains = jQuery.expr.createPseudo(function (arg) {
+        return function (elem) {
+            return jQuery(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+        };
+    });
+
+    $(".jq-faq-button-search").click(function (e) {
+        var termo = $(this).prev('input').val();
+        //$(".faq--item").removeHighlight();
+        $(".faq--item").find(".result").removeClass("result");
+
+
+        if (termo.length > 0) {
+            $(".faq--item").hide();
+
+            //Aplicar destaque nos termos pesquisados
+            $(".faq").highlight(termo);
+
+            //Exbiria pergunta e resposta com o termo pesquisado
+            $(".faq--item:Contains('" + termo + "')").each(function () {
+                $(this).show();
+            });
+
+            var categoriasEncontradas = 0;
+
+            //Controle de exibição da categoria
+            $(".faq-categoria").each(function () {
+                var id = $(this).attr("id");
+
+                if ($(this).nextUntil("h2").not('[style*="display: none"]').length > 0) {
+                    categoriasEncontradas++;
+                    $(this).show();
+                    $("a[href=#" + id + "]").parent('li').show();
+                }
+                else {
+                    $(this).hide();
+                    $("a[href=#" + id + "]").parent('li').hide();
+                }
+            });
+
+            if (categoriasEncontradas == 0) {
+                $("#divFaqNenhumRegistro").show();
+            }
+            else {
+                $("#divFaqNenhumRegistro").hide();
+            }
+        }
+        else {
+            $(".faq--item").show();
+            $("#divFaqNenhumRegistro").hide();
+            $("#ulFaqCategorias li").show();
+        }
+
+        e.preventDefault();
+    });
+
+</script>
+

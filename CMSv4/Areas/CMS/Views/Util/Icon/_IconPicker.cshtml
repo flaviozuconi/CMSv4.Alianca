@@ -1,0 +1,62 @@
+﻿@model MLIconPack
+
+@{ 
+    var iconesPorLinha = 8;
+    var size = ViewBag.Size;
+    var linhas = Math.Ceiling(Convert.ToDecimal(Model.Icons.Count) / iconesPorLinha);
+}
+
+<table class="table-icons">
+    <thead>
+        @*<tr>   
+            <td colspan="8">     
+                <div class="input-group">
+                    <input class="form-control search-control" id="buscaIcone" placeholder="Digite para procurar..." type="text">   
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
+                
+            </td>
+        </tr>*@
+    </thead>
+    
+    <tbody>
+        @for (int i = 0; i < linhas; i++)
+        {
+            var iconesLinha = Model.Icons.Skip(i * iconesPorLinha).Take(iconesPorLinha).ToList();
+
+            <tr>
+                @foreach (var item in iconesLinha)
+                {
+                    <td>
+                        <button class="btn btn-white btn-icon" style="display: inline-block;" value="glyphicon-cloud" title="@item.Name">
+                            <img src="@item.Src" width="@size" height="@size"/>
+                        </button>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr class="text-center" >
+            <td></td>
+            <td></td>
+            <td>
+                <button class="btn btn-arrow btn-previous btn-primary disabled" value="-1" id="btnIconPrevPage">
+                    <span class="glyphicon glyphicon-arrow-left"></span>
+                </button>
+            </td>
+
+            <td colspan="2">
+                <span class="page-count">1</span> de <span class="page-total">@(Model.total > 0 ? Model.total : 1)</span>
+            </td>
+
+            <td>
+                <button class="btn btn-arrow btn-next btn-primary" id="btnIconNextPage" value="1">
+                    <span class="glyphicon glyphicon-arrow-right"></span>
+                </button>
+            </td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>

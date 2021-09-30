@@ -1,0 +1,71 @@
+﻿/* AREA DE CONSTRUCAO */
+.cms-ac-container {
+    position: relative !important;
+    min-height: 50px !important;
+    max-height: 500px;
+    overflow: hidden;
+    background: rgba(250, 250, 250, 0.19);
+}
+.cms-ac-container:hover,
+.cms-ac-container:focus,
+.cms-ac-container:active {
+    background: rgba(250, 250, 250, 0.3);
+    outline: 1px dotted #e41f2b;
+}
+.cms-ac-container:hover .cms-ac-toolbar {
+    visibility: visible!important;
+}
+.cms-ac-toolbar {
+    /*background: white!important;*/
+    text-align: right !important;
+    border: none !important;
+    margin-top: -25px !important; /*was -15*/
+    margin-bottom: 0px !important;
+    margin-right: 0px !important;
+    margin-left: 0px !important;
+    height: 30px !important; /*was -16*/
+    position: absolute !important;
+    right: 0px !important;
+    top: 28px !important;
+    z-index: 1000; /*was 1*/
+    visibility: hidden !important;
+}
+.cms-ac-toolbar a {
+    display: inline !important;
+    background-color: #e41f2b !important;
+    border-radius: 3px;
+    color: #ffffff;
+    padding: 5px 10px !important;
+    height: 30px;
+    overflow: hidden;
+    transition: background-color 250ms linear;
+}
+.cms-ac-toolbar a:hover,
+.cms-ac-toolbar a:focus,
+.cms-ac-toolbar a:active {
+    background-color: #ff0000;
+    transition: background-color 250ms linear;
+}
+.container .toolbar a {
+    border: none!important;
+    display: inline!important;
+    width: auto!important;
+    color: #000!important;
+    font-size: 14px!important;
+    font-weight: normal!important;
+    text-decoration: underline!important;
+}
+.cms-ac-empty {
+    text-align: center;
+    min-height: 100px;
+    padding-top: 35px;
+}
+.cms-ac-empty:hover {
+    background-color: #cecece;
+}
+.cms-ac-toolbar {
+    top: 28px !important;
+}
+.cke_editable {
+    height: auto !important;
+}

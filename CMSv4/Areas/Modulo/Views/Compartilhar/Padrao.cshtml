@@ -1,0 +1,251 @@
+﻿@model MLModuloCompartilhar
+@{
+    var portal = BLPortal.Atual;
+    string urlShare = Request.Url.AbsoluteUri;
+
+    if (!String.IsNullOrWhiteSpace(Request.Url.Query))
+    {
+        urlShare = urlShare.Replace(Request.Url.Query ?? "", String.Empty);
+    }
+}
+<div class="post-in post-in__ri">
+    <aside class="action-list no-print @Model.Css" data-compartilhar="">
+        <ul class="list-unstyled hidden-xs">
+            <li onclick="return resizeText(1);">
+                <a href="">
+                    <span title="@T("Aumentar o texto")" class="icon icon-zoom-in" aria-hidden="true" data-toggle="tooltip" data-placement="left">A</span>
+                </a>
+            </li>
+            <li onclick="return resizeText(-1);">
+                <a href="">
+                    <span title="@T("Diminuir texto")" class="icon icon-zoom-out" aria-hidden="true" data-toggle="tooltip" data-placement="left">A</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="list-unstyled">
+            <li>
+                <a href="" onclick="return AbrirPopUp(555, 450, 'http://www.facebook.com/sharer.php?u=@(Url.Encode(urlShare))');">
+                    <span title="@T("Compartilhar via Facebook")" class="icon icon-social icon-facebook" aria-hidden="true" data-toggle="tooltip" data-placement="left"></span>
+                </a>
+            </li>
+            <li>
+                <a href="" onclick="return AbrirPopUp(555, 450, 'https://twitter.com/share?url=@urlShare&text=@(Url.Encode(Model.Titulo))');">
+                    <span title="@T("Compartilhar via Twitter")" class="icon icon-social icon-twitter" aria-hidden="true" data-toggle="tooltip" data-placement="left"></span>
+                </a>
+            </li>
+            <li>
+                <a href="" onclick="return AbrirPopUp(555, 450, 'http://www.linkedin.com/shareArticle?mini=true&url=@(Url.Encode(urlShare))');">
+                    <span title="@T("Compartilhar via Linkedin")" class="icon icon-social icon-linkedin" aria-hidden="true" data-toggle="tooltip" data-placement="left"></span>
+                </a>
+            </li>
+            <li>
+                <a href="" data-target="#modelEnviarEmail" data-toggle="modal">
+                    <span title="@T("Compartilhar por e-mail")" class="icon icon-mail" aria-hidden="true" data-toggle="tooltip" data-placement="left"></span>
+                </a>
+            </li>
+        </ul>
+        <ul class="list-unstyled hidden-xs">
+            <li>
+                <a href="javascript:window.print();">
+                    <span title="@T("Imprimir")" class="icon icon-print" aria-hidden="true" data-toggle="tooltip" data-placement="left"></span>
+                </a>
+            </li>
+            <li>
+                <a href="@Portal.UrlCms(portal)/Compartilhar/Pdf?titulo=@(Url.Encode(Request.Url.AbsolutePath.Substring(Request.Url.AbsolutePath.LastIndexOf('/') + 1)))&url=@(BLEncriptacao.EncriptarQueryString(Request.Url.ToString()))">
+                    <span title="@T("Salvar como PDF")" class="icon icon-pdf" aria-hidden="true" data-toggle="tooltip" data-placement="left"></span>
+                </a>
+            </li>
+        </ul>
+        <ul class="list-unstyled">
+            <li>
+                <a data-original-title="Link" id="link" name="link" href=""
+                   data-html='true' data-container="body"
+                   data-toggle="popover" data-placement="left"
+                   data-content="@string.Concat("<input id=\"urlLink\" name=\"urlLink\" type=\"text\" class=\"form-control\" value=\"", Request.Url.ToString(), "\" width=\"100%\" />")" onclick="return false;">
+                    <span title="@T("Link da página")" class="icon icon-link" aria-hidden="true" data-toggle="tooltip" data-placement="left"></span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+</div>
+<div class="modal fade" id="modelEnviarEmail" tabindex="-1" role="dialog" aria-labelledby="standardModalLabel" aria-hidden="true" style="color: #333333;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="modelEnviarEmailLabel">@T("ENVIAR POR EMAIL")</h4>
+            </div>
+            <div class="modal-body">
+                <form id="formEmail" name="formEmail" method="post" class="clearfix">
+                    <div class="col-md-24 form-group">
+                        <label for="modalNome">@T("Seus dados:")</label>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <input type="text" class="form-control" required maxlength="250" name="modalNome" placeholder="@T("Nome")">
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <input type="email" class="form-control" required maxlength="250" name="modalEmail" placeholder="@T("E-mail")">
+                    </div>
+
+                    <div class="col-md-24 form-group">
+                        <label for="modalAmigoNome">@T("Dados do seu amigo:")</label>
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <input type="text" class="form-control" required maxlength="250" name="modalAmigoNome" placeholder="@T("Nome")">
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <input type="email" class="form-control" required maxlength="250" name="modalAmigoEmail" placeholder="@T("E-mail")">
+                    </div>
+
+                    <div class="col-md-24 form-group">
+                        <label for="modalComentario">@T("Comentário") (@T("Opcional")):</label>
+                        <textarea class="form-control" name="modalComentario" placeholder="@T("Comentário")" maxlength="250" data-rule-nohtml="true"></textarea>
+                    </div>
+
+                    <input type="Button" id="btnEnviarEmail" value="@T("Enviar")" onclick="enviarEmail()" class="btn btn-info pull-right" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="modalEmailCodigo" />
+    <input type="hidden" id="modalEmailUrl" />
+</div>
+
+@helper Javascript(MLPortal portal)
+{
+    <script src="~/Content/js/plugins/validate/jquery.validate.min.js"></script>
+    <script type="text/javascript">
+        jQuery.validator.addMethod("noHTML", function (value, element) {
+            return !value.match(/<(\w+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)>/);
+        }, "@T("Não é permitido inserir tags HTML")");
+
+        $('#link').on('shown.bs.popover', function () {
+            $("#urlLink").select();
+        });
+
+        function resizeText(multiplier) {
+            var main = $("main");
+
+            //.not("aside[data-compartilhar] *");
+
+            //Todos os elementos dentro do target
+            var element = main.find('*');
+
+            //Modificar fonte do próprio elemento.
+            //main.css('font-size', CalcularFonte(main, multiplier));
+
+            //Modificar a fonte dos elementos filho
+            element.each(function (i) {
+                if ($(this).parents("aside[data-compartilhar]").length == 0 && $(this).parents("article.content").length > 0) {
+                    $(this).css('font-size', CalcularFonte($(this), multiplier));
+                }
+            });
+
+            return false;
+        }
+
+        function CalcularFonte(element, multiplier) {
+            var fontSize = element.css('font-size').replace("px", "");
+            var fontResized = parseInt(fontSize) + (multiplier + 0.2);
+
+            if (fontResized < 12) {
+                fontResized = 12;
+            }
+            else if (fontResized > 24) {
+                fontResized = 24;
+            }
+
+            return String(fontResized) + "px";
+        }
+
+        function AbrirPopUp(width, height, url) {
+            var left = parseInt((screen.availWidth / 2) - (width / 2));
+            var top = parseInt((screen.availHeight / 2) - (height / 2));
+            var windowSize = "width=" + width + ",height=" + height + ",status,resizable,left=" + left + ",top=" + top + "screenX=" + left + ",screenY=" + top;
+
+            window.open(url, 'Continue_to_Application', windowSize);
+
+            return false;
+        }
+
+        function enviarEmail() {
+            var $form = $("#formEmail");
+
+            $form.validate({
+                highlight: function (element) {
+                    $(element).parent().find(".validate").removeClass("hide");
+                    $(element).parent().find(".validate").removeClass("alert-success").addClass("alert-danger");
+                    $(element).parents(".form-group").addClass("has-error").removeClass("has-success");
+                },
+                unhighlight: function (element) {
+                    $(element).parent().find(".validate").removeClass("alert-danger").addClass("alert-success");
+                    $(element).parents(".form-group").addClass("has-success").removeClass("has-error");
+                },
+                errorPlacement: function (error, element) {
+                    $(element).parent().find(".validate").html(error.text());
+                },
+                success: function (success, element) {
+                    $(element).parent().find(".validate").html("@T("Campo preenchido corretamente")");
+                }
+            });
+
+            if ($form.valid()) {
+                var dataSend = {
+                    "nome": $form.find("input[name=modalNome]").val(),
+                    "email": $form.find("input[name=modalEmail]").val(),
+                    "nomeAmigo": $form.find("input[name=modalAmigoNome]").val(),
+                    "emailAmigo": $form.find("input[name=modalAmigoEmail]").val(),
+                    "comentario": $form.find("textarea[name=modalComentario]").val(),
+                    "url": "@Server.UrlEncode(Request.Url.ToString())",
+                    "titulo": $(document).prop('title'),
+                    "chamada": $(document).prop('description') || ""
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/Compartilhar/Email",
+                    data: dataSend,
+                    beforeSend: function () {
+                        $("#btnEnviarEmail").addClass("disabled");
+                        $("#btnEnviarEmail").val("@T("Enviando...")");
+                    },
+                    success: function (data) {
+                        if (data != null) {
+                            if (data.success) {
+                                alert("@T("Seu e-mail foi enviado com sucesso.")");
+
+                                $form.find("input, textarea").val("");
+                                $("#modelEnviarEmail").modal("hide");
+                            }
+                            else if (!data.success && data.msg != "") {
+                                alert(data.msg);
+                            }
+                        }
+
+                        $("#btnEnviarEmail").removeClass("disabled");
+                        $("#btnEnviarEmail").val("@T("Enviar")");
+                    },
+                    error: function (data) {
+                        alert("@Html.Raw(T("Não foi possível enviar o e-mail."))");
+
+                        $("#btnEnviarEmail").removeClass("disabled");
+                        $("#btnEnviarEmail").val("@T("Enviar")");
+                    }
+                });
+            }
+
+            return false;
+        }
+    </script>
+}
+@{ BLConteudo.AdicionarJavaScript(Javascript(portal).ToHtmlString(), false); }
+
+<style type="text/css">
+    @@media print {
+        footer, header, .hero-title--img, aside.no-print, .breadcrumb { display: none; }
+    }
+</style>

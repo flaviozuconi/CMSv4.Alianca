@@ -1,0 +1,175 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    var urlEditar = string.Format("/cms/{0}/eventoadmin/item", portal.Diretorio);
+    var salvo = (bool?)TempData["Salvo"] ?? false;
+    var urlCalendario = Request.Url.AbsolutePath + "/calendario";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/microphone" /> @TAdm("Eventos")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            { <a class="btn btn-green" href="@urlEditar">@TAdm("Adicionar")</a> }
+            <a class="btn btn-blue" data-toggle="modal" data-target="#standardModal" onclick="return calendario();">@TAdm("Calendário")</a>
+            @Helpers.BotaoExcluir(T("Excluir"))
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body" style="min-height:600px">
+        @if (salvo)
+        {
+            <div class="alert alert-success">
+                @TAdm("Registro salvo com sucesso!")
+            </div>
+        }
+
+        @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), Request.Url.AbsolutePath + "/excluir")
+
+        <div class="table-responsive">
+            <div id="filter">
+                @Helpers.ComboIdiomas(PortalAtual.Obter.CodigoIdioma, false)
+            </div>
+            <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                <thead>
+                    <tr>
+                        <th>@TAdm("Título")</th>
+                        <th style="width: 100px;">@TAdm("Data")</th>
+                        <th style="width: 100px;">@TAdm("Horário")</th>
+                        @*<th>@TAdm("Termino")</th>*@
+                        <th style="width: 50px;">@TAdm("Ativo")</th>
+                        <th style="width: 50px;">@TAdm("Excluir")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Grupos -->
+<div class="modal modal-flex fade" id="standardModal" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true">
+</div>
+<!-- /.modal -->
+@section head {
+    <link href='~/Content/js/plugins/fullcalendar_v2/fullcalendar.css' rel='stylesheet' />
+    <link href='~/Content/js/plugins/fullcalendar_v2/fullcalendar.print.css' rel='stylesheet' media='print' />
+    <link href="~/Content/css/demo.css" rel="stylesheet">
+    <link href="~/Content/css/plugins.css" rel="stylesheet">
+}
+
+@section scripts {
+    <!-- GLOBAL SCRIPTS -->
+
+    <script src='~/Content/js/plugins/fullcalendar_v2/lib/moment.min.js'></script>
+    <script src='~/Content/js/plugins/fullcalendar_v2/fullcalendar.min.js'></script>
+    <script src='~/Content/js/plugins/fullcalendar_v2/lang/pt-br.js'></script>
+
+    <!-- THEME SCRIPTS -->
+    @*<script src="~/Content/js/flex.js"></script>
+        <script src="~/Content/js/plugins/pace/pace.js"></script>*@
+
+    <script type="text/javascript">
+        function calendario() {
+            $.ajax({
+                url: "@urlCalendario",
+                data: {},
+                success: function (data) {
+                    $('#standardModal').empty();
+                    $('#standardModal').html(data);
+
+                    window.setTimeout(criarCalendario, 200);
+                }
+            });
+
+            return false;
+        }
+
+        function setCalendarioParameter() {
+            return {
+                url: '/cms/@portal.Diretorio/EventoAdmin/ListarCalendario',
+                type: 'POST',
+                data: {
+                    codigoIdioma: $("#idiomas-calendario option:selected").val() || $("#CodigoIdioma option:selected").val()
+                }
+            };
+        }
+
+        function criarCalendario() {
+            var isLoadModal = true;
+            var eventoParametro = setCalendarioParameter();
+
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: false,
+                droppable: false,
+                eventLimit: true,
+                events: eventoParametro,
+                loading: function (loading, view) {
+                    if (loading && isLoadModal) {
+                        $("#idiomas-calendario").empty();
+                        $("#idiomas-calendario").append($("#CodigoIdioma option").clone());
+                        $("#idiomas-calendario").val($("#CodigoIdioma option:selected").val())
+                        $("#idiomas-calendario").unbind("change");
+                        $("#idiomas-calendario").change(function () {
+                            isLoadModal = false;
+                            $('#calendar').fullCalendar('removeEventSource', eventoParametro);
+
+                            eventoParametro = setCalendarioParameter();
+
+                            $('#calendar').fullCalendar('addEventSource', eventoParametro);
+                        });
+                    }
+                }
+            });
+            
+            /* initialize the external events */
+            $('#external-events div.external-event').each(function () {
+                var eventObject = {
+                    title: $.trim($(this).text()) // use the element's text as the event title
+                };
+
+                // store the Event Object in the DOM element so we can get to it later
+                $(this).data('eventObject', eventObject);
+            });
+        }
+
+        //DataTables Initialization
+        $(document).ready(function () {
+            scrollToTop();
+            $("#CodigoIdioma").change(function () {
+                $('#lista').DataTable().ajax.reload();
+            });
+
+            //DataTables Initialization
+            $('#lista').dataTable(
+                {
+                    "ajax": { "url": "/cms/@portal.Diretorio/EventoAdmin/Listar", "data": function (d) { d.CodigoIdioma = $("#CodigoIdioma").val(); } },
+                    "order": [[0, "asc"]],
+                    "columns": [
+                        @Helpers.ColunaEditar("Titulo", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditarData("DataInicio", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditar("Hora", urlEditar, "Codigo"),
+                        @*@Helpers.ColunaEditarData("DataTermino", urlEditar, "Codigo"),*@
+                        @Helpers.ColunaEditarBoolean("Ativo", urlEditar, "Codigo", "Sim", "Não"),
+                        @Helpers.ColunaExcluir("Codigo")
+                    ]
+                }
+            );
+        });
+
+        $("#standardModal").on("shown.bs.modal", function () {
+            setInterval(function () {
+
+            }, 1000);
+        });
+
+    </script>
+}

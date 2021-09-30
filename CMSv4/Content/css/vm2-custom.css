@@ -1,0 +1,9 @@
+﻿/*CSS QUE SERÁ APLICADO DENTRO DE TODOS OS IFRAMES*/ 
+
+.nav-tabs > li.active > a {
+    outline:none;
+}
+
+.nav-tabs > li.active a {
+    border-top: 2px solid #34495e !important;
+}

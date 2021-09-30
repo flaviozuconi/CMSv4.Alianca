@@ -1,0 +1,218 @@
+﻿@model MLArquivo
+@{
+    var portal = PortalAtual.Diretorio;
+    var regex = new System.Text.RegularExpressions.Regex(@"\d+");
+    var baseUrl = regex.Replace(Request.Url.AbsolutePath, string.Empty).Remove((Request.Url.AbsolutePath.Length - 12));
+    var urlLista = baseUrl + "/arquivo?codigocategoria=" + Model.CodigoCategoria;
+    var urlUpload = baseUrl + "/uploadfile";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/file_extension_zip" />
+                @TAdm("Arquivos")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {
+                @Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)
+            }
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Model.CodigoCategoria" name="CodigoCategoria" />
+            <input type="hidden" value="@Model.CodigoBase" name="CodigoBase" />
+            <input type="hidden" value="@Model.Nome" name="Nome" />
+            <input type="hidden" value="@Model.Imagem" name="Imagem" />
+
+            <div class="form-group col-md-6">
+                <label>@TAdm("Título")</label>
+                <input type="text" class="form-control" name="Titulo" maxlength="200" value="@Model.Titulo">
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Idioma")</label>
+                @Helpers.ComboIdiomas(Model.CodigoIdioma)
+            </div>
+
+            <div class="form-group col-md-2">
+                <br />
+                @Html.CheckBox("Ativo", (Model.Ativo ?? true))
+                <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+            <div class="form-group col-md-2">
+                <br />
+                @Html.CheckBox("Destaque", (Model.Destaque ?? false))
+                <label for="Destaque">@TAdm("Destaque")</label>
+            </div>
+            <div class="form-group col-md-2">
+                <label>@TAdm("Data")</label>
+                <input type="text" class="form-control data" name="Data" id="Data" maxlength="16" value="@(Model.Data.HasValue ? Model.Data.Value.ToString("dd/MM/yyyy HH:mm") : "")">
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Descrição")</label>
+                <textarea data-ckeditor="@portal" class="form-control" style="height: 300px;" name="Descricao">@((string.IsNullOrEmpty(Model.Descricao) ? "" : Model.Descricao))</textarea>
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Imagem")</label>
+                <input type="file" name="imgThumb" accept="image/x-png, image/gif, image/jpeg, image/*" />
+                @if (!string.IsNullOrEmpty(Model.Imagem))
+                {
+                    <br />
+                    <img id="imagemCapa" src="@Path.Combine(BLConfiguracao.Pastas.ModuloArquivosImagens(portal, Model.Codigo.Value), Model.Imagem)" alt="" style="max-width: 150px; max-height: 150px;" /><br />
+                    <input type="checkbox" id="RemoverImg" name="RemoverImg" value="True" /> <label for="RemoverImg">@TAdm("Remover imagem")</label>
+                }
+            </div>
+            <div id="fileUpload" class="col-md-6 dropzone">
+                <label>@TAdm("Arquivo")</label>
+
+                <div class="fallback">
+                    <input type="file" name="file" />
+                </div>
+                <span id="errorfileUpload" for="fileUpload" style="display:none" class="help-block">Preencha este campo.</span>
+            </div>
+            
+            <div class="col-md-6">
+                @if (Model.Codigo.HasValue && !string.IsNullOrEmpty(Model.Nome))
+                {
+                    <a target="_blank" href="/download/@(portal)/@(Model.Codigo)?file=@Model.Nome">/download/@(portal)/@(Model.Codigo)?file=@Model.Nome</a>
+                }
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section head {
+    <link href="~/Content/css/plugins/bootstrap-tokenfield/bootstrap-tokenfield.css" rel="stylesheet" />
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.theme.css" rel="stylesheet" />
+}
+
+@section scripts{
+
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-tokenfield/bootstrap-tokenfield.min.js"></script>
+
+    <script type="text/javascript">
+
+        $('form').validate({
+            rules: {
+                Titulo: { required: true, maxlength: 200 },
+                CodigoIdioma: { required: true },
+                file: { required: true }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $(document).ready(function () {
+            /*
+            *   FORM UPLOAD
+            */
+            Dropzone.options.fileUpload = {
+                url: "@urlUpload",
+                dictDefaultMessage: "@(string.IsNullOrEmpty(Model.Nome) ? T("Arraste ou clique aqui para realizar upload de arquivos") : Model.Nome.Replace(".resource", string.Empty))",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                maxFiles: 1,
+                parallelUploads: 1,
+                paramName: "file",
+                sending: function (file, xhr, formData) {
+                    formData.append('Codigo', '@(Model.Codigo)');
+                    formData.append('CodigoCategoria', '@(Model.CodigoCategoria)');
+                },
+                accept: function (file, done) {
+                    ///Definir aqui quais extensões
+                    ///de arquivos a restringir
+                    done();
+                },
+                complete: function (file) {
+                    objResponse = JSON.parse(file.xhr.response);
+                    if (!objResponse.Sucesso) {
+                        alert(objResponse.msg);
+                        this.removeFile(file);
+                    }
+                    else {
+                        $("input[name='Nome']").val(file.name);
+                        $("#fileUpload").removeClass("has-error");       
+                        $("#errorfileUpload").hide();
+                    }
+                }
+            };
+        });
+
+        function toDate(data) {
+            var regex = /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})/;
+            var arr = regex.exec(data);
+
+            return new Date(
+                (+arr[3]),
+                (+arr[2]) - 1,
+                (+arr[1]),
+                (+arr[4]),
+                (+arr[5])
+            );
+        }
+
+        $("#Data").blur(function () {
+            if ($(this).val() == "__/__/____ __:__") {
+                $(this).val("");
+            }
+        });
+
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                if ($("#Data").val() == "__/__/____ __:__") {
+                    $("#Data").val("");
+                }
+
+                if ($("input[name='Nome']").val() == "") {
+                    $("#errorfileUpload").show();
+                    $("#fileUpload").addClass("has-error");
+
+                    return false;
+                }
+
+            }
+            else {
+                if ($("input[name='Nome']").val() == "") {
+                    $("#errorfileUpload").show();
+                    $("#fileUpload").addClass("has-error");
+
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            $('#Data').datetimepicker({
+                timepicker: true, mask: true, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            scrollToTop();
+        });
+
+    </script>
+}

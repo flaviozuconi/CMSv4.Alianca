@@ -1,0 +1,20 @@
+﻿@using VM2.PageSpeed.Model
+
+@model MLPageSpeedViewModel
+
+<div class="text-center">
+    <input id="knobPerformance" class="knob" data-fgColor="@Model.Seo.ScoreColor" data-thickness=".2" readonly value="@Model.Seo.Score" data-width="120" data-height="120" data-linecap="round">
+    <h2 class="category-title">@TAdm("Seo")</h2>
+</div>
+
+<div class="text-center row-bottom-space">
+    <span>These checks ensure that your page is optimized for search engine results ranking. There are additional factors Lighthouse does not check that may affect your search ranking. <a rel="noopener" target="_blank" href="https://support.google.com/webmasters/answer/35769">Learn more</a>.</span>
+</div>
+
+<div class="row row-bottom-space">
+    @HelpersPageSpeed.Audits(Model.Seo.Audits, "seo")
+</div>
+
+<div class="row">
+    @HelpersPageSpeed.PassedAudits(Model.Seo.Passed)
+</div>

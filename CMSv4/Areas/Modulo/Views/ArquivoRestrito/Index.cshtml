@@ -1,0 +1,17 @@
+﻿@model  MLModuloArquivoRestrito
+
+@if (string.IsNullOrEmpty(Model.NomeView))
+{
+    <br />
+    <p>@T("Clique em") <u>@T("Editar")</u> @T("para exibir os arquivos")</p>
+}
+else { 
+    try
+    {
+        @Html.Action((string)Model.NomeView, "ArquivoRestrito", new { model = Model })
+    }
+    catch (Exception ex) 
+    { 
+        ApplicationLog.ErrorLog(ex); 
+    }
+}

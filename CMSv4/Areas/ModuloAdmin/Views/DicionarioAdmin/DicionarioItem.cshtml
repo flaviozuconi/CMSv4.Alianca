@@ -1,0 +1,77 @@
+﻿@model CMSv4.Model.MLDicionarios
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/DicionarioAdmin/Dicionario", portal.Diretorio);
+    var Grupos = (List<MLDicionarioGrupo>)ViewBag.Grupos;
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/advertising" />
+                @TAdm("Grupo")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.GetValueOrDefault(0) > 0)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Model.CodigoIdioma" name="CodigoIdioma" />
+            <input type="hidden" value="@Model.CodigoPortal" name="CodigoPortal" />
+
+            <div class="form-group col-md-6">
+                <label>@TAdm("Sub Região")</label><br />
+                <select class="form-control" name="CodigoGrupo" required>
+                    @if (true)
+                    {
+                        <option value="">@TAdm("Selecione um Grupo")</option>
+                    }
+                    @foreach (var item in Grupos)
+                    {
+                        <option value="@item.Codigo" @( item.Codigo == Model.CodigoGrupo ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Termo")</label>
+                <input type="text" class="form-control" name="Termo" maxlength="200" value="@Model.Termo">
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Definição")</label>
+                <input type="text" class="form-control" name="Definicao" maxlength="500" value="@Model.Definicao" autofocus>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('form').validate({
+            rules: {
+                Termo: { required: true, maxlength: 200 },
+                Definicao: { required: true, maxlength: 500 }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

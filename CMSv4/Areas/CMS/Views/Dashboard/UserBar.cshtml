@@ -1,0 +1,61 @@
+﻿<!-- begin MESSAGES/ALERTS/TASKS/USER ACTIONS DROPDOWNS -->
+@{
+    var portal = PortalAtual.Obter;
+    var usuario = BLUsuario.ObterLogado();
+    if (usuario == null)
+    {
+        usuario = new MLUsuario();
+    }
+}
+
+<ul class="nav navbar-right">
+    @{
+        bool listarIdiomas = true; //desabilitado, enquanto não houver tratamento em datas e valores (solução em global.asax.cs)
+        var siglaatual = Framework.Utilities.BLIdioma.AtualAdm.Sigla;
+    }
+
+      <!-- begin USER ACTIONS DROPDOWN -->
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <img src="~/content/img/idioma/@(siglaatual).jpg" width="20" />  <i class="fa fa-caret-down"></i>
+        </a>
+        
+        @if (listarIdiomas)
+        {
+            <ul class="dropdown-menu dropdown-user">
+            @foreach (var item in BLIdioma.Listar())
+            {
+                <li>
+                    <a href="/cms/@portal.Diretorio?l=@item.Sigla" title="@item.Nome"><img src="~/content/img/idioma/@(item.Sigla).jpg" width="20" /></a>
+                </li>
+            }
+                </ul>
+        }
+        
+        <!-- /.dropdown-menu -->
+    </li>
+    <!-- /.dropdown -->
+    <!-- end USER ACTIONS DROPDOWN -->
+
+    <!-- begin USER ACTIONS DROPDOWN -->
+    <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-user"></i>  
+            @usuario.Nome
+            <i class="fa fa-caret-down"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-user">
+            <li>
+                <a class="logout_open" href="#logout">
+                    <i class="fa fa-sign-out"></i> @TAdm("Sair")
+                </a>
+            </li>
+        </ul>
+        <!-- /.dropdown-menu -->
+    </li>
+    <!-- /.dropdown -->
+    <!-- end USER ACTIONS DROPDOWN -->
+
+</ul>
+<!-- /.nav -->
+<!-- end MESSAGES/ALERTS/TASKS/USER ACTIONS DROPDOWNS -->

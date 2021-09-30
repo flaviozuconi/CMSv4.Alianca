@@ -1,0 +1,151 @@
+﻿@{ 
+     var portal = BLPortal.Atual;
+    var baseUrl = "~/portal/principal/";
+    var imagens = "/portal/"+portal.Diretorio+"/";
+    var cookieAnalytics = Framework.Utilities.BLCookie.Carregar("alianca_cookie_analytics");
+    var cookieThird = Framework.Utilities.BLCookie.Carregar("alianca_cookie_third");
+    var checkCookiesAnalytics = string.IsNullOrEmpty(cookieAnalytics.Nome) || (cookieAnalytics.Valores.Count() > 0 && cookieAnalytics.Valores[0].Valor == "true") ? "checked" : "";
+    var checkCookiesThird = string.IsNullOrEmpty(cookieThird.Nome) || (cookieThird.Valores.Count() > 0 && cookieThird.Valores[0].Valor == "true") ? "checked" : "";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     @RenderSection("head", false)
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" />
+    <link rel="stylesheet" href="@Url.Content(baseUrl + "css/plugins.min.css")">
+    <link rel="stylesheet" href="@Url.Content(baseUrl + "css/main.min.css")">
+    
+ 
+<body>
+      @RenderSection("body", false)
+    <header class="header show">
+
+        <a href="#" class="header--logo">
+    		<img src="@(imagens)img/alianca.png" alt="Aliança">
+    	</a>
+       <div class="header--menu">
+           @try
+            {
+                @Html.Action("ListarPublico", "ModuloMenu", new { model = new MLModuloMenuModulo() { CodigoMenu = 24, View="TopoSite", ClasseCSS="menu" } })
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+            }
+            <div class="header--search">
+                <input type="text" placeholder="Buscar">
+                <a href="#" class="icon icon-magnifying-glass"></a>
+            </div>
+        </div>
+        <a href="#" class="btn btn-login">Portal Cabotagem</a>
+          @try
+                    {
+                        @Html.Action("Index", "Idioma", new { view = "Index"  })
+                    }
+                    catch (Exception ex)
+                    {
+                        ApplicationLog.ErrorLog(ex);
+                    }
+        <a href="#" class="header--menu-toggle">
+    		<span class="bar"></span>
+    		<span class="bar"></span>
+    		<span class="bar"></span>
+    	</a>
+    </header>
+    <main class="main">
+          @RenderBody()
+    </main>
+    <footer class="footer">
+        <div class="footer--info">
+            <a href="#" class="footer--logo">
+    			<img src="@(imagens)img/alianca_footer.png" alt="">
+    		</a>
+            <div class="footer--social">
+                <p class="text-center">Acompanhe a Aliança</p>
+                <ul class="social-list">
+                    <li><a href="#" class="icon icon-linkedin"></a></li>
+                    <li><a href="#" class="icon icon-instagram"></a></li>
+                </ul>
+            </div>
+            <div class="footer--contato">
+                <figure>
+                    <img src="@(imagens)img/contato.jpg" alt="">
+                </figure>
+                <h4 class="contato--title">Precisa de ajuda?</h4>
+                <p>Fale conosco</p>
+            </div>
+        </div>
+        <div class="footer--copyright">
+            <ul class="footer--list">
+                <li><strong>©2021 Aliança</strong></li>
+                <li><a href="#">Maersk Company</a></li>
+                <li><a href="#">Termos e condições</a> - <a href="#">Política de privacidade</a></li>
+            </ul>
+        </div>
+    </footer>
+    <div class="modal modal-search fade" tabindex="-1" role="dialog" id="modalSearch">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span class="icon icon-close"></span></button>
+                <h2 class="modal-title">Podemos te ajudar?</h2>
+                <div class="form">
+                    <div class="form-group">
+                        <input type="text" id="txt-busca" class="form-control">
+                        <button class="btn-search icon icon-search"></button>
+                    </div>
+                </div>
+                 <div class="result">
+
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal modal-media fade" tabindex="-1" role="dialog" id="modalMedia">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span class="icon icon-plus"></span></button>
+
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" src="" allowfullscreen></iframe>
+            </div>
+            <video width="100%" controls autoplay></video>
+            <figure class="img-responsive">
+                <img src="" alt="">
+            </figure>
+
+        </div>
+    </div>
+</div>
+     @try
+              {
+                  @Html.Action("Renderizar", "FaleConosco", new { model = new MLModuloFaleConosco() { NomeView = "Especialista", NomeModelo="Especialista" } })
+              }
+              catch (Exception ex)
+              {
+                  ApplicationLog.ErrorLog(ex);
+              }
+    <script src="@Url.Content(baseUrl + "js/jquery.min.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/popper.min.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/bootstrap.min.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/plugins/owl.carousel.min.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/plugins/bootstrap-select.min.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/plugins/fullcalendar/moment.min.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/plugins/fullcalendar/fullcalendar.min.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/plugins/fullcalendar/pt-br.js")"></script>
+
+    <script src="@Url.Content(baseUrl + "js/calendar.js")"></script>
+    <script src="@Url.Content(baseUrl + "js/main.min.js")"></script>
+     <script src="@Url.Content(baseUrl + "modulos/busca.js")"></script>
+     <script>
+       
+     </script>
+     
+    @RenderSection("scripts", false)
+</body>
+
+</html>

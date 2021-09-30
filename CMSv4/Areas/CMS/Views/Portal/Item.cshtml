@@ -1,0 +1,347 @@
+﻿@model Framework.Utilities.MLPortal
+
+@{ 
+    var Menus = (List<Framework.Utilities.MLMenu>)ViewBag.Menus ?? new List<Framework.Utilities.MLMenu>();
+    var MenuView = (List<Framework.Utilities.MLMenuView>)ViewBag.MenuViews ?? new List<Framework.Utilities.MLMenuView>();
+}
+
+<style type="text/css">
+    .help {
+        outline: 0;
+    }
+</style>
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/globe_network" /> @TAdm("Portais")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="/admin/portal">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @{
+            var acessoNegado = !((bool?)ViewBag.PossuiPermissao ?? false);
+
+            if (acessoNegado)
+            {
+                <div class="alert alert-danger">@TAdm("Usuário de IIS não possui permissão para criação de diretórios e arquivos. Contate o administrador")</div>
+            }
+        }
+
+        @Helpers.ExibirErros(ViewData.ModelState)
+
+                <form accept-charset="UTF-8" role="form" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" value="@Model.Codigo" name="Codigo" />
+
+                    @if (Model.Codigo.HasValue)
+                    {
+                        <div class="col-md-4 form-group">
+                            <label for="nome">@TAdm("Nome")</label>
+                            <input class="form-control" value="@Model.Nome" name="Nome" type="text" maxlength="100" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="diretorio">@TAdm("Diretório")</label>
+                            <input value="@Model.Diretorio" name="DiretorioAnterior" type="hidden" />
+                            <input class="form-control" value="@Model.Diretorio" name="Diretorio" type="text" maxlength="20" />
+                        </div>
+
+                        @*MENU*@
+                        <div class="col-md-2 form-group">
+                            <label for="diretorio">@TAdm("Menu")</label>
+                            <a id="infoMenu" href="javascript:void(0)" class="help" data-content="@TAdm("Menu que será exibido no canto esquerdo da tela ao realizar o login no sistema.")" data-placement="bottom" data-original-title="" title="">
+                                <i class="fa fa-question-circle" style="font-size: 18px;"></i>
+                            </a>
+
+                            <select class="form-control" name="CodigoMenu">
+                                <option>@TAdm("Selecione")</option>
+
+                                @foreach (var item in Menus)
+                                {
+                                    <option value="@item.Codigo" @(item.Codigo != Model.CodigoMenu ? "" : "selected")>@item.Nome</option>
+                                }
+                            </select>
+                        </div>
+
+                        @*MENU VIEW*@
+                        <div class="col-md-2 form-group">
+                            <label for="diretorio">@TAdm("Menu View")</label>
+                            <a id="infoMenu" href="javascript:void(0)" class="help" data-content="@TAdm("View que será utilizada para contruir o html do menu.")" data-placement="bottom" data-original-title="" title="">
+                                <i class="fa fa-question-circle" style="font-size: 18px;"></i>
+                            </a>
+
+                            <select class="form-control" name="CodigoMenuView">
+                                @foreach (var item in MenuView)
+                                {
+                                    <option value="@item.Codigo" @(item.Codigo != Model.Codigo ? "" : "selected")>@item.Nome</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6 form-group">
+                            <label for="nome">@TAdm("Nome")</label>
+                            <input class="form-control" value="@Model.Nome" name="Nome" type="text" maxlength="100" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="diretorio">@TAdm("Diretório")</label>
+                            <input value="@Model.Diretorio" name="DiretorioAnterior" type="hidden" />
+                            <input class="form-control" value="@Model.Diretorio" name="Diretorio" type="text" maxlength="20" />
+                        </div>
+
+                        @*MENU VIEW*@
+                        <div class="col-md-2 form-group">
+                            <label for="diretorio">@TAdm("Menu View")</label>
+                            <a id="infoMenu" href="javascript:void(0)" class="help" data-content="@TAdm("View que será utilizada para contruir o html do menu.")" data-placement="bottom" data-original-title="" title="">
+                                <i class="fa fa-question-circle" style="font-size: 18px;"></i>
+                            </a>
+
+                            <select class="form-control" name="CodigoMenuView">
+                                @foreach (var item in MenuView)
+                                {
+                                    <option value="@item.Codigo" @(item.Codigo != Model.Codigo ? "" : "selected")>@item.Nome</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    <div class="col-md-12 form-group">
+                        <label for="url">@TAdm("Domínios")</label>
+                        <textarea class="form-control" rows="2" name="Url">@Model.Url</textarea>
+                        <p class="small">@TAdm("Ao informar os domínios, o sistema considerará que este é o Portal padrão. Separar os domínios por vírgula.")</p>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="CodigoIdioma">@TAdm("Idioma Padrão")</label>
+                        @Helpers.ComboIdiomas(Model.CodigoIdioma)
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="diretorio">@TAdm("Page Speed Api Key")</label>
+                        <input class="form-control" value="@Model.PageSpeedApiKey" name="PageSpeedApiKey" type="text" maxlength="300" />
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <label for="arquivosPortals">Arquivo do Portal</label>
+                        <input name="arquivosPortal" type="file" />
+                        <small>@TAdm("O upload de arquivo ZIP auxilia na instalação do portal para descompactar arquivos que estarão disponíveis no diretório do portal.")</small>
+                    </div>
+
+                    <div class="form-group col-md-12 text-right">
+                        <input type="checkbox" id="Manutencao" name="Manutencao" value="True" @(Model.Manutencao.GetValueOrDefault() ? "checked" : "") /> <label for="Manutencao">@TAdm("Manutenção")</label>
+                    </div>
+                    <fieldset class="col-md-12">
+                        <legend>@TAdm("Analytics")</legend>
+                        <div>
+                            <div class="col-md-3 form-group">
+                                <label for="ServidorBD">@TAdm("Nome do Usuário")</label>
+                                <input class="form-control" value="@Model.AnalyticsUsername" name="AnalyticsUsername" type="text" maxlength="100" />
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="SenhaBD">@TAdm("Senha")</label>
+                                <input class="form-control" value="@Model.AnalyticsPassword" name="AnalyticsPassword" type="password" maxlength="100" />
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label for="NomeBD">@TAdm("Profile ID")</label>
+                                <input class="form-control" value="@Model.AnalyticsProfileId" name="AnalyticsProfileId" type="text" maxlength="30" />
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="col-md-12">
+                        <legend>@TAdm("Banco de Conteúdo")</legend>
+                        <div class="col-md-12 form-group">
+                            <label class="radio-inline" data-toggle="tooltip" data-placement="bottom" title="">
+                                <input type="radio" class="jqTipo" name="optionTipo" value="E" checked>@TAdm("Banco Existente")
+                            </label>
+                            <label class="radio-inline" data-toggle="tooltip" data-placement="bottom" title="@TAdm("Não implementado")">
+                                <input type="radio" class="jqTipo" name="optionTipo" value="N" disabled>@TAdm("Criar Novo Banco")
+                            </label>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="ServidorBD">@TAdm("Endereço do Servidor")</label>
+                            <input class="form-control" value="@Model.ServidorBD" name="ServidorBD" type="text" maxlength="100" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="ServidorBD">@TAdm("Endereço do Servidor Alternativo")</label>
+                            <input class="form-control" value="@Model.ServidorBDFailOver" name="ServidorBDFailOver" type="text" maxlength="100" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="UsuarioBD">@TAdm("Usuário")</label>
+                            <input class="form-control" value="@Model.UsuarioBD" name="UsuarioBD" type="text" maxlength="100" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="SenhaBD">@TAdm("Senha")</label>
+                            <input class="form-control" value="@Model.SenhaBD" name="SenhaBD" type="password" maxlength="100" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="NomeBD">@TAdm("Nome do Banco de Dados")</label>
+                            <input class="form-control" value="@Model.NomeBD" name="NomeBD" type="text" maxlength="100" />
+                        </div>
+                        @if (Model.Ativo.GetValueOrDefault(true))
+                        {
+                            <div class="form-group col-md-1 clearfix">
+                                <br />
+                                <button id="jqConn" type="button" class="btn btn-red">@TAdm("Testar")</button>
+                            </div>
+                        }
+                        <div class="form-group col-md-11" id="jqErrorConn">
+                        </div>
+                    </fieldset>
+                    <div class="col-md-6 col-md-offset-6">
+                        <div class="col-md-4">
+
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12 text-right">
+                        <a class="btn btn-white" href="/admin/portal">@TAdm("Cancelar")</a>
+                        @if (Model.Codigo.HasValue && Model.Ativo.GetValueOrDefault(true))
+                        {
+                            <a class="btn btn-red" href="/admin/portal/desativar/@(Model.Codigo)">@TAdm("Desativar")</a>
+                        }
+                        @if (Model.Ativo.GetValueOrDefault(true))
+                        {
+                            <input type="submit" class="btn btn-green" @(acessoNegado ? "disabed" : "") value="@TAdm("Salvar")" />
+                        }
+                    </div>
+                </form>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) || !Model.Ativo.GetValueOrDefault(true) ? "disableForm();" : "")
+
+        $(document).ready(function () {
+            scrollToTop();
+
+            $(".jqTipo").tooltip();
+        });
+
+        $('#jqConn').on("click", function () {
+            var servidor = $("input[name=ServidorBD]").val();
+            var usuario = $("input[name=UsuarioBD]").val();
+            var senha = $("input[name=SenhaBD]").val();
+            var nomebanco = $("input[name=NomeBD]").val();
+            var novo = $("input:radio[name=optionTipo]:checked").val() == 'N';
+
+            var servidorValido = validarValor($("input[name=ServidorBD]"));
+            var usuarioValido = validarValor($("input[name=UsuarioBD]"));
+            var senhaValida = validarValor($("input[name=SenhaBD]"));
+            var nomeValido = validarValor($("input[name=NomeBD]"));
+
+            if (!servidorValido || !usuarioValido || !senhaValida || !nomeValido) {
+                return;
+            }
+            else {
+                var dataSend = {
+                    'novo': novo,
+                    'servidor': servidor,
+                    'usuario': usuario,
+                    'senha': senha,
+                    'nomebanco': nomebanco
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/admin/portal/ConnectionTest',
+                    data: dataSend,
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $('#jqErrorConn').html("<span class='help-block'><i class='glyphicon glyphicon-time'></i> @TAdm("Aguarde enquanto testamos a conexão...")</span>");
+                    },
+                    success: function (data) {
+                        callbackConexao(data.success, data.msg);
+                    },
+                    error: function (data) {
+                        callbackConexao(false, data.error);
+                    }
+                });
+            }
+        });
+
+        $.validator.addMethod("dadosbanco", function (value, element, valida) {
+            var tipo = $("input:radio[name=optionTipo]:checked").val();
+            return (tipo == 'E' && value != '' || tipo == 'N');
+        }, $.validator.messages.required);
+
+        $('form').validate({
+            rules: {
+                Nome: { required: true },
+                CodigoMenu: { required: true },
+                Diretorio: {
+                    required: true, regex: /^[a-zA-Z_\-0-9]+$/, remote: {
+                        url: "/admin/portal/ValidarNomeDiretorio",
+                        type: "POST",
+                        async: false,
+                        loadingPanel: false,
+                        data: { diretorio: $("[name=Diretorio]").val(), id: "@Model.Codigo" }
+                    }
+                },
+                arquivosPortal: { extension: "zip" },
+                ServidorBD: { dadosbanco: true },
+                UsuarioBD: { dadosbanco: true },
+                SenhaBD: { dadosbanco: true },
+                NomeBD: { dadosbanco: true }
+            },
+            messages: {
+                Diretorio: {
+                    regex: "@TAdm("Não utilize espaços ou caracteres especiais no nome do diretório")",
+                    remote: "@TAdm("Este nome encontra-se indisponível, verifique se o diretório não esta esta sendo utilizado por uma rota ou página.")"
+                },
+                arquivosPortal: {
+                    extension: "@TAdm("Extensão inválida")"
+                }
+            }
+        });
+
+        $('input[name=Nome]').keyup(function () {
+            var url = $('input[name=Diretorio]');
+            if (url) {
+                url.val(UrlAmigavel($(this).val()));
+            }
+        });
+
+        $(".help").popover({
+            trigger: "hover",
+            delay: { show: 200, hide: 0 }
+        });
+
+        function validarValor(element) {
+            return element.valid();
+        }
+
+        function callbackConexao(sucess, msg) {
+            if (sucess) {
+                if (msg) {
+                    $('#jqErrorConn').html("<span class='help-block'><i class='fa fa-check'></i> " + msg + "</span>");
+                }
+                else {
+                    $('#jqErrorConn').html("<span class='help-block'><i class='fa fa-check'></i> @TAdm("Conexão realizada com sucesso!")</span>");
+                }
+
+                $('#jqErrorConn').removeClass('has-error');
+                $('#jqErrorConn').addClass('has-success');
+            }
+            else {
+                if (msg) {
+                    $('#jqErrorConn').html("<span class='help-block'><i class='fa fa-warning'></i> " + msg + "</span>");
+                }
+                else {
+                    $('#jqErrorConn').html("<span class='help-block'><i class='fa fa-warning'></i> @TAdm("Houve um erro na conexão!")</span>");
+                }
+
+                $('#jqErrorConn').removeClass('has-success');
+                $('#jqErrorConn').addClass('has-error');
+            }
+        }
+    </script>
+}
+

@@ -1,0 +1,91 @@
+﻿@model MLModuloAniversariante
+@{
+    var listaAniversariantes = ViewBag.ListaAniversariantes != null ? ViewBag.ListaAniversariantes as List<MLColaboradorPublico> : new List<MLColaboradorPublico>();
+    var portal = BLPortal.Atual;
+}
+@if (Model != null)
+{
+    if (!String.IsNullOrEmpty(Model.Titulo))
+    {
+        <h3>
+            <i class="fa fa-birthday-cake"></i> @Model.Titulo
+        </h3>
+    }
+    if (!String.IsNullOrEmpty(Model.DataString))
+    {
+        <p>@Model.DataString</p>
+    }
+
+    if (listaAniversariantes.Count > 0)
+    {
+        if (Model.ModoCompacto.GetValueOrDefault())
+        {
+            for (int i = 0; i < listaAniversariantes.Count; i++)
+            {
+                string _src = "";
+                if (!String.IsNullOrEmpty(listaAniversariantes[i].Foto))
+                {
+                    _src = string.Format("{0}/thumb/{1}/Clientes/45/45/{2}/", Portal.Url(), portal.Diretorio, listaAniversariantes[i].NomeImagem);
+                }
+                else
+                {
+                    _src = string.Format("{0}/content/img/no-img.png", Portal.Url());
+                }
+                <div class="media">
+                    <img alt="@listaAniversariantes[i].Nome" src="@_src" width="45" class="pull-left img-circle" />
+                    <div class="media-body">
+                        <strong>@String.Format("{0:dd 'de' MMMM}", listaAniversariantes[i].DataNascimento.Value)</strong><br />
+                        <strong>@listaAniversariantes[i].Nome</strong> @(!string.IsNullOrEmpty(listaAniversariantes[i].Cargo) ? string.Format("- {0}", listaAniversariantes[i].Cargo) : "")<br />
+                        @if (!string.IsNullOrEmpty(listaAniversariantes[i].LojaLotacao) && !string.IsNullOrEmpty(listaAniversariantes[i].Empresa))
+                        {
+                            <text>
+                                @(listaAniversariantes[i].LojaLotacao) - @(listaAniversariantes[i].Empresa)
+                            </text>
+                        }
+                    </div>
+                </div>
+            }
+
+            if (!string.IsNullOrEmpty(Model.UrlListagem))
+            {
+                <a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlListagem)" title="@T("Ver Todos")">@T("Ver Todos")</a>
+            }
+        }
+        else
+        {
+            /*Paginação de Abas vem antes*/
+            <div class="aniversariantesMesesJQ">
+                <span class="anteriorJQ">
+                    <a href="javascript:;" class="btn btn-white"><</a>
+                </span>
+                <span class="mesesJQ">
+
+                </span>
+                <span class="proximoJQ"><a href="javascript:;" class="btn btn-white">></a></span>
+            </div>
+            <div id="aniversariantes_@Model.Repositorio">
+                @{Html.RenderAction("ItemListagem", new { model = listaAniversariantes });}
+            </div>
+        }
+    }
+    else
+    {
+        <p>@T("Nenhum registro encontrado")</p>
+    }
+}
+else
+{
+    <br />
+    <p>Clique em <u>Editar</u> para exibir os aniversariantes</p>
+}
+@if (Model != null && !Model.ModoCompacto.GetValueOrDefault())
+{
+    if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+    {
+        Html.RenderAction("Script", new { model = Model });
+    }
+    else
+    {
+        BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+    }
+}

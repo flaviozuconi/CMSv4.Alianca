@@ -1,0 +1,128 @@
+﻿@model MLGaleriaMultimidia
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/GaleriaAdmin/", portal.Diretorio);
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/images" /> @TAdm("Cadastro de Galeria")</h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" id="formCadastro">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-12">
+                * <label>@TAdm("Título")</label>
+                <input type="text" class="form-control maxlength-jq" name="Titulo" value="@Model.Titulo" maxlength="100" autofocus />
+            </div>
+            @*<div class="form-group col-md-6">
+                <label>@TAdm("Url Amigável")</label>
+                <input type="text" class="form-control maxlength-jq" name="Url" value="@Model.Url" maxlength="100" />
+            </div>*@
+            <div class="clearfix"></div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Chamada")</label>
+                <input type="text" class="form-control maxlength-jq" name="Chamada" value="@Model.Chamada" maxlength="500" />
+            </div>
+            <div class="form-group col-md-3">
+                <label>@TAdm("Início")</label>
+                <input type="text" class="form-control data" name="DataInicio" id="DataInicio" maxlength="16" value="@(Model.DataInicio.HasValue ? Model.DataInicio.Value.ToString("dd/MM/yyyy") : "")">
+            </div>
+            <div class="form-group col-md-3">
+                <label>@TAdm("Término")</label>
+                <input type="text" class="form-control data" name="DataTermino" id="DataTermino" maxlength="16" value="@(Model.DataTermino.HasValue ? Model.DataTermino.Value.ToString("dd/MM/yyyy") : "")">
+            </div>
+            <div class="form-group col-md-6 tokenfield">
+                <label>@TAdm("Tags")</label>
+                <input type="text" class="form-control" name="Tags" value="@Model.Tags">
+                <span class="help-block"><small>@TAdm("Pressione TAB para separar as Tags")</small></span>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group col-md-2">
+                <input type="checkbox" name="Ativo" id="Ativo" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") value="true" /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+@section head {
+    <link href="~/Content/css/plugins/bootstrap-tokenfield/bootstrap-tokenfield.css" rel="stylesheet" />
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+}
+@section scripts{
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="/Content/js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-tokenfield/bootstrap-tokenfield.min.js"></script>
+
+    <script type="text/javascript">
+    $("#DataInicio, #DataTermino").blur(function () {
+        if ($(this).val() == "__/__/____") {
+            $(this).val("");
+        }
+    });
+
+    $('form').submit(function () {
+        if ($(this).valid()) {
+            if ($("#DataInicio").val() == "__/__/____") {
+                $("#DataInicio").val("");
+            }
+
+            if ($("#DataTermino").val() == "__/__/____") {
+                $("#DataTermino").val("");
+            }
+        }
+    });
+
+    $('input[name=Titulo]').keyup(function () {
+        var url = $('input[name=Url]');
+        if (url) {
+            url.val(UrlAmigavel($(this).val()));
+        }
+    });
+
+    $("form").validate({
+        rules: {
+            Titulo: { required: true, maxlength: 100 },
+            Url: { maxlength: 100, regex: "^[a-zA-Z][a-zA-Z0-9\-\_]+$" },
+            DataTermino: { greaterThan: '#DataInicio' }
+        }
+    });
+
+    @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+    $(document).ready(function () {
+        $('#DataInicio').datetimepicker({
+            timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: false, scrollTime: false, scrollInput: false
+        });
+        $('#DataTermino').datetimepicker({
+            timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: false, scrollTime: false, scrollInput: false
+        });
+
+        $(".maxlength-jq").maxlength({
+            alwaysShow: true,
+            warningClass: "label green",
+            limitReachedClass: "label orange"
+        });
+
+        $('input[name=Tags]').tokenfield();
+    });
+
+    </script>
+}

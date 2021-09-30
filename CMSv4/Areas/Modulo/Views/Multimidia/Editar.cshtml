@@ -1,0 +1,91 @@
+﻿@model MLModuloMultimidia
+@{
+    var lstArquivosCategoria = (List<MLMultimidiaCategoria>)ViewData["CategoriaArquivos"];
+    var arquivoSelecionado = (MLMultimidiaArquivo)ViewBag.Arquivo ?? new MLMultimidiaArquivo();
+    var lstArquivos = (List<MLMultimidiaArquivo>)ViewBag.Arquivos ?? new List<MLMultimidiaArquivo>();
+    
+    var portal = BLPortal.Atual;
+    var urlArquivo = string.Concat(Portal.UrlCms(portal), "/Multimidia/ComboArquivo");
+    var urlDownload = string.Concat(Portal.UrlCms(portal), "/Ranking/DownloadArquivo?id=");
+}
+
+<div class="col-md-24">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Título")" value="@Model.Titulo">
+</div>
+
+<div class="col-md-12">
+    <label>@T("Categoria")</label>
+    <select name="CategoriaArquivo" class="form-control" id="CategoriaArquivo" onchange="carregarArquivo()">
+        <option value="">@T("Selecione")</option>
+
+        @foreach (var item in lstArquivosCategoria)
+        {
+            <option value="@item.Codigo" @(arquivoSelecionado.CodigoCategoria.HasValue && arquivoSelecionado.CodigoCategoria == item.Codigo ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+</div>
+
+<div class="col-md-12 TabelaDesempenho">
+    <label>@T("Arquivo")</label>
+    <select name="CodigoArquivo" class="form-control" id="CodigoArquivo">
+        @foreach (var item in lstArquivos)
+        {
+            <option value="@item.Codigo" @(arquivoSelecionado.Codigo.HasValue && arquivoSelecionado.Codigo.Value == item.Codigo ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+</div>
+
+@if (Model.CodigoArquivo.HasValue)
+{
+    urlDownload += BLEncriptacao.EncriptarQueryString(Model.CodigoArquivo.Value.ToString());
+    
+    <div class="col-md-6 TabelaDesempenho">
+        <a href="@urlDownload">@T("Download do Arquivo")</a>
+    </div>
+}
+
+<script type="text/javascript">
+    function carregarArquivo() {
+        $.post(
+            '@urlArquivo', { id: $("#CategoriaArquivo").val() },
+            function (data) {
+                if (data.success) {
+                    $("#CodigoArquivo option").remove();
+
+                    $.each(data.categorias, function (i, item) {
+                        $("#CodigoArquivo").append('<option value="' + item.Codigo + '">' + item.Titulo + '</option>');
+                    });
+                }
+            }
+        );
+    }
+
+    $(document).ready(function () {
+        $("#CategoriaArquivo").on("change", function () {
+            $.post(
+                '@urlArquivo', { id: $(this).val() },
+            function (data) {
+                if (data.success) {
+                    $("#CodigoArquivo option").remove();
+
+                    $.each(data.categorias, function (i, item) {
+                        $("#CodigoArquivo").append('<option value="' + item.Codigo + '">' + item.Titulo + '</option>');
+                    });
+                }
+            }
+        );
+        });
+
+    });
+
+    var settings = $('#propriedade').validate().settings;
+
+    $.extend(true, settings, {
+        rules: {
+            "Titulo": { required: true, maxlength: 250 },
+            "CategoriaArquivo": { required: true },
+            "CodigoArquivo": { required: true }
+        }
+    });
+</script>

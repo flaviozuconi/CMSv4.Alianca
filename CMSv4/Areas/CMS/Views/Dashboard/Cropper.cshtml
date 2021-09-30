@@ -1,0 +1,43 @@
+﻿@{ 
+    var url = "/cms/Principal/Dashboard/Cropper";
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title"><h4><img src="~/iconpack.axd/16/client_account_template" /> @TAdm("Clientes")</h4></div>
+        <div class="portlet-widgets">
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body">
+
+        <div class="row">
+            <div class="col-md-12">
+                <button type="button" class="btn btn-primary" data-target="#modalCropper" data-toggle="modal">
+                    Launch the demo
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+
+        </div>
+    </div>
+</div>
+
+@Crop.Modal()
+  
+@section head {
+   @Crop.Style()
+}
+
+@section scripts {
+    @Crop.Script(url)
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setNewImageToCrop('/Content/img/crop-demo.jpg');
+        });
+    </script>
+
+    
+}

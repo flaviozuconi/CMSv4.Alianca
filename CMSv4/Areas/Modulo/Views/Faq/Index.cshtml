@@ -1,0 +1,127 @@
+﻿@model MLModuloFaqEdicao
+
+@{
+    var lstCategorias = (List<MLFaqCategoria>)ViewBag.Categorias ?? new List<MLFaqCategoria>();
+    var lstFAQs = (List<MLFaq>)ViewBag.Faqs ?? new List<MLFaq>();
+}
+
+@if (Model != null && Model.CodigoPagina.HasValue && Model.Repositorio.HasValue)
+{
+    <div class="faq" id="faq">
+        <div class="container">
+            <h2 class="faq--title">
+                @Model.Titulo
+            </h2>
+            <p class="text-center">
+                @Html.Raw(Model.Descricao)
+            </p>
+            <div class="faq--filter">
+                <input class="form-control" id="search" name="search" autocomplete="off" placeholder="@T("O que você procura?")" type="text" />
+                <a class="btn btn-blue  jq-faq-button-search" href="#">
+                    @T("Buscar")
+                </a>
+            </div>
+
+            <div class="faq--list" id="accordionExample">
+                @foreach (var faq in lstFAQs)
+                {
+                    if (lstCategorias.FindAll(o => o.Codigo == faq.CodigoCategoria).Count > 0)
+                    {
+                        var primeiro = lstFAQs.IndexOf(faq) == 0;
+                    <div class="faq--item faq"><!--open-->
+                        <a aria-controls="collapseExample@(faq.Codigo)" aria-expanded="false" class="faq--link" data-toggle="collapse" href="#collapseExample@(faq.Codigo)" role="button">
+                            <p>
+                               @Html.Raw(faq.Pergunta)
+                            </p>
+
+                            <span class="icon icon-chevron-down">
+
+                            </span>
+
+                        </a>
+                        <div class="faq--collapse collapse" data-parent="#accordionExample" id="collapseExample@(faq.Codigo)">
+                            <div class="faq--wrap">
+                                @Html.Raw(faq.Resposta)
+                            </div>
+                        </div>
+                    </div>
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+
+    @*<div class="row jq-loading-faq">
+        <div class="col-xs-24 col-md-18">
+            <div class="jovens-faq">
+                @if (!String.IsNullOrEmpty(Model.Titulo))
+                {
+                    <h1>
+                        @Model.Titulo
+                    </h1>
+                }
+                @if (!String.IsNullOrEmpty(Model.Descricao))
+                {
+                    <p>@Model.Descricao</p>
+                }
+            </div>
+        </div>
+        <div class="col-xs-24 col-md-6 pull-right">
+
+            <!-- mol-jovens-programas- -nav -->
+            <div class="programas-nav">
+                <div class="input-group">
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Pesquisar..." autocomplete="off">
+                    <button class="btn btn-default jq-faq-button-search" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                </div>
+                <nav class="nav navbar side-menu side-menu-faq" role="navigation">
+                    <div class="container">
+                        <ul class="nav" id="ulFaqCategorias">
+                            @foreach (var item in lstCategorias)
+                            {
+                                <li><a href="#@item.Titulo.RemoverAcentos().Replace(" ", "-")" class="smooth">@item.Titulo</a></li>
+                            }
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <!-- /mol-jovens-programas- -nav -->
+
+        </div>
+        <div class="col-xs-24 col-md-18">
+
+            <!-- mol-jovens-faq -->
+            <div class="jovens-faq">
+
+                <div class='col-xs-24 col-md-18 alert alert-warning' style="display:none;" id="divFaqNenhumRegistro">@T("Nenhum resultado encontrado")</div>
+
+                @foreach (var categoria in lstCategorias)
+                {
+                    <h2 class="faq-categoria" id="@categoria.Titulo.RemoverAcentos().Replace(" ", "-")">@categoria.Titulo.UpperPrimeiroChar()</h2>
+
+                    //Todas as perguntas da categoria
+                    foreach (var faq in lstFAQs.FindAll(f => f.CodigoCategoria == categoria.Codigo))
+                    {
+                        <div class="faq">
+                            <h3 class="faq-question">@Html.Raw(faq.Pergunta)</h3>
+                            <div class="faq-answer">@Html.Raw(faq.Resposta)</div>
+                        </div>
+                    }
+                }
+
+            </div>
+            <!-- /mol-jovens-faq -->
+
+
+        </div>
+    </div>*@
+
+    BLConteudo.AdicionarJavaScript(Html.Partial("Script"));
+}
+else
+{
+    <br />
+    <p>@T("Clique em ")<u>@T("Editar")</u> @T("para configurar FAQ")</p>
+}
+

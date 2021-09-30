@@ -1,0 +1,164 @@
+﻿@model MLModuloAgrupador
+@{
+    Layout = "";
+    var portal = BLPortal.Atual;
+    var agrupadores = (List<MLAgrupador>)ViewData["agrupadores"] ?? new List<MLAgrupador>();
+    var filtros = CRUD.Listar<MLCategoriaAgrupador>(new MLCategoriaAgrupador() { Ativo = true, FiltroSecundario = true }, portal.ConnectionString);
+
+    var views = (List<string>)ViewData["views"] ?? new List<string> { "Lista" };
+    var categorias = (List<MLCategoriaAgrupador>)ViewData["categorias-todas"] ?? new List<MLCategoriaAgrupador>();
+    var categoriasSelecionadas = (List<string>)ViewData["categorias-selecionadas"] ?? new List<string>();
+    var modulosSelecionados = (List<string>)ViewData["modulos-selecionados"] ?? new List<string>();
+
+    var listas = CRUD.Listar(new MLListaConfig() { CodigoPortal = portal.Codigo });
+
+    if(listas.Count > 0)
+    {
+        listas.OrderBy(o => o.Nome);
+    }
+
+    //Variável de contro para execução de código somente no portal LTP
+    var IsPortalLTP = portal.Diretorio.Contains("packaging");
+}
+<div class="form-group col-md-12">
+    <label>@T("Agrupador")</label>
+    <select name="CodigoAgrupador" id="CodigoAgrupador" class="form-control">
+        @if (agrupadores.Count > 1)
+        {
+            <option value="" selected>@T("Selecione")</option>
+        }
+        @foreach (var item in agrupadores)
+        {
+            <option value="@item.Codigo" @(item.Codigo == Model.CodigoAgrupador ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+</div>
+<div class="form-group col-md-12">
+    <label>@T("Visualização")</label>
+    <select name="NomeView" class="form-control" id="NomeView">
+        @if (views.Count > 1)
+        {
+            <option value="" selected>@T("Selecione")</option>
+        }
+        @foreach (var item in views)
+        {
+            <option value="@item" @(item == Model.NomeView ? "selected" : "")  >@item</option>
+        }
+    </select>
+</div>
+<div class="form-group col-md-12">
+    <label>@T("Categorias")</label><br />
+    <select name="Categorias"  @(!IsPortalLTP ? "multiple=multiple" : "")>
+
+        @if(IsPortalLTP)
+        {
+            <option value="">Selecione...</option>
+        }
+
+        @foreach (var categoria in categorias)
+        {
+            <option value="@categoria.Codigo" @(categoriasSelecionadas.Find(o => o == categoria.Codigo.ToString()) != null ? "selected" : "")>@categoria.Nome</option>
+        }
+    </select>
+</div>
+
+@if (IsPortalLTP)
+{
+    <div class="form-group col-md-12 jq-ltp ListagemModuloLista ResultadoBusca" id="ListagemModuloLista" style="display:none;">
+        <label>@T("Módulos")</label><br />
+        <select name="Modulos" multiple="multiple">
+            @foreach (var item in listas)
+            {
+                <option value="@item.Codigo" @(modulosSelecionados.Find(o => o == item.Codigo.ToString()) != null ? "selected" : "")>@item.Nome</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group col-md-12 jq-ltp ListagemSecundaria" id="ListagemSecundaria" style="display:none;">
+        <label>@T("Filtro Processo Inovação")</label><br />
+        <select name="CodigoCategoriaAgrupador">
+            <option value="">Selecione...</option>
+            @foreach (var item in filtros)
+            {
+                <option value="@item.Codigo" @(Model.CodigoCategoriaAgrupador.HasValue && item.Codigo == Model.CodigoCategoriaAgrupador ? "selected" : "")>@item.Nome</option>
+            }
+        </select>
+    </div>
+}
+
+<div class="form-group col-md-20">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Nome")" value="@Model.Titulo">
+</div>
+
+<div class="form-group col-md-4">
+    <label>@T("Quantidade")</label>
+    <input type="text" class="form-control" name="Quantidade" maxlength="4" value="@Model.Quantidade">
+</div>
+
+<div class="form-group col-md-24 tokenfield" data-value="blue">
+    <label>@TAdm("Tags")</label>
+    <input type="text" class="form-control" name="Tags" value="@Model.Tags">
+    <small>@TAdm("Pressione TAB para separar as Tags")</small>
+</div>
+
+<div class="form-group col-md-24">
+    <input type="checkbox" id="Destaques" name="Destaques" @(Model.Destaques.HasValue && Model.Destaques.Value ? "checked" : "")/>
+    <label for="Destaques">@TAdm("Somente destaques (Somente para conteúdo relacionado)")</label>
+</div>
+
+<link href="~/Content/css/plugins/bootstrap-tokenfield/bootstrap-tokenfield.css" rel="stylesheet" />
+<script src="~/Content/js/plugins/bootstrap-tokenfield/bootstrap-tokenfield.min.js"></script>
+
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+
+    $('input[name=Tags]').tokenfield();
+
+    // Modify validation settings
+    $.extend(true, settings, {
+        rules: {
+            "CodigoAgrupador": { required: true },
+            "NomeView": { required: true },
+            "Quantidade": { number: true }
+        }
+    });
+
+    $('select[name=Categorias]').multiselect({
+        includeSelectAllOption: false,
+        nonSelectedText: '@T("Todas")',
+        enableFiltering: true
+    });
+
+    @if(IsPortalLTP)
+    {
+        @:$(document).ready(function () {
+            @:$("#@Model.NomeView").show();
+        @:});
+
+        @:$('select[name=Modulos]').multiselect({
+            @:includeSelectAllOption: false,
+            @:nonSelectedText: '@T("Nenhum")',
+            @:enableFiltering: true
+        @:});
+
+        @:$('select[name=CodigoCategoriaAgrupador]').multiselect({
+            @:includeSelectAllOption: false,
+            @:nonSelectedText: '@T("Nenhum")',
+            @:enableFiltering: true,
+            @:buttonClass: 'btn btn-green"'
+            @:});
+
+        @:$("#NomeView").change(function () {
+            @:var value = $(this).val();
+            @:$(".jq-ltp").hide();
+            @:$("." + value).show();
+
+            @:$("select[name=Modulos] option:selected").prop("selected", false);
+            @:$("select[name=Modulos]").multiselect('refresh');
+
+            @:$("select[name=CodigoCategoriaAgrupador] option:first").prop("selected", true);
+            @:$("select[name=CodigoCategoriaAgrupador]").multiselect('refresh');
+        @:})
+    }
+</script>

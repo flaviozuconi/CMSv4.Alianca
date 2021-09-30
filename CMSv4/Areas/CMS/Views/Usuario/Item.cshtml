@@ -1,0 +1,150 @@
+﻿@model  MLUsuario
+@{
+    var urlLista = "/admin/usuario";
+    var grupos = (List<MLGrupo>)ViewData["grupos"] ?? new List<MLGrupo>();
+    var portais = (List<MLPortal>)ViewData["Portais"] ?? new List<MLPortal>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/user" /> @TAdm("Usuários")</h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue && Model.Codigo > 0)
+            {
+                <a id="btnNovaSenha" class="btn" href="javascript:;" onclick="$('.msg-exclusao').remove();$('.alert').hide();$('#painelSenha').show();">
+                    <i class="glyphicon glyphicon-send"></i> @TAdm("Enviar nova senha")
+                </a>
+            }
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @Helpers.PainelConfirmacao("painelSenha", T("Recuperação de senha"), T("Confirma envio de nova senha para este usuário?"), "novaSenha();")
+        @Helpers.PainelAviso("painelSenhaOk", "alert-info", T("Sucesso"), T("Um e-mail foi enviado para o usuário para trocar a senha."))
+
+        @Html.ValidationSummary()
+
+        @if (!String.IsNullOrEmpty((String)ViewData["Error"]))
+        {
+            <div class="alert alert-danger">
+                <strong>Atenção: </strong> @ViewData["Error"]
+            </div>
+        }
+
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-4">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("E-mail")</label>
+                <input type="text" class="form-control" name="Email" value="@Model.Email">
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Login")</label>
+                <input type="text" class="form-control" name="Login" value="@Model.Login">
+            </div>
+
+            @*SENHA*@
+            <div class="form-group col-md-3">
+                <label>@TAdm("Senha")</label>
+                <input type="password" class="form-control" name="Senha" maxlength="20" id="Senha">
+            </div>
+
+            @*CONFIRMAR SENHA*@
+            <div class="form-group col-md-3">
+                <label>@TAdm("Confirmar Senha")</label>
+                <input type="password" class="form-control" name="ConfirmarSenha" maxlength="20">
+            </div>
+
+            <fieldset class="form-group col-md-12">
+                <legend>@TAdm("Grupos Associados")</legend>
+                @for (int i = 0; i < grupos.Count; i++)
+                {
+                    <div class="form-group col-sm-3">
+                        <input class="highlight" type="checkbox" id="group_@i" name="listaCodigoGrupo" value="@grupos[i].Codigo" @(Model.Grupos.Find(o => o.CodigoGrupo == grupos[i].Codigo) != null ? "checked" : "") />
+                        <label for="group_@i">@grupos[i].Nome</label>
+                    </div>
+                }
+            </fieldset>
+            <fieldset class="form-group col-md-12">
+                <legend>@TAdm("Portais Associados")</legend>
+                @for (int i = 0; i < portais.Count; i++)
+                {
+                    <div class="form-group col-sm-3">
+                        <input class="highlight" type="checkbox" id="portal_@i" name="listaCodigoPortal" value="@portais[i].Codigo" @(Model.Portais.Find(o => o.CodigoPortal == portais[i].Codigo) != null ? "checked" : "") />
+                        <label for="portal_@i">@portais[i].Nome</label>
+                    </div>
+                }
+            </fieldset>
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('form').validate({
+            rules: {
+                Nome: { required: true, maxlength: 100 },
+                Login: {
+                    required: true,
+                    maxlength: 200,
+                    remote: {
+                        url: "/admin/usuario/isvalid",
+                        type: "post",
+                        loadingPanel: false,
+                        data: { id: "@Model.Codigo" }
+                    }
+                },
+                Email: {
+                    required: true,
+                    maxlength: 200,
+                    remote: {
+                        url: "/admin/usuario/isvalid",
+                        type: "post",
+                        loadingPanel: false,
+                        data: { id: "@Model.Codigo" }
+                    },
+                    maxlength: 200, email: true
+                },
+                Senha: { required: @(Model != null && Model.Codigo.HasValue ? "false" : "true"), minlength: 6, maxlength: 20 },
+                ConfirmarSenha: { required: @(Model != null && Model.Codigo.HasValue ? "false" : "true"), maxlength: 20, equalTo: "#Senha" },
+            }
+        });
+
+        function novaSenha() {
+            $.post('/admin/usuario/senha', { id: '@Model.Codigo' }, function (data) {
+                var div = "<div class='msg-exclusao alert alert-danger row'><strong>@TAdm("Erro"):</strong> [[MSG]]</div>";
+
+                $(".alert").hide();
+                $(".msg-exclusao").remove();
+
+                if (data.success) {
+                    $("#painelSenhaOk").show();
+                }
+                else {
+                    if (data.msg) {
+                        $(".portlet-body").prepend(div.replace("[[MSG]]", data.msg));
+                    }
+                }
+            });
+        }
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

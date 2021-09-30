@@ -1,0 +1,52 @@
+﻿@model MLModuloBanner
+@{
+    var portal = BLPortal.Atual;
+    List<MLBannerArquivoPublico> lstArquivos = (List<MLBannerArquivoPublico>)ViewData["lstArquivos"] ?? new List<MLBannerArquivoPublico>();
+    var caminho = string.Format("/portal/{0}/arquivos/banner/{1}/", portal.Diretorio, Model.CodigoBanner);
+
+}
+<!-- mod-banner -->
+<div class="owl-principal">
+    <div class="owl-carousel">
+        <!-- Wrapper for slides -->
+
+        @foreach (var item in lstArquivos)
+        {
+            var _url = (!string.IsNullOrEmpty(item.Url) ? Portal.ResolveUrl(item.Url, portal) : "#");
+            item.ImagemMobile = item.ImagemMobile ?? item.Imagem;
+            item.ImagemTablet = item.ImagemTablet ?? item.Imagem;
+            var data_src = _url;
+            var complemento = "";
+            var css = string.IsNullOrEmpty(item.CssClass1) ? "" : item.CssClass1;
+            var target = item.Target;
+            if (css.Equals("item-video") || css.Equals("item-mpquatro"))
+            {
+                _url = "#modalMedia";
+                complemento = "data-toggle=modal";
+                css = item.CssClass1;
+                target = "_self";
+
+            }
+            <a href="@_url" data-src="@data_src" target="@target" class="item @css" @complemento>
+                <picture>
+                    <!--[if IE 9]><video style="display: none;"><![endif]-->
+                    <source srcset="@string.Format("{0}/{1}",caminho,item.ImagemMobile)" media="(max-width: 767px)">
+                    <source srcset="@string.Format("{0}/{1}",caminho,item.ImagemTablet)" media="(max-width: 991px)">
+                    <!--[if IE 9]></video><![endif]-->
+                    <img srcset="@string.Format("{0}/{1}",caminho,item.Imagem)" alt="@item.Titulo">
+                </picture>
+                @if (!string.IsNullOrEmpty(item.Texto))
+                {
+
+                    <div class="item-txt">
+                        @*<h2 class="item-title">@Html.Raw(item.Titulo)</h2>*@
+                        @*<p>@Html.Raw(item.)</p>*@
+                        @Html.Raw(item.Texto)
+                    </div>
+
+                }
+            </a>
+        }
+    </div>
+</div>
+

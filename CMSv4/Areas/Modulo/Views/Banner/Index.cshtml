@@ -1,0 +1,9 @@
+﻿@model MLModuloBanner
+@try
+{
+    @Html.Action("ListarPublico", "Banner", new { model = Model })
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

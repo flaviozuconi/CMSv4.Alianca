@@ -1,0 +1,535 @@
+﻿@model MLModuloTakeOrPay
+@{
+    var baseUrl = "/portal/" + BLPortal.Atual.Diretorio + "/";
+    var portal = BLPortal.Atual;
+}
+
+<script src="@baseUrl/js/plugins/select2/select2.min.js"></script>
+<link href="@baseUrl/css/select2.css" rel="stylesheet" />
+
+<script type="text/javascript">
+    $("#btnVoltarEtapa3").click(function () {
+        ApagarContainers();
+        VoltarEtapa3();
+    });
+
+    $("#btnAvancarEtapa4_2").click(function () {
+        AvancarEtapa4_2();
+    });
+
+    $("#btnRegistrarContainer").click(function () {
+        AdicionarLinhaTabelaContainer();
+    });
+
+    $("#btnVoltarEtapa4_1").click(function () {
+        VoltarEtapa4_1();
+    });
+
+    $("#btnAvancarEtapa5").click(function () {
+        AvancarEtapa5();
+    });
+
+    $(".porto").change(function () {
+        if ($(this).val() == "" || $(this).val() < 0)
+            $(this).val(0)
+    });
+
+    $("#TonelagemMedia").change(function () {
+        if ($(this).val().includes(".") || $(this).val().includes(",")) {
+            $(this).val($(this).val().split('.')[0]);
+
+            $("#erroTonelagemDecimal").show()
+            $("#TonelagemMedia").addClass("is-invalid")
+        }
+        else {
+            $("#erroTonelagemDecimal").hide()
+            $("#TonelagemMedia").removeClass("is-invalid")
+        }
+        
+    });
+
+    $("#NavioViagem").change(function () {
+        if (!$("#sim").prop("checked"))
+            AtualizarDeadline();
+    });
+
+    function AvancarEtapa4_2() {
+        let isSemanal = $("#semanal").prop("checked");
+        let isSim = $("#sim").prop("checked");
+
+        if ($("#tabelaContainer").html().length > 15) {
+            $("#erroTabela").hide()
+
+            if (isSemanal && isSim) {
+                AvancarTelaEtapa4_2()
+
+                $("#TipoContratacao").text(isSim ? "Regular" : "Spot");
+            }
+            else {
+                if ($("#NavioViagem").val() != null && $("#NavioViagem").val() != "Selecione") {
+                    $("#erroNavioViagem").hide()
+                    $("#NavioViagem").removeClass("is-invalid")
+
+                    AvancarTelaEtapa4_2();
+
+                    $("#TipoContratacao").text(isSim ? "Regular" : "Spot");
+                }
+                else {
+                    $("#erroNavioViagem").show()
+                    $("#NavioViagem").addClass("is-invalid")
+                }
+            }
+        }
+        else {
+            $("#erroTabela").show()
+        }
+    }
+
+    function AvancarTelaEtapa4_2()
+    {
+        let isSemanal = $("#semanal").prop("checked");
+        let isSim = $("#sim").prop("checked");
+
+        if (isSemanal && isSim) {
+            $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/SomarContainerSemana",
+            data: {"Codigo": $("#Codigo").val() },
+            success: function (data) {
+                if (data.Sucess == true) {
+                    $("#UnidadesSemana").val(data.UnidadesSemana)
+                    $("#ToneladasSemana").val(data.ToneladasSemana)
+                    $("#TEUSemana").val(data.TEUSemana)
+
+                    $("#UnidadesMes").val(data.UnidadesMes)
+                    $("#ToneladasMes").val(data.ToneladasMes)
+                    $("#TEUMes").val(data.TEUMes)
+
+                    $("#divResumoSemanal").show()
+
+                    $("#Etapa4_1").hide()
+                    $("#Etapa4_2").show()
+                }
+                else {
+                    ErroGenerico();
+                }
+            },
+            error: function (data) {
+                ErroGenerico();
+        }});
+        }
+        else {
+            $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/SomarContainerMes",
+            data: {"Codigo": $("#Codigo").val() },
+            success: function (data) {
+                if (data.Sucess == true) {
+                    $("#UnidadesMes").val(data.UnidadesMes)
+                    $("#ToneladasMes").val(data.ToneladasMes)
+                    $("#TEUMes").val(data.TEUMes)
+
+                    $("#divResumoSemanal").hide()
+
+                    $("#Etapa4_1").hide()
+                    $("#Etapa4_2").show()
+                }
+                else {
+                    ErroGenerico();
+                }
+            },
+            error: function (data) {
+                ErroGenerico();
+        }});
+        }
+    }
+
+    function VoltarEtapa3() {
+        $("#erroNavioViagem").hide();
+        $("#NavioViagem").removeClass("is-invalid")
+        $("#erroContainer").hide()
+        $("#erroContagemContainer").hide();
+        $("#erroTonelagem").hide();
+        $("#TonelagemMedia").removeClass("is-invalid")
+
+        $("#Etapa4_1").hide()
+        $("#Etapa3_1").show()
+
+        $("#ProgressoEtapa4").removeClass("active")
+
+        $("#ProgressoEtapa3").removeClass("disabled")
+        $("#ProgressoEtapa3").addClass("active")
+    }
+
+    function CarregarEtapa4_1() {
+        $("#erroNavioViagem").hide();
+        $("#NavioViagem").removeClass("is-invalid")
+        $("#erroContainer").hide()
+        $("#erroContagemContainer").hide();
+        $("#erroTonelagem").hide();
+        $("#TonelagemMedia").removeClass("is-invalid")
+
+        let isSemanal = $("#semanal").prop("checked");
+        let isSim = $("#sim").prop("checked");
+
+        if (isSemanal && isSim) {
+            $("#textoEtapa4_1").text("a cada semana?")
+
+            $("#TxtNavioViagem").hide();
+            $("#divNavioViagem").hide();
+            $("#divNavioViagemOp2").hide();
+            $("#divNavioViagemOp3").hide();
+            $("#divDeadline").hide();
+
+            HabilitarUnidades();
+        }
+        else if (!isSemanal && isSim) {
+            AutocompleteNavio();
+
+            $("#textoEtapa4_1").text("a cada mês?")
+
+            $("#TxtNavioViagem").show();
+            $("#divNavioViagem").show();
+            $("#divNavioViagemOp2").hide();
+            $("#divNavioViagemOp3").hide();
+            $("#divDeadline").hide();
+
+            HabilitarUnidades();
+        }
+        else {
+            AutocompleteNavio();
+
+            $("#textoEtapa4_1").text("nesta semana de contratação?");
+
+            $("#divNavioViagem").show();
+            $("#divNavioViagemOp2").show();
+            $("#divNavioViagemOp3").show();
+            $("#divDeadline").show();
+
+            DesabilitarUnidades();
+        }
+
+        LimparCampos();
+    }
+
+    function AvancarEtapa5() {
+        CarregarEtapa5();
+    }
+
+    function VoltarEtapa4_1() {
+        $("#Etapa4_2").hide()
+        $("#Etapa4_1").show()
+    }
+
+    function SelecionarContainer(tipo) {
+        switch (tipo) {
+            case 1:
+                $("#Container1").addClass("active")
+                $("#Container2").removeClass("active")
+                $("#Container3").removeClass("active")
+                $("#Container4").removeClass("active")
+
+                break;
+            case 2:
+                $("#Container1").removeClass("active")
+                $("#Container2").addClass("active")
+                $("#Container3").removeClass("active")
+                $("#Container4").removeClass("active")
+                break;
+            case 3:
+                $("#Container1").removeClass("active")
+                $("#Container2").removeClass("active")
+                $("#Container3").addClass("active")
+                $("#Container4").removeClass("active")
+                break;
+            case 4:
+                $("#Container1").removeClass("active")
+                $("#Container2").removeClass("active")
+                $("#Container3").removeClass("active")
+                $("#Container4").addClass("active")
+                break;
+        }
+    }
+
+    function AdicionarLinhaTabelaContainer() {
+        let erro = 0;
+
+        let RIG = $("#RIG").val();
+        let IBB = $("#IBB").val();
+        let IOA = $("#IOA").val();
+        let SSZ = $("#SSZ").val();
+        let SPB = $("#SPB").val();
+        let VIX = $("#VIX").val();
+        let SSA = $("#SSA").val();
+        let SUA = $("#SUA").val();
+        let PEC = $("#PEC").val();
+
+        let TipoContainer = '';
+        let TamanhoContainer = '';
+
+        if (!$("#sim").prop("checked") && $("#NavioViagem").val() == "" || $("#sim").prop("checked") && !$("#semanal").prop("checked") && $("#NavioViagem").val() == "") {
+            $("#erroNavioViagem").show();
+            $("#NavioViagem").addClass("is-invalid")
+
+            return;
+        }
+        else {
+            $("#erroNavioViagem").hide();
+            $("#NavioViagem").removeClass("is-invalid")
+        }
+
+        if ($("#Container1").hasClass("active")) {
+            TipoContainer = "Seco";
+            TamanhoContainer = "20'";
+
+            $("#erroContainer").hide()
+        }
+        else if ($("#Container2").hasClass("active")) {
+            TipoContainer = "Seco";
+            TamanhoContainer = "40'";
+
+            $("#erroContainer").hide()
+        }
+        else if ($("#Container3").hasClass("active")) {
+            TipoContainer = "Refrigerado";
+            TamanhoContainer = "20'";
+
+            $("#erroContainer").hide()
+        }
+        else if ($("#Container4").hasClass("active")) {
+            TipoContainer = "Refrigerado";
+            TamanhoContainer = "40'";
+
+            $("#erroContainer").hide()
+        }
+        else {
+            $("#erroContainer").show();
+
+            erro++;
+        }
+
+
+        if ((RIG + IBB + IOA + SSZ + SPB + VIX + SSA + SUA + PEC) == 0) {
+            $("#erroContagemContainer").show();
+
+            erro++;
+        }
+        else {
+            $("#erroContagemContainer").hide();
+        }
+
+        if ($("#TonelagemMedia").val() <= 0) {
+            $("#erroTonelagem").show();
+            $("#TonelagemMedia").addClass("is-invalid")
+
+            erro++;
+        }
+        else {
+            $("#erroTonelagem").hide();
+            $("#TonelagemMedia").removeClass("is-invalid")
+        }
+
+        if (erro == 0) {
+            let dados = {
+                "CodigoEmbarqueCerto": $("#Codigo").val(),
+                "NavioViagem": !$("#sim").prop("checked") || !$("#semanal").prop("checked") ? $("#NavioViagem").val() : "",
+                "NavioViagemOp2": !$("#sim").prop("checked") ? $("#NavioViagemOp2").val() : "",
+                "NavioViagemOp3": !$("#sim").prop("checked") ? $("#NavioViagemOp3").val() : "",
+                "TipoContainer": TipoContainer,
+                "TamanhoContainer": TamanhoContainer,
+                "TonelagemMedia": $("#TonelagemMedia").val(),
+                "RIG": RIG,
+                "IBB": IBB,
+                "IOA": IOA,
+                "SSZ": SSZ,
+                "SPB": SPB,
+                "VIX": VIX,
+                "SSA": SSA,
+                "SUA": SUA,
+                "PEC": PEC
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/TakeOrPay/AdicionarContainer",
+                data: dados,
+                success: function (data) {
+                    if (data.Sucess == true) {
+                        $('#tabelaContainer').append('<tr id="tr-' + data.Codigo + '"><th>Container <strong>' + TipoContainer + ' - <span style="color: #057dc8;">' + TamanhoContainer + '</span></strong></th><td><strong ' + (RIG > 0 ? ' class="color" ' : ' ') + '>' + RIG + '</strong> unidades <br> RIG/MAO</td><td><strong ' + (IBB > 0 ? ' class="color" ' : ' ') + '>' + IBB + '</strong> unidades <br>IBB/MAO</td><td><strong ' + (IOA > 0 ? ' class="color" ' : ' ') + '>' + IOA + '</strong> unidades <br> IOA/MAO</td><td><strong ' + (SSZ > 0 ? ' class="color" ' : ' ') + '>' + SSZ + '</strong> unidades <br> SSZ/MAO</td><td><strong ' + (SPB > 0 ? ' class="color" ' : ' ') + '>' + SPB + '</strong> unidades <br> SPB/MAO</td><td><strong ' + (VIX > 0 ? ' class="color" ' : ' ') + '>' + VIX + '</strong> unidades <br> VIX/MAO</td><td><strong ' + (SSA > 0 ? ' class="color" ' : ' ') + '>' + SSA + '</strong> unidades <br> SSA/MAO</td><td><strong ' + (SUA > 0 ? ' class="color" ' : ' ') + '>' + SUA + '</strong> unidades <br> SUA/MAO</td><td><strong ' + (PEC > 0 ? ' class="color" ' : ' ') + '>' + PEC + '</strong> unidades <br> PEC/MAO</td><td><a href="javascript:ExcluirTabelaContainer(' + data.Codigo + ')" class="icon icon-trash"></a></td></tr>');
+
+                        if (!$("#sim").prop("checked")) {
+                            DesabilitarUnidade("RIG")
+                            DesabilitarUnidade("IBB")
+                            DesabilitarUnidade("IOA")
+                            DesabilitarUnidade("SSZ")
+                            DesabilitarUnidade("SPB")
+                            DesabilitarUnidade("VIX")
+                            DesabilitarUnidade("SSA")
+                            DesabilitarUnidade("SUA")
+                            DesabilitarUnidade("PEC")
+                        }
+
+                        LimparCampos();
+                    }
+                    else {
+                        ErroGenerico();
+                    }
+                },
+                error: function (data) {
+                    ErroGenerico();
+            }});
+        }
+    }
+
+    function LimparCampos() {
+        $('#NavioViagem').val(null).trigger('change');
+        $('#NavioViagemOp2').val(null).trigger('change');
+        $('#NavioViagemOp3').val(null).trigger('change');
+
+        $("#Container1").removeClass("active")
+        $("#Container2").removeClass("active")
+        $("#Container3").removeClass("active")
+        $("#Container4").removeClass("active")
+
+        $("#RIG").val(0).trigger('change');
+        $("#IBB").val(0).trigger('change');
+        $("#IOA").val(0).trigger('change');
+        $("#SSZ").val(0).trigger('change');
+        $("#SPB").val(0).trigger('change');
+        $("#VIX").val(0).trigger('change');
+        $("#SSA").val(0).trigger('change');
+        $("#SUA").val(0).trigger('change');
+        $("#PEC").val(0).trigger('change');
+
+        $("#TonelagemMedia").val("");
+    }
+
+    function ExcluirTabelaContainer(CodigoTabela) {
+        $.ajax({
+        type: "POST",
+        url: "@Portal.UrlCms(portal)/TakeOrPay/ExcluirContainer",
+        data: { "CodigoTabela": CodigoTabela },
+        success: function (data) {
+            if (data.Sucess == true) {
+                $("#tr-" + CodigoTabela).remove();
+            }
+            else {
+                ErroGenerico();
+            }
+        },
+        error: function (data) {
+            ErroGenerico();
+        }});
+    }
+
+    function AutocompleteNavio() {
+        $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/ListarNaviosAutocomplete?isTipoReserva=" + $("#sim").prop("checked"),
+            success: function (data) {
+                $('#NavioViagem').empty();
+                $('#NavioViagem').append(data.autocomplete);
+                $('#NavioViagem').select2();
+
+                $('#NavioViagemOp2').empty();
+                $('#NavioViagemOp2').append(data.autocomplete);
+                $('#NavioViagemOp2').select2();
+
+                $('#NavioViagemOp3').empty();
+                $('#NavioViagemOp3').append(data.autocomplete);
+                $('#NavioViagemOp3').select2();
+            },
+            error: function (data) {
+            }
+        });
+    }
+
+    function ApagarContainers() {
+        $.ajax({
+        type: "POST",
+        url: "@Portal.UrlCms(portal)/TakeOrPay/ExcluirTodosContainers",
+        data: { "Codigo": $("#Codigo").val() },
+        success: function (data) {
+            if (data.Sucess == true) {
+                $("#tabelaContainer").html("");
+            }
+            
+        },
+        error: function (data) {
+            ErroGenerico();
+        }});
+    }
+
+    function AtualizarDeadline() {
+        $.ajax({
+        type: "POST",
+        url: "@Portal.UrlCms(portal)/TakeOrPay/ListarDeadLine",
+        data: { "NavioViagem": $("#NavioViagem").val() },
+        success: function (data) {
+            if (data.Sucess == true) {
+                AtualizaUnidade(data.DeadlineRIG, data.DeadlineRIGAtivo, "RIG")
+                AtualizaUnidade(data.DeadlineIBB, data.DeadlineIBBAtivo, "IBB")
+                AtualizaUnidade(data.DeadlineIOA, data.DeadlineIOAAtivo, "IOA")
+                AtualizaUnidade(data.DeadlineSSZ, data.DeadlineSSZAtivo, "SSZ")
+                AtualizaUnidade(data.DeadlineSPB, data.DeadlineSPBAtivo, "SPB")
+                AtualizaUnidade(data.DeadlineVIX, data.DeadlineVIXAtivo, "VIX")
+                AtualizaUnidade(data.DeadlineSSA, data.DeadlineSSAAtivo, "SSA")
+                AtualizaUnidade(data.DeadlineSUA, data.DeadlineSUAAtivo, "SUA")
+                AtualizaUnidade(data.DeadlinePEC, data.DeadlinePECAtivo, "PEC")
+            }
+            else {
+                ErroGenerico();
+            }
+        },
+        error: function (data) {
+            ErroGenerico();
+        }});
+    }
+
+    function AtualizaUnidade(deadLine, deadLineAtivo, porto) {
+        if (deadLineAtivo == null) {
+            DesabilitarUnidade(porto)
+        }
+        else {
+            $("#" + porto).val(0)
+            $("#" + porto).attr("disabled", !deadLineAtivo)
+            $("#deadline-" + porto).html(deadLine + "<span>deadline</span>")
+        }
+    }
+
+    function HabilitarUnidades() {
+        HabilitarUnidade("RIG")
+        HabilitarUnidade("IBB")
+        HabilitarUnidade("IOA")
+        HabilitarUnidade("SSZ")
+        HabilitarUnidade("SPB")
+        HabilitarUnidade("VIX")
+        HabilitarUnidade("SSA")
+        HabilitarUnidade("SUA")
+        HabilitarUnidade("PEC")
+    }
+
+    function HabilitarUnidade(porto) {
+        $("#" + porto).val(0)
+        $("#" + porto).attr("disabled", false)
+        $("#deadline-" + porto).html("")
+    }
+
+    function DesabilitarUnidades() {
+        DesabilitarUnidade("RIG")
+        DesabilitarUnidade("IBB")
+        DesabilitarUnidade("IOA")
+        DesabilitarUnidade("SSZ")
+        DesabilitarUnidade("SPB")
+        DesabilitarUnidade("VIX")
+        DesabilitarUnidade("SSA")
+        DesabilitarUnidade("SUA")
+        DesabilitarUnidade("PEC")
+    }
+
+    function DesabilitarUnidade(porto) {
+        $("#" + porto).val(0)
+        $("#" + porto).attr("disabled", true)
+        $("#deadline-" + porto).html("")
+    }
+</script>

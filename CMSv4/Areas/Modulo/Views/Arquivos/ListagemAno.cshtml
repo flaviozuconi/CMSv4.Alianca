@@ -1,0 +1,30 @@
+﻿@model MLModuloArquivos
+
+@if (!String.IsNullOrEmpty(Model.Titulo))
+{
+    <h1>@Model.Titulo</h1>
+}
+
+<div id="topo" class="row text-right">
+    <select id="ano_arquivo_@(Model.Repositorio)">
+        <option value="2015" selected>2015</option>
+        <option value="2014">2014</option>
+        <option value="2013">2013</option>
+        <option value="2012">2012</option>
+        <option value="2011">2011</option>
+        <option value="2010">2010</option>
+        <option value="2009">2009</option>
+        <option value="2008">2008</option>
+    </select>
+</div>
+<div id="model_arquivo_@(Model.Repositorio)">
+    @* O AJAX IRÁ INSERIR O CONTEÚDO (ListaAnoAjax.cshtml) AQUI DENTRO *@
+</div>
+@if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+{
+    Html.RenderAction("ScriptAno", new { model = Model });
+}
+else
+{
+    CMSv4.BusinessLayer.BLConteudo.AdicionarJavaScript(Html.Action("ScriptAno", new { model = Model }));
+}

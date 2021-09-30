@@ -1,0 +1,203 @@
+﻿@model MLModuloFaleConosco
+@{
+    var portal = BLPortal.Atual;
+    var formId = string.Format("#fale-conosco-div-{0} form", Model.Repositorio);
+}
+<script src="~/Content/js/placeholderIE.js"></script>
+<script src="/Content/js/jquery.form.min.js" type="text/javascript"></script>
+<script src="/Content/js/plugins/validate/jquery.validate.min.js" type="text/javascript"></script>
+<script src="/Content/js/plugins/validate/additional-methods.min.js" type="text/javascript"></script>
+<script src="~/Content/js/jquery.scrollTo.min.js"></script>
+<script type="text/javascript">
+    $("input[data-telefone]").blur(function () {
+        var $this = $(this);
+        var val = $this.val().replace(/_/g, "");
+        if (val.length == 14) {
+            var t = val.replace("-", "");
+
+            setTimeout(function () {
+                $this.val(t.substr(0, 9) + "-" + t.substr(9));
+            }, 100);
+        }
+    });
+
+    $("input[data-show]").click(function () {
+        var validate = $(this).data("validate");
+
+        if (validate) { //realiza validacao antes de prosseguir
+            var loop = validate.split(",");
+            for (var i = 0; i < loop.length; i++) {
+                $("select[name=" + loop[i] + "], input[name=" + loop[i] + "]").valid(); //valida todos os inputs, selects presentes em data-validate
+            }
+        }
+
+        //verifica se possui erro no formulario antes de prosseguir
+        if ($(this).parents("form").find(".has-error").length == 0) {
+            $($(this).data("show")).slideDown();
+            $(this).remove();
+
+            if ($(this).data("callback")) { //chama função ao término da validação, se houver
+                $(this).data("callback")();
+            }
+        }
+    });
+
+    $("input[data-toggle=popover], select[data-toggle=popover]").blur(function () { //esconder tooltip qnd um elemento perder o foco
+        $(this).popover("hide");
+    });
+
+    $("@formId").validate({
+        ignore: [],
+        highlight: function (element) {
+            $(element).parent().find(".validate").addClass("hide");
+            //$(element).parent().find(".validate").removeClass("hide");
+            $(element).parent().find(".validate").removeClass("alert-success").addClass("alert-danger");
+            $(element).parent().addClass("has-error").removeClass("has-success");
+        },
+        unhighlight: function (element) {
+            $(element).parent().find(".validate").removeClass("alert-danger").addClass("alert-success");
+            $(element).parent().addClass("has-success").removeClass("has-error");
+            $(element).next('.error').addClass('hide');
+        },
+        errorPlacement: function (error, element) {
+            $(element).parent().find(".validate").addClass("hide");
+            //$(element).parent().find(".validate").html(error.text());
+            $(element).data("error-message", error.text());
+            $(element).next('.error').removeClass('hide');
+        },
+        success: function (success, element) {
+            $(element).parent().find(".validate").html("@T("Campo preenchido corretamente")");
+        }
+    });
+
+    $("@formId [type=submit]").click(function () {
+        var $this = $("@formId");
+        var btn = $(this);
+
+        if ($this.valid()) {
+            btn.attr("disabled", "disabled");
+            btn.val("@T("Enviando...")");
+
+            $(".alert").remove();
+
+            if ($("[name=destinatario]").length > 0 && $("[name=destinatario]").val().indexOf("http") > -1) { //se for um http não pode enviar email, apresentar mensagem
+                $this.prepend("<div class='alert alert-danger'>@T("Não é possível enviar email para a área selecionada.") <a href=\"" + $("[name=destinatario]").val() + "\">@T("Clique Aqui para ser direcionado corretamente").</a></div>");
+            }
+            else {
+                $this.ajaxSubmit({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/FaleConosco/Salvar",
+                    success: function (datareturn) {
+                        var data = $.parseJSON(datareturn);
+
+                        if (data.Sucesso == true) {
+                            if ($('#mensagem').length > 0) {
+                                $("#form").fadeOut(function () { $("#mensagem").fadeIn(); });
+                            }
+                            else if (data.Mensagem) {
+                                $this.prepend("<div class='alert alert-success'>" + data.Mensagem + "</div>");
+                            }
+                            else {
+                                $this.prepend("<div class='alert alert-success'>@T("E-mail enviado com sucesso!")</div>");
+                            }
+
+                        }
+                        else {
+                            if (data.Mensagem) {
+                                $this.prepend("<div class='alert alert-danger'>" + data.Mensagem + "</div>");
+                            }
+                            else {
+                                $this.prepend("<div class='alert alert-danger'>@T("Erro no envio de E-mail.")</div>");
+                            }
+                        }
+
+                        btn.removeAttr("disabled");
+                        btn.val("@T("Enviar")");
+
+                        try {
+                            var offsetTop = $this.offset().top - 100;
+
+                            if (offsetTop < 0) {
+                                offsetTop = 0;
+                            }
+
+                            $.scrollTo(offsetTop, 500);
+
+                            //limpar campos
+                            $this.find("input[type=text], input[type=email], textarea").val("");
+
+                            $this.find("select").each(function () {
+                                $(this).val("");
+
+                                try {
+                                    ReloadSelect_@(Model.Repositorio)($(this));
+                                } catch (e) { }
+
+                                $(this).trigger("change");
+                            });
+                        } catch (e) { }
+                    },
+                    error: function (data) {
+                        if (data && data.msg) {
+                            $this.prepend("<div class='alert alert-danger'>" + data.msg + "</div>");
+                        }
+                        else {
+                            $this.prepend("<div class='alert alert-danger'>@T("Erro no envio de Email.")</div>");
+                        }
+
+                        btn.removeAttr("disabled");
+                        btn.val("@T("Enviar")");
+
+                        try {
+                            var offsetTop = $this.offset().top - 100;
+
+                            if (offsetTop < 0) {
+                                offsetTop = 0;
+                            }
+
+                            $.scrollTo(offsetTop, 500);
+                        } catch (e) { }
+                    }
+                });
+            }
+        }
+        else {
+            try {
+                var elm = $('@formId').find(".has-error").first();
+                if (elm.length) {
+                    $.scrollTo(elm.offset().top - 100, 500);
+                }
+            } catch (e) { }
+        }
+
+        ///adicionar manualmente mensagem de erro para input file inválido
+        if ($this.find("input[type=file]").length > 0) {
+            $(".msg-erro-etica").remove();
+
+            $this.find("input[type=file]").each(function (e) {
+                if (!$(this).valid()) {
+                    var span = $("<span class='msg-erro-etica' />");
+
+                    span.css("color", "red");
+
+                    if (!$(this).val()) {
+                        span.html(" " + "@T("Informar arquivo")");
+                    }
+                    else {
+                        if ($(this).data("error-message")) {
+                            span.html(" " + $(this).data("error-message"));
+                        }
+                        else {
+                            span.html(" " + "@T("Arquivo inválido")");
+                        }
+                    }
+
+                    $(this).parent().append(span);
+                }
+            });
+        }
+
+        return false;
+    });
+</script>
+

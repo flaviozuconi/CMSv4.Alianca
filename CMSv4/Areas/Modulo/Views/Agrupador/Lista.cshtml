@@ -1,0 +1,52 @@
+﻿@model  MLAgrupadorPublico
+@{
+    var portal = BLPortal.Atual;
+    var modulo = (MLModuloAgrupador)ViewData["modulo"];
+    var anoatual = Convert.ToInt32(ViewData["anoatual"]);
+    var anos = (List<MLAgrupadorAnos>)ViewData["anos"];
+    var listaslinks = ViewData["listaslinks"] != null ? (List<decimal>)ViewData["listaslinks"] : new List<decimal>();
+    var urlAtual = string.Concat(Portal.UrlDiretorio(portal), "/", ViewData["urlatual"]);
+}
+<header class="content--header clearfix">
+    <h1 class="section-title-sub">@modulo.Titulo</h1>
+    <div class="select-top">
+        @T("Selecione o Ano"): 
+        <select name="Ano" id="Ano" onchange="location.href='@urlAtual/' + $('#Ano').val();" class="selectpicker" data-style="btn-secondary">
+            @foreach (var item in anos)
+            {
+                <option value="@item.Ano" @(item.Ano == anoatual ? "selected" : "")>@item.Ano</option>
+            }
+        </select>
+    </div>
+</header>
+<div class="content--body">
+    @foreach (var categoria in Model.Categorias)
+    {
+        var conteudos = Model.Conteudos.FindAll(o => o.CategoriaAgrupador == categoria.Codigo);
+        if (conteudos.Count > 0)
+        {
+            if (Model.Categorias.Count > 1)
+            {
+                <h2 class="section-title-alt">@categoria.Nome</h2>
+            }
+            foreach (var item in conteudos)
+            {
+                var _url = item.UrlDetalheDisplay(listaslinks);
+                var _novaJanela = item.Lista.HasValue && listaslinks != null && listaslinks.Contains(item.Lista.Value);
+                <!-- div para loop de busca -->
+                <div class="post-box">
+                    <a href="@_url" target="@(_novaJanela ? "_blank" : "_self")">
+                        <time datetime="@item.DataString" class="post-date">@item.DataString</time>
+                        <h2 class="post-title">@item.Titulo</h2>
+                    </a>
+                </div>
+                <!-- /div para loop de busca -->
+            }
+        }
+    }
+</div>
+<style type="text/css">
+    .selectboxit-option, .selectboxit-optgroup-header { clear: both; }
+    i.glyphicon { position: relative !important; top: inherit !important; font-family: 'Glyphicons Halflings'; }
+    .selectboxit.selectboxit-disabled { -moz-box-shadow: 0px 0px !important; -webkit-box-shadow: 0px 0px !important; box-shadow: 0px 0px !important; background: #e0e0e0; }
+</style>

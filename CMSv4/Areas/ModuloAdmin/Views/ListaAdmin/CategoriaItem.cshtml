@@ -1,0 +1,65 @@
+﻿@model MLListaConfigCategoria
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/ListaAdmin/ListarCategoriasView?idLista={1}", portal.Diretorio, Model.CodigoLista);
+    var categorias = (List<MLCategoriaAgrupador>)ViewData["categorias"] ?? new List<MLCategoriaAgrupador>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="@(ViewBag.Icone ?? "~/iconpack.axd/16/group_key")" />
+                @TAdm("Cadastro de Categoria")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" id="formCadastro" action="categoriaitem">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Model.CodigoLista" name="CodigoLista" />
+            <div class="form-group col-md-12">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" maxlength="350" value="@Model.Nome" autofocus />
+            </div>
+            <div class="form-group col-md-4" style="display:none;">
+                <label>@TAdm("Agrupador")</label><br />
+
+                <select name="CodigoCategoriaAgrupador" class="form-control">
+                    <option value="" @(!Model.CodigoCategoriaAgrupador.HasValue ? "selected" : "")>@TAdm("Selecione")</option>
+                    @foreach (var item in categorias)
+                    {
+                        <option value="@item.Codigo" @(item.Codigo == Model.CodigoCategoriaAgrupador ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $("form").validate({
+            rules: {
+                Nome: { required: true, maxlength: 200 }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

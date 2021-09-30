@@ -1,0 +1,134 @@
+﻿@using VM2.PageSpeed.Model
+
+@model MLPageSpeedViewModel
+
+<div class="text-center">
+    <input id="knobPerformance" class="knob" data-fgColor="@Model.Performance.ScoreColor" data-thickness=".2" readonly value="@Model.Performance.Score" data-width="120" data-height="120" data-linecap="round">
+    <h2 class="category-title">@TAdm("Performance")</h2>
+</div>
+
+<div class="row">
+    <div class="col-xs-6">
+        <h3 class="category-subtitle">Metrics</h3>
+    </div>
+    <div class="col-xs-6">
+        <div class="pill-btns">
+            <a class="active" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </a>
+            <a role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (var audit in Model.Performance.Metrics)
+    {
+        <div class="col-md-6">
+            <div class="category--item category--@audit.ScoreColorClass">
+                <div class="category--item-wrap">
+                    <span class="icon"></span>
+                    <h4 class="category--name">@audit.Title</h4>
+                    <p class="category--time">@audit.SubTitle</p>
+                </div>
+                <div class="category--collapse collapse">
+                    <p>@Html.Raw(audit.Description))</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <p>Values are estimated and may vary. The performance score is <a href="https://github.com/GoogleChrome/lighthouse/blob/d2ec9ffbb21de9ad1a0f86ed24575eda32c796f0/docs/scoring.md#how-are-the-scores-weighted">based only on these metrics</a>.</p>
+    </div>
+</div>
+
+<div class="img-row">
+    @foreach (var thumb in Model.Performance.Thumbnails)
+    {
+        <figure class="img-item"><img src="@thumb.data"></figure>
+    }
+</div>
+
+<div class="row row-bottom-space">
+    <div class="col-xs-12">
+        <h3 class="category-subtitle">Opportunities</h3>
+    </div>
+
+    <div class="col-xs-12">
+        @{
+            double total = Model.Performance.Opportunities.Sum(o => Convert.ToDouble(o.Details["overallSavingsMs"]));
+        }
+
+        @foreach (var oportunity in Model.Performance.Opportunities)
+        {
+            dynamic tableHader = oportunity.Details["headings"];
+            dynamic tableRows = oportunity.Details["items"];
+
+            <div class="category--item category--@oportunity.ScoreColorClass">
+                <div class="category--item-wrap" role="button" data-toggle="collapse" href="#@oportunity.Id" aria-expanded="false" aria-controls="@oportunity.Id">
+                    <span class="icon"></span>
+                    <h4 class="category--name">@oportunity.Title</h4>
+
+                    <div class="progress pagespeed-progress">
+                        <div class="progress-bar pagespeed-bar" role="progressbar" aria-valuenow="@(oportunity.Percent)" aria-valuemin="0" aria-valuemax="100" style="width: @(oportunity.Percent)%;background-color:@(oportunity.ScoreColorHexa);"></div>
+                    </div>
+
+                    <p class="category--time">
+                        @oportunity.TimeMs s
+                    </p>
+                </div>
+
+                <div class="category--collapse collapse" id="@oportunity.Id">
+                    <p>@Html.Raw(oportunity.Description)</p>
+
+                    @if (tableHader != null && tableHader.Count > 0)
+                    {
+                        <table class="table-url">
+                            <thead>
+                                <tr>
+                                    @foreach (var header in tableHader)
+                                    {
+                                        <th @HelpersPageSpeed.TableHeaderWidthByValueType(header.valueType.ToString())>@header.label</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in tableRows)
+                                {
+                                    <tr>
+                                        @foreach (var header in tableHader)
+                                        {
+                                            <td>
+                                                @HelpersPageSpeed.FormatValueTypeToHtmlString(header.valueType.ToString(), header.key.ToString(), row)
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="row row-bottom-space">
+    <div class="col-xs-12">
+        <h3 class="category-subtitle">Diagnostics</h3>
+    </div>
+
+    @HelpersPageSpeed.Audits(Model.Performance.Diagnostics, "diagnostics")
+</div>
+
+<div class="row">
+    @HelpersPageSpeed.PassedAudits(Model.Performance.Passed)
+</div>

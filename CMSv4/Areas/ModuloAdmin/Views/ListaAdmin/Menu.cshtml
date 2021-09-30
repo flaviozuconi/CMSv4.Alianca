@@ -1,0 +1,62 @@
+﻿@using CMSv4.Model
+
+@model List<MLListaConfig>
+
+@{
+    var portal = PortalAtual.Diretorio;
+    bool IsCategoria = false;
+    
+    foreach (var item in Model)
+    {
+        var json = Json.Decode(item.Configuracao);
+        IsCategoria = false;
+        
+        if (json.config != null)
+        {
+            for (var i = 0; i < json.config.Length; i++)
+            {
+                if (json.config[i].campo == "Categoria")
+                {
+                    IsCategoria = true;
+                    break;
+                }
+            }    
+        }
+        
+        if (IsCategoria)
+        {
+            <li class="nav tree">
+                <ul class="nav">
+		            <li><a><img src="@(item.Icone ?? "~/iconpack.axd/16/newspaper")" /> @item.Nome</a>
+			            <ul class="nav">
+                            <li><a data-url="@string.Format("/cms/{0}/listaAdmin?idlista={1}&view={2}", portal, item.Codigo, "Index")" onclick="return newTab(this, 'listaCont_@(item.Codigo??0)');" href="javascript:;">@TAdm("Conteúdo")</a></li>
+                            <li><a data-url="@string.Format("/cms/{0}/listaAdmin?idlista={1}&view={2}", portal, item.Codigo, "Categoria")" onclick="return newTab(this, 'listaCat_@(item.Codigo??0)');" href="javascript:;">@TAdm("Categoria")</a></li>
+
+                            @*ITENS PERSONALIZADOS PARA CADA MÓDULO*@
+                            @if (json.sidebar != null)
+                            {
+                                for (var i = 0; i < json.sidebar.Length; i++)
+                                {
+                                    @:<li>
+                                        @:<a data-url="@string.Format(json.sidebar[i].url, portal)" onclick="@String.Format("return newTab(this, '{0}');", json.sidebar[i].nome + "_" + (item.Codigo??0))" href="javascript:;">
+                                        if (!String.IsNullOrWhiteSpace(json.sidebar[i].icon))
+                                        {
+                                            @:<img src="/iconpack.axd/16/@json.sidebar[i].icon" />
+                                        }
+                                        
+                                            @json.sidebar[i].rotulo
+                                        @:</a>
+                                    @:</li>
+                                }
+                            }
+			            </ul>
+		            </li>
+                </ul>
+            </li>
+        }
+        else
+        {
+            <li><a data-url="@string.Format("/cms/{0}/listaAdmin?idlista={1}", portal, item.Codigo)" onclick="return newTab(this, 'lista_@(item.Codigo??0)');" href="javascript:;"><img src="@(item.Icone ?? "~/iconpack.axd/16/newspaper")" /> @item.Nome</a></li>
+        }
+    }
+}

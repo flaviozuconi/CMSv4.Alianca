@@ -1,0 +1,201 @@
+﻿@model MLClienteAlterarSenha
+@{
+    var portal = BLPortal.Atual;
+}
+<style type="text/css">
+    .cropit-image-preview {
+        /* You can specify preview size in CSS */
+        width: 200px;
+        height: 200px;
+    }
+</style>
+<script src="~/Content/js/plugins/cropit/jquery.cropit.min.js"></script>
+<script type="text/javascript">
+    function validarExtensao(value, element, params) {
+        if (value && !(/\.(gif|jpg|jpeg|png)$/i).test(value)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function cropImage(codigoCliente) {
+        if (!codigoCliente) {
+            $("#recortar").prepend("<div class='alert alert-danger msg-recortar'>@T("Não foi possível recortar a imagem.")</div>");
+
+            setTimeout(function () {
+                $(".msg-recortar").fadeOut(500, function () {
+                    $(this).remove();
+                });
+            }, 5000);
+
+            return false;
+        }
+
+        var uri = crop.cropit('export', {
+            type: 'image/png',
+            quality: .9,
+            originalSize: true
+        });
+
+        $.post("@Portal.UrlCms(portal)/ModuloLogin/RecortarImagem", { codigo: codigoCliente, img: uri }, function (data) {
+            if (data) {
+                if (data.success) {
+                    window.location.href = $("#linkCancelar").attr('href');
+                }
+                else {
+                    if (data.msg) {
+                        $("#recortar").prepend("<div class='alert alert-danger msg-recortar'>" + data.msg + "</div>");
+                    }
+                    else {
+                        $("#recortar").prepend("<div class='alert alert-danger msg-recortar'>@T("Não foi possível recortar a imagem.")</div>");
+                    }
+                }
+            }
+
+            $("#btnCrop").removeAttr("disabled", "disabled");
+        }).fail(function (err) {
+            $("#recortar").prepend("<div class='alert alert-danger msg-recortar'>@T("Não foi possível recortar a imagem.")</div>");
+
+            $("#btnCrop").removeAttr("disabled", "disabled");
+        });
+
+        setTimeout(function () {
+            $(".msg-recortar").fadeOut(500, function () {
+                $(this).remove();
+            });
+        }, 5000);
+
+        return false;
+    }
+
+    var crop;
+
+    $(document).ready(function () {
+        if ($("#image-cropper").length > 0) {
+            crop = $("#image-cropper").cropit({ imageState: { src: $("#imgSrc").val() } });
+
+            $("#btnCrop").click(function () {
+                $(this).attr("disabled", "disabled");
+            });
+        }
+
+        if ($("#formEditarPerfil").length > 0) {
+
+            $.validator.addMethod("validaExt", validarExtensao, "@T("Informar um arquivo com uma extensão válida")");
+
+            $("#formEditarPerfil").validate({
+                rules: {
+                    Nome: { required: true, maxlength: 100 },
+                    Email: { required: true, email: true, maxlength: 200 },
+                    NovaImagem: { validaExt: "" }
+                },
+                messages: {
+                    Nome: {
+                        required: "@T("O campo Nome é de preenchimento obrigatório")"
+                    },
+                    Email: {
+                        required: "@T("O campo Email é de preenchimento obrigatório")",
+                        email: "@T("Preencher com um Email válido")"
+                    },
+                    NovaImagem: { validaExt: "@T("Informar um arquivo com uma extensão válida")" }
+                }
+            });
+
+            $("btnSalvar").click(function () {
+                $(this).attr("disabled", "disabled");
+            });
+        }
+
+        if ($("#formAlterarSenha").length > 0) {
+            $("#formAlterarSenha").validate({
+                rules: {
+                    AlterarSenha_Senha: { required: true, maxlength: 50 },
+                    AlterarSenha_NovaSenha: { required: true, maxlength: 50, minlength: 6 },
+                    AlterarSenha_ConfirmarNovaSenha: { required: true, maxlength: 50, minlength: 6, equalTo: "#AlterarSenha_NovaSenha" },
+                },
+                messages: {
+                    "AlterarSenha_Senha": {
+                        required: "@T("O campo Senha é de preenchimento obrigatório")"
+                    },
+                    "AlterarSenha_NovaSenha": {
+                        required: "@T("O campo Nova Senha é de preenchimento obrigatório")",
+                        minlength: "@T("A senha deve ter no mínimo 6 caracteres")",
+                    },
+                    "AlterarSenha_ConfirmarNovaSenha": {
+                        required: "@T("O campo Confirmar Senha deve ser igual a Nova Senha")",
+                        minlength: "@T("A senha deve ter no mínimo 6 caracteres")",
+                        equalTo: "@T("A senha de confirmação não está batendo com a nova senha")"
+                    }
+                }
+            });
+
+            $("#btnAlterar").click(function () {
+                $(this).attr("disabled", "disabled");
+            });
+        }
+    });
+
+    function salvar_nova_senha() {
+        if ($("#formAlterarSenha").valid()) {
+            var dataSend = { "novaSenha": $("#AlterarSenha_NovaSenha").val(), "senhaAtual": $("#AlterarSenha_Senha").val() };
+
+            $.post("@Portal.UrlCms(portal)/ModuloLogin/AlterarSenha", dataSend, function (data) {
+                if (data) {
+                    if (data.success) {
+                        $("#perfil").prepend("<div class='alert alert-success msg-senha'>@T("Senha alterada com sucesso.")</div>");
+                    }
+                    else {
+                        if (data.msg)
+                            $("#perfil").prepend("<div class='alert alert-warning msg-senha'>" + data.msg + "</div>");
+                    }
+                }
+
+                $("#AlterarSenha_Senha").val("");
+                $("#AlterarSenha_NovaSenha").val("");
+                $("#AlterarSenha_ConfirmarNovaSenha").val("");
+
+                $("#btnAlterar").removeAttr("disabled", "disabled");
+
+                voltar();
+            }).fail(function (err) {
+                $("#perfil").prepend("<div class='alert alert-danger msg-senha'>@T("Não foi possível alterar sua senha.")</div>");
+
+                $("#AlterarSenha_Senha").val("");
+                $("#AlterarSenha_NovaSenha").val("");
+                $("#AlterarSenha_ConfirmarNovaSenha").val("");
+
+                $("#btnAlterar").removeAttr("disabled", "disabled");
+
+                voltar();
+            });
+        }
+    }
+
+    function editar() {
+        $("#alterar_senha").hide();
+        $("#perfil").hide();
+
+        $("#editar_perfil").show();
+    }
+
+    function mudar_senha() {
+        $("#editar_perfil").hide();
+        $("#perfil").hide();
+
+        $("#alterar_senha").show();
+    }
+
+    function voltar() {
+        $("#editar_perfil").hide();
+        $("#alterar_senha").hide();
+
+        $("#perfil").show();
+
+        setTimeout(function () {
+            $(".msg-senha").fadeOut(500, function () {
+                $(this).remove();
+            });
+        }, 5000);
+    }
+</script>

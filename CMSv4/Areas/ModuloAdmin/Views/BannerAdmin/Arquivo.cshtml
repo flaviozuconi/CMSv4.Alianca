@@ -1,0 +1,690 @@
+﻿@model  MLBannerArquivoView
+@{
+    var portal = PortalAtual.Obter;
+
+    var urlLista = "/cms/" + portal.Diretorio + "/banneradmin";
+    var urlListarArquivos = "/cms/" + portal.Diretorio + "/banneradmin/listararquivos";
+    var urlListarArquivosSelect = "/cms/" + portal.Diretorio + "/banneradmin/ListarArquivosSelect";
+    var urlIncluir = "/cms/" + portal.Diretorio + "/banneradmin/incluirarquivo";
+    var urlRemover = "/cms/" + portal.Diretorio + "/banneradmin/removerarquivo";
+    var urlRemoverServidor = "/cms/" + portal.Diretorio + "/banneradmin/removerarquivoservidor";
+    var urlRenderizarArquivo = "/cms/" + portal.Diretorio + "/banneradmin/renderizararquivo";
+    var urlUpload = "/cms/" + portal.Diretorio + "/banneradmin/uploadgaleria";
+    var urlOrdem = "/cms/" + portal.Diretorio + "/banneradmin/ordenar";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/advertising" /> @TAdm("Arquivos")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <div class="alert alert-info">
+            <strong>@TAdm("Atenção"): </strong>@TAdm("É obrigatório, para sua exibição, que todas as imagens de banners possuam imagens correspondentes à versão mobile!")
+            @if (!string.IsNullOrWhiteSpace(Model.SugestaoResolucao))
+            {
+                <br>
+                <strong>@TAdm("Dimensões (sugeridas) das imagens"): </strong> @Model.SugestaoResolucao
+            }
+
+        </div>
+
+        <div class="form-group col-md-12">
+            <label class="radio-inline">
+                <input name="CodigoTipo" value="1" checked type="radio">Arquivo
+            </label>
+
+            <label class="radio-inline">
+                <input name="CodigoTipo" value="2" type="radio">Iframe
+            </label>
+        </div>
+
+        <div class="form-group col-md-5 jq-iframe" style="display:none;">
+            <input class="form-control" name="UrlIframe" maxlength="500" type="text" placeholder="Digite a url completa para o Iframe">
+        </div>
+
+        @*<div class="form-group col-md-2 jq-iframe" style="display:none;">
+            <label>@TAdm("Width")</label>
+            <input class="form-control" name="Width"  maxlength="100" type="text">
+        </div>
+
+        <div class="form-group col-md-2 jq-iframe" style="display:none;">
+            <label>@TAdm("Heigth")</label>
+            <input class="form-control" name="Heigth"  maxlength="100" type="text">
+        </div>
+
+        <div class="form-group col-md-2 jq-iframe" style="display:none;">
+            <label>@TAdm("Class")</label>
+            <input class="form-control" name="Titulo" maxlength="100" type="text">
+        </div>*@
+
+        <div class="form-group col-md-1 jq-iframe" style="display:none;">
+            <a class="btn btn-green" href="#" id="btnAdicionar"><i class="fa fa-plus"></i></a>
+        </div>
+
+        <div class="form-group col-md-12 clearfix jq-arquivo">
+            <form id="arquivoUpload" action="/" method="post" class="dropzone">
+                <input type="hidden" name="id" id="id" value="@Model.Codigo" />
+                <div class="fallback">
+                    <input type="file" name="file" />
+                </div>
+            </form>
+            <br />
+        </div>
+
+        <div class="form-group col-md-12">
+            <ul id="arquivoSortable" class="ui-sortable col-md-12" style="padding-left: 0;">
+                @Html.Partial("ArquivoItem", Model.ListaArquivos, new ViewDataDictionary { { "diretorioGaleria", Model.DiretorioGaleria } })
+            </ul>
+        </div>
+
+        <div class="form-group col-md-12 clearfix">
+            <input type="checkbox" onclick="mostrarArquivosDisco();" id="showDisk" />
+            <label for="showDisk" style="font-weight: normal;">@TAdm("Mostrar arquivos em disco")</label>
+            <ul id="galeriaImportar" class="ui-sortable col-md-12" style="display: none; padding-left: 0;"></ul>
+        </div>
+    </div>
+</div>
+
+@*MODAL DE EDIÇÃO DOS ITENS*@
+<div class="modal modal-flex fade not-sortable" id="editarBannerArquivo" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <form class="modal-content" id="formModalEdicao" name="formModalEdicao" enctype="multipart/form-data" method="post" action="/cms/@portal.Diretorio/banneradmin/arquivoitem">
+            <input type="hidden" name="Codigo" />
+            <input type="hidden" name="CodigoBanner" value="@Model.Codigo" />
+
+            <input type="hidden" name="Imagem" />
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">@TAdm("Edição")</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Título")</label>
+                    <input type="text" class="form-control" name="Titulo" maxlength="250">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Url")</label>
+                    <input type="text" class="form-control" name="Url" maxlength="500">
+                </div>
+                <div class="form-group col-md-12 jq-tipo-imagem">
+                    <label>@TAdm("Texto")</label>
+                    <textarea class="form-control" name="Texto" style="height: 80px;"></textarea>
+                </div>
+                <div class="form-group col-md-6 jq-tipo-imagem">
+                    <label>@TAdm("Tag Analytics")</label>
+                    <input type="text" class="form-control" name="TagGA" maxlength="50">
+                    <small>@TAdm("Nome único para a imagem.")</small>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>CSS Class</label>
+                    <input type="text" class="form-control" name="CssClass1" maxlength="200">
+                </div>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Início")</label>
+                    <input type="text" class="form-control data DataInicio" name="DataInicio" id="DataInicio" maxlength="16">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Término")</label>
+                    <input type="text" class="form-control data DataTermino" name="DataTermino" id="DataTermino" maxlength="16">
+                </div>
+                <div class="form-group col-md-12 jq-tipo-imagem">
+                    <label>@TAdm("Hover")</label>
+                    <select id="CodigoBannerHover" name="CodigoBannerHover" class="form-control jq-select-banner" data-value="Codigo">
+                        <option selected value="">@TAdm("Selecione")</option>
+                        @for (int i = 0; i < Model.ListaArquivos.Count; i++)
+                        {
+                            <option value="@Model.ListaArquivos[i].Codigo">@Model.ListaArquivos[i].MontarNomeImagem</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-6 jq-tipo-imagem">
+                    <label>@TAdm("Versão Mobile")</label>
+                    <select id="ImagemMobile" name="ImagemMobile" class="form-control jq-select-banner" data-value="Imagem">
+                        <option selected) value="">@TAdm("Selecione")</option>
+                        @for (int i = 0; i < Model.ListaArquivos.Count; i++)
+                        {
+                            <option value="@Model.ListaArquivos[i].Imagem">@Model.ListaArquivos[i].MontarNomeImagem</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-6 jq-tipo-imagem">
+                    <label>@TAdm("Versão Tablet")</label>
+                    <select id="ImagemTablet" name="ImagemTablet" class="form-control jq-select-banner" data-value="Imagem">
+                        <option selected value="">@TAdm("Selecione")</option>
+                        @for (int i = 0; i < Model.ListaArquivos.Count; i++)
+                        {
+                            <option value="@Model.ListaArquivos[i].Imagem">@Model.ListaArquivos[i].MontarNomeImagem</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group col-md-6 jq-tipo-imagem">
+                    @Html.CheckBox("NovaJanela", true) <label for="NovaJanela">@TAdm("Abrir Url em uma nova janela")</label>
+                </div>
+                <div class="form-group col-md-6">
+                    @Html.CheckBox("Ativo", false) <label for="Ativo">@TAdm("Ativo")</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@TAdm("Fechar")</button>
+                <button type="button" class="btn btn-green" name="btnsalvarImagem" onclick="return salvarImagem($(this));">@TAdm("Salvar")</button>
+            </div>
+        </form>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<div class="modal modal-flex fade not-sortable" id="img_@Model.Codigo" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body form-group" style="text-align: center;">
+                <img src="@Model.DiretorioGaleria" border="0" alt="" style="width: 500px;" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@TAdm("Fechar")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*MODAL PARA VISUALIZAÇÃO DA IMAGEM*@
+<div class="modal modal-flex fade not-sortable" id="modalImagemBannerArquivo" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">@TAdm("Visualização")</h4>
+            </div>
+            <div class="modal-body form-group" style="text-align: center;">
+                <a href="@Model.DiretorioGaleria" target="_blank" title="Clique para visualizar no tamanho original." id="aImagemFull">
+                    <img src="@Model.DiretorioGaleria" border="0" alt="" style="width: 500px;" id="imgEdicao" />
+                </a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">@T("Fechar")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section head {
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <style type="text/css">
+        .banner-imagem-item {
+            height: 156px;
+            border: 3px solid #FFF;
+        }
+
+            .banner-imagem-item:hover {
+                cursor: grab;
+                border: 3px dashed #ddd;
+                visibility: visible !important;
+                box-sizing: border-box;
+            }
+
+        .galeria-imagem-div {
+            position: relative;
+            overflow: auto;
+        }
+
+            .galeria-imagem-div:hover .galeria-imagem-botoes {
+                display: block
+            }
+
+            .galeria-imagem-div .galeria-imagem-botoes {
+                position: absolute;
+                top: 0;
+                right: 0;
+                display: none;
+                margin: 5px;
+            }
+
+        .ui-sortable-placeholder {
+            border: 3px dashed #ddd;
+            padding: 50px;
+            visibility: visible !important;
+        }
+
+        iframe html body {
+            margin: 0px;
+            padding: 0px;
+            border: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        iframe {
+            margin: 0px;
+            padding: 0px;
+            border: 0px;
+            display: block;
+        }
+    </style>
+}
+
+
+
+@section scripts{
+    <script src="~/Content/js/jquery.sortable.min.js"></script>
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script type="text/javascript">
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();": "")
+
+        function mostrarArquivosDisco() {
+            var codigoBanner = $("input[name=id]").val();
+            $.post("/cms/@BLPortal.Atual.Diretorio/BannerAdmin/MostrarArquivosDisco", { "id": codigoBanner }, function (data) {
+                $("#galeriaImportar").html(data.html);
+                $('#galeriaImportar').toggle();
+            });
+        }
+
+        $(document).ready(function () {
+            $('input.data').datetimepicker();
+
+            $('.DataInicio').datetimepicker({
+                timepicker: true, mask: true, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false, lang: 'pt', validateOnBlur: false
+            });
+
+            $('.DataTermino').datetimepicker({
+                timepicker: true, mask: true, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false, lang: 'pt', validateOnBlur: false
+            });
+
+            /*
+            * FORM UPLOAD
+            */
+            Dropzone.options.arquivoUpload = {
+                url: "@urlUpload",
+                acceptedFiles: "image/*",
+                dictDefaultMessage: "@TAdm("Arraste ou clique aqui para realizar upload de arquivos")",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                completemultiple: function (files) {
+                    var arrayNames = [];
+
+                    for (var i = 0; i < files.length; i++) {
+                        if (files[i].type.includes("image"))
+                            arrayNames.push(files[i].name);
+                    }
+
+                    if (arrayNames.length > 0) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '@urlIncluir',
+                            data: {
+                                id: @Model.Codigo,
+                                files: arrayNames,
+                                CodigoTipo: function () { return $("input[name=CodigoTipo]:checked").val() }
+                            },
+                            datatype: "json",
+                            traditional: true,
+                            beforeSend: function () {
+                                $("#spinner").show();
+                            },
+                            complete: function () {
+                                Dropzone.forElement('#arquivoUpload').removeAllFiles(true);
+                                $("#spinner").hide();
+                            },
+                            success: function (data) {
+                                if (data.Sucesso != null && data.Sucesso) {
+                                    $('#arquivoSortable').append(data.html);
+                                }
+                            }
+                        });
+                    }
+                }
+            };
+
+            /*
+            * SORTABLE
+            */
+            $("#arquivoSortable").sortable({
+                cursor: "grabbing",
+                cancel: "a, input, select, p, .galeria-imagem-botoes, .not-sortable",
+                placeholder: "form-group col-sm-4 banner-imagem-item ui-sortable-placeholder",
+                update: function (event, ui) {
+                    salvarOrdem();
+                }
+            });
+        });
+
+        $("input[name=CodigoTipo]").change(function () {
+            var value = $(this).val();
+
+            if (value == "2") {
+                $(".jq-iframe").show();
+                $(".jq-arquivo").hide();
+            }
+            else {
+                $(".jq-iframe").hide();
+                $(".jq-arquivo").show();
+            }
+        });
+
+        $("#btnAdicionar").click(function () {
+            var url = $("input[name=UrlIframe]").val();
+
+            if (url != "") {
+                incluirIframe();
+            }
+        });
+
+
+        $("#formModalEdicao").validate({
+            rules: {
+                Url: { required: false },
+                DataTermino: { greaterThan: "#DataInicio" }
+            }
+        });
+
+        function carregarSelect() {
+            $.get('@urlListarArquivosSelect', { id: '@Model.Codigo' }, function (data) {
+                $(".jq-select-banner").each(function () {
+                    var $this = $(this);
+                    var valSelecionado = $this.val();
+
+                    $this.empty();
+
+                    $this.append("<option value=''>@TAdm("Selecione")</option>");
+
+                    $.each(data, function (a, b) {
+                        var addSelected = valSelecionado == b[$this.data("value")];
+
+                        if (b.Titulo) {
+                            $this.append("<option value='" + b[$this.data("value")] + "' " + (addSelected ? "selected" : "") + ">" + b.Titulo + " - " + b.Imagem + "</option>");
+                        }
+                        else {
+                            $this.append("<option value='" + b[$this.data("value")] + "' " + (addSelected ? "selected" : "") + ">" + b.Imagem + "</option>");
+                        }
+                    });
+                });
+            });
+        }
+
+        /*
+        *   SALVAR ORDEM
+        */
+        function salvarOrdem() {
+
+            var codigos = $('#arquivoSortable > li').map(function () {
+                return $(this).data('codigo');
+            }).get()
+
+            if (!codigos) { return; }
+
+            $.ajax({
+                url: '@urlOrdem',
+                traditional: true,
+                type: 'post',
+                data: {
+                    id: '@Model.Codigo',
+                    ordem: codigos
+                }
+            });
+        }
+
+        function incluirIframe() {
+            $.post('@urlIncluir',
+                {
+                    id: '@Model.Codigo',
+                    UrlIframe: $("input[name=UrlIframe]").val()
+                },
+                function (response) {
+                    $('#arquivoSortable').append(response.html);
+                    $("input[name=UrlIframe]").val("");
+            });
+        }
+
+        /*
+        *   INCLUIR IMAGEM DO ARQUIVO EM DISCO PARA A GALERIA
+        */
+        function incluirImagem(botao, imagem) {
+
+            var arquivo = imagem || botao.data('file');
+
+            $.post('@urlIncluir', {
+                id: '@Model.Codigo',
+                CodigoTipo: $("input[name=CodigoTipo]:checked").val(),
+                files: arquivo
+            },
+            function (response) {
+                if (botao)
+                    botao.parents('.banner-imagem-item').remove();
+
+                $('#arquivoSortable').append(response.html);
+            });
+        }
+
+        //Abrir modal com a imagem de visualização
+        function exibirModalImagem(img) {
+            $('#aImagemFull').attr('href', img);
+            $('#imgEdicao').attr('src', img);
+            $("#modalImagemBannerArquivo").modal('show');
+
+            scrollToTop(100);
+        }
+
+        /*
+        *   REMOVER IMAGEM DA GALERIA (MANTER NO DISCO)
+        */
+        function removerImagem(botao, codigo) {
+            if (confirm("@TAdm("Deseja realmente remover este arquivo?")")) {
+                $.post('@urlRemover', { id: codigo, CodigoBanner: "@Model.Codigo" },
+                    function (response) {
+                        $(botao.parents('li.banner-imagem-item')[0]).remove();
+                        $('#galeriaImportar').append(response);
+
+                        if ($('#showDisk').is(':checked') && $('#galeriaImportar').css('display') == 'none')
+                        {
+                            mostrarArquivosDisco();
+                        }
+                });
+            }
+        }
+
+        function removerImagemServidor(botao, id, arquivo) {
+            if (confirm("@Html.Raw(T("Deseja realmente excluir este arquivo? Não será possível recuperá-lo."))")) {
+                $.get('@urlRemoverServidor', { id: id, imagem: arquivo }, function (response) {
+                    $(botao.parents('li.banner-imagem-item')[0]).remove();
+                });
+            }
+        }
+
+        /*
+        * SALVAR DESCRIÇÃO DOS IFRAMES
+        */
+        function SalvarIframe(botao) {
+            var form = botao.parents('form')[0];
+
+            if ($(form).valid()) {
+                prepareData(form);
+
+                $.post(
+                    form.action,
+                    $(form).serialize(),
+                    function (response) {
+                        botao.parents('.modal').modal('hide');
+                        $(".modal-backdrop").remove();
+
+                        var codigo = $(form).find("input[name=Codigo]").val();
+                        var novaUrl = $(form).find("input[name=Url]").val();
+
+                        $("#nomeImagem_" + codigo).text($(form).find("input[name=Titulo]").val());
+
+                        scrollToTop(100);
+
+                        //Recarregar iframe
+                        $('#iframe_' + codigo).attr('src', function (i, val) { return novaUrl; });
+                    }
+                );
+            }
+        }
+
+        /*
+        *   SALVAR DESCRIÇÃO DAS IMAGENS
+        */
+        function salvarImagem(botao) {
+            var form = $("#formModalEdicao");
+
+            if ($("#formModalEdicao").valid()) {
+                prepareData(form);
+
+                $.post(
+                    '/cms/@portal.Diretorio/banneradmin/arquivoitem',
+                    form.serialize(),
+                    function (response) {
+                        botao.parents('.modal').modal('hide');
+
+                        $(".modal-backdrop").remove();
+
+                        var divConteudo = $('li[data-codigo=' + form.find('input[name=Codigo]').val() + "]");
+
+                        var titulo = $(form).find("[name=Titulo]").val();
+
+                        if($("#iframe_" + response.model.Codigo).length > 0){
+                            //Quando for tipo Iframe, atualizar a URL do Iframe que já esta sendo exibido na tela
+                            $("#iframe_" + response.model.Codigo).attr('src', response.model.Url);
+                        }
+
+
+                        var imagem = $(form).find("[name=Imagem]").val();
+
+                        var CodigoBannerHover = $(form).find("[name=CodigoBannerHover]").val();
+                        var ImagemMobile = $(form).find("[name=ImagemMobile]").val();
+                        var ImagemTablet = $(form).find("[name=ImagemTablet]").val();
+
+                        var conteudoP = '';
+
+                        if (ImagemMobile != null && ImagemMobile != "") {
+                            conteudoP = "Mobile: <strong>" + ImagemMobile + "</strong>&nbsp;"
+                        }
+
+                        if (ImagemTablet != null && ImagemTablet != "") {
+                            conteudoP += "Tablet: <strong>" + ImagemTablet + "</strong>&nbsp;"
+                        }
+
+                        if (CodigoBannerHover != null && CodigoBannerHover != "") {
+                            conteudoP += "Hover: <strong>" + CodigoBannerHover + "</strong>&nbsp;"
+                        }
+
+                        divConteudo.find('p.small').html(conteudoP);
+
+                        if (titulo) {
+                            divConteudo.find('#nomeImagem').html(titulo + " - " + imagem);
+                        }
+                        else {
+                            divConteudo.find('#nomeImagem').html(imagem);
+                        }
+
+                        scrollToTop(100);
+                    }
+                );
+            }
+        }
+
+        function prepareData(form) {
+            var dinicio = $(form).find(".DataInicio");
+            var dtermino = $(form).find(".DataTermino");
+
+            dinicio.val(removerMask(dinicio.val()));
+            dtermino.val(removerMask(dtermino.val()));
+        }
+
+        function exibirModalEdicao(id) {
+            scrollToTop(100);
+
+            $.get("/cms/@portal.Diretorio/BannerAdmin/ArquivoItem", { "id": id }, function (data) {
+
+                //A classe jq-tipo-imagem indica todos os campos que devem ser exibidos somente
+                //para arquivos do tipo imagem, quando for Iframe, deve ocultar.
+                if(data.model.CodigoTipo != 2){
+                    $('.jq-tipo-imagem').show();
+                }
+                else{
+                    $('.jq-tipo-imagem').hide();
+                }
+
+                document.getElementById("formModalEdicao").reset();
+                $('#formModalEdicao').find("input[name=CodigoBanner]").val(data.model.CodigoBanner);
+                $('#formModalEdicao').find("input[name=Codigo]").val(data.model.Codigo);
+                $('#formModalEdicao').find("input[name=Imagem]").val(data.model.Imagem);
+                $('#formModalEdicao').find("input[name=Chapeu]").val(data.model.Chapeu);
+                $('#formModalEdicao').find("input[name=Titulo]").val(data.model.Titulo);
+                $('#formModalEdicao').find("input[name=CssClass1]").val(data.model.CssClass1);
+                $('#formModalEdicao').find("textarea[name=Texto]").val(data.model.Texto);
+                $('#formModalEdicao').find("input[name=Url]").val(data.model.Url);
+
+                $('#formModalEdicao').find("select[name=CodigoBannerHover]").val(data.model.CodigoBannerHover);
+                $('#formModalEdicao').find("select[name=ImagemMobile]").val(data.model.ImagemMobile);
+                $('#formModalEdicao').find("select[name=ImagemTablet]").val(data.model.ImagemTablet);
+
+                if (data.model.Ativo != null && data.model.Ativo) {
+                    $('#formModalEdicao').find("input[name=Ativo]").prop("checked", true);
+                }
+
+                if (data.model.NovaJanela != null && data.model.NovaJanela) {
+                    $('#formModalEdicao').find("input[name=NovaJanela]").prop("checked", true);
+                }
+
+                //Formatando dataInicio
+                if (data.model.DataInicio != null)
+                {
+                    $('#formModalEdicao').find("input[name=DataInicio]").datetimepicker('destroy');
+                    $('#formModalEdicao').find("input[name=DataInicio]").val(formatarData(data.model.DataInicio));
+
+                    $('#formModalEdicao').find("input[name=DataInicio]").datetimepicker({
+                        timepicker: true, mask: false, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false, lang: 'pt', validateOnBlur: false
+                    });
+                }
+
+                //Formatando dataTermino
+                if (data.model.DataTermino != null)
+                {
+                    $('#formModalEdicao').find("input[name=DataTermino]").datetimepicker('destroy');
+                    $('#formModalEdicao').find("input[name=DataTermino]").val(formatarData(data.model.DataTermino));
+
+                    $('#formModalEdicao').find("input[name=DataTermino]").datetimepicker({
+                        timepicker: true, mask: false, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false, lang: 'pt', validateOnBlur: false
+                    });
+                }
+                $('#formModalEdicao').find("input[name=Title]").val(data.model.Title);
+                $('#formModalEdicao').find("input[name=TagGA]").val(data.model.TagGA);
+                $('#formModalEdicao').find("input[name=Alt]").val(data.model.Alt);
+
+
+                $("#editarBannerArquivo").modal('show');
+            });
+        }
+
+        function formatarData(data){
+            var dataSub = new Date(parseInt(data.substr(6)));
+            var formatted =  ("0" + dataSub.getDate()).slice(-2) + "/" +
+                  ("0" + (dataSub.getMonth() + 1)).slice(-2) + "/" +
+                  dataSub.getFullYear() + " " + (dataSub.getHours()<10?'0':'') + dataSub.getHours() + ":" +
+                  (dataSub.getMinutes()<10?'0':'') + dataSub.getMinutes();
+
+            return formatted;
+        }
+
+        function exibirModalImagem(img) {
+            $('#aImagemFull').attr('href', img);
+            $('#imgEdicao').attr('src', img);
+            $("#modalImagemBannerArquivo").modal('show');
+        }
+
+        //Limpar source da imagem para evitar que a última imagem seja exibida ao reabrir a modal
+        $("#modalImagemBannerArquivo").on('hidden.bs.modal', function(){
+            $("#aImagemFull").attr('href', '');
+            $("#imgEdicao").attr('src', '');
+        });
+    </script>
+}

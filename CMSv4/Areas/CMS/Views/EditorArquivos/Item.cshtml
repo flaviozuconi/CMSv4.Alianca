@@ -1,0 +1,59 @@
+﻿@model MLConteudoViewModel
+
+@{
+    var portal = PortalAtual.Obter;
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/file_manager" />
+                @TAdm("Editor de Arquivos")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="/cms/@portal.Diretorio/editorarquivos">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Nome" name="NomeAnterior" />
+            <input type="hidden" value="@Model.Diretorio" name="Diretorio" id="Diretorio" />
+            <div class="form-group col-md-12">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+            </div>
+            <div class="form-group col-md-12">
+                <textarea data-editor="html" name="Conteudo" id="Conteudo" style="height: 400px; width: 100%;">@Model.Conteudo</textarea>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="/cms/@portal.Diretorio/editorarquivos">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script type="text/javascript">
+        @if (Model.AceEditorMode != null)
+        {
+
+            @:$(document).ready(function () {
+            @:    var editor = ace.edit("Conteudo");
+            @:    editor.getSession().setMode("@Model.AceEditorMode");
+            });
+        }
+
+    $('form').validate({
+        rules: {
+            Nome: { required: true }
+        }
+    });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

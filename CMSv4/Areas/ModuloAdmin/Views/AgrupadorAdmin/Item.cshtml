@@ -1,0 +1,76 @@
+﻿@model MLCategoriaAgrupador
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/AgrupadorAdmin/Index", portal.Diretorio);
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/group_key" /> @TAdm("Agrupador")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Model.Ordem" name="Ordem" />
+
+            <div class="form-group col-md-6">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" maxlength="200" value="@Model.Nome" autofocus />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label>@TAdm("Url")</label>
+                <input type="text" class="form-control" name="UrlAmigavel" maxlength="200" value="@Model.UrlAmigavel" />
+            </div>
+
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="ExibirNoCadastroDeCliente" id="ExibirNoCadastroDeCliente" value="true" @((Model.ExibirNoCadastroDeCliente.HasValue && Model.ExibirNoCadastroDeCliente.Value) ? "checked" : "") /> <label for="ExibirNoCadastroDeCliente">@TAdm("Exibir no cadastro de clientes")</label>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $("form").validate({
+            rules: {
+                Nome: { required: true, maxlength: 200 }
+            }
+        });
+
+        $('input[name=Nome]').keyup(function () {
+            var url = $('input[name=UrlAmigavel]');
+            if (url) {
+                if (url.data('editado')) return;
+
+                url.val(UrlAmigavel($(this).val()));
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

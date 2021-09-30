@@ -1,0 +1,27 @@
+﻿@model MLModuloLogin
+@{
+    var portal = BLPortal.Atual;
+}
+
+<div class="form-group col-md-24">
+    <label>@T("Tipo de Exibição")</label>
+    <select name="View" class="form-control" id="View" required>
+        <option value="">@T("Selecione...")</option>
+        <option value="Cadastro" @(Model.View == "Cadastro" ? "selected" : "")>@T("Cadastro")</option>
+        <option value="Login" @(Model.View == "Login" ? "selected" : "")>@T("Login")</option>
+    </select>
+</div>
+
+<fieldset>
+    <legend>Facebook</legend>
+
+    <div class="form-group col-md-12">
+        <label>@T("AppId")</label>
+        <input type="text" name="FacebookAppId" class="form-control" maxlength="50" value="@Model.FacebookAppId">
+    </div>
+
+    <div class="form-group col-md-12">
+        <label>@T("App Secret")</label>
+        <input type="text" name="FacebookAppSecret" class="form-control" maxlength="100" value="@Model.FacebookAppSecret">
+    </div>
+</fieldset>

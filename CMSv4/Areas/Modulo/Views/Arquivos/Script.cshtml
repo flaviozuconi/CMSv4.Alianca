@@ -1,0 +1,31 @@
+﻿@model MLModuloArquivos
+@{
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $("#vermais_@Model.Repositorio").on("click", function () {
+        $.ajax({
+            type: "POST",
+            data: { "Pagina": $("#hdn_@Model.Repositorio").val(),
+                    "Quantidade": "@Model.Quantidade",
+                    "url": "@Model.UrlDetalhe",
+                    "categorias": "@Model.Categorias",
+                    "ordenardata": "@Model.OrdenarData",
+                    "ordenardesc": "@Model.OrdenarDesc"
+            },
+            url: "@Portal.UrlCms(portal)/Arquivos/ListagemAjax",
+            success: function (data) {
+
+                if (parseInt($("#hdn_@Model.Repositorio").val()) >= parseInt(data.TotalPaginas)) {
+                    $("#vermais_@Model.Repositorio").hide();
+                }
+
+                $("#divVerMais_@Model.Repositorio").append(data.view);
+                $("#hdn_@Model.Repositorio").val(parseInt($("#hdn_@Model.Repositorio").val()) + 1);
+            },
+            error: function(err){
+                
+            }
+        });
+    });
+</script>

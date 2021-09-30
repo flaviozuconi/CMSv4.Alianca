@@ -1,0 +1,11 @@
+﻿@model MLEnqueteOpcao
+
+@{
+    var itemId = Model.Codigo;
+    
+}
+<div class="col-md-12 form-group">
+    <textarea class="form-control" rows="5" name="OpcaoTitulo" placeholder="@TAdm("Título")">@Model.Titulo</textarea>
+    <a class="btn btn-link" name="remover" onclick="@string.Format("removerOpcao($(this),'{0}');", itemId)"><img src="/iconpack.axd/16/delete" />@TAdm(" remover opção")</a>
+    <input type="hidden" Name="OpcaoCodigo" value="@itemId" />
+</div>

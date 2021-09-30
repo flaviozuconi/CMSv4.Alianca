@@ -1,0 +1,56 @@
+﻿@model MLModuloArquivoRestrito
+@{
+    var portal = BLPortal.Atual;
+
+    // OBTEM O USUARIO LOGADO
+    var usuarioLogado = CMSv4.BusinessLayer.BLCliente.ObterLogado();
+
+    // VERIFICA SE O USUARIO É EXCLUSIVO, SE NÃO FOR EXCLUSIVO EXIBE A POPUP
+    // E NÃO DEIXA O USUARIO FAZER O DOWNLOAD
+    var isExclusivo = string.Empty;
+    if (usuarioLogado != null && usuarioLogado.Grupos.FindAll(obj => obj.CodigoGrupo == BLConfiguracao.CodigoUsuarioRestrito).Count > 0)
+    {
+        isExclusivo = "true";
+    }
+
+}
+<script type="text/javascript">
+
+    $("#linkArquivo_@Model.Repositorio").click(function (e) {
+
+        $('#linkArquivo_@Model.Repositorio').attr("disabled", "disabled");
+
+        $.ajax({
+            type: "POST",
+            data: {
+                "codigo": $(this).attr("data-content")
+            },
+            url: "@Portal.UrlCms(portal)/ArquivoRestrito/DownloadArquivo",
+             success: function (data) {
+                 if (data.success) {
+
+                     if('@isExclusivo' == "true"){
+                         window.location.href = data.arquivo;
+                     }
+                     else {
+                         $('#divLoginCabecalho').css("display", "none");
+                         $('#divArearestrita').css("display", "block");                         
+                     }
+                 }
+                 else {
+                     $(".msgJQ_@Model.Repositorio").html("<span>Por favor, fazer login no sistema para efetuar download.</span>");
+                     $(".msgJQ_@Model.Repositorio").fadeIn("slide");
+                 }
+
+                 $('#linkArquivo_@Model.Repositorio').removeAttr("disabled");
+            },
+             error: function (err) {
+                 $('#linkArquivo_@Model.Repositorio').removeAttr("disabled");
+                 $(".msgJQ_@Model.Repositorio").html("<span>Não foi possível baixar o arquivo. Tente novamente mais tarde.</span>");
+                 $(".msgJQ_@Model.Repositorio").fadeIn("slide");
+             }
+         });
+
+
+    });
+</script>

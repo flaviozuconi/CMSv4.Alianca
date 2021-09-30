@@ -1,0 +1,46 @@
+﻿@model MLModuloFaleConosco
+@{
+    Layout = "";
+
+    var modelos = (List<string>)ViewData["modelos"] ?? new List<string>();
+    var formularios = (List<string>)ViewData["formularios"] ?? new List<string>();
+}
+
+<div class="col-md-6">
+    <label>@T("Formulário")</label>
+    <select name="NomeView" class="form-control">
+        <option value="" selected>@T("Selecione")</option>
+        @foreach (var item in formularios)
+        {
+            <option value="@item" @(item == Model.NomeView ? "selected" : "")>@item</option>
+        }
+    </select>
+</div>
+
+<div class="col-md-6">
+    <label>@T("Modelo de Email")</label>
+    <select name="NomeModelo" class="form-control">
+        <option value="" selected>@T("Selecione")</option>
+        @foreach (var item in modelos)
+        {
+            <option value="@item" @(item == Model.NomeModelo ? "selected" : "")>@item</option>
+        }
+    </select>
+</div>
+
+<div class="col-md-12">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Nome")" value="@Model.Titulo">
+</div>
+
+<div class="form-group col-md-6">
+    <br />
+    <input type="checkbox" name="Anonimo" id="Anonimo" value="true" @(Model.Anonimo.GetValueOrDefault() ? "checked" : "") />
+    <label for="Anonimo">@T("Anônimo")</label>
+</div>
+
+<div class="form-group col-md-6">
+    <br />
+    <input type="checkbox" name="EnviaEmail" id="EnviaEmail" value="true" @(Model.EnviaEmail.GetValueOrDefault(true) ? "checked" : "") />
+    <label for="EnviaEmail">@T("Envia Email")</label>
+</div>

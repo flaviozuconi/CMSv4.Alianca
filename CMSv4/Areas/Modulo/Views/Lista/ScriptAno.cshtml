@@ -1,0 +1,26 @@
+﻿@model MLModuloLista
+@{
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        listarLista@(Model.Repositorio)("@DateTime.Now.Year");
+    });
+
+    $("#ano_lista_@(Model.Repositorio)").change(function () {
+        var ano = $(this).find("option:selected").val();
+
+        listarLista@(Model.Repositorio)(ano);
+    });
+
+    function listarLista@(Model.Repositorio)(anoLista) {
+        $("#model_lista_@(Model.Repositorio)").html("<p>@T("Carregando...")</p>");
+        $.ajax({
+            url: "@Portal.UrlCms(portal)/Lista/ListaAnoAjaxRequest",
+            data: { codigoLista: '@Model.CodigoLista', categorias: '@Model.Categorias', ano: anoLista },
+            success: function (data) {
+                $("#model_lista_@(Model.Repositorio)").html(data.view);
+            }
+        });
+    }
+</script>

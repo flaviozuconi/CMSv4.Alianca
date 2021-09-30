@@ -1,0 +1,186 @@
+﻿@model  MLListaConteudo
+@{
+    var portal = PortalAtual.Diretorio;
+
+    var config = (MLListaConfig)ViewData["listaConfig"];
+    var lista = (List<MLListaConteudoImagem>)ViewData["lista"] ?? new List<MLListaConteudoImagem>();
+
+    var arquivos = (List<string>)ViewData["arquivosGaleria"] ?? new List<string>();
+
+    var urlLista = "/cms/" + portal + "/listaadmin?idLista=" + config.Codigo;
+    var urlIncluir = "/cms/" + portal + "/listaadmin/incluirarquivo";
+    var urlRemover = "/cms/" + portal + "/listaadmin/removerarquivo";
+    var urlUpload = "/cms/" + portal + "/listaadmin/uploadgaleria";
+    var urlOrdem = "/cms/" + portal + "/listaadmin/ordenar";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="@(config.Icone ?? "~/iconpack.axd/16/newspaper")" />
+                @TAdm("Galeria") : @TAdm(config.Nome)
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form id="galeriaUpload" action="/" method="post" class="dropzone">
+            <input type="hidden" name="id" value="@Model.Codigo" />
+            <div class="fallback">
+                <input type="file" name="file" />
+            </div>
+        </form>
+        <ul id="galeriaSortable" class="ui-sortable">
+            @{
+                foreach (var imagem in lista.FindAll(o => o.Codigo.HasValue))
+                {
+                    <li class="form-group col-sm-2 galeria-imagem-item">
+                        @Html.Partial("GaleriaItem", imagem)
+                    </li>
+                }
+            }
+        </ul>
+
+        <div class="col-md-12">
+            <input type="checkbox" onclick="$('#galeriaImportar').toggle();" id="showDisk" /> <label for="showDisk" style="font-weight: normal;">@TAdm("Mostrar arquivos em disco")</label>
+        </div>
+
+        <ul id="galeriaImportar" class="ui-sortable" style="display: none;">
+            @{
+                foreach (var imagem in lista.FindAll(o => !o.Codigo.HasValue))
+                {
+                    <li class="form-group col-sm-2 galeria-imagem-item">
+                        @Html.Partial("GaleriaItem", imagem)
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>
+
+@section head {
+    <link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.theme.css" rel="stylesheet" />
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+}
+
+@section scripts{
+    <script src="~/Content/js/jquery.sortable.min.js"></script>
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+
+    <script type="text/javascript">
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $(document).ready(function () {
+
+            /*
+            *   FORM UPLOAD
+            */
+            Dropzone.options.galeriaUpload = {
+                url: "@urlUpload",
+                acceptedFiles: "image/*",
+                dictDefaultMessage: "@TAdm("Arraste ou clique aqui para realizar upload de arquivos")",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                complete: function (file) {
+                    incluirImagemUpload(file.name);
+                    $(file.previewElement).remove();
+                }
+            };
+
+            /*
+            * SORTABLE
+            */
+            $('#galeriaSortable').sortable({ update: function (event, ui) { salvarOrdem(); } });
+
+        });
+
+        /*
+        *   SALVAR ORDEM
+        */
+        function salvarOrdem() {
+            var codigos = $('input[name=Codigo]').map(function () { var t = $(this); if (t.val()) { return $(this).val() }; }).get()
+            if (!codigos) { return; }
+
+            $.ajax(
+                {
+                    url: '@urlOrdem',
+                    traditional: true,
+                    type: 'post',
+                    data: {
+                        id: '@Model.Codigo',
+                        ordem: codigos
+                    }
+                }
+            );
+        }
+
+        /*
+        *   INCLUIR IMAGEM DO ARQUIVO EM DISCO PARA A GALERIA
+        */
+        function incluirImagem(botao) {
+            var arquivo = botao.data('file');
+            $.post(
+                '@urlIncluir',
+                {
+                    id: '@Model.Codigo',
+                    file: arquivo
+                },
+                function (response) {
+                    botao.parent('li.galeria-imagem-item').remove();
+                    $('#galeriaSortable').append('<li class="form-group col-sm-2 galeria-imagem-item">' + response + '</li>');
+                }
+            );
+        }
+        function incluirImagemUpload(arquivo) {
+            $.post(
+                '@urlIncluir',
+                {
+                    id: '@Model.Codigo',
+                    file: arquivo
+                },
+                function (response) {
+                    $('#galeriaSortable').append('<li class="form-group col-sm-2 galeria-imagem-item">' + response + '</li>');
+                }
+            );
+        }
+
+        /*
+        *   REMOVER IMAGEM DA GALERIA (MANTER NO DISCO)
+        */
+        function removerImagem(botao, codigo) {
+            $.post(
+                '@urlRemover', { id: codigo },
+                function (response) {
+                    $(botao.parents('li.galeria-imagem-item')[0]).remove();
+                    $('#galeriaImportar').append('<li class="form-group col-sm-2 galeria-imagem-item">' + response + '</li>');
+                }
+            );
+        }
+
+        /*
+            *   SALVAR DESCRIÇÃO DAS IMAGENS
+            */
+        function salvarImagem(botao) {
+            var form = botao.parents('form')[0];
+
+            $.post(
+                form.action,
+                $(form).serialize(),
+                function (response) {
+                    $('div.modal').hide();
+                }
+            );
+        }
+
+    </script>
+}
+

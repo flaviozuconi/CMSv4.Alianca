@@ -1,0 +1,31 @@
+﻿@model MLModuloFaleConosco
+
+@{
+    if (Model.NomeView == "Index" || Model.NomeView == "Editar") { Model.NomeView = "Padrao"; }
+}
+
+@if (Model != null && Model.CodigoPagina.HasValue && Model.Repositorio.HasValue)
+{
+    <div id="fale-conosco-div-@Model.Repositorio">
+        @{
+            if (!String.IsNullOrEmpty(Model.Titulo))
+            {
+                <h1>@Model.Titulo</h1>
+            }
+
+            try
+            {
+                Html.RenderAction("Renderizar", "FaleConosco", new { model = Model });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+            }
+        }
+    </div>
+}
+else
+{
+    <br />
+    <p>@T("Clique em ")<u>@T("Editar")</u> @T("para configurar o módulo.")</p>
+}

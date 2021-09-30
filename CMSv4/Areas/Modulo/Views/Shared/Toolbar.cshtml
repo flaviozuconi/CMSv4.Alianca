@@ -1,0 +1,25 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+}
+<div class="cms-ac-toolbar">
+    @if (ViewData["editavel"] != null && Convert.ToBoolean(ViewData["editavel"]) && ViewData["urlModulo"].ToString().ToLower() != "html")
+    {
+        <a class="linkEditar_@ViewData["Repositorio"]" data-toggle="modal" data-target="#propertiesModal" href="#" onclick="editarModulo(this,@ViewData["codigoPagina"],@ViewData["Repositorio"],'@ViewData["urlModulo"]','@portal.Diretorio');">@T("Editar")</a>
+        <input type="hidden" class="hdf_@ViewData["Repositorio"]" value="@ViewData["abrirEdicao"]" />
+        if (@ViewData["abrirEdicao"] == "1")
+        {
+            <script type="text/javascript">
+                $(document).ready(function () {
+                    if ($('.hdf_@ViewData["Repositorio"]').val() == "1") {
+                        $('.hdf_@ViewData["Repositorio"]').val("0");
+                        $('.linkEditar_@ViewData["Repositorio"]').trigger('click');
+                    }
+                });
+            </script>
+        }
+    }
+
+    <a href="javascript:;" onclick="recortarModulo(@ViewData["Repositorio"],'@ViewData["urlModulo"]',this);" rel="recortar">@T("Recortar")</a>
+    <a href="javascript:;" onclick="colarModulo(@ViewData["codigoPagina"], @ViewData["Repositorio"],'@portal.Diretorio',this,'@ViewData["urlModulo"]');" rel="colar" style="display: none!important;">@T("Colar Aqui")</a>
+    <a class="linkRemover_@ViewData["Repositorio"]" href="javascript:;" onclick="removerModulo(this, @ViewData["codigoPagina"],@ViewData["Repositorio"],'@ViewData["urlModulo"]','@portal.Diretorio')">@T("Remover")</a>
+</div>

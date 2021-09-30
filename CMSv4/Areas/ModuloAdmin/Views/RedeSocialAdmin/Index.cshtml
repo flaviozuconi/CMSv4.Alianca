@@ -1,0 +1,31 @@
+﻿<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/linkedin" /> @TAdm("Redes Sociais")</h4>
+        </div>
+        <div class="portlet-widgets"></div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body">
+        <a href="@ViewBag.UrlAuth" target="_blank">@TAdm("Requisição de autenticação no Linkedin")</a>
+
+        @if (Request.QueryString["code"] != null)
+        {
+            <p><b>code:</b></p>
+            <p>@Request.QueryString["code"]</p>
+            <p><b>state:</b></p>
+            <p>@Request.QueryString["state"]</p>
+            <p>
+                <a href="@ViewBag.UrlToken" target="_blank">@TAdm("Requisição de Token")</a>
+            </p>
+        }
+
+        @if (Request.QueryString["access_token"] != null)
+        {
+            <p><b>access_token:</b></p>
+            <p>@Request.QueryString["access_token"]</p>
+            <p><b>expires_in:</b></p>
+            <p>@Request.QueryString["expires_in"]</p>
+        }
+    </div>
+</div>

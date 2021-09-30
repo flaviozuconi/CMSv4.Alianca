@@ -1,0 +1,58 @@
+﻿@model MLModuloEventos
+@{
+    var portal = BLPortal.Atual;
+    var lstEventos = (List<MLEvento>)ViewData["lstEventos"] ?? new List<MLEvento>();
+    string strTitulo = Model.Titulo ?? T("Eventos");
+    var textoVerMais = T("Ver mais");
+    var textoDe = T("de");
+}
+
+<!-- mol-carousel-event -->
+<h2>@strTitulo</h2>
+<div class="carousel-event" id="carousel-example-generic_@Model.Repositorio">
+    @if (lstEventos.Count > 0)
+    {
+        <div class="owl-carousel">
+            @for (int i = 0; i < lstEventos.Count; i++)
+            {
+                <div class="item @lstEventos[i].Class">
+                    <div class="event-box">
+                        <a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista)">
+                            <div class="event--date">
+                                <span>@(String.Format("{0:dd}", lstEventos[i].DataInicio))</span> @(String.Format("{0:MMM}", lstEventos[i].DataInicio)) @textoDe @(lstEventos[i].DataInicio.Value.Year.ToString())
+                            </div>
+                            <div class="event--desc">
+                                <h3 class="event--title">@lstEventos[i].Titulo</h3>
+                                <p class="event--cap">@lstEventos[i].Chamada</p>
+                                <span class="btn btn-link unpad">
+                                    @textoVerMais <span class="icon icon-chevron-right"></span>
+                                </span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>@T("Nenhum evento futuro encontrado"). <a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista)">@T("Visualizar eventos anteriores")</a></p>
+        <br />
+    }
+</div>
+<!-- /mol-carousel-event -->
+<div class="carousel slide" data-ride="carousel" style="display: none;">
+    <ol class="carousel-indicators carousel-indicators-custom"></ol>
+    <div class="carousel-inner"></div>
+    <a class="left carousel-control" href="#carousel-example-generic_@Model.Repositorio" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+    </a>
+    <a class="right carousel-control" href="#carousel-example-generic_@Model.Repositorio" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right"></span>
+    </a>
+</div>
+@*<a href="@Model.UrlLista" class="btn btn-danger" target="_top">Veja mais</a>*@
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+}

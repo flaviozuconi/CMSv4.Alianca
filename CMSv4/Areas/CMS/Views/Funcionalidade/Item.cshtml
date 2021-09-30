@@ -1,0 +1,110 @@
+﻿@model  MLFuncionalidade
+@{
+    var urlLista = "/admin/funcionalidade";
+    var termoVisualizar = T("Visualizar");
+    var termoModificar = T("Modificar");
+    var termoExcluir = T("Modificar e Excluir");
+    var grupos = (List<MLGrupo>)ViewData["Grupos"] ?? new List<MLGrupo>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/group_key" /> @TAdm("Funcionalidades")</h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @if (!String.IsNullOrEmpty((String)ViewData["Valicacao"]))
+        {
+            <div class="alert alert-danger">
+                <strong>@TAdm("Atenção: ")</strong> @ViewData["Valicacao"]
+            </div>
+        }
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-4">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+            </div>
+            <div class="form-group col-md-8">
+                <label>@TAdm("Url")</label>
+                <input type="text" class="form-control" name="Url" value="@Model.Url">
+            </div>
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+            <fieldset class="col-md-12">
+                <legend>@TAdm("Grupos Autorizados")</legend>
+                @for (int i = 0; i < grupos.Count; i++)
+                {
+                    var item = Model.Permissoes.Find(o => o.CodigoGrupo == grupos[i].Codigo) ?? new MLFuncionalidadeItemPermissao();
+
+                    var nivel = 0;
+                    if (item.Excluir.GetValueOrDefault()) { nivel = 3; }
+                    else if (item.Modificar.GetValueOrDefault()) { nivel = 2; }
+                    else if (item.Visualizar.GetValueOrDefault()) { nivel = 1; }
+
+                    <div class="form-group col-sm-3">
+                        <label>@grupos[i].Nome</label><br />
+                        <select name="@string.Format("[{0}].NivelPermissao", i)" class="form-control" id="@("grupo_" + grupos[i].Codigo)">
+                            <option value="0">-</option>
+                            <option value="1" @(nivel == 1 ? "selected" : "")>@termoVisualizar</option>
+                            <option value="2" @(nivel == 2 ? "selected" : "")>@termoModificar</option>
+                            <option value="3" @(nivel == 3 ? "selected" : "")>@termoExcluir</option>
+                        </select>
+                        <input type="hidden" name="@string.Format("[{0}].CodigoGrupo", i)" value="@grupos[i].Codigo" />
+                    </div>
+                }
+            </fieldset>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts{
+
+<script type="text/javascript">
+
+        $('form').validate({
+            rules: {
+                Nome: { required: true, maxlength: 50 },
+                Url: {
+                    required: true,
+                    maxlength: 300,
+                    remote: {
+                        url: "/admin/funcionalidade/isvalidurl",
+                        type: "post",
+                        loadingPanel: false,
+                        data: {
+                            id: "@Model.Codigo",
+                            url: $("input[name=Url]").val()
+                        }
+                    }
+                }
+            },
+            messages: {
+                Url: {
+                    remote: "@TAdm("Url já cadastrada")"
+                }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $('select').multiselect({ buttonClass: 'btn btn-white' });
+
+</script>
+}
+

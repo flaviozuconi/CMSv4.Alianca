@@ -1,0 +1,10 @@
+﻿@model MLModuloConteudo
+@{
+    Layout = "";
+}
+<div class="form-group col-md-24">
+    <label>@T("Nome")</label>    
+    <input type="text" class="form-control" id="Chave" name="Chave" maxlength="50" value="@Model.Chave" required autocomplete="off">
+</div>
+
+@Helpers.AutoComplete("ListarConteudosPublicados", "ModuloConteudo", "filtro", FormMethod.Get, "Codigo", "Chave", portal: BLPortal.Atual, textExibicao: "Chave", idInputTextBox: "Chave", ignorarInputVazio: false, executarOnLoad: true)

@@ -1,0 +1,20 @@
+﻿@model MLModuloConteudo
+
+@if (Model != null && Model.CodigoPagina.HasValue && Model.Repositorio.HasValue)
+{
+    @Html.Raw(ViewData["conteudo"].ToString())
+    
+    if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+    {
+        Html.RenderAction("Script", new { model = Model });
+    }
+    else
+    {
+        BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+    }
+}
+else
+{
+    <br />
+    <p>@("Clique em ")<u>@T("Editar")</u> @T("para selecionar Conteúdo")</p>
+}

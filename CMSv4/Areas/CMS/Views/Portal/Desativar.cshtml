@@ -1,0 +1,41 @@
+﻿@model decimal
+@{
+    var errorMessage = (string)ViewBag.ErrorMessage ?? string.Empty;
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/globe_network" /> @TAdm("Portais")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="/admin/portal">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">
+                @errorMessage
+            </div>
+        }
+
+        <form accept-charset="UTF-8" role="form" method="POST">
+            @Html.AntiForgeryToken()
+            <input type="hidden" value="@Model" name="id" />
+            <div class="col-md-12 form-group">
+                @TAdm("Confirma a desativação do portal? A sua desativação pode acarretar sérios problemas.")
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="/admin/portal">@TAdm("Cancelar")</a>
+                <input type="submit" class="btn btn-red" value="@TAdm("Confirmar")" />
+            </div>
+        </form>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            scrollToTop();
+        });
+    </script>
+}

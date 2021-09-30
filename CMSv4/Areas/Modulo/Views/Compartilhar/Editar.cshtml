@@ -1,0 +1,34 @@
+﻿@model  MLModuloCompartilharEdicao
+@{
+    Layout = "";
+
+    //ocultar os seguintes arquivos
+    var arquivosOcultos = new string[] { "index", "script", "editar" };
+    //listar views do diretório
+    var viewsInDir = (from e in Directory.GetFiles(Server.MapPath(string.Format("~/Areas/Modulo/Views/{0}", ViewContext.Controller.ValueProvider.GetValue("controller").RawValue)), "*.cshtml")
+                      //regra para ocultação de views principais
+                      where Array.IndexOf(arquivosOcultos, Path.GetFileNameWithoutExtension(e).ToLower()) == -1
+                      select Path.GetFileNameWithoutExtension(e));
+
+}
+@Html.HiddenFor(a => a.CodigoPortal)
+@Html.HiddenFor(a => a.CodigoUsuario)
+@Html.HiddenFor(a => a.DataRegistro)
+
+<div class="form-group col-md-24">
+    <label>@T("Título")</label>
+    @Html.TextBoxFor(a => a.Titulo, new { @class = "form-control", maxlength = 100, placeholder = T("Título") })
+</div>
+<div class="form-group col-md-12">
+    <label>@T("Css")</label>
+    @Html.TextBoxFor(a => a.Css, new { @class = "form-control", maxlength = 100, placeholder = T("Css") })
+</div>
+<div class="form-group col-md-12">
+    <label>@T("View")</label><br />
+    <select name="View" class="form-control" required>
+        @foreach (var item in viewsInDir)
+        {
+            <option value="@item" @(item == Model.View ? "selected" : "")>@item</option>
+        }
+    </select>
+</div>

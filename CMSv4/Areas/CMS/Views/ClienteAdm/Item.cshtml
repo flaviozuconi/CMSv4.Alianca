@@ -1,0 +1,294 @@
+﻿@model  MLClienteViewModelItem
+@{
+    var urlLista  = "/admin/clienteadm";
+    var novo      = ViewData["Novo"] != null && Convert.ToBoolean(ViewData["Novo"]);
+    var urlImagem = string.Format("/portal/Principal/arquivos/clientes/");
+}
+
+<style>
+    .grupo-disabled {
+        border-color: #3f8dc0;
+        background-color: #4993c3;
+        opacity: .65;
+    }
+</style>
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/client_account_template" />
+                @TAdm("Clientes")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Cliente.Codigo.HasValue && Model.Cliente.Codigo > 0)
+            {
+                <a id="btnNovaSenha" class="btn" href="javascript:;" onclick="$('#painelSenha').show();">
+                    <i class="glyphicon glyphicon-send"></i> @TAdm("Enviar nova senha")
+                </a>
+            }
+            @if (Model.Cliente.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Cliente.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+
+        @Helpers.PainelConfirmacao("painelSenha", T("Recuperação de senha"), T("Confirma envio de nova senha para este usuário?"), "novaSenha();")
+        @Helpers.PainelAviso("painelSenhaOk", "alert-info", T("Sucesso"), T("Uma mensagem de e-mail foi enviada ao usuário para iniciar o processo de recuperação de senha"))
+        @if (novo)
+        {
+            <div class="alert alert-success">
+                @TAdm("Registro salvo com sucesso! Configure os Grupos de acesso para cada Portal!")
+            </div>
+        }
+        @Html.ValidationSummary()
+        <form method="post" class="form-vertical" role="form" enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Cliente.Codigo" name="Codigo" id="Codigo" />
+            <input type="hidden" value="@Model.Cliente.Colaborador.Codigo" name="Colaborador.Codigo" id="Colaborador_Codigo" />
+
+            <div class="form-group col-md-12">
+                <label>@TAdm("Imagem")</label>
+                <input type="file" name="file" />
+                <br />
+                @if (!string.IsNullOrEmpty(Model.Cliente.Foto))
+                {
+                    <img id="imagemCapa" src="@string.Concat(urlImagem, Model.Cliente.Codigo, Model.Cliente.Foto, "?", new Random().Next(1, 10))" alt="" style="max-width: 300px; max-height: 300px;" /><br />
+                    <input type="hidden" id="Foto" name="Foto" value="@Model.Cliente.Foto" />
+                    <input type="checkbox" id="RemoverCapa" name="RemoverCapa" value="True" /><label for="RemoverCapa"> @TAdm("Remover capa")</label>
+                }
+            </div>
+
+            <div class="row">
+
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Nome")</label>
+                    <input type="text" class="form-control" name="Nome" value="@Model.Cliente.Nome" autofocus>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label>@TAdm("E-mail")</label>
+                    <input type="text" class="form-control" name="Email" value="@Model.Cliente.Email">
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Login")</label>
+                    <input type="text" class="form-control" name="Login" value="@Model.Cliente.Login">
+                </div>
+
+            </div>
+
+            <div class="form-group col-md-2">
+                <label>@TAdm("Dt. Nascimento")</label>
+                <input type="text" class="form-control" name="DataNascimento" autocomplete="off" id="DataNascimento" value="@(Model.Cliente.DataNascimento.HasValue ? Model.Cliente.DataNascimento.Value.ToString("dd/MM/yyyy") : null)" maxlength="10">
+            </div>
+
+            <div class="form-group col-md-4">
+                <label>@TAdm("Telefone")</label>
+                <input type="text" class="form-control" name="Colaborador.Telefone" id="Colaborador_Telefone" value="@Model.Cliente.Colaborador.Telefone" maxlength="100">
+                <small>@TAdm("Separar os telefones por vírgula")</small>
+            </div>
+
+            @*<div class="form-group col-md-6">
+                <label>@TAdm("Sexo")</label><br />
+                <input type="radio" name="Colaborador.Sexo" id="SexoFeminino" value="F" @(Model.Colaborador.Sexo == "M" ? "checked" : "") /> <label for="SexoFeminino">@TAdm("Feminino")</label>&nbsp;
+                <input type="radio" name="Colaborador.Sexo" id="SexoMasculino" value="M" @(Model.Colaborador.Sexo == "F" ? "checked" : "") /> <label for="SexoMasculino">@TAdm("Masculino")</label>
+            </div>*@
+
+            <div class="form-group col-md-2">
+                <label>@TAdm("Estado")</label>
+                <select class="form-control" name="Colaborador.Estado" id="Colaborador_Estado">
+                    <option value="" @(Model.Cliente.Colaborador.Estado == "" ? "selected" : "")>@TAdm("Selecione")</option>
+                    <option value="AC" @(Model.Cliente.Colaborador.Estado == "AC" ? "selected" : "")>@TAdm("Acre")</option>
+                    <option value="AL" @(Model.Cliente.Colaborador.Estado == "AL" ? "selected" : "")>@TAdm("Alagoas")</option>
+                    <option value="AP" @(Model.Cliente.Colaborador.Estado == "AP" ? "selected" : "")>@TAdm("Amapá")</option>
+                    <option value="AM" @(Model.Cliente.Colaborador.Estado == "AM" ? "selected" : "")>@TAdm("Amazonas")</option>
+                    <option value="BA" @(Model.Cliente.Colaborador.Estado == "BA" ? "selected" : "")>@TAdm("Bahia")</option>
+                    <option value="CE" @(Model.Cliente.Colaborador.Estado == "CE" ? "selected" : "")>@TAdm("Ceará")</option>
+                    <option value="DF" @(Model.Cliente.Colaborador.Estado == "DF" ? "selected" : "")>@TAdm("Distrito Federal")</option>
+                    <option value="ES" @(Model.Cliente.Colaborador.Estado == "ES" ? "selected" : "")>@TAdm("Espírito Santo")</option>
+                    <option value="GO" @(Model.Cliente.Colaborador.Estado == "GO" ? "selected" : "")>@TAdm("Goiás")</option>
+                    <option value="MA" @(Model.Cliente.Colaborador.Estado == "MA" ? "selected" : "")>@TAdm("Maranhão")</option>
+                    <option value="MT" @(Model.Cliente.Colaborador.Estado == "MT" ? "selected" : "")>@TAdm("Mato Grosso")</option>
+                    <option value="MS" @(Model.Cliente.Colaborador.Estado == "MS" ? "selected" : "")>@TAdm("Mato Grosso do Sul")</option>
+                    <option value="MG" @(Model.Cliente.Colaborador.Estado == "MG" ? "selected" : "")>@TAdm("Minas Gerais")</option>
+                    <option value="PA" @(Model.Cliente.Colaborador.Estado == "PA" ? "selected" : "")>@TAdm("Pará")</option>
+                    <option value="PB" @(Model.Cliente.Colaborador.Estado == "PB" ? "selected" : "")>@TAdm("Paraíba")</option>
+                    <option value="PR" @(Model.Cliente.Colaborador.Estado == "PR" ? "selected" : "")>@TAdm("Paraná")</option>
+                    <option value="PE" @(Model.Cliente.Colaborador.Estado == "PE" ? "selected" : "")>@TAdm("Pernambuco")</option>
+                    <option value="PI" @(Model.Cliente.Colaborador.Estado == "PI" ? "selected" : "")>@TAdm("Piauí")</option>
+                    <option value="RJ" @(Model.Cliente.Colaborador.Estado == "RJ" ? "selected" : "")>@TAdm("Rio de Janeiro")</option>
+                    <option value="RN" @(Model.Cliente.Colaborador.Estado == "RN" ? "selected" : "")>@TAdm("Rio Grande do Norte")</option>
+                    <option value="RS" @(Model.Cliente.Colaborador.Estado == "RS" ? "selected" : "")>@TAdm("Rio Grande do Sul")</option>
+                    <option value="RO" @(Model.Cliente.Colaborador.Estado == "RO" ? "selected" : "")>@TAdm("Rondônia")</option>
+                    <option value="RR" @(Model.Cliente.Colaborador.Estado == "RR" ? "selected" : "")>@TAdm("Roraima")</option>
+                    <option value="SC" @(Model.Cliente.Colaborador.Estado == "SC" ? "selected" : "")>@TAdm("Santa Catarina")</option>
+                    <option value="SP" @(Model.Cliente.Colaborador.Estado == "SP" ? "selected" : "")>@TAdm("São Paulo")</option>
+                    <option value="SE" @(Model.Cliente.Colaborador.Estado == "SE" ? "selected" : "")>@TAdm("Sergipe")</option>
+                    <option value="TO" @(Model.Cliente.Colaborador.Estado == "TO" ? "selected" : "")>@TAdm("Tocantin")</option>
+                </select>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label>@TAdm("Cidade")</label>
+                <input type="text" class="form-control" name="Colaborador.Cidade" id="Colaborador_Cidade" value="@Model.Cliente.Colaborador.Cidade" maxlength="100">
+            </div>
+            
+            <div class="clearfix"></div>
+            
+            @if (Model.Cliente.Codigo.HasValue)
+            {
+                <fieldset class="form-group col-md-12">
+                    <legend>@TAdm("Portais")</legend>
+                
+                    @foreach (var portalItem in Model.Portais)
+                    {
+                        var gruposPortal = Model.Grupos.FindAll(o => o.CodigoPortal == portalItem.CodigoPortal) ?? new List<MLGrupoCliente>();
+
+                        <button data-portal="@portalItem.CodigoPortal" class="btn btn-blue btn-md btn-square @(gruposPortal.Count > 0 ? "" : "grupo-disabled")" onclick="gruposportal(@portalItem.CodigoPortal)" data-toggle="modal" data-target="#standardModal">@portalItem.Nome</button>
+                    }
+
+                </fieldset>
+
+                <!-- Modal de Grupos -->
+                <div class="modal modal-flex fade" id="standardModal" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true"></div>
+                <!-- /.modal -->
+            }
+            <div class="form-group col-md-3">
+                <br />
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Cliente.Ativo.HasValue || Model.Cliente.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+
+    <script type="text/javascript">
+        $("#DataNascimento").blur(function () {
+            if ($(this).val() == "__/__/____") {
+                $(this).val("");
+            }
+        });
+
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                if ($("#DataNascimento").val() == "__/__/____") {
+                    $("#DataNascimento").val("");
+                }
+            }
+        });
+
+        @* PRECISA CORRIGIR *@
+        $("#DataNascimento").datetimepicker({ timepicker: false, mask: true, format: 'd/m/Y' });
+
+        $('form').validate({
+            rules: {
+                Nome: { required: true, maxlength: 100 },
+                Login: {
+                    required: true, maxlength: 200, remote: {
+                        url: "/admin/clienteadm/isvalid",
+                        type: "post",
+                        loadingPanel: false,
+                        data: { id: "@Model.Cliente.Codigo" }
+                    }
+                },
+                Email: {
+                    required: true, maxlength: 200, email: true, remote: {
+                        url: "/admin/clienteadm/isvalidemail",
+                        type: "post",
+                        loadingPanel: false,
+                        data: { id: "@Model.Cliente.Codigo" }
+                    }
+                }
+            },
+            messages: {
+                Login: {
+                    remote: "@TAdm("Cliente já cadastrado com esse login.")"
+                },
+                Email: {
+                    remote: "@TAdm("Cliente já cadastrado com esse e-mail.")"
+                }
+            }
+        });
+
+        function novaSenha() {
+            $.post('/admin/clienteadm/EnviarNovaSenha', { id: '@Model.Cliente.Codigo' }, function (data) {
+                var div = "<div class='msg-exclusao alert alert-danger row'><strong>@TAdm("Erro"):</strong> [[MSG]]</div>";
+
+                $(".alert").hide();
+                $(".msg-exclusao").remove();
+
+                if (data.success) {
+                    $("#painelSenhaOk").show();
+                }
+                else {
+                    if (data.msg) {
+                        $(".portlet-body").prepend(div.replace("[[MSG]]", data.msg));
+                    }
+                }
+            });
+        }
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        function gruposportal(portal) {
+            $('#msg').hide();
+            var dataSend = { 'portal': portal, 'cliente': $('#Codigo').val() };
+            $.ajax({
+                url: '/admin/clienteadm/GruposPortal',
+                data: dataSend,
+                success: function (data) {
+                    $('#standardModal').empty();
+                    $('#standardModal').html(data);
+                }
+            });
+            return false;
+        }
+
+        function salvargrupos(portal) {
+            var arrayAssociados = $(".grupos:checked").map(function () { return $(this).val() }).get();
+            var arrayNAssociados = $(".grupos:not(:checked)").map(function () { return $(this).val() }).get();;
+            var dataSend = { 'portal': portal, 'cliente': $('#Codigo').val(), 'associados': arrayAssociados, 'nassociados': arrayNAssociados };
+            var buttonPortal = $("[data-portal=" + $("input[name=ModelCodigoPortal]").val() + "]");
+
+            $.ajax({
+                type: 'POST',
+                url: '/admin/clienteadm/GruposPortal',
+                traditional: true,
+                data: dataSend,
+                beforeSend: function () {
+                    buttonPortal.addClass('grupo-disabled');
+                },
+                success: function (data) {
+                    if (data.success)
+                        $('#msg').show();
+
+                    if (arrayAssociados.length > 0) {
+                        buttonPortal.removeClass('grupo-disabled');
+                    }
+                },
+                error: function (data) {
+
+                }
+            });
+            return false;
+        }
+
+    </script>
+}

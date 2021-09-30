@@ -1,0 +1,39 @@
+﻿@model  MLModuloDicionario
+@{
+    var edicao = (Model is MLModuloDicionario);
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    function DicBuscarTermos(codRepositorio) {
+        var chars = $("#txtBuscaTermo_" + codRepositorio).val().length;
+
+        if (chars >= 3) {
+            $("#DicionarioRep_" + codRepositorio).empty();
+            $.post("@Portal.UrlCms(portal)/Dicionario/AtualizaListagem",
+                {
+                    strTermo: $("#txtBuscaTermo_" + codRepositorio).val(),
+                },
+                function (data, opts) {
+                    if (data.success) {
+                        $("#DicionarioRep_" + codRepositorio).html(data.html);
+                    }
+                }
+            );
+        } else {
+            $("#DicionarioRep_" + codRepositorio).html('@T("Digite mais de 3 caracteres para realizar a busca!")');
+        }
+    }
+
+    function DicOrdemTermos(letra, codRepositorio) {
+        $("#DicionarioRep_" + codRepositorio).empty();
+        $("#txtBuscaTermo_" + codRepositorio).val("");
+
+        $.post("@Portal.UrlCms(portal)/Dicionario/AtualizaListagem", { strLetra: letra },
+        function (data, opts) {
+            if (data.success) {
+
+                $("#DicionarioRep_" + codRepositorio).html(data.html);
+            }
+        });
+    }
+</script>

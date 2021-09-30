@@ -1,0 +1,9 @@
+﻿@model  MLModuloAgrupador
+@try
+{
+    @Html.Action(Model.NomeView ?? "lista", "agrupador", new { model = Model })
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

@@ -1,0 +1,87 @@
+﻿@model MLMenuItem
+@{
+    var portal = PortalAtual.Obter;
+    var funcionalidade = (List<MLFuncionalidade>)ViewData["Funcionalidades"] ?? new List<MLFuncionalidade>();
+    var portaisRelacionados = (List<MLPortalMenu>)ViewData["PortaisRelacionados"] ?? new List<MLPortalMenu>();
+    var portais = (List<MLPortal>)ViewData["Portais"] ?? new List<MLPortal>();
+}
+
+<div class="modal modal-flex fade teste" id="editar" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="formMenuItem" action="/cms/@portal.Diretorio/Menu/MenuItemSalvar">
+            <input type="hidden" name="Codigo" value="@Model.Codigo" />
+            <input type="hidden" name="CodigoMenu" value="@Model.CodigoMenu" />
+
+            <div class="modal-body clearfix">
+
+                <div class="form-group col-md-12 alert alert-warning">
+                    @TAdm("{portal} - Será substituído pelo diretório do portal atual.")
+                </div>
+
+                @*URL*@
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Url")</label>
+                    <input type="text" class="form-control" name="CaminhoPagina" id="CaminhoPagina" value="@Model.CaminhoPagina" maxlength="100" />
+                </div>
+
+                @*FUNCIONALIDADE*@
+                <div class="form-group col-md-6">
+                    <label>@T("Funcionalidade")</label><br />
+                    <select name="CodigoFuncionalidade" class="form-control jq-multiselect" style="display:none;">
+                        <option value="" @(!Model.CodigoFuncionalidade.HasValue ? "selected" : "")>@TAdm("Selecione")</option>
+                        @foreach (var item in funcionalidade)
+                        {
+                            <option value="@item.Codigo" @(item.Codigo == Model.CodigoFuncionalidade ? "selected" : "")>@item.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                @*ICONE*@
+                <div class="form-group col-md-6">
+                    <label>@T("Ícone")</label>
+                    <a href="~/Content/img/IconPack.png" target="_blank">
+                        <img src="~/iconpack.axd/16/images" />
+                        <small>@TAdm("Visualizar Ícones")</small>
+                    </a>
+                    <input type="text" class="form-control maxlength" name="Imagem" id="Imagem" maxlength="100" value="@Model.Imagem" />
+                </div>
+
+                @*CSS*@
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Css")</label>
+                    <input type="text" class="form-control" name="Css" id="Css" maxlength="100" value="@Model.Css" />
+                </div>
+
+                <div class="clearfix"></div>
+
+                @*PORTAIS*@
+                <div class="form-group col-md-12">
+                    <label>@TAdm("Portais Relacionados")</label><br />
+                    <select name="PortaisRelacionados" multiple="multiple" class="jq-multiselect">
+                        @foreach (var item in portais)
+                        {
+                            <option value="@item.Codigo" @(portaisRelacionados.Find(o => o.CodigoPortal == item.Codigo) != null ? "selected" : "")>@item.Nome</option>
+                        }
+                    </select>
+                </div>
+
+                @*ABRIR NOVA PÁGINA*@
+                @*<div class="form-group col-md-6">
+                    <label for="AbrirNovaPagina">@Html.CheckBox("AbrirNovaPagina", (Model.AbrirNovaPagina.HasValue ? Model.AbrirNovaPagina.Value : true)) @T("Abrir em nova janela")</label>
+                </div>*@
+
+                @*ATIVO*@
+                <div class="form-group col-md-2">
+                    <label for="AtivoModal">@Html.CheckBox("Ativo", (Model.Ativo.HasValue ? Model.Ativo.Value : true), new { id = "AtivoModal" }) @TAdm("Ativo")</label>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@TAdm("Fechar")</button>
+                <button type="button" class="btn btn-green" name="btnsalvar" onclick="return salvar($(this));">@TAdm("Salvar")</button>
+            </div>
+        </form>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

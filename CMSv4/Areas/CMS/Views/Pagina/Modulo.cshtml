@@ -1,0 +1,13 @@
+﻿@{
+    var codigoPagina = Convert.ToDecimal(ViewData["codigoPagina"]);
+    var repositorio = Convert.ToInt32(ViewData["repositorio"]);
+    var urlModulo = Convert.ToString(ViewData["urlModulo"]);
+    
+}
+<div class="clearfix cms-ac-container">
+
+    @Html.Partial("~/areas/modulo/views/shared/toolbar.cshtml", ViewData)
+
+    @Html.Action("visualizar", urlModulo , new { area="CMS", codigoPagina = codigoPagina , repositorio = repositorio, edicao=true })
+
+</div>

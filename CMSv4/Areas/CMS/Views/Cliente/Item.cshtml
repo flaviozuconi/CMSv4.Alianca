@@ -1,0 +1,231 @@
+﻿@model  MLClienteCompleto
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/cliente", portal.Diretorio);
+    var urlImagem = string.Format("/portal/{0}/arquivos/clientes/", portal.Diretorio);
+    var grupos = (List<MLGrupoCliente>)ViewData["Grupos"] ?? new List<MLGrupoCliente>();
+    var estados = (List<MLEstado>)ViewData["Estados"] ?? new List<MLEstado>();
+}
+
+<style>
+    .help-block {
+        color: #a94442;
+    }
+</style>
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/client_account_template" />
+                @TAdm("Clientes")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue && Model.Codigo > 0)
+            {
+            <a id="btnNovaSenha" class="btn" href="javascript:;" onclick="$('#painelSenha').show();">
+                <i class="glyphicon glyphicon-send"></i> @TAdm("Enviar nova senha")
+            </a>
+            }
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo, true)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @Helpers.PainelConfirmacao("painelSenha", T("Recuperação de senha"), T("Confirma envio de nova senha para este usuário?"), "novaSenha();")
+        @Helpers.PainelAviso("painelSenhaOk", "alert-info", T("Sucesso"), T("Uma mensagem de e-mail foi enviada ao usuário para iniciar o processo de recuperação de senha"))
+
+        @Html.ValidationSummary()
+        <form method="post" class="form-vertical" role="form" enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+
+            <div class="row">
+                @*NOME*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Nome")</label>
+                    <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+                </div>
+
+                @*EMAIL*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("E-mail")</label>
+                    <input type="text" class="form-control" name="Email" value="@Model.Email">
+                </div>
+
+                @*LOGIN*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Login")</label>
+                    <input type="text" class="form-control" name="Login" value="@Model.Login">
+                </div>
+            </div>
+           
+            @*ESTADO*@
+            <div class="form-group col-md-3" id="divEstadoSelect">
+                <label>@TAdm("Estado")</label>
+                <select class="form-control" name="CodigoEstado" id="CodigoEstado">
+                    <option value="">@TAdm("Selecione...")</option>
+                    @foreach (var item in estados)
+                    {
+                        <option @(Model.CodigoEstado == item.Codigo ? "selected" : "") value="@item.Codigo">@item.Uf</option>
+                    }
+                </select>
+            </div>
+
+            @*CIDADE*@
+            <div class="form-group col-md-6">
+                <label>@TAdm("Cidade")</label>
+                <input type="text" class="form-control" name="Cidade" value="@Model.Cidade" maxlength="200">
+            </div>
+
+            @*DATA NASCIMENTO*@
+            <div class="form-group col-md-2">
+                <label>@TAdm("Dt. Nascimento")</label>
+                <input type="text" class="form-control" name="DataNascimento" autocomplete="off" id="DataNascimento" value="@(Model.DataNascimento.HasValue ? Model.DataNascimento.Value.ToString("dd/MM/yyyy") : null)" maxlength="10">
+            </div>
+
+                @*TELEFONE*@
+                <div class="form-group col-md-2">
+                    <label>@TAdm("Telefone")</label>
+                    <input type="text" class="form-control" name="Telefone" id="Telefone" value="@Model.Telefone" maxlength="50">
+                </div>
+            
+
+            <br />
+
+            <div class="clearfix"></div>
+
+            <fieldset class="form-group col-md-12">
+                <legend>@TAdm("Grupos")</legend>
+
+                <div id="erroGrupo" style="color:red !important;"></div>
+
+                @for (int i = 0; i < grupos.Count; i++)
+                {
+                    <div class="form-group col-sm-3">
+                        <input class="highlight" type="checkbox" id="group_@i" name="listaCodigoGrupo" value="@grupos[i].Codigo" @(Model.Grupos.Find(o => o.CodigoGrupo == grupos[i].Codigo) != null ? "checked" : "") />
+                        <label for="group_@i">@grupos[i].Nome</label>
+                        <input type="hidden" name="@string.Format("[{0}].CodigoGrupo", i)" value="@grupos[i].Codigo" />
+                    </div>
+                }
+            </fieldset>
+
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+
+
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <link href="~/Content/css/plugins/bootstrap-datepicker/datepicker3.css" rel="stylesheet" />
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+
+
+    <script type="text/javascript">
+        $("#DataNascimento").blur(function () {
+            if ($(this).val() == "__/__/____") {
+                $(this).val("");
+            }
+        });
+
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                if ($("#DataNascimento").val() == "__/__/____") {
+                    $("#DataNascimento").val("");
+                }
+            }
+        });
+
+        @* PRECISA CORRIGIR *@
+        $("#DataNascimento").datetimepicker({ timepicker: false, mask: true, format: 'd/m/Y', language: "ptbr" });
+
+        $('.multiselect').multiselect({
+            enableFiltering: true,
+            enableCaseInsensitiveFiltering: true,
+            maxHeight: 500,
+            nonSelectedText: '@TAdm("Selecione")'
+        });
+
+        $('form').validate({
+            rules: {
+                Nome: { required: true, maxlength: 100 },
+                listaCodigoGrupo: { required: true },
+                Login: {
+                    required: true, maxlength: 200, remote: {
+                        url: "/cms/@portal.Diretorio/cliente/isvalid",
+                        type: "post",
+                        loadingPanel: false,
+                        data: { id: "@Model.Codigo" }
+                    }
+                },
+                Email: {
+                    required: true, maxlength: 200, email: true, remote: {
+                        url: "/cms/@portal.Diretorio/cliente/isvalidemail",
+                        type: "post",
+                        loadingPanel: false,
+                        data: { id: "@Model.Codigo" }
+                    }
+                }
+            },
+            messages: {
+                listaCodigoGrupo: "Selecione um ou mais grupos",
+                 Login: {
+                    remote: "@TAdm("Cliente já cadastrado com esse login.")"
+                },
+                Email: {
+                    remote: "@TAdm("Cliente já cadastrado com esse e-mail.")"
+                }
+            },
+            errorPlacement: function (error, element) {
+                if ($(element).prop('name') == 'listaCodigoGrupo') {
+                    $("#erroGrupo").html($(error));
+                }
+                else {
+                    error.insertAfter(element);
+                }
+
+
+            }
+        });
+
+        function novaSenha() {
+            $.post('/cms/@portal.Diretorio/cliente/EnviarNovaSenha', { id: '@Model.Codigo' }, function (data) {
+                var div = "<div class='msg-exclusao alert alert-danger row'><strong>@TAdm("Erro"):</strong> [[MSG]]</div>";
+
+                $(".alert").hide();
+                $(".msg-exclusao").remove();
+
+                if (data.success) {
+                    $("#painelSenhaOk").show();
+                }
+                else {
+                    if (data.msg) {
+                        $(".portlet-body").prepend(div.replace("[[MSG]]", data.msg));
+                    }
+                }
+            });
+        }
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+    </script>
+}

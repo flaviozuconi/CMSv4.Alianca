@@ -1,0 +1,868 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    var url = string.Concat("/cms/", portal.Diretorio, "/editorarquivos");
+    var urlEditar = string.Concat(url, "/item?id=");
+    var gruposcliente = (List<MLGrupo>)ViewData["GruposCliente"] ?? new List<MLGrupo>();
+    var urlFull = "http://" + Request.Url.Authority + "/portal/" + portal.Diretorio;
+}
+@Html.Hidden("DiretorioAtual")
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/file_manager" />
+                @TAdm("Editor de Arquivos")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a id="deletar"  style="display:none;" class="btn btn-red" href="javascript:;" onclick="$('.alert-success').hide(); $('#painelExcluir').show(); $('input[type=checkbox][name=opcoes]').prop('disabled', true);">
+                <i class="fa fa-trash-o" title="Excluir"></i> @T("Excluir")
+            </a>
+
+            <a id="compactar" class="btn btn-blue" href="javascript:;" onclick="$('.alert-success').hide(); $('#modalCriarZip').modal('show'); $('input[type=checkbox][name=opcoes]').prop('disabled', true);">
+                <i class="fa fa-file-archive-o" title="Compactar"></i> @T("Compactar")
+            </a>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body">
+
+        <div id="painelExcluir" class="alert alert-danger col-md-12 painel" style="display: none;">
+            <div class="col-md-10">
+                <strong>@TAdm("Atenção"):</strong> @TAdm("Você confirma a exclusão dos itens selecionados?")
+            </div>
+            <div class="col-md-2" style="text-align: right;">
+                <a class="btn btn-red" href="javascript:;" onclick="excluirRegistros();">Sim</a>
+                <a class="btn btn-white" href="javascript:;" onclick="cancelar();">Não</a>
+            </div>
+        </div>
+
+        <p>@TAdm("Editor de arquivos tem como função: criar e deletar os arquivos e os diretórios do portal que estão armazenados físicamente.")</p>
+
+        <small id="urlFull">
+            http://@(Request.Url.Authority)/portal/@(portal.Diretorio)
+        </small>
+
+        <div class="page-title">
+            <ol class="breadcrumb"></ol>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div id="diretorios" class="col-sm-3">
+                    <ul id="myStacked" style="border: 0.5px solid #e0e7e8;height: 400px;overflow-y: scroll;" class="nav nav-pills nav-stacked"></ul>
+                    <hr />
+                    <p>
+                        <button type="button" class="btn btn-green btn-block btn-sm btn-novo-diretorio" data-toggle="modal" data-target="#modalNovodiretorio">@TAdm("Criar novo diretório")</button>
+                        <button type="button" class="btn btn-blue btn-block btn-sm btn-upload-arquivo" data-toggle="modal" data-target="#modalUploadarquivo">@TAdm("Upload de arquivo")</button>
+                        <button type="button" class="btn btn-orange btn-block btn-sm btn-renomear-diretorio" data-toggle="modal" data-target="#modalRenomeardiretorio">@TAdm("Renomear diretório")</button>
+                        <button type="button" class="btn btn-red btn-block btn-sm btn-excluir-diretorio" data-toggle="modal" data-target="#modalExcluirdiretorio">@TAdm("Excluir diretório")</button>
+
+                        <button type="button" class="btn btn-default btn-block btn-sm" id="btnPermissao" disabled data-toggle="modal" data-target="#modalPermissoes">@TAdm("Permissões")</button>
+                    </p>
+                </div>
+                <div class="col-sm-9">
+                    <div id="myStackedContent" class="tab-content">
+                        <div class="tab-pane fade in active" id="stackedHome">
+                            <div class="table-responsive">
+                                <div id="toolbar"></div>
+                                <table id="lista" class="table table-striped table-bordered table-hover table-blue" style="border-collapse: collapse !important; font-size: 12px;">
+                                    <thead>
+                                        <tr>
+                                            <th>@TAdm("Nome")</th>
+                                            <th style="width: 105px;">@TAdm("Criação")</th>
+                                            @*<th>@TAdm("Último Acesso")</th>*@
+                                            <th style="width: 105px;">@TAdm("Última Alteração")</th>
+                                            <th style="width: 55px;">@TAdm("Tamanho")</th>
+                                            <th style="width:25px;padding-left:0;padding-right:0;"><input type="checkbox" id="selecionarTodos" title="Selecionar Todos"></th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Modal para criação de diretório *@
+    <div class="modal modal-flex fade" id="modalNovodiretorio" tabindex="-1" role="dialog" aria-labelledby="modalNovodiretorioLabel" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">@TAdm("Criar Novo Diretório")</h4>
+                </div>
+                <div class="modal-body form-group">
+                    <label for="diretorioNome">@TAdm("Nome do diretório")</label>
+                    <input type="text" class="form-control" id="diretorioNome" placeholder="@TAdm("Nome do diretório")">
+                </div>
+                <div class="modal-footer">
+                    <button id="buttonNovoDiretorio" type="button" class="btn btn-green">@TAdm("Criar")</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@TAdm("Cancelar")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Modal para renomear diretório *@
+    <div class="modal modal-flex fade" id="modalRenomeardiretorio" tabindex="-1" role="dialog" aria-labelledby="modalRenomeardiretorioLabel" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">@TAdm("Renomear Diretório")</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="diretorioNomeDe">@TAdm("De")</label>
+                        <input type="text" class="form-control" id="diretorioNomeDe" disabled placeholder="@TAdm("Nome atual do diretório")">
+                    </div>
+                    <div class="form-group">
+                        <label for="diretorioNomePara">@TAdm("Para")</label>
+                        <input type="text" class="form-control" id="diretorioNomePara" placeholder="@TAdm("Novo nome do diretório")">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="buttonRenomearDiretorio" type="button" class="btn btn-green">@TAdm("Renomear")</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@TAdm("Cancelar")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Modal para upload de arquivo *@
+    <div class="modal modal-flex fade" id="modalUploadarquivo" tabindex="-1" role="dialog" aria-labelledby="modalUploadarquivoLabel" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">@TAdm("Upload de Arquivo")</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="arquivoUpload" action="/" method="post" class="dropzone">
+                        <div class="fallback">
+                            <input type="file" name="file" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="buttonUploadArquivo" type="button" class="btn btn-default" data-dismiss="modal">@TAdm("Fechar")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Modal para exclusão de diretório *@
+    <div class="modal modal-flex fade" id="modalExcluirdiretorio" tabindex="-1" role="dialog" aria-labelledby="modalNovoarquivoLabel" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">@TAdm("Deseja excluir este diretório?")</h4>
+                </div>
+                <div class="modal-body text-right">
+                    <button id="buttonExcluirDiretorio" type="button" data-dismiss="modal" class="btn btn-green">@TAdm("Sim")</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@TAdm("Não")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Modal para modificar permissões de acesso *@
+    <div class="modal modal-flex fade" id="modalPermissoes" tabindex="-1" role="dialog" aria-labelledby="modalPermissoes" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">@TAdm("Permissões")</h4>
+                </div>
+                <div class="modal-body form-group clearfix">
+
+                    @*<input type="hidden" id="diretorioAtual" />*@
+
+                    <div class="form-group col-md-12">
+                        <select name="Restrito" class="form-control">
+                            <option value="">@TAdm("<-- Selecione o tipo de pemissão -->")</option>
+                            <option value="false">@TAdm("Liberado")</option>
+                            <option value="true">@TAdm("Restrito")</option>
+                        </select>
+                    </div>
+
+                    <div class="jqPermissao col-md-12" style="display:none; overflow-y:scroll;height:250px;">
+                        @if (gruposcliente.Count > 0)
+                        {
+                            <div class="clearfix"></div>
+                            for (int i = 0; i < gruposcliente.Count; i++)
+                            {
+                                <div class="form-group col-md-4">
+                                    <input class="highlight grupos" type="checkbox" id="group_@i" name="listaCodigoGrupoCliente" value="@gruposcliente[i].Codigo" />
+                                    <label for="group_@i">@gruposcliente[i].Nome</label>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                @TAdm("Não há grupos Cadastrados para esse portal!")
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button id="btnSalvarPermissao" type="button" class="btn btn-green">Salvar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Modal para confirmação de clique em arquivo ZIP (Baixar ou descompactar)*@
+    <div class="modal modal-flex fade" id="modalZip" tabindex="-1" role="dialog" aria-labelledby="modalZip" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title"><img src="/iconpack.axd/16/file_extension_zip" /> @TAdm("Arquivo ZIP")</h4>
+                </div>
+                <div class="modal-body form-group clearfix">
+
+                    <input type="hidden" id="arquivoZipBaixar" />
+
+                    <div class="form-group col-md-12">
+                        @T("Você pode baixar este arquivo ou descompacta-lo dentro da pasta atual, selecione a opção desejada clicando em um dos botões abaixo.")
+                    </div>
+
+                    <div class="form-group col-md-6" style="text-align: right;padding-left: 0;padding-right: 0;">
+                        <button id="btnBaixarZip" class="btn btn-white" style="border: 1px solid gray;height: 150px;width: 150px;">
+                            <i class='fa fa-3x fa-download'></i> <br />@T("Baixar")
+                        </button>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <button id="btnDescompactarZip" class="btn btn-white" style="border: 1px solid gray;height: 150px;width: 150px;">
+                            <i class='fa fa-3x fa-file-archive-o'></i> <br />@T("Descompactar")
+                        </button>
+                    </div>
+
+                    <div class="form-group col-md-12 text-center">
+                        <small>
+                            @TAdm("Link para download direto") <br />
+                            <a href="#" id="aZipLinkDireto" target="_blank"></a> <br />
+                        </small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">@T("Fechar")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Modal criar arquivo ZIP*@
+    <div class="modal modal-flex fade" id="modalCriarZip" tabindex="-1" role="dialog" aria-labelledby="modalCriarZip" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title"><img src="/iconpack.axd/16/file_extension_zip" /> @TAdm("Criar ZIP")</h4>
+                </div>
+                <div class="modal-body form-group clearfix">
+                    <div class="form-group col-md-12">
+                        <label>@T("Informe o nome do arquivo zip")</label>
+                        <input type="text" maxlength="50" class="form-control" id="NomeZip" />
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="btnCriarZip" class="btn btn-green">@T("Salvar")</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section head {
+    <style type="text/css">
+        .denied, .denied:hover {
+            color: red;
+            cursor: default;
+        }
+
+        .table > thead > tr > th {
+            vertical-align: middle;
+        }
+
+        .table > thread > tr > th:last-child {
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+    </style>
+}
+
+@section scripts {
+    <script src="~/content/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+    <script type="text/javascript">
+        var url = "@url";
+        var dirPrincipal = "@portal.Diretorio";
+
+        function modalZip(arquivo) {
+            $("#arquivoZipBaixar").val(arquivo);
+
+            $.get(url + '/ObterUrlPublicaZip', { arquivo: $("#arquivoZipBaixar").val(), diretorio: $("#DiretorioAtual").val() }, function (data) {
+                $("#aZipLinkDireto").prop('href', data.url);
+                $("#aZipLinkDireto").html(data.url);
+            });
+
+            $("#modalZip").modal('show');
+        }
+
+        // Align modal when it is displayed
+        $(".modal").on("shown.bs.modal", alignModal);
+
+        // Align modal when user resize the window
+        $(window).on("resize", function () {
+            $(".modal:visible").each(alignModal);
+        });
+
+        function PastaSelecionada(sender) {
+            var caminho = $(sender).data("caminho");
+
+            AtualizarDiretorioAtual(caminho);
+        }
+
+        function AtualizarDiretorioAtual(caminho) {
+            MontarBreadCrumb(caminho);
+            CarregarArquivos(caminho);
+            CarregarDiretorios(caminho);
+            NomeDiretorioDe(caminho);
+
+            $("#DiretorioAtual").val(caminho);
+        }
+
+        function NomeDiretorioDe(caminho) {
+            if (caminho) {
+                $("#diretorioNomeDe").val(caminho.substr(caminho.lastIndexOf("|") + 1));
+
+                //habilitar ação para renomear diretório
+                $(".btn-renomear-diretorio").removeAttr("disabled");
+                $("#btnPermissao").removeAttr("disabled");
+            }
+            else {
+                //desabilitar ação para renomear diretório
+                $(".btn-renomear-diretorio").attr("disabled", "disabled");
+                $("#btnPermissao").attr("disabled", "disabled");
+            }
+        }
+
+        function showConfirmacao(me) {
+            $('#deletar').hide();
+
+            //Em nenhuma paginação há um item selecionado
+            if (getAllValues('input[name="opcoes"][type="checkbox"]:checked').length > 0) { $('#deletar').show(); }
+
+            if ($(me).is(":checked")) {
+                $(me).parents('tr').addClass('selected');
+            } else {
+                $(me).parents('tr').removeClass('selected');
+            }
+        }
+
+        function CarregarArquivos(dir) {
+            try {
+                if ($.fn.dataTable.isDataTable('#lista')) {
+                    $('#lista').DataTable().destroy();
+                }
+
+                $('#lista').dataTable({
+                    "ajax": url + "/Arquivos?pasta=" + dir,
+                    "serverSide": false,
+                    "iDisplayLength": 10,
+                    "columns": [
+                        @ColunaArquivo("Nome", urlEditar),
+                        @ColunaArquivoDataHora("DataCriacao", urlEditar),
+                        @*@ColunaArquivoDataHora("UltimoAcesso", urlEditar),*@
+                        @ColunaArquivoDataHora("UltimaAlteracao", urlEditar),
+                        @ColunaArquivo("TamanhoEmTexto", urlEditar),
+                        {
+                            "data": "NomeEncriptacao",
+                            "bSortable": false,
+                            "visible": "@(AdminHelper.CheckPermission(Permissao.Excluir) ? "true" : "false")",
+                            "render": function (data) {
+                                return '<input type="checkbox" name="opcoes" value="' + data + '" onclick="showConfirmacao(this);" />';
+                            },
+                            "sClass": "center"
+                        }
+                    ],
+                    "aoColumnDefs": [
+                        { "sClass": "center", "aTargets": [0] }
+                    ],
+                    "fnInitComplete": function () {
+                        var oTable = $("#lista").dataTable();
+
+                        $("#selecionarTodos").removeAttr("checked");
+
+                        $("#selecionarTodos").click(function () {
+                            var botao = $('#deletar');
+                            var chks = $('input[type=checkbox][name=opcoes]', oTable.fnGetNodes());
+
+                            botao.hide();
+
+                            if (this.checked) {
+                                chks.prop("checked", true);
+                                chks.parents('tr').addClass('selected');
+
+                                if (chks.length > 0)
+                                    botao.show();
+                            }
+                            else {
+                                chks.removeAttr("checked");
+                                chks.parents('tr').removeClass('selected');
+                            }
+                        });
+                    }
+                });
+            } catch (e) { }
+        }
+
+        function MontarBreadCrumb(dir) {
+            var ul = $('.breadcrumb');
+
+            ul.empty();
+            ul.append("<li>@TAdm("Carregando...")</li>");
+
+            $.get(url + '/BreadCrumbArquivos', { 'pasta': dir }, function (data) {
+                ul.empty();
+
+
+                $("#urlFull").html("@(urlFull)" + dir.split('|').join('/'));
+
+                if (dir) {
+                    ul.append("<li><a href='#' class='pastaJQ' data-caminho='' data-toggle='tab'>" + dirPrincipal + "</a></li>");
+                }
+                else {
+                    ul.append("<li>" + dirPrincipal + "</li>");
+                }
+
+                $.each(data, function (i, v) {
+                    if (v.Atual)
+                        $("<li class='active'> " + v.Nome + "</li>").appendTo(ul);
+                    else
+                        $("<li class='active'><a href='#' class='pastaJQ' data-caminho='" + v.Caminho + "'>" + v.Nome + "</a></li>").appendTo(ul);
+                });
+
+                $(".pastaJQ").on("click", pastaJqClick);
+            });
+        }
+
+        function CarregarDiretorios(dir) {
+            var ul = $("#myStacked");
+
+            ul.empty();
+            ul.append("<li>@TAdm("Carregando...")</li>");
+
+            $.get(url + '/Diretorios', { 'pasta': dir }, function (data) {
+                ul.empty();
+
+                if (dir) {
+                    ul.append("<li><a href='#' class='pastaJQ' data-caminho='" + dir.substr(0, dir.lastIndexOf("|")) + "' data-toggle='tab'><i class='fa fa-folder-o iconeJC'></i> @TAdm("Diretório Anterior")</a></li>");
+
+                    //habilitar exclusão de diretório
+                    $(".btn-excluir-diretorio").removeAttr("disabled");
+                }
+                else {
+
+                    //desabilitar exclusão de diretório
+                    $(".btn-excluir-diretorio").attr("disabled", "disabled");
+                }
+
+                $.each(data, function (i, v) {
+                    var classe = "pastaJQ";
+                    var icon = "fa-folder-o";
+
+                    if (v.Restrito) {
+                        classe = "denied";
+                        icon = "fa-lock";
+                    }
+
+                    ul.append("<li><a href='#' class='" + classe + "' data-caminho='" + v.Caminho + "' data-toggle='tab'><i class='fa " + icon + " iconeJC'></i> " + v.Caminho.substring(v.Caminho.lastIndexOf("|") + 1) + "</a></li>");
+                });
+
+                $(".pastaJQ").on("click", pastaJqClick);
+                $(".denied").bind('click', function () { return false; });
+            });
+        }
+
+        function pastaJqClick(e) {
+            PastaSelecionada($(this));
+
+            //Persistir o caminho do diretório para utilizar na permissão.
+            $("#diretorioAtual").val($(this).data('caminho'));
+
+            e.preventDefault();
+            return false;
+        }
+
+        function callbackGrid() {
+            var dirAtual = $("#DiretorioAtual").val();
+
+            $("#painelExcluir").hide();
+
+            AtualizarDiretorioAtual(dirAtual);
+        }
+
+        $(document).ready(function () {
+
+            AtualizarDiretorioAtual("");
+
+            Dropzone.options.arquivoUpload = {
+                url: url + "/upload",
+                dictDefaultMessage: '@TAdm("Arraste ou clique aqui para realizar upload de arquivos")',
+                dictCancelUpload: '@TAdm("Cancelar upload")',
+                dictCancelUploadConfirmation: '@TAdm("Cancelar upload")',
+                dictMaxFilesExceeded: '@TAdm("Atingiu a quantidade de uploads permitidos")',
+                dictFileTooBig: '@TAdm("Arquivo excedeu o tamanho permitido")',
+                dictFallbackMessage: '@TAdm("Seu browser não suporta Drag and Drop")',
+                maxFilesize: 1000, //MB
+                maxFiles: 10,
+                sendingmultiple: function (file, xhr, formData) {
+                    //$(".alert-success").remove();
+                    formData.append("DiretorioSalvar", $("#DiretorioAtual").val());
+                }
+            };
+
+            $("#arquivoUpload").slimScroll({
+                height: "250px"
+            });
+
+            window.onbeforeunload = "";
+        });
+
+        $("#modalUploadarquivo").on("hidden.bs.modal", function () {
+            callbackGrid();
+            Dropzone.forElement('#arquivoUpload').removeAllFiles(true);
+        });
+
+        $("#buttonNovoDiretorio").click(function () {
+            var required = "<span class='help-block'><i class='fa fa-warning'></i> @TAdm("Preencher este campo")</span>";
+
+            $(".msg-erro").remove();
+            $("#diretorioNome").parent().removeClass("has-error");
+            $("#diretorioNome").parent().find(".help-block").remove();
+
+            if (!$("#diretorioNome").val()) {
+                $("#diretorioNome").parent().addClass("has-error");
+                $("#diretorioNome").parent().append(required);
+                return;
+            }
+
+            $.post(url + '/NovaPasta', { 'pasta': $("#DiretorioAtual").val(), 'novaPasta': $('#diretorioNome').val() }, function (data) {
+                if (data.success) {
+                    callbackGrid();
+                }
+                else {
+                    if (data.msg) {
+                        var div = "<div class='msg-erro alert alert-danger row'>[[MSG]]</div>";
+                        $(div.replace("[[MSG]]", data.msg)).insertBefore("#painelExcluir");
+                    }
+                }
+
+                $("#diretorioNome").val("");
+                $("#modalNovodiretorio").modal("hide");
+            });
+        });
+
+        $("#buttonExcluirDiretorio").click(function () {
+
+            $(".msg-erro").remove();
+
+            if ($("#DiretorioAtual").val()) {
+                $.post(url + '/ExcluirPasta', { 'dataPath': $("#DiretorioAtual").val() }, function (data) {
+                    $("#diretorioNome").val("");
+
+                    if (data.Sucesso) {
+                        var dirAtual = $("#DiretorioAtual").val();
+                        $("#DiretorioAtual").val(dirAtual.substr(0, dirAtual.lastIndexOf("|")));
+
+                        callbackGrid();
+                    }
+                    else {
+                        if (data.msg) {
+                            var div = "<div class='msg-erro alert alert-danger row'>[[MSG]]</div>";
+                            $(div.replace("[[MSG]]", data.msg)).insertBefore("#painelExcluir");
+                        }
+                    }
+                });
+            }
+            else {
+                $(div.replace("[[MSG]]", "Este diretório não pode ser excluído")).insertBefore("#painelExcluir");
+            }
+        });
+
+        $("#buttonRenomearDiretorio").click(function () {
+            var required = "<span class='help-block'><i class='fa fa-warning'></i> @TAdm("Preencher este campo")</span>";
+
+            $(".msg-erro").remove();
+            $("#diretorioNomePara").parent().removeClass("has-error");
+            $("#diretorioNomePara").parent().find(".help-block").remove();
+
+            if (!$("#diretorioNomePara").val()) {
+                $("#diretorioNomePara").parent().addClass("has-error");
+                $("#diretorioNomePara").parent().append(required);
+                return;
+            }
+
+            $.post(url + '/RenomearPasta', { 'dataPath': $("#DiretorioAtual").val(), 'novoNome': $('#diretorioNomePara').val() }, function (data) {
+                if (data.success) {
+                    var dir = $("#DiretorioAtual").val();
+
+
+                    dir = dir.substr(0, dir.lastIndexOf("|")) + "|" + $('#diretorioNomePara').val();
+
+                    $("#DiretorioAtual").val(dir);
+
+                    callbackGrid();
+                }
+                else {
+                    if (data.msg) {
+                        var div = "<div class='msg-erro alert alert-danger row'>[[MSG]]</div>";
+                        $(div.replace("[[MSG]]", data.msg)).insertBefore("#painelExcluir");
+                    }
+                }
+
+                $('#diretorioNomePara').val("");
+                $("#modalRenomeardiretorio").modal("hide");
+            });
+        });
+
+        $("#modalNovodiretorio").on("shown.bs.modal", function () {
+            $("#diretorioNome").focus();
+        });
+
+        $("#modalRenomeardiretorio").on("shown.bs.modal", function () {
+            $("#diretorioNomePara").focus();
+        });
+
+        $("#modalPermissoes").on("show.bs.modal", function () {
+
+            $(".alert-warning").remove();
+
+            $('input[name=listaCodigoGrupoCliente]').prop('checked', false);
+
+            $.get(url + '/ObterPermissao', { pasta: $("#DiretorioAtual").val() }, function (data) {
+                if (data.restrito != null && data.restrito == true) {
+                    $('select[name=Restrito]').val('true');
+                    $('.jqPermissao').show();
+                    CarregarCheckBoxPermissao(data);
+                }
+                else {
+                    $('select[name=Restrito]').val('false');
+                    $('.jqPermissao').hide();
+                }
+            });
+        });
+
+        $('select[name=Restrito]').on('change', function (event) {
+            $('input[name=listaCodigoGrupoCliente]').prop('checked', false);
+
+            if ($('select[name=Restrito]').val() == 'true') {
+                $('.jqPermissao').show();
+
+                $.get(url + '/ObterPermissao', { pasta: $("#DiretorioAtual").val() }, function (data) {
+                    if (data.restrito != null && data.restrito == true) {
+                        CarregarCheckBoxPermissao(data);
+                    }
+                });
+            }
+            else {
+                $('.jqPermissao').hide();
+            }
+
+        });
+
+        $("#btnSalvarPermissao").click(function (e) {
+            var ids = [];
+
+            //Obter todas as permissões selecionadas
+            $('input[name="listaCodigoGrupoCliente"]:checked').each(function () {
+                ids.push($(this).val());
+            });
+
+            //Limpar id de aviso para evitar div duplicada
+            $(".alert-warning").remove();
+
+            //Quando selecionar "restrito", é obrigatório marcar um grupo
+            if ($("select[name=Restrito]").val() == 'true' && ids.length == 0) {
+                $("#modalPermissoes").find(".modal-body").prepend('<div id="avisoGrupo" class="alert alert-warning col-md-12">@T("Selecione um grupo")</div>')
+
+                return false;
+            }
+
+            $("#btnSalvarPermissao").html("@T("Salvando...")");
+
+            $.ajax({
+                url: url + '/SalvarPermissao',
+                type: "POST",
+                traditional: true,
+                data: {
+                    pasta: $("#DiretorioAtual").val(),
+                    Restrito: $('select[name=Restrito]').val(),
+                    grupos: ids
+                },
+                success: function () {
+                    $("#btnSalvarPermissao").html("@T("Salvar")");
+                    $("#modalPermissoes").modal('hide');
+                }
+            });
+
+            e.preventDefault();
+        });
+
+        function CarregarCheckBoxPermissao(data) {
+            if (data.permissoes != null && data.permissoes.length > 0) {
+
+                $.each(data.permissoes, function (index) {
+                    $('input[name=listaCodigoGrupoCliente][value=' + data.permissoes[index].CodigoGrupo + ']').prop('checked', true);
+                });
+            }
+        }
+
+        function alignModal() {
+            var modalDialog = $(this).find(".modal-dialog");
+
+            // Applying the top margin on modal dialog to align it vertically center
+            modalDialog.css("margin-top", $(window.parent).scrollTop());
+        }
+
+        $("#btnBaixarZip").click(function () {
+            window.location.href = "@urlEditar.TrimEnd('/')/" + $("#arquivoZipBaixar").val();
+        });
+
+        $("#btnDescompactarZip").click(function () {
+
+            $.post(url + '/DescompactarZip', { arquivo: $("#arquivoZipBaixar").val(), diretorioAtual: $("#DiretorioAtual").val() }, function (data) {
+                $("#modalZip").modal("hide");
+
+                if (data) {
+                    callbackGrid();
+                }
+                else {
+                    window.parent.$.fn.ModalPadrao({
+                        mensagem: "Não foi possível extrair o arquivo.",
+                        exibirNaInicializacao: true
+                    });
+                }
+            });
+        });
+
+        $("#modalCriarZip").on("hidden.bs.modal", function () {
+            cancelar();
+        });
+
+        //$("#btnExcluirConfirmacao").ModalPadrao({
+        //    mensagem: "Não foi possível extrair o arquivo.",
+        //});
+
+        $("#btnCriarZip").click(function () {
+            if ($("#NomeZip").val().trim() != "") {
+
+                $.ajax({
+                    url: url + '/CompactarZip',
+                    type: "POST",
+                    traditional: true,
+                    data: {
+                        arquivos: getAllValues('input[type=checkbox][name=opcoes]:checked'),
+                        diretorioAtual: $("#DiretorioAtual").val(),
+                        nome: $("#NomeZip").val()
+                    },
+                    success: function () {
+                        $("#modalCriarZip").modal('hide');
+                        callbackGrid();
+                    }
+                });
+            }
+        });
+
+        function modalCriarZip() {
+            $("#NomeZip").val('');
+            $("#modalCriarZip").modal('show');
+        }
+
+        function excluirRegistros() {
+            var div = "<div class='msg-exclusao alert alert-danger col-md-12'><strong>Erro:</strong> [[MSG]]</div>";
+
+            $(".msg-exclusao").remove();
+
+            $.post('@string.Concat(url, "/excluir")', $.param({ ids: getAllValues('input[type=checkbox][name=opcoes]:checked') }, true), function (data) {
+                if (data.Sucesso) {
+                    cancelar();
+
+                    //Método para execução como callback do post ajax
+                    try { callbackGrid(); } catch (err) { }
+                }
+                else if (data.msg) {
+                    $("#painelExcluir").hide();
+                    $(div.replace("[[MSG]]", data.msg)).insertBefore("#painelExcluir");
+                }
+            });
+        };
+
+        function cancelar() {
+            $('.painel').hide();
+            $('#deletar').hide();
+            $('input[type=checkbox][name=opcoes]').prop('disabled', false).prop('checked', false);
+            $('#selecionarTodos').removeAttr('checked');
+            $('.table tr.selected').removeClass('selected');
+        }
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+    </script>
+
+    <script type="text/javascript" id="scriptExcluir">
+
+    </script>
+}
+
+@helper ColunaArquivo(string campo, string urlEditar)
+    {
+        <text>
+            {
+            "data": "@campo",
+            "bSortable": true,
+            "render": function (data, type, row) {
+
+            if (data == null) { data = ''; }
+
+            if(!row.Nome.endsWith(".zip")){
+            return '<a href="@urlEditar.TrimEnd('/')/' + row.NomeEncriptacao + '">' + data + '</a>';
+            }
+
+            return "<a href=\"javascript:void(0)\" onclick=\"modalZip('" + row.NomeEncriptacao + "')\">" + data + "</a>";
+            }
+            }
+        </text>
+}
+
+@helper ColunaArquivoDataHora(string campo, string urlEditar)
+    {
+        <text>
+            {
+            "data": "@campo",
+            "render": function (data, type, row){
+            if (data == null) { return ''; }
+
+            if(!row.Nome.endsWith(".zip")){
+            return '<a href="@urlEditar.TrimEnd('/')/' + row.NomeEncriptacao + '">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+            }
+
+            return "<a href=\"javascript:void(0)\" onclick=\"modalZip('" + row.NomeEncriptacao + "')\">" + moment(data).format('DD/MM/YYYY HH:mm') + "</a>";
+            }
+            }
+        </text>
+}

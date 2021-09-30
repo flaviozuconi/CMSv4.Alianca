@@ -1,0 +1,156 @@
+﻿@model MLResultado
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/ResultadoAdmin", portal.Diretorio);
+    var diretorio = (BLConfiguracao.Pastas.ModuloResultado(portal.Diretorio).TrimEnd('/') + "/" + Model.Codigo);
+    var listaIdioma = (List<MLIdioma>)ViewData["listaIdioma"] ?? new List<MLIdioma>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/account_balances" />
+                @TAdm("Resultado")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" enctype="multipart/form-data" method="post">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-12">
+                <label>@TAdm("Chamada")</label>
+                <input type="text" class="form-control" name="Chamada" maxlength="250" value="@Model.Chamada" autofocus>
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Ano")</label>
+                <input type="number" onkeypress="return(MascaraNumero(this,event))" min="1900" max="2050" class="form-control" name="Ano" value="@Model.Ano" autofocus>
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Trimestre")</label>
+
+                <select class="form-control" id="Trimestre" name="Trimestre">
+                    <option value="1" @((Model.Trimestre.HasValue && Model.Trimestre == 1) ? "Selected" : "")>@TAdm("1º Trimestre")</option>
+                    <option value="2" @((Model.Trimestre.HasValue && Model.Trimestre == 2) ? "Selected" : "")>@TAdm("2º Trimestre")</option>
+                    <option value="3" @((Model.Trimestre.HasValue && Model.Trimestre == 3) ? "Selected" : "")>@TAdm("3º Trimestre")</option>
+                    <option value="4" @((Model.Trimestre.HasValue && Model.Trimestre == 4) ? "Selected" : "")>@TAdm("4º Trimestre")</option>
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+
+                <label>@TAdm("Idioma")</label><br />
+                <select name="Idioma" id="Idioma" class="form-control">
+                    @foreach (var idioma in listaIdioma)
+                    {
+                        <option value="@idioma.Codigo" @(idioma.Codigo == Model.Idioma ? "selected" : "")>@idioma.Nome</option>
+                    }
+                </select>
+
+            </div>
+
+
+            <div class="form-group col-md-12">
+                <label>@TAdm("Conteúdo")</label>
+                <textarea data-ckeditor="@portal.Diretorio" class="form-control" style="height: 300px;" name="Conteudo">@Model.Conteudo</textarea>
+            </div>
+            <div class="col-md-12">
+                <fieldset>
+                    <legend>@TAdm("Arquivos")</legend>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Value Book")</label>
+                        <input type="file" name="fileValueBook" />
+                        <br />
+                        @if (!string.IsNullOrEmpty(Model.ValueBook))
+                        {
+                            @:<a target="_blank" href="@(diretorio+"/"+Model.ValueBook)">@Model.ValueBook <span class="glyphicon glyphicon-circle-arrow-down"></span> </a>
+                        }
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Release de Resultados")</label>
+                        <input type="file" name="fileReleaseResultados" />
+                        <br />
+                        @if (!string.IsNullOrEmpty(Model.ReleaseResultados))
+                        {
+                            @:<a target="_blank" href="@(diretorio+"/"+Model.ReleaseResultados)">@Model.ReleaseResultados <span class="glyphicon glyphicon-circle-arrow-down"></span> </a>
+                        }
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("DFP")</label>
+                        <input type="file" name="fileDfp" />
+                        <br />
+                        @if (!string.IsNullOrEmpty(Model.Dfp))
+                        {
+                            @:<a target="_blank" href="@(diretorio+"/"+Model.Dfp)">@Model.Dfp <span class="glyphicon glyphicon-circle-arrow-down"></span> </a>
+                        }
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label>@TAdm("Teleconferência")</label>
+                        <input type="text" class="form-control" name="IframeTeleconferencia" maxlength="500" value="@Model.IframeTeleconferencia">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Áudio")</label>
+                        <input type="file" name="fileAudio" />
+                        <br />
+                        @if (!string.IsNullOrEmpty(Model.Audio))
+                        {
+                            @:<a target="_blank" href="@(diretorio+"/"+Model.Audio)">@Model.Audio <span class="glyphicon glyphicon-circle-arrow-down"></span> </a>
+                        }
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Link/Transcrição")</label>
+                        <input type="file" name="fileTranscricao" />
+                        <br />
+                        @if (!string.IsNullOrEmpty(Model.Transcricao))
+                        {
+                            @:<a target="_blank" href="@(diretorio+"/"+Model.Transcricao)">@Model.Transcricao <span class="glyphicon glyphicon-circle-arrow-down"></span> </a>
+                        }
+                    </div>
+                    <div class="form-group col-md-12">
+                        <label>@TAdm("Apresentação")</label>
+                        <input type="file" name="fileApresentação" />
+                        <br />
+                        @if (!string.IsNullOrEmpty(Model.Apresentacao))
+                        {
+                            @:<a target="_blank" href="@(diretorio+"/"+Model.Apresentacao)">@Model.Apresentacao <span class="glyphicon glyphicon-circle-arrow-down"></span> </a>
+                        }
+                    </div>
+                </fieldset>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{
+
+    <script type="text/javascript">
+
+        $('form').validate({
+            rules: {
+                Chamada: { required: true, maxlength: 250 },
+                Ano: { required: true, maxlength: 4 },
+                Trimestre: { required: true }
+
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+    </script>
+}

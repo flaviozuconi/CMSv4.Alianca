@@ -1,0 +1,130 @@
+﻿@model MLModuloTakeOrPay
+@{ 
+    var baseUrl = "/portal/" + BLPortal.Atual.Diretorio + "/";
+    var portal = BLPortal.Atual;
+
+    var urlCep1 = "https://viacep.com.br/ws/";
+    var urlCep2 = "/json/unicode/";
+}
+
+<script src="@baseUrl/js/plugins/jquery.mask/jquery.mask.min.js"></script>
+<script src="@baseUrl/js/plugins/jquery.validate/jquery.validate.js"></script>
+<script src="@baseUrl/js/plugins/jquery.validate/additional-methods.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#CEP").mask("00000-000");
+        $("#CNPJ").mask("00.000.000/0000-00");
+    });
+
+    $("#btnVoltarEtapa1").click(function () {
+        VoltarEtapa1();
+    });
+
+    $("#btnAvancarEtapa3").click(function () {
+        if ($("#formEtapa2").valid() == true)
+        {
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/TakeOrPay/SalvarEtapa2",
+                data:
+                {
+                    "Codigo": $("#Codigo").val(),
+                    "lstNumeroProposta": $("#lstNumeroProposta").val(),
+                    "Nome": $("#Nome").val(),
+                    "Email": $("#Email").val(),
+                    "CNPJ": $("#CNPJ").val(),
+                    "CEP": $("#CEP").val(),
+                    "Logadouro": $("#Endereco").val(),
+                    "Bairro": $("#Bairro").val(),
+                    "Cidade": $("#Cidade").val(),
+                    "Estado": $("#Estado").val(),
+                    "isBID": $("#btnBID").hasClass("active")
+                },
+                success: function (data) {
+                    if (data.Sucess == true) {
+                        $("#Codigo").val(data.Codigo);
+
+                        AvancarEtapa3();
+                    }
+                    else {
+                        ErroGenerico();
+                    }
+                },
+                error: function (data) {
+                    ErroGenerico();
+                }
+            });
+        }
+    });
+
+    $("#btnBuscaCEP").click(function () {
+        $.ajax({
+            url: '@urlCep1' + $("#CEP").val() + '@urlCep2',
+            dataType: 'json',
+            success: function (resposta) {
+                $("#Endereco").val(resposta.logradouro);
+                $("#Bairro").val(resposta.bairro);
+                $("#Cidade").val(resposta.localidade);
+                $("#Estado").val(resposta.uf);
+            }
+        });
+    });
+
+    function AvancarEtapa3() {
+        $("#Etapa2").hide()
+        $("#Etapa3_1").show()
+
+        $("#ProgressoEtapa2").removeClass("active")
+
+        $("#ProgressoEtapa3").removeClass("disabled")
+        $("#ProgressoEtapa3").addClass("active")
+
+        $('#Modalidade').text($('#ModalidadeSelecionada').val())
+    }
+
+    function VoltarEtapa1() {
+        $("#Etapa2").hide()
+        $("#Etapa1").show()
+
+        $("#ProgressoEtapa2").removeClass("active")
+
+        $("#ProgressoEtapa1").removeClass("disabled")
+        $("#ProgressoEtapa1").addClass("active")
+    }
+
+    function ErroGenerico() {
+        alert("Algo deu errado, tente novamente mais tarde.");
+    }
+
+    $('#formEtapa2').validate({
+        rules: {
+            Nome: { required: true, maxlength: 150 },
+            Email: { required: true, maxlength: 100 },
+            CNPJ: { required: true, maxlength: 20 },
+            CEP: { required: true, maxlength: 9 },
+            Endereco: { required: true, maxlength: 50 },
+            Bairro: { required: true, maxlength: 50 },
+            Cidade: { required: true, maxlength: 100 },
+            Estado: { required: true },
+        },
+        errorClass: 'error is-invalid',
+        errorPlacement: function (error, element) {
+            switch (element.attr("name")) {
+                case "CEP":
+                    error.appendTo(element.parents('#divCEP'));
+                    break;
+
+                default:
+                    error.insertAfter(element);
+                    break;
+            }
+        }
+    });
+
+    jQuery.extend(jQuery.validator.messages, {
+        required: "Preencha este campo.",
+        maxlength: "Forneça não mais que {0} caracteres.",
+        email: "Forneça um endereço de email válido."
+    });
+</script>

@@ -1,0 +1,35 @@
+﻿@model  List<MLListaConteudoPublicoListagem>
+@{
+    var portal = BLPortal.Atual;
+    var modulo = (MLModuloLista)ViewData["modulo"] ?? new MLModuloLista();
+    if (string.IsNullOrEmpty(modulo.UrlLista)) { modulo.UrlLista = "/noticias"; }
+}
+<div class="informativos">
+    <div class="container">
+        <h2 class="informativos--title">@Html.Raw(modulo.Titulo)</h2>
+        <div class="informativos--list">
+
+            @foreach (var item in Model)
+            {
+                var url = @Portal.ResolveUrl(string.IsNullOrEmpty(modulo.UrlDetalhe) ? item.Url : string.Format("{0}/{1}", modulo.UrlDetalhe, item.UrlOriginal), portal);
+
+                <a href="@url" class="informativos--item" hidden>
+                    <p>@Html.Raw(item.Titulo)</p>
+                    <span class="icon icon-chevron-right"></span>
+                </a>
+            }
+
+        </div>
+        <div class="text-center">
+            <a href="#" hidden id="btn-vermais-info" class="btn btn-blue">@T("Ver mais")</a>
+        </div>
+    </div>
+</div>
+@{
+    BLConteudo.AdicionarJavaScript(@"<script src='/portal/principal/modulos/lista-info.js'></script>", false);
+}
+
+
+
+
+

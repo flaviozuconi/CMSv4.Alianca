@@ -1,0 +1,13 @@
+﻿@model  MLModuloYoutubeEdicao
+
+
+@if (!string.IsNullOrEmpty(Model.Link))
+{
+    if (!string.IsNullOrEmpty(Model.Titulo)) { <h2>@Model.Titulo</h2> }
+    @Html.Raw("<iframe width=" + (Model.Largura > 0 ? Model.Largura.ToString() : "560") + " height=" + (Model.Altura > 0 ? Model.Altura.ToString() : "315") + " src=" + (Model.Link) + " frameborder='0' allowfullscreen></iframe>")
+}
+else
+{
+    <br />
+    <p>@T("Clique em ")<u>@T("Editar")</u> @T("para exibir o vídeo")</p>
+}

@@ -1,0 +1,44 @@
+﻿@{
+    Layout = "";
+    var grupos = (List<MLGrupoCliente>)ViewData["Grupos"] ?? new List<MLGrupoCliente>();
+    var CodigoPortal = (decimal)ViewData["CodigoPortal"];
+    var gruposcliente = (List<MLClienteItemGrupo>)ViewData["GruposCliente"] ?? new List<MLClienteItemGrupo>();
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="standardModalLabel">@TAdm("Grupos do Portal") <strong>@Model.Nome</strong></h4>
+        </div>
+        <div class="modal-body clearfix">
+
+            <input type="hidden" name="ModelCodigoPortal" value="@CodigoPortal"/>
+
+            <div class="alert alert-success" id="msg" style="display: none">
+                @TAdm("Grupos Inseridos com sucesso!")
+            </div>
+            @if (grupos.Count == 0)
+            {
+                <div class="col-md-12">
+                    <div class="alert alert-warning">
+                        @TAdm("Não há grupos Cadastrados para esse portal!")
+                    </div>
+                </div>
+            }
+            @for (int i = 0; i < grupos.Count; i++)
+            {
+                <div class="form-group col-md-6">
+                    <input class="highlight grupos" type="checkbox" id="group_@i" value="@grupos[i].Codigo" @(gruposcliente.Find(o => o.CodigoGrupo == grupos[i].Codigo) != null ? "checked" : "") />
+                    <label for="group_@i">@grupos[i].Nome</label>
+                </div>
+            }
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white" data-dismiss="modal">@TAdm("Fechar")</button>
+            <button type="button" onclick="salvargrupos(@Model.Codigo)" class="btn btn-green">@TAdm("Salvar")</button>
+        </div>
+    </div>
+    <!-- /.modal-content -->
+</div>

@@ -1,0 +1,10 @@
+﻿@model MLModuloRedeSocial
+<div id="divDestaqueRedesSociais_@Model.Repositorio" data-loading data-loading-target>
+    <h2>@(Model.Titulo ?? T("Braskem na Rede"))</h2>
+    <!-- list-social -->
+    <ul class="list-social list-unstyled" id="ulDestaqueRedesSociais_@Model.Repositorio"></ul>
+    <!-- /list-social -->
+</div>
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptDestaque", new { model = Model, bEdicao = ViewBag.Edicao }));
+}

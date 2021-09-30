@@ -1,0 +1,34 @@
+﻿@{
+    Layout = "";
+}
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="standardModalLabel"><span class="glyphicon glyphicon-calendar"></span> @TAdm("Calendário")</h4>
+        </div>
+        <div class="modal-body clearfix">
+            <div class="portlet-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="col-md-3 text-left" style="padding: 0;">
+                <span class="col-md-1 fc-day-grid-event fc-event fc-start fc-end fc-white">&nbsp;</span>&nbsp;<small>@TAdm("Eventos passados")</small>
+                <br />
+                <span class="col-md-1 fc-day-grid-event fc-event fc-start fc-end fc-green">&nbsp;</span>&nbsp;<small>@TAdm("Eventos atuais")</small>
+            </div>
+            <div class="col-md-3 text-left" style="padding: 0;">
+                <span class="col-md-1 fc-day-grid-event fc-event fc-start fc-end fc-blue">&nbsp;</span>&nbsp;<small>@TAdm("Eventos futuros")</small>
+            </div>
+            <div class="col-md-4 text-left">
+                <strong><small>@TAdm("Idioma:")</small></strong>
+                <select class="form-control" style="height: 25px; padding: 0;" id="idiomas-calendario">
+                </select>
+            </div>
+
+            <button type="button" class="btn btn-white" data-dismiss="modal"><small>@TAdm("Fechar")</small></button>
+        </div>
+    </div>
+</div>

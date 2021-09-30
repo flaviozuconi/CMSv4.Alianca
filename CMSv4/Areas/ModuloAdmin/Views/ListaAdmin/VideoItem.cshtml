@@ -1,0 +1,102 @@
+﻿@model MLListaConteudoVideo
+
+@{
+    var itemId = Model.GuidConteudo.ToString().Replace("-", string.Empty);
+    bool isFile = (!(Model.Video.Contains("http") || Model.Video.Contains("www") || string.IsNullOrEmpty(Model.Video)));
+    var frmId = Guid.NewGuid().ToString().Replace("-", string.Empty);
+
+    if (!isFile)
+    {
+
+        <div class="galeria-video-youtube-container col-md-6" onclick="$(this).next('.galeria-video-botoes').toggle();">
+            <div class="js-video vimeo widescreen">
+                <iframe height="100%" src="@Model.Video" frameborder="0" allowfullscreen id="@frmId"></iframe>
+            </div>
+        </div>
+    }
+    else if (ViewData.ContainsKey("diretorioVideo") && File.Exists(Server.MapPath(ViewData["diretorioVideo"] + "\\" + Model.Video)))
+    {
+        var diretorio = Convert.ToString(ViewData["diretorioVideo"]);
+        <div class="galeria-video-container col-md-6" onclick="$(this).next('.galeria-video-botoes').toggle();">
+            <video width="100%" height="100%" controls>
+                <source src="@((diretorio + "/" + Model.Video))" type="video/@(Path.GetExtension(diretorio + "/" + Model.Video).Replace(".", ""))" />
+            </video>
+        </div>
+    }
+}
+
+<div class="form-group col-md-6 form-videos">
+    @{
+        if (isFile)
+        {
+            <input type="hidden" name="GaleriaVideo" value="@Model.Video" />
+        }
+        else
+        {
+            <input type="text" class="form-control" maxlength="500" name="GaleriaVideo" value="@Model.Video" placeholder="@T("Url")" id="txtUrl"
+                   onblur="reloadVideo($(this), $('#@(frmId)'));" />
+        }
+    }
+    <input type="text" class="form-control" name="VideoTitulo" value="@Model.Titulo" maxlength="250" placeholder="@T("Título")" style="margin-bottom: 10px;">
+    <textarea class="form-control" name="VideoTexto" placeholder="@T("Descrição")">@Model.Texto</textarea>
+    <input type="text" class="form-control" name="VideoFonte" value="@Model.Fonte" maxlength="250" placeholder="@T("Fonte / Autor")" style="margin-bottom: 10px; margin-top: 10px;">
+    <input type="button" class="btn btn-link" name="remover" value="@T("remover vídeo")" onclick="@string.Format("removerVideo($(this),'{0}', '{1}');", itemId, Model.Video)" />
+    <input type="hidden" name="VideoGuid" id="VideoGuid" value="@Model.Guid" />
+</div>
+
+@{
+    if (!isFile)
+    {
+        <script src="~/Content/js/jquery.min.js"></script>
+        <script type="text/javascript">
+            var reloadVideo = function (objTxt, objFrm){
+                var newVideoUrl = $(objTxt).val();
+
+                if(newVideoUrl != ""){
+                    var url = "";
+
+                    if (/^(http:\/\/|http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/|www\.)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(newVideoUrl)) {
+                        if (newVideoUrl.indexOf("youtube") != -1) {
+
+                            if (newVideoUrl.indexOf("embed") == -1) {
+                                var splitUrl = newVideoUrl.split('=');
+
+                                if (splitUrl.length > 1) {
+                                    url = "https://www.youtube.com/embed/" + splitUrl[1];
+                                }
+                            }
+                            else {
+                                url = newVideoUrl;
+                            }
+                        }
+                        else if (newVideoUrl.indexOf("vimeo") != -1) {
+
+                            if (newVideoUrl.indexOf("player") == -1) {
+
+                                var splitUrl = newVideoUrl.split('/');
+
+                                if (splitUrl.length > 0) {
+                                    url = "https://player.vimeo.com/video/" + splitUrl[splitUrl.length - 1];
+                                }
+                            }
+                            else {
+                                url = newVideoUrl;
+                            }
+                        }
+                    }
+
+                    if (url != "") {
+                        $(objTxt).val(url);
+                        $(objFrm).attr('src', $(objTxt).val());
+                    }
+                    else {
+                        $(objTxt).val("");
+                        alert("Url Inválida!");
+                    }
+                }
+            }
+        </script>
+    }
+}
+
+

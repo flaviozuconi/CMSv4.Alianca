@@ -1,0 +1,130 @@
+﻿@model MLFaleConoscoConfiguracaoEnvioEmail
+
+@{
+    var portal = PortalAtual.Obter;
+    var urlControler = string.Format("/cms/{0}/FaleConoscoAdmin", portal.Diretorio);
+    var urlSalvar = urlControler + "/FormularioConfiguracaiEnvioEmail";
+
+    var modelDefaultBraskem = new MLFaleConoscoConfiguracaoEnvioEmail();
+    modelDefaultBraskem.From = "Braskem@braskem.com.br";
+    modelDefaultBraskem.Host = "200.185.31.81";
+    modelDefaultBraskem.Port = 25;
+    modelDefaultBraskem.UserName = "braskem@braskem.com.br";
+    modelDefaultBraskem.Password = "braskem";
+    modelDefaultBraskem.SubjectEncoding = "ISO-8859-1";
+    modelDefaultBraskem.DefaultCredential = true;
+
+    var modelDefaultVM2 = new MLFaleConoscoConfiguracaoEnvioEmail();
+    modelDefaultVM2.From = "homologacao@vm2.com.br";
+    modelDefaultVM2.Host = "smtp.vm2.com.br";
+    modelDefaultVM2.Port = 587;
+    modelDefaultVM2.UserName = "homologacao@vm2.com.br";
+    modelDefaultVM2.Password = "mudar12tres";
+    modelDefaultVM2.SubjectEncoding = "ISO-8859-1";
+    modelDefaultVM2.DefaultCredential = true;
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/pop_mail" /> @TAdm("Fale Conosco - Configuração de Formulário")</h4>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" action="@urlSalvar">
+            @*FORMULARIO SOMENTE PARA TESTES DE SMTP, SEMPRE VAI SALVAR NO MESMO REGISTRO*@
+            <input type="hidden" value="1" name="Codigo" />
+
+            <div class="form-group col-md-12">
+                <input type="button" class="btn btn-red" value="@TAdm("Config Braskem")" id="btnBraskem"/>
+                <input type="button" class="btn btn-blue" value="@TAdm("Config VM2")" id="btnVM2"/>
+            </div>
+            
+
+            @*From*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("From")</label>
+                <input type="text" class="form-control maxlength" name="From" value="@Model.From" maxlength="500" autofocus>
+            </div>
+
+            @*Host*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Host")</label>
+                <input type="text" class="form-control maxlength" name="Host" value="@Model.Host" maxlength="500">
+            </div>
+
+            @*Port*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Port")</label>
+                <input type="text" class="form-control maxlength" name="Port" value="@Model.Port" maxlength="3">
+                <span class="help-block"><small></small></span>
+            </div>
+
+            @*UserName*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("UserName")</label>
+                <input type="text" class="form-control maxlength" name="UserName" value="@Model.UserName" maxlength="500">
+            </div>
+
+            @*Password*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Password")</label>
+                <input type="text" class="form-control maxlength" name="Password" value="@Model.Password" maxlength="500">
+            </div>
+
+            @*SubjectEncoding*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("SubjectEncoding")</label>
+                <input type="text" class="form-control maxlength" name="SubjectEncoding" value="@Model.SubjectEncoding" maxlength="500">
+            </div>
+
+            @*DefaultCredential*@
+            <div class="form-group col-md-1">
+                <input type="checkbox" name="DefaultCredential" id="DefaultCredential" value="true" @((!Model.DefaultCredential.HasValue || Model.DefaultCredential.Value) ? "checked" : "") />
+                <label for="DefaultCredential">@TAdm("DefaultCredential")</label>
+            </div>
+
+
+            <div class="form-group col-md-12 text-right">
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script src="/Content/js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+
+    <script type="text/javascript">
+
+        $("#btnBraskem").click(function () {
+            $("input[name=From]").val('@Html.Raw(modelDefaultBraskem.From)');
+            $("input[name=Host]").val("@modelDefaultBraskem.Host");
+            $("input[name=Port]").val("@modelDefaultBraskem.Port");
+            $("input[name=UserName]").val("@modelDefaultBraskem.UserName");
+            $("input[name=Password]").val("@modelDefaultBraskem.Password");
+            $("input[name=SubjectEncoding]").val("@modelDefaultBraskem.SubjectEncoding");
+        });
+
+        $("#btnVM2").click(function () {
+            $("input[name=From]").val('@Html.Raw(modelDefaultVM2.From)');
+            $("input[name=Host]").val("@modelDefaultVM2.Host");
+            $("input[name=Port]").val("@modelDefaultVM2.Port");
+            $("input[name=UserName]").val("@modelDefaultVM2.UserName");
+            $("input[name=Password]").val("@modelDefaultVM2.Password");
+            $("input[name=SubjectEncoding]").val("@modelDefaultVM2.SubjectEncoding");
+        });
+
+        $(".maxlength").maxlength({
+            appendToParent: true,
+            alwaysShow: true,
+            warningClass: "label green",
+            limitReachedClass: "label orange"
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

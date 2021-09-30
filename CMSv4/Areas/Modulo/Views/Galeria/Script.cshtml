@@ -1,0 +1,330 @@
+﻿@model MLModuloGaleriaMultimidia
+@{
+    Layout = null;
+    var portal = BLPortal.Atual;
+}
+
+<script src="~/Portal/Braskem/js/plugins/mediaelement-and-player.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.owl-text-select-on .owl-next').click(function () {
+            $('.carousel-indicators li.active').closest('.owl-item').next().find('a').click();
+        });
+
+        $('.owl-text-select-on .owl-prev').click(function () {
+            $('.carousel-indicators li.active').closest('.owl-item').prev().find('a').click();
+        });
+
+        $('.audio-player_@Model.Repositorio').mediaelementplayer({
+            defaultAudioWidth: '100%',
+        });
+
+        if ($("#tab-2").length > 0) {
+            var viewer = $("#tab-2 .jq-viewer video#@(string.Concat("player_", Model.CodigoPagina, "_", Model.Repositorio))");
+            var object = viewer.find("object");
+            var clone = viewer.clone();
+
+            viewer.load();
+            viewer.show();
+
+            object.show();
+
+            clone.hide();
+            clone.appendTo(viewer.parent());
+
+            viewer.mediaelementplayer({
+                defaultVideoWidth: '100%',
+                defaultVideoHeight: '300px',
+                videoWidth: '100%',
+                videoHeight: '300px',
+                pluginWidth: '100%',
+                pluginHeight: '300px',
+                enableAutosize: true,
+                mode: 'auto',
+                plugins: ['flash', 'silverlight']
+            });
+        }
+
+        $(".jq-btn_@Model.Repositorio").click(function () {
+            $(".jq-btn_@Model.Repositorio").parent().removeClass("active");
+            $(this).parent().addClass("active");
+
+            var value = $(this).data("value");
+
+
+            if (value) {
+                $(".jq-galeria-thumb_@Model.Repositorio").parent().hide();
+                $(".jq-tipo_@Model.Repositorio-" + value).parent().parent().show();
+            }
+            else {
+                $(".jq-galeria-thumb_@Model.Repositorio").parent().show();
+            }
+
+            var obj = $(".jq-galeria-thumb_@Model.Repositorio:visible").first();
+
+
+            configurarVisiblidade(obj.find("a"),"@Model.Repositorio");
+
+        });
+
+        $(".jq-galeria-thumb_@Model.Repositorio a").click(function () {
+            configurarVisiblidade($(this), "@Model.Repositorio");
+
+            //PARA A MELHORIA
+            //$(".owl-item.active").removeClass("active");
+            //$(this).closest(".owl-item").addClass("active");
+
+            var thumbsTotal = $('.carousel-indicators .owl-item').length;
+            var thumbPos = $(this).closest('.owl-item').index();
+
+            if (thumbPos > 0) {
+                $('.owl-text-select-on .owl-prev').removeClass('inactive');
+            } else {
+                $('.owl-text-select-on .owl-prev').addClass('inactive');
+            }
+
+            if (thumbPos == (thumbsTotal - 1)) {
+                $('.owl-text-select-on .owl-next').addClass('inactive');
+            } else {
+                $('.owl-text-select-on .owl-next').removeClass('inactive');
+            }
+        });
+
+        $(".jq-comunicacao a").click(function () {
+            var $this = $(this);
+            var div = $this.parents("#carousel-gallery").find(".jq-viewer");
+            var e = $(".gallery-multimedia");
+            var download = $this.parents("#carousel-gallery").find("#download");
+            var url = $this.parents("#carousel-gallery").find("#url");
+            var urlDownload = "@string.Concat(Portal.UrlCms(portal), "/galeria/download?f=")";
+
+            channelingLoad(e);
+
+            $this.parents(".jq-comunicacao").find("li").removeClass("active");
+            $this.parent().addClass("active")
+
+            div.find("*").hide();
+            div.find("iframe").attr("src", "");
+
+            try {
+                div.find("video")[0].pause();
+            } catch (e) { }
+
+            url.hide();
+            download.hide();
+
+            $this.parents("#carousel-gallery").find("#jq-content-text").html($this.data("text"));
+
+            if ($this.data("ytb")) {
+                var viewer = div.find("#iframe");
+                var protocol = "http://";
+                var ytb = $this.data("ytb");
+
+                if (window.location.protocol == "https:")
+                    protocol = "https://";
+
+                if (ytb.indexOf("?") > -1) {
+                    ytb = protocol + "www.youtube.com/embed/" + ytb.substr(ytb.indexOf("v=") + 2) + "&wmode=transparent";
+                }
+                else {
+                    ytb = protocol + "www.youtube.com/embed/" + ytb.substr(ytb.indexOf("/v/") + 3) + "&wmode=transparent";
+                }
+
+                viewer.attr("src", ytb);
+                viewer.show();
+
+                viewer.load(function () {
+                    doneLoad(e);
+                });
+            }
+            else if ($this.data("tipo") == "2") {
+                $(".mejs-offscreen").remove();
+                $(".mejs-video").remove();
+
+                var viewer = div.find("video#player");
+                var source = viewer.find("source");
+                var object = viewer.find("object");
+                var flashvar = viewer.find("object param[name=flashvars]");
+
+                var clone = viewer.clone();
+
+                source.attr("src", $this.data("arq"));
+                source.attr("type", $this.data("ext"));
+                flashvar.attr("value", "controls=true&file=" + $this.data("arq"));
+
+                source.show();
+
+                viewer.load();
+                viewer.show();
+
+                object.show();
+
+                clone.hide();
+                clone.appendTo(viewer.parent());
+
+                download.attr("href", urlDownload + $this.data("download"));
+                download.show();
+
+                viewer.mediaelementplayer({
+                    defaultVideoWidth: '100%',
+                    defaultVideoHeight: '300px',
+                    videoWidth: '100%',
+                    videoHeight: '300px',
+                    pluginWidth: '100%',
+                    pluginHeight: '300px',
+                    enableAutosize: true,
+                    mode: 'auto',
+                    plugins: ['flash', 'silverlight']
+                });
+
+                doneLoad(e);
+            }
+            else {
+                var viewer = div.find("#img");
+                var zoom = div.find("#img_zoom");
+
+                if ($this.data("url")) {
+                    zoom.attr("href", $this.data("img"));
+                    viewer.attr("src", $this.data("img"));
+
+                    url.attr("href", $this.data("url"));
+                    url.show();
+                }
+                else {
+                    zoom.attr("href", $this.data("arq"));
+                    viewer.attr("src", $this.data("arq"));
+
+                    download.attr("href", urlDownload + $this.data("download"));
+                    download.show();
+                }
+
+                viewer.attr("alt", $this.data("alt"));
+                viewer.show();
+
+                zoom.show();
+                zoom.find("span").show();
+
+                var tmpImg = new Image();
+                tmpImg.src = viewer.attr('src');
+                tmpImg.onload = function () {
+                    doneLoad(e);
+                };
+            }
+        });
+    });
+
+    function configurarVisiblidade(obj,pRepositorio) {
+        var download = $("#@(string.Concat("download_", Model.CodigoPagina, "_"))"+pRepositorio);
+        var urlDownload = "@string.Concat(Portal.UrlCms(portal), "/galeria/download?f=")";
+        var e = $("#carousel-gallery_"+pRepositorio).closest('[data-loading]');
+
+        channelingLoad(e);
+
+        $(".jq-galeria-thumb_"+pRepositorio).removeClass("active");
+
+        $(obj).parent().addClass("active");
+
+        $("#jq-content-viewer_"+pRepositorio).find("*").hide();
+        $("#jq-content-viewer_" + pRepositorio).find("iframe").attr("src", "");
+
+        if($("#jq-content-viewer_" + pRepositorio).find("video")[0] != undefined)
+            $("#jq-content-viewer_"+pRepositorio).find("video")[0].pause();
+
+        if (obj.data("tipo") == "1") {
+            var viewer = $("#@(string.Concat("img_", Model.CodigoPagina, "_"))"+pRepositorio);
+            var zoom = $("#@(string.Concat("img_zoom_", Model.CodigoPagina, "_"))"+pRepositorio);
+
+            zoom.attr("href", obj.data("arq"));
+
+            viewer.attr("src", obj.data("arq"));
+            viewer.attr("alt", obj.data("alt"));
+            viewer.show();
+
+            download.attr("href", urlDownload + obj.data("download"));
+            download.show();
+
+            zoom.show();
+            zoom.find("span").show();
+
+            var tmpImg = new Image();
+            tmpImg.src = viewer.attr('src');
+            tmpImg.onload = function () {
+                doneLoad(e);
+            };
+        }
+        else {
+            if (obj.data("ytb")) {
+                var viewer = $("#@(string.Concat("iframe_", Model.CodigoPagina, "_"))"+pRepositorio);
+                var protocol = "http://";
+                var ytb = obj.data("ytb");
+
+                if (window.location.protocol == "https:")
+                    protocol = "https://";
+
+                if (ytb.indexOf("?") > -1) {
+                    ytb = protocol + "www.youtube.com/embed/" + ytb.substr(ytb.indexOf("v=") + 2);
+                }
+                else {
+                    ytb = protocol + "www.youtube.com/embed/" + ytb.substr(ytb.indexOf("/v/") + 3);
+                }
+
+                viewer.attr("src", ytb);
+                viewer.show();
+
+                if (obj.data("download")) {
+                    download.attr("href", urlDownload + obj.data("download"));
+                    download.show();
+                } else {
+
+                    download.removeAttr("href");
+                    download.hide();
+                }
+                doneLoad(e);               
+            }
+            else {
+                $(".mejs-offscreen").remove();
+                $(".mejs-video").remove();
+
+                var viewer = $("video#@(string.Concat("player_", Model.CodigoPagina, "_"))"+pRepositorio);
+                var source = viewer.find("source");
+                var object = viewer.find("object");
+                var flashvar = viewer.find("object param[name=flashvars]");
+
+                var clone = viewer.clone();
+
+                source.attr("src", obj.data("arq"));
+                source.attr("type", obj.data("ext"));
+                flashvar.attr("value", "controls=true&file=" + obj.data("arq"));
+
+                source.show();
+
+                viewer.load();
+                viewer.show();
+
+                object.show();
+
+                clone.hide();
+                clone.appendTo(viewer.parent());
+
+                download.attr("href", urlDownload + obj.data("download"));
+                download.show();
+
+                viewer.mediaelementplayer({
+                    defaultVideoWidth: '100%',
+                    defaultVideoHeight: '300px',
+                    videoWidth: '100%',
+                    videoHeight: '300px',
+                    pluginWidth: '100%',
+                    pluginHeight: '300px',
+                    enableAutosize: true,
+                    mode: 'auto',
+                    plugins: ['flash', 'silverlight']
+                });
+
+                doneLoad(e);
+            }
+        }
+
+        $("#jq-content-text_"+pRepositorio).html(obj.data("text"));
+    }
+</script>

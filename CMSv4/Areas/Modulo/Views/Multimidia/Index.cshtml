@@ -1,0 +1,19 @@
+﻿@model MLModuloMultimidia
+
+@{
+    var objArquivo = (MLMultimidiaArquivo)ViewBag.Arquivo ?? new MLMultimidiaArquivo();
+}
+
+@if (!String.IsNullOrWhiteSpace(Model.Titulo))
+{
+    <h2>@Model.Titulo</h2>
+}
+
+@try
+{
+    @Html.Raw(objArquivo.HtmlOutput)
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

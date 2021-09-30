@@ -1,0 +1,68 @@
+﻿@model MLTemplate
+@{
+    var portal = PortalAtual.Obter;
+    var imagem = ViewBag.Imagem;
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/border_1d_around" /> @TAdm("Templates")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="/cms/@portal.Diretorio/template">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @Helpers.ExibirErros(ViewData.ModelState)
+
+        <form method="post" class="form-vertical" role="form"  enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Model.Nome" name="NomeAnterior" />
+            <div class="form-group col-md-12">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+                <span><small>@TAdm("Utilize apenas letras sem acentuação e números.")</small></span>
+            </div>
+            <div class="form-group col-md-12">
+                <input type="file" name="Imagem" accept="image/jpeg">
+
+                @if (!string.IsNullOrEmpty(imagem))
+                {
+                    <img id="imagemCapa" src="@(imagem)?q=@Guid.NewGuid()" alt="" style="max-width: 300px;" /><br />
+                }
+            </div>
+            <div class="form-group col-md-12">
+                <textarea data-editor="html" name="Conteudo" style="height: 400px; width: 100%;">@Model.Conteudo</textarea>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="/cms/@portal.Diretorio/template">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script src="~/Content/js/plugins/html2canvas/html2canvas.js"></script>
+
+    <script type="text/javascript">
+        $('form').validate({
+            ignore: [],
+            rules: {
+                Nome: { required: true, regex: /^[_a-z|A-Z|0-9][\w|\s|-]*$/ },
+                Conteudo: { required: true },
+                Imagem: {
+                    @*required: @(string.IsNullOrEmpty(Model.Nome) ? "true" : "false"),*@
+                    extension: "jpg"
+                }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+    </script>
+}

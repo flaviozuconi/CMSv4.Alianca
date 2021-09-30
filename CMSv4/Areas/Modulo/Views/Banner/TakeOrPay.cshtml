@@ -1,0 +1,16 @@
+﻿@model MLModuloBanner
+@{
+    var portal = BLPortal.Atual;
+    List<MLBannerArquivoPublico> lstArquivos = (List<MLBannerArquivoPublico>)ViewData["lstArquivos"] ?? new List<MLBannerArquivoPublico>();
+
+    var width = 1600;
+    var height = 342;
+}
+
+<figure class="banner">
+    @for (int i = 0; i < lstArquivos.Count; i++)
+    {
+        <img srcset="@string.Format("{0}/thumb/{1}/Banner/{2}/{3}/{4}/{5}/?crop=true", Portal.Url(), portal.Diretorio, Model.CodigoBanner, width, height, lstArquivos[i].Imagem)" alt="@lstArquivos[i].Titulo">
+        <figcaption>@Html.Raw(lstArquivos[i].Texto)</figcaption>
+    }
+</figure>

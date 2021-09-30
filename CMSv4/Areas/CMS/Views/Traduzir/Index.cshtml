@@ -1,0 +1,148 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    var idiomas = BLIdioma.Listar().Where(a => a.Codigo != 1).ToList();
+    var urlListar = string.Format("/cms/{0}/traduzir/listar", portal.Diretorio);
+    var urlAtualizar = string.Format("/cms/{0}/traduzir/atualizar", portal.Diretorio);
+    var adm = Request["adm"] != null ? "?adm=1" : "";
+
+    urlListar = urlListar + adm;
+
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title"><h4><img src="~/iconpack.axd/16/document_font_wizard" /> @TAdm("Tradução de Termos")</h4></div>
+        <div class="portlet-widgets">
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            {
+                <input type="checkbox" id="traduzirOnFocus" /> <label for="traduzirOnFocus">@TAdm("Traduzir ao Selecionar Caixa de Texto")</label>
+                <a class="btn btn-green" href="/cms/@portal.Diretorio/traduzir/TraducaoTermos@(adm)" onclick="return confirm('@Html.Raw(T("Deseja seguir processo de tradução automática dos termos?"))');">@TAdm("Traduzir Textos*")</a>
+                <a class="btn btn-red" href="/cms/@portal.Diretorio/traduzir/atualizarcache@(adm)">@TAdm("Atualizar Cache")</a>
+            }
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body col-lg-12">
+        <div class="table-responsive">
+            <div id="toolbar"><small class="text-red text-right">@TAdm("*A tradução será aplicada somente em caixas de textos vazias. Pode demorar um pouco.")</small></div>
+            <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                <thead>
+                    <tr>
+                        <th width="350">Termo</th>
+                        @for (int i = 0; i < idiomas.Count; i++)
+                        {
+                            <th>@idiomas[i].Nome</th>
+                        }
+                    </tr>
+                </thead>
+            </table>
+            <br />
+        </div>
+    </div>
+</div>
+
+@section scripts {
+<script type="text/javascript">
+        $(document).ready(function () {
+            //DataTables Initialization
+            $('#lista').dataTable(
+                {
+                    "bProcessing": true,
+                    "order": [[0, "asc"]],
+                    "iDisplayLength": 20,
+                    "ajax": { 'url': "@urlListar" },
+                    "columns": [
+                        @Helpers.Coluna("Termo"),
+                        @for (int i = 0; i < idiomas.Count; i++)
+                        {
+                            <text>
+                            {
+                                "data": "@idiomas[i].Sigla",
+                                "bSortable": false,
+                                "render": function (data, type, row) {
+                                    var traducao = row.@(idiomas[i].Sigla.Replace("-", "_"));
+                                    return '<input type="text" class="txt-termo form-control" style="width: 100%;" data-termo="' + row.Termo + '" data-sigla="@idiomas[i].Sigla" data-id="' + row.Codigo + '" onchange="atualizar(this);" onfocus="traduzirOnFocus(this);" value="' + (traducao == undefined ? '' : traducao) + '" />';
+                                }
+                            },
+                            </text>
+                        }
+                    ]
+                }
+            );
+        });
+
+        function traduzirOnFocus(sender) {
+            var YandexUrl = "@System.Configuration.ConfigurationManager.AppSettings["Framework.Yandex.Url"]";
+            var YandexKey = "@System.Configuration.ConfigurationManager.AppSettings["Framework.Yandex.Key"]";
+
+            var me = $(sender);
+            if ($("#traduzirOnFocus").prop("checked") && !me.val()) {
+                var termo = me.parents("tr").find("td").first().html();
+
+                //Siglas permitirdas para tradução em https://tech.yandex.com/translate/doc/dg/concepts/api-overview-docpage/
+                $.ajax({
+                    url: YandexUrl + "?key=" + YandexKey,
+                    data: {
+                        "text": termo,
+                        "lang": "pt-" + me.data("sigla").split('-')[0],
+                        "format": "plain"
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+
+                            //Salvar a tradução na base e atualizar o cache
+                            $.get("/cms/@portal.Diretorio/Traduzir/traduzir", { traducao: data.text[0], idtermo: me.data("id"), para: me.data("sigla") }, function (dataAction) {
+                                me.val(data.text[0]);
+                                Mensagem('O termo \"' + termo + '\"'+' @TAdm("foi atualizado com sucesso! Atualize a lista de termos.")', 'success');
+                            });
+                        }
+                        else {
+                            Mensagem(data.message, 'error');
+                        }
+                    },
+                    error(ex) {
+                        console.log(ex);
+                    }
+                });
+            }
+        }
+
+        function atualizar(sender) {
+            var value = $(sender).val();
+            var id = $(sender).data("id");
+            var sigla = $(sender).data("sigla");
+            var termo = $(sender).data("termo");
+
+            if (value) {
+                $.get("@urlAtualizar", { codigo: id, sigla: sigla, traducao: value }, function (data) {
+                    if (data && data.success) {
+                        Mensagem('O termo \"' + termo + '\"'+ ' @TAdm("foi atualizado com sucesso! Atualize a lista de termos.")', 'success');
+                    }
+                    else {
+                        Mensagem(data.msg, 'danger');
+                    }
+                });
+            }
+        }
+
+        function Mensagem(msg, tipo) {
+            try {
+                window.parent.Mensagem(msg, tipo);
+            }
+            catch (err) {
+                Messenger.options = {
+                    extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+                    theme: 'flat'
+                }
+                Messenger().post({
+                    message: msg,
+                    id: "message-page",
+                    type: tipo,
+                    showCloseButton: false,
+                    hideAfter: 4
+                });
+            }
+        }
+
+</script>
+}

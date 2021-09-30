@@ -1,0 +1,241 @@
+﻿@model MLFaleConoscoFormulario
+
+@{
+    var portal = PortalAtual.Obter;
+    var urlControler = string.Format("/cms/{0}/FaleConoscoAdmin", portal.Diretorio);
+    var urlLista = urlControler + "/Formularios";
+    var urlSalvar = urlControler + "/FormulariosItem";
+    var exemploJavaScript = "@helper Javascript(MLPortal portal)\n{\n    <script type=\"text/javascript\">\n        //Código em java script aqui    \n    </script>\n}\n@{\n    BLConteudo.AdicionarJavaScript\n    (\n        Javascript(portal).ToHtmlString(), \n        false\n    );\n}";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/pop_mail" /> @TAdm("Fale Conosco - Formularios")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" action="@urlSalvar">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" name="nomeAntigo" value="@Model.Nome" />
+
+            <div class="form-group col-md-12" >
+                <span class="label label-warning">Atenção</span>
+                <p class="small">Os campos "Email Destinatário" e "Assunto" só serão utilizados caso não estejam presentes como hidden field no formulário.</p>
+            </div>
+
+            @*NOME*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control maxlength" name="Nome" value="@Model.Nome" maxlength="250" autofocus>
+                <span class="help-block"><small>@TAdm("Utilize apenas letras e números (sem acentuação e espaço)")</small></span>
+            </div>
+
+            @*DESTINATÁRIO*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Email Destinatário")</label>
+                <input type="text" class="form-control maxlength" name="EmailDestinatario" value="@Model.EmailDestinatario" maxlength="200">
+                <span class="help-block"><small>@TAdm("E-mail da pessoa que receberá o formulário de contato")</small></span>
+            </div>
+
+            @*DESTINATÁRIO*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Assunto")</label>
+                <input type="text" class="form-control maxlength" name="Assunto" value="@Model.Assunto" maxlength="100">
+                <span class="help-block"><small></small></span>
+            </div>
+
+            @*EMAILS COPIA*@
+            <div class="form-group col-md-12">
+                <label>@TAdm("Email's em Cópia")</label>
+                <input type="text" class="form-control maxlength" name="EmailsCopia" value="@Model.EmailsCopia" maxlength="1000">
+                <span class="help-block"><small>@TAdm("Email das pessoas que receberão uma cópia, separar por vírgula")</small></span>
+            </div>
+
+            @*CONTEÚDO*@
+            <div class="form-group col-md-12">
+                <label>@TAdm("Formulário")</label>
+                <textarea data-editor="html" name="Conteudo" style="height: 400px; width: 100%;">@Model.Conteudo</textarea>
+            </div>
+
+            @*SCRIPT PERSONALIZADO*@
+            <div class="form-group col-md-12 collapseJQ">
+                <a data-toggle="collapse" data-parent="#accordion" href="#divScriptEdicao" class="collapsed" id="aScrpt">
+                    <i class="fa fa-chevron-up"></i> Script
+                </a>
+
+                @*<a href="#" id="aInfo" class="glyphicon glyphicon-question-sign" data-original-title="" data-container="body" data-toggle="popover" data-placement="right" data-content="Em alguns casos, o script padrão pode não atender as suas necessidades, se esse for o seu caso, utilize o campo abaixo para definir o script para este formulário."></a>*@
+
+                <a href="#" id="aInfo" class="glyphicon glyphicon-question-sign" data-toggle="modal" data-target="#modalAjudaFaleConosco"></a>
+            </div>
+
+            <div class="form-group col-md-12 clearfix clearfix collapse" id="divScriptEdicao" aria-expanded="false" aria-controls="divScriptEdicao" style="height: auto;">
+                <textarea name="Script" id="Script" style="height: 400px; width: 100%;">@Model.Script</textarea>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal modal-flex fade in" id="modalAjudaFaleConosco" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="flexModalLabel">Fale Conosco</h4>
+            </div>
+            <div class="modal-body">
+                <p>Em alguns casos, a validação padrão do módulo fale conosco pode não atender as suas necessidades, se esse for o seu caso, utilize o campo script para sobrescrever o script padrão.</p>
+
+                <p><span class="label label-warning">Atenção: </span>Se você deseja apenas adicionar novas funcionalidades em javascript e/ou jquery, adicione no campo "Formulário" o código de exemplo abaixo.</p>
+
+                <textarea data-editor="html" name="Sample" id="Sample" style="height: 250px; width: 100%;">@exemploJavaScript</textarea>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section scripts{
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script src="/Content/js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+
+    <script type="text/javascript">
+        //o ace editor está armazenado numa variável para que não perca a sessão e assim seja possível sua atualização
+        var editor;
+        var editorSample;
+
+        $(document).ready(function () {
+            //o editor não atualiza width se o componente estiver escondido
+            setTimeout(function () {
+                $(".ace_editor").css("width", "100%");
+            }, 1000);
+
+            @if (Model.Codigo.HasValue && !string.IsNullOrWhiteSpace(Model.Script)){
+                @:$("#aScrpt").click();
+            }
+        });
+
+        $('.glyphicon-question-sign').popover();
+
+        $(".maxlength").maxlength({
+            appendToParent: true,
+            alwaysShow: true,
+            warningClass: "label green",
+            limitReachedClass: "label orange"
+        });
+
+        $('form').validate({
+            onkeyup: false,
+            rules: {
+                Nome: {
+                    required: true,
+                    regex: "^[a-zA-Z][a-zA-Z0-9\-\_]+$",
+                    remote: {
+                        url: "/cms/@portal.Diretorio/FaleConoscoAdmin/FormularioslValidarNome",
+                        type: "post",
+                        async: false,
+                        loadingPanel: false,
+                        data: {
+                            codigo: function () {
+                                return $('input[name=Codigo]').val();
+                            },
+                            nome: function () {
+                                return $('input[name=Nome]').val();
+                            }
+                        }
+                    }
+                },
+                //EmailDestinatario: { required: true, email: true },
+                Conteudo: { required: true }
+            },
+            messages: {
+                Nome:{
+                    regex: "@TAdm("O nome do arquivo conter apenas caracteres e/ou números")",
+                    remote: "@TAdm("Já existe um arquivo com esse nome.")",
+                }
+            }
+        });
+
+        $('#divScriptEdicao').on('shown.bs.collapse', function (e) {
+            //abre editor, por problema do plugin ele não estava atualizando o conteúdo do editor
+            //solução:
+            setTimeout(function () {
+                editor.resize();
+                editor.renderer.updateFull();
+            }, 400);
+        })
+
+        //ativar ace editor
+        var textarea = $("#Script");
+        var editDiv = $('<div>', {
+            position: 'absolute',
+            width: textarea.width(),
+            height: textarea.height(),
+            'class': textarea.attr('class')
+        }).insertBefore(textarea);
+
+        //textarea.val(val);
+        textarea.css('visibility', 'hidden');
+        textarea.css('display', 'none');
+
+        editor = ace.edit(editDiv[0]);
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setValue(textarea.val(), 1);
+        editor.getSession().setMode("ace/mode/html");
+
+        // copy back to textarea on form submit...
+        editor.on("blur", function () {
+            textarea.val(escape(editor.getSession().getValue()));
+        });
+
+        textarea.closest('form').submit(function () {
+            textarea.val(escape(editor.getSession().getValue()));
+        });
+
+        //abrir/fechar edicao de html
+        $(".collapseJQ a").click(function () {
+            var i = $(this).find("i");
+            if (i.hasClass("fa-chevron-up")) {
+                i.addClass("fa-chevron-down");
+                i.removeClass("fa-chevron-up");
+            }
+            else {
+                i.removeClass("fa-chevron-down");
+                i.addClass("fa-chevron-up");
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $(function () {
+            function reposition() {
+                var modal = $(this),
+                    dialog = modal.find('.modal-dialog');
+                modal.css('display', 'block');
+                dialog.css("margin-top", Math.max(0, $(window.parent.document).scrollTop()));
+            }
+            // Reposition when a modal is shown
+            $('.modal').on('show.bs.modal', reposition);
+            // Reposition when the window is resized
+            $(window).on('resize', function () {
+                $('.modal:visible').each(reposition);
+            });
+        });
+    </script>
+}

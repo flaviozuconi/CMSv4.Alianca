@@ -1,0 +1,23 @@
+﻿@model MLModuloArquivos
+@{
+    var portal = BLPortal.Atual;
+    List<MLArquivoPublico> lstResultados = (List<MLArquivoPublico>)ViewData["lstArquivos"] ?? new List<MLArquivoPublico>();
+}
+<h2>@Model.Titulo</h2>
+<ul class="list-news list-unstyled">
+        @foreach (var item in lstResultados)
+    {
+            <li>
+                <a href="@item.EnderecoDownload()" target="_blank">
+                    <time>@item.Data.Value.ToString(T("dd/MM/yyyy"))</time>
+                    @item.Titulo
+                </a>
+            </li>
+    }
+</ul>
+                @if (!string.IsNullOrEmpty(Model.UrlLista))
+    {
+            <div class="text-right">
+                <a class="btn btn-default" href="@Model.UrlLista">@T("Ver Mais")</a>
+            </div>
+    }

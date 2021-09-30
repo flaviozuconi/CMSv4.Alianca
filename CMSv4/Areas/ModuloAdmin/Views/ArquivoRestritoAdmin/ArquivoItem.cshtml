@@ -1,0 +1,265 @@
+﻿@using Framework.Utilities;
+@using System.Text.RegularExpressions;
+@model  MLArquivoRestrito
+@{
+    var baseUrl = "/cms/" + PortalAtual.Diretorio + "/arquivorestritoadmin";
+    var urlLista = baseUrl + "/arquivo?codigoCategoria=" + Request["codigocategoria"];
+    var urlUpload = baseUrl + "/uploadfile";
+    var tipo = ViewBag.Tipos;
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/active_sessions" />
+                @TAdm("Arquivos")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Request["codigocategoria"]" name="CodigoCategoria" />
+
+            <div class="form-group col-md-3">
+                <label>@TAdm("Tipo")</label>
+
+                <select name="CodigoTipo" id="CodigoTipo" class="form-control">
+                    <option value="">Selecione</option>
+                    @foreach (var item in tipo)
+                    {
+                        <option arquivo="@(item.IsArquivo ? "arquivo" : "url")" value="@item.Codigo" @(item.Codigo == Model.CodigoTipo ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group col-md-3">
+                <label>@TAdm("Data")</label>
+                <input type="text" class="form-control data" name="Data" id="Data" maxlength="16" value="@(Model.Data.HasValue ? Model.Data.Value.ToString("dd/MM/yyyy") : "")">
+            </div>
+
+            <div class="form-group col-md-3">
+                <br />
+                @Html.CheckBox("Destaque", (Model.Destaque ?? true))
+                <label for="Destaque">@TAdm("Destaque")</label>
+            </div>
+
+            <div class="form-group col-md-3">
+                <br />
+                @Html.CheckBox("Ativo", (Model.Ativo ?? true))
+                <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+
+            <div class="clearfix"></div>
+            <div id="fileUploadImagem" class="col-md-6 dropzone">
+                <label>@TAdm("Imagem")</label>
+                <div class="fallback">
+                    <input type="file" name="fileImagem" />
+                </div>
+
+                <input type="hidden" value="@Model.Imagem" name="Imagem" />
+            </div>
+
+            <div id="divArquivo" class="col-md-6">
+                <div id="fileUpload" class="col-md-12 dropzone">
+                    <label>@TAdm("Arquivo")</label>
+                    <div class="fallback">
+                        <input type="file" id="txtFile" name="File" />
+                    </div>
+                </div>
+
+                <div id="url" class="col-md-12" style="display: none;">
+                    <label>@TAdm("URL YouTube")</label>
+                    <input type="text" id="txtUrl" class="form-control" maxlength="400" value="@(Model.CodigoTipo == 3 ? Model.ArquivoUrl : "")">
+                </div>
+
+                <input type="hidden" id="ArquivoUrl" value="@Model.ArquivoUrl" name="ArquivoUrl"/>
+            </div>
+
+            <div class="col-md-12">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" required>
+            </div>
+
+            <div class="col-md-12">
+                <label>@TAdm("Descrição")</label>
+                @Html.TextArea("Descricao", Model.Descricao, new { @class = "form-control fill-tip", maxlength = 1030 })
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section head {
+    <link href="~/Content/css/plugins/bootstrap-tokenfield/bootstrap-tokenfield.css" rel="stylesheet" />
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.theme.css" rel="stylesheet" />
+}
+
+@section scripts{
+
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-tokenfield/bootstrap-tokenfield.min.js"></script>
+
+    <script type="text/javascript">
+
+        $('form').validate({
+            ignore: '.ignorarCampo',
+            rules: {
+                Data: { required: true },
+                Nome: { required: true, maxlength: 200 },
+                CodigoTipo: { required: true },
+                ArquivoUrl: { required: true }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $(document).ready(function () {
+
+            //Upload de arquivos.
+            $("#fileUpload").dropzone({
+                url: "@urlUpload",
+                acceptedFiles: ".mp4,.webm,.ogg,.jpg,.jpeg,.gif,.png,.doc,.docx,.pdf,.xls,.xlsx,.xlsm,.xlsb",
+                dictDefaultMessage: "@(string.IsNullOrEmpty(Model.ArquivoUrl) ? T("Arraste ou clique aqui para realizar upload de arquivos") : Model.ArquivoUrl.Replace(".resource", string.Empty))",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload?")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                maxFiles: 1,
+                parallelUploads: 1,
+                paramName: "File",
+                sending: function (file, xhr, formData) {
+                    formData.append('codigoCategoria', '@Request["codigocategoria"]');
+                    formData.append('isImagem', 'false');
+                },
+                accept: function (file, done) {
+                    done();
+                },
+                complete: function (file) {
+                    objResponse = JSON.parse(file.xhr.response);
+                    if (!objResponse.success) {
+                        alert(objResponse.msg);
+                        this.removeFile(file);
+                    }
+                    else {
+                        $('#ArquivoUrl').val(objResponse.name);
+                    }
+                }
+            });
+
+            //Upload de imagens.
+            $("#fileUploadImagem").dropzone({
+                url: "@urlUpload",
+                acceptedFiles: ".jpg,.jpeg,.gif,.png",
+                dictDefaultMessage: "@(string.IsNullOrEmpty(Model.Imagem) ? T("Arraste ou clique aqui para realizar upload de arquivos") : Model.Imagem.Replace(".resource", string.Empty))",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload?")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                maxFiles: 1,
+                parallelUploads: 1,
+                paramName: "fileImagem",
+                sending: function (file, xhr, formData) {
+                    formData.append('codigoCategoria', '@Request["codigocategoria"]');
+                    formData.append('isImagem', 'true');
+                },
+                accept: function (file, done) {
+                    done();
+                },
+                complete: function (file) {
+                    objResponse = JSON.parse(file.xhr.response);
+                    if (!objResponse.success) {
+                        alert(objResponse.msg);
+                        this.removeFile(file);
+                    }
+                    else {
+                        $("input[name='Imagem']").val(objResponse.name);
+                    }
+                }
+            });
+
+            //Campo de data.
+            $('#Data').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            scrollToTop(); //Rola até o topo da página.
+        });
+
+        //#region Formata campo de data.
+        //Formata campo de data.----------------------------------
+        $("#Data").blur(function () {
+            if ($(this).val() == "__/__/____") {
+                $(this).val("");
+            }
+        });
+
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                if ($("#Data").val() == "__/__/____") {
+                    $("#Data").val("");
+                }
+            }
+        });
+        //--------------------------------------------------------
+        //#endregion
+
+
+        //Exibe os campo de arquivo de acordo com o tipo selecionado.
+        $("select[name='CodigoTipo']").change(function () {
+            var tipoArquivo = $(this).children(':selected').attr("arquivo");
+
+            if (tipoArquivo == "arquivo") {
+                $("#fileUpload").show();
+                $('#fileUpload').removeClass('ignorarCampo');
+                $("#url").hide();
+                $('#url').addClass('ignorarCampo');
+
+                $('#ArquivoUrl').removeClass('ignorarCampo');
+            }
+            else if (tipoArquivo == "url") {
+                $("#fileUpload").hide();
+                $('#fileUpload').addClass('ignorarCampo');
+                $("#url").show();
+                $('#url').removeClass('ignorarCampo');
+
+                $('#ArquivoUrl').removeClass('ignorarCampo');
+            }
+            else {
+                $("#fileUpload").hide();
+                $('#fileUpload').addClass('ignorarCampo');
+                $("#url").hide();
+                $('#url').addClass('ignorarCampo');
+
+                $('#ArquivoUrl').addClass('ignorarCampo');
+            }
+        });
+
+        $('#txtUrl').change(function () {
+            $('#ArquivoUrl').val($(this).val());
+        });
+
+    </script>
+}

@@ -1,0 +1,935 @@
+﻿@helper ComboIdiomas(decimal? idioma, bool exibirSelecione = true, bool requerido = false)
+{
+    <select id="CodigoIdioma" class="form-control" name="CodigoIdioma" @(requerido ? "required" : "")>
+        @if (exibirSelecione)
+        {
+            <option value="">Selecione</option>
+        }
+        @foreach (var item in Framework.Utilities.BLIdioma.Listar())
+        {
+            <option value="@item.Codigo" @(item.Codigo == idioma ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+}
+
+<!-- AVISO E CONFIRMACAO -->
+@helper PainelConfirmacao(string id, string titulo, string mensagem, string jsSim)
+{
+    @Helpers.PainelConfirmacao(id, "alert-warning", titulo, mensagem, jsSim, string.Format("$('#{0}').hide();", id))
+}
+
+@helper PainelConfirmacao(string id, string css, string titulo, string mensagem, string jsSim, string jsNao)
+{
+    <div id="@id" class="alert @css col-md-12" style="display:none;">
+        <div class="col-md-10">
+            <strong>@titulo:</strong> @mensagem
+        </div>
+        <div class="col-md-2" style="text-align: right;">
+            <a class="btn btn-red" href="javascript:;" onclick="@jsSim">Sim</a>
+            <a class="btn btn-white" href="javascript:;" onclick="@jsNao">Não</a>
+        </div>
+    </div>
+
+}
+
+@helper PainelAviso(string id, string titulo, string mensagem)
+{
+    @Helpers.PainelAviso(id, "alert-info", titulo, mensagem)
+}
+
+@helper PainelAviso(string id, string css, string titulo, string mensagem)
+{
+    <div id="@id" class="alert @css alert-dismissable col-md-12" style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <strong>@titulo:</strong> @mensagem
+    </div>
+}
+
+<!-- EXCLUSÃO -->
+@helper BotaoExcluir(string texto)
+{
+    if (AdminHelper.CheckPermission(Permissao.Excluir))
+    {
+        <a id="excluir" href="javascript:;" style="display: none;"
+           onclick="$('.alert-success').hide();$('#painelExcluir').show();$('input[type=checkbox][name=excluir]').prop('disabled',true);" class="btn btn-red">
+            <i class="fa fa-trash-o" title="@texto"></i> @texto
+        </a>
+    }
+}
+
+@helper PainelExcluir(string titulo, string mensagem, string url, bool reloadPage = true)
+{
+    if (AdminHelper.CheckPermission(Permissao.Excluir))
+    {
+        <div id="painelExcluir" class="alert alert-danger col-md-12" style="display: none;">
+            <div class="col-md-10">
+                <strong>@titulo:</strong> @mensagem
+            </div>
+            <div class="col-md-2" style="text-align: right;">
+                <a class="btn btn-red" href="javascript:;" onclick="excluirRegistros();">Sim</a>
+                <a class="btn btn-white" href="javascript:;" onclick="cancelarExclusao();">Não</a>
+            </div>
+        </div>
+        <script type="text/javascript">
+        var excluirRegistros = function () {
+            var div = "<div class='msg-exclusao alert alert-danger col-md-12'><strong>Erro:</strong> [[MSG]]</div>";
+
+            $(".msg-exclusao").remove();
+
+            $.post('@url', $.param({ ids: getAllValues('input[type=checkbox][name=excluir]:checked') }, true), function (data) {
+                if (data.Sucesso) {
+                        @if (reloadPage)
+                        {
+                        @:window.location.reload();
+                                                                                                                                                                    }
+                        else
+                        {
+                            //Método para execução como callback do post ajax
+                        @:try { callbackGrid(); } catch (err) { }
+                                                                                                                                                                    }
+                }
+                else {
+                    if (data.Mensagem) {
+                        $("#painelExcluir").hide();
+
+                        $(div.replace("[[MSG]]", data.Mensagem)).insertBefore("#painelExcluir");
+                    }
+                }
+            });
+        };
+
+        var cancelarExclusao = function () {
+            $('#painelExcluir').hide();
+            $('#excluir').hide();
+            $('input[type=checkbox][name=excluir]').prop('disabled', false).prop('checked', false);
+            $('#selecionarTodos').removeAttr('checked');
+            $('.table tr.selected').removeClass('selected');
+        }
+        </script>
+    }
+}
+
+<!-- EXCLUSÃO -->
+@helper BotaoConfirma(string texto, string divName = "painel_confirma", string cssClass = "", Permissao? permissao = null)
+{
+    if (!permissao.HasValue || AdminHelper.CheckPermission(permissao.Value))
+    {
+        <a id="btn_@divName" href="javascript:;" onclick="$('.alert').hide();$('#@divName').show();" class="btn btn-red">
+            <i class="@cssClass" title="@texto"></i>@texto
+        </a>
+    }
+}
+
+@helper Recaptcha(bool required = true, string dataCallBackFunction = "", string hiddenName = "Recaptcha")
+{
+    <input type="hidden" name="@hiddenName" id="@hiddenName" required>
+    <div id="div_@hiddenName" class="g-recaptcha" @(!string.IsNullOrEmpty(dataCallBackFunction) ? "data-callback=" + dataCallBackFunction : "") data-sitekey="@System.Configuration.ConfigurationManager.AppSettings["BRASKEM.GOOGLE.RECAPTCHA.KEY.SITE"]"></div>
+}
+
+@helper PainelConfirma(string titulo, string mensagem, string divName = "painel_confirma", string cssClass = "alert-warning", string funcaoJsConfirma = "suaFuncaoJs();", Permissao? permissao = null)
+{
+    if (!permissao.HasValue || AdminHelper.CheckPermission(permissao.Value))
+    {
+        <div id="@divName" class="alert @cssClass col-md-12" style="display: none;">
+            <div class="col-md-10">
+                <strong>@titulo:</strong> @mensagem
+            </div>
+            <div class="col-md-2" style="text-align: right;">
+                <a class="btn btn-green" href="javascript:;" onclick="confirmaJs@(divName)();">Sim</a>
+                <a class="btn btn-white" href="javascript:;" onclick="cancelaJs@(divName)();">Não</a>
+            </div>
+        </div>
+        <script type="text/javascript">
+            function confirmaJs@(divName)() {
+                try {
+                    @if (!String.IsNullOrWhiteSpace(funcaoJsConfirma))
+                    {
+                        @funcaoJsConfirma
+                    }
+                    $('#@divName').hide();
+                } catch (e) { }
+            }
+
+            function cancelaJs@(divName)() {
+                $('#@divName').hide();
+                //$('input.chk_selecionar').prop('disabled', false).prop('checked', false);
+                //$('#selecionarTodos').removeAttr('checked');
+                //$('.table tr.selected').removeClass('selected');
+            }
+        </script>
+    }
+}
+
+@helper Coluna(string campo)
+{
+    @:{ "data": "@campo" }
+}
+
+@helper ColunaDataHora(string campo)
+{
+    @:{
+    @:  "data": "@campo", "sClass": "center",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:       if (data) return moment(data).format('DD/MM/YYYY HH:mm'); else return '';
+    @:    }
+    @:}
+}
+
+
+@helper ColunaIdiomaCadastrado(string campo, string textoCadastrado, string textoNaoCadastrado, string campoIdiomas = "IdiomasCadastrados")
+{
+    <text>
+        {
+        "data": "@campo",
+        "bSortable": false,
+        "render": function (data, type, row) {
+        if (data == null) { data = ''; }
+
+        var links = '';
+        var arrIdiomas = row.@(campo).split(',');
+
+        for (var i = 0; i < arrIdiomas.length; i++) {
+        var arrIdiomaSigla = arrIdiomas[i].split(':');
+        var css = arrIdiomaSigla[1] > 0 ? 'red' : 'label-default';
+        var title = arrIdiomaSigla[1] > 0 ? '@textoCadastrado' : '@textoNaoCadastrado';
+
+        links += '<a style="padding: 2px 2px 2px 2px !important;" class="label ' + css + ' tooltip-idioma" data-toggle="tooltip" data-placement="bottom" title="' + title + '">' + arrIdiomaSigla[0] + '</a> ';
+        }
+
+        return links;
+        }
+        }
+    </text>
+}
+
+@helper ColunaDataHora(string campo, string url, string chave, bool novaJanela = false)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data) {
+    if (novaJanela)
+    {
+        @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '" target="_blank">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+    }
+    @:    } else return '';
+    @:    }
+    @:}
+}
+
+@helper ColunaDataHora(string campo, string url, string chave, string chavePai, bool novaJanela = false)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { data = ''; }
+    if (!string.IsNullOrEmpty(chavePai))
+    {
+        if (novaJanela)
+        {
+            @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '" target="_blank">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+        }
+        else
+        {
+            @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+        }
+    }
+    else
+    {
+        if (novaJanela)
+        {
+            @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '" target="_blank">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+        }
+        else
+        {
+            @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+        }
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaData(string campo)
+{
+    @:{
+    @:  "data": "@campo", "sClass": "center",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:       if (data) return moment(data).format('DD/MM/YYYY'); else return '';
+    @:    }
+    @:}
+}
+
+@helper ColunaData(string campo, string url, string chave)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { data = ''; }
+    @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '">' + moment(data).format('DD/MM/YYYY') + '</a>';
+    @:    }
+    @:}
+}
+
+@helper ColunaData(string campo, string url, string chave, string chavePai)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { data = ''; }
+    if (!string.IsNullOrEmpty(chavePai))
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '">' + moment(data).format('DD/MM/YYYY') + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '">' + moment(data).format('DD/MM/YYYY') + '</a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaCheckbox(string chave, string cssClass = "", string onClick = "", string name = null)
+{
+    string onClickCall = String.IsNullOrWhiteSpace(onClick) ? "" : "onclick=" + onClick;
+    string elementName = String.IsNullOrWhiteSpace(name) ? "name=\"chk_" + chave + "\"" : "name=" + name + "";
+
+    @:{
+    @:  "data": "@chave", "bSortable": false,
+    @:  "render": function (data)
+    @:    {
+    @:      return '<input type="checkbox" @elementName value="' + data + '" class="chk_selecionar @cssClass" @onClickCall />';
+    @:    },
+    @:  "sClass": "center"
+    @:}
+}
+
+@helper ColunaExcluir(string chave)
+{
+    @:{
+    @:  "data": "@chave", "bSortable": false, "visible": "@(AdminHelper.CheckPermission(Permissao.Excluir) ? "true" : "false")",
+    @:  "render": function (data)
+    @:    {
+    @:      return '<input type="checkbox" name="excluir" value="' + data + '" onclick="showExcluir(this);" />';
+    @:    },
+    @:  "sClass": "center"
+    @:}
+}
+
+@helper ColunaEditar(string campo, string url, string chave, bool novaJanela = false, bool ordenavel = true)
+{
+    @:{
+    @:  "data": "@campo",
+    if (ordenavel)
+    {
+        @:"bSortable": true,
+    }
+    else
+    {
+        @:"bSortable": false,
+    }
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { data = ''; }
+    if (novaJanela)
+    {
+        @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '" target="_blank">' + data + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '">' + data + '</a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaEditar(string campo, string url, string chave, string chavePai)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { data = ''; }
+    if (!string.IsNullOrEmpty(chavePai))
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '">' + data + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '">' + data + '</a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarDataHora(string campo, string url, string chave)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { return ''; }
+    @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarDataHora(string campo, string url, string chave, string chavePai)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { return ''; }
+    if (!string.IsNullOrEmpty(chavePai))
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '">' + moment(data).format('DD/MM/YYYY HH:mm') + '</a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarData(string campo, string url, string chave)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { return ''; }
+    @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '">' + moment(data).format('DD/MM/YYYY') + '</a>';
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarData(string campo, string url, string chave, string chavePai)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { return ''; }
+    if (!string.IsNullOrEmpty(chavePai))
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '">' + moment(data).format('DD/MM/YYYY') + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '">' + moment(data).format('DD/MM/YYYY') + '</a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarBoolean(string campo, string url, string chave, string textoSim, string textoNao, bool novaJanela = false, bool ordenavel = true)
+{
+    @:{
+    @:  "data": "@campo",
+    if (ordenavel)
+    {
+        @:"bSortable": true,
+    }
+    else
+    {
+        @:"bSortable": false,
+    }
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == true) { data = '@textoSim'; } else { data = '@textoNao'; }
+    if (novaJanela)
+    {
+        @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '" target="_blank">' + data + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '">' + data + '</a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaBoolean(string campo, string textoSim, string textoNao)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == true) { data = '@textoSim'; } else { data = '@textoNao'; }
+    @: return data;
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarIdioma(string campo, string codigoPai, string urlEditar, string texto)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "bSortable": false,
+    @:  "render": function (data, type, row)
+    @:   {
+    @:      if (data == null) { data = ''; }
+    @:      var links = '';
+    @:      var arrIdiomas = (row.@campo || "").split('#');
+    @:      if (arrIdiomas.length) {
+    @:          for (var i = 0; i < arrIdiomas.length; i++){
+    @:              if (arrIdiomas[i]) {
+    @:                  var item = (arrIdiomas[i] || "").split(',');
+    @:                  var vclass="label red tooltip-idioma" ; var tooltip = 'Cadastrado'
+    @:                  if (item[0] == 0) {
+    @:                       vclass = "label label-default tooltip-idioma" ;
+    @:                       tooltip = 'Não Cadastrado';
+    @:                  }
+    @:                  links += '<a class="'+vclass+'" title="'+tooltip+'" href="@urlEditar'+item[0]+'?codigoidioma='+item[1]+'&codigoPai='+row.@codigoPai+' ">' + item[2] + '</a> ';
+    @:              }
+    @:          }
+    @:      }
+    //@:      return '<a href="@urlEditar.TrimEnd('/')?codigo=' + row.Codigo + '&codigocategoria=' + row.CodigoCategoria + '">' + row.SiglaIdioma + '</a><br />' + links;
+    @:      return  links;
+    @:   }
+    @:}
+}
+
+@helper ColunaEditarBoolean(string campo, string url, string chave, string chavePai, string textoSim, string textoNao)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == true) { data = '@textoSim'; } else { data = '@textoNao'; }
+    if (!string.IsNullOrEmpty(chavePai))
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '">' + data + '</a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '">' + data + '</a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarBooleanIcon(string campo, string url, string chave)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == true) return '<a href="@url.TrimEnd('/')/' + row.@chave + '"><i class="fa fa-check-square-o"></i></a>';
+    @:      return '<a href="@url.TrimEnd('/')/' + row.@chave + '"><i class="fa fa-square-o"></i></a>';
+    @:    }
+    @:}
+}
+
+@helper ColunaEditarBooleanIcon(string campo, string url, string chave, string chavePai)
+{
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == true) return '<a href="@url.TrimEnd('/')/' + row.@chave + '"><i class="fa fa-check-square-o"></i></a>';
+    if (!string.IsNullOrEmpty(chavePai))
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '&@chavePai=' + row.@chavePai + '"><i class="fa fa-square-o"></i></a>';
+    }
+    else
+    {
+        @:      return '<a href="@url.TrimEnd('/')?@chave=' + row.@chave + '"><i class="fa fa-square-o"></i></a>';
+    }
+    @:    }
+    @:}
+}
+
+@helper ColunaDownloadIcon(string campo, string url, string chave)
+{
+
+    @:{
+    @:  "data": "@campo",
+    @:  "render": function (data, type, row)
+    @:    {
+    @:      if (data == null) { return '' }
+    @:      return '<button onclick="downloadImportacao(' + row.@chave + ')"><i class="fa fa-file"></i></button>';
+    @:    }
+    @:}
+}
+
+<!-- LOADING PANEL -->
+@helper LoadingPanel()
+{
+    <div id="spinner" class="spinner" style="display: none;">
+        <img id="img-spinner" src="~/Content/img/ajax-loader.gif" alt="Loading" style="width: 100%; height: 5px; vertical-align: top;" />
+    </div>
+}
+
+<!-- AUDITORIA -->
+@helper ButtonAuditoria(object funcionalidade, decimal? codigo)
+{
+    @Helpers.ButtonAuditoria(funcionalidade, codigo, false);
+}
+
+@helper ButtonAuditoria(object funcionalidade, decimal? codigo, bool pularPortal)
+{
+    if (funcionalidade != null)
+    {
+        <button class="btn btn-white" onclick="logAuditoria(@funcionalidade,@codigo,@(pularPortal ? "true" : "false"))" data-toggle="modal" title="Auditoria do Registro" data-target="#logModal">
+            <i class="fa fa-info"></i>
+        </button>
+    }
+}
+
+@helper PainelAuditoria()
+{
+    <div class="modal modal-flex fade" id="logModal" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true">
+    </div>
+}
+
+@helper BuscarPaginas(string idInputTextBox, string portal, decimal? codigoPortal, bool adicionarPortalNaUrl = false)
+{
+    string mask = ""; //altera a forma de exibição do item selecionado
+
+    if (adicionarPortalNaUrl)
+    {
+        mask = string.Concat("/", portal, "/", "{0}");
+    }
+    else
+    {
+        mask = "/{0}";
+    }
+
+    @AutoComplete("ListarPaginaspublicadas", "pagina", "busca", System.Web.Mvc.FormMethod.Post, "Url", "Titulo",
+                                portal: new Framework.Utilities.MLPortal { Codigo = codigoPortal, Diretorio = portal }, idInputTextBox: idInputTextBox, mascaraValueJson: mask)
+}
+
+@helper AutoComplete(string action, string controller, string nomeParametroPesquisa, System.Web.Mvc.FormMethod tipoRequisicao, string valueJson, string textJson,
+        /*Parâmetros opcionais*/string textExibicao = "", Framework.Utilities.MLPortal portal = null, string idInputTextBox = "", string classInputTextBox = "", string mascaraValueJson = "{0}", bool ignorarInputVazio = true, bool executarOnLoad = false, string param1 = "", string param2 = "", string param3 = "")
+{
+    @AutoComplete(string.Format("/cms/{0}/{1}/{2}", portal.Diretorio, controller, action), nomeParametroPesquisa, tipoRequisicao, valueJson, textJson,
+    textExibicao: textExibicao, portal: portal, idInputTextBox: idInputTextBox, classInputTextBox: classInputTextBox, mascaraValueJson: mascaraValueJson, ignorarInputVazio: ignorarInputVazio, executarOnLoad: executarOnLoad, param1: param1, param2: param2, param3: param3)
+}
+
+@helper AutoComplete(string url, string nomeParametroPesquisa, System.Web.Mvc.FormMethod tipoRequisicao, string valueJson, string textJson,
+        /*Parâmetros opcionais*/string textExibicao = "", Framework.Utilities.MLPortal portal = null, string idInputTextBox = "", string classInputTextBox = "", string mascaraValueJson = "{0}", bool ignorarInputVazio = true, bool executarOnLoad = false, string param1 = "", string param2 = "", string param3 = "")
+{
+    //CONFIGURAÇÕES INICIAIS
+    var sender = string.Empty; //o id ou classe que identifique o textbox
+    var sender_ul = string.Empty; //identificador para a ul do sender
+    var requestParam = string.Empty; //parametros da requisição ajax
+    var valorJsonExibicao = string.Empty; //realiza a formatação de como o valor deve ser exibido
+    var chaveJsonExibicao = string.Empty; //caso textExibicao esteja preenchida, é obtida o valor de data-text invés de data-value
+    var requisicaoAjax = string.Empty; //de acordo com tipoRequisicao é chamado um tipo de requisição ajax
+
+    if (!string.IsNullOrEmpty(idInputTextBox))
+    {
+        sender = string.Concat("#", idInputTextBox);
+        sender_ul = idInputTextBox;
+    }
+    else if (!string.IsNullOrEmpty(classInputTextBox))
+    {
+        sender = string.Concat(".", classInputTextBox);
+        sender_ul = classInputTextBox;
+    }
+    else
+    {
+        throw new NullReferenceException("Não foi informado o id nem a classe do textbox");
+    }
+
+    requestParam = string.Concat("{", nomeParametroPesquisa, ": value, CodigoPortal: ", (portal != null && portal.Codigo.HasValue ? portal.Codigo.ToString() : "null"), ", param1: param1Val, param2: param2Val, param3: param3Val }");
+
+    if (!string.IsNullOrEmpty(textExibicao))
+    {
+        chaveJsonExibicao = "text";
+    }
+    else
+    {
+        textExibicao = valueJson;
+        chaveJsonExibicao = "value";
+    }
+
+    if (!string.IsNullOrEmpty(mascaraValueJson) && mascaraValueJson.IndexOf("{0}") > -1)
+    {
+        if (mascaraValueJson.Equals("{0}"))
+        {
+            valorJsonExibicao = string.Concat("$(this).data('", chaveJsonExibicao, "')");
+        }
+        else
+        {
+            valorJsonExibicao = string.Concat("'", string.Format(mascaraValueJson, ""), "' + $(this).data('", chaveJsonExibicao, "')");
+        }
+    }
+    else
+    {
+        valorJsonExibicao = string.Concat("$(this).data('", chaveJsonExibicao, "')");
+    }
+
+    if (tipoRequisicao == System.Web.Mvc.FormMethod.Post)
+    {
+        requisicaoAjax = "$.post";
+    }
+    else
+    {
+        requisicaoAjax = "$.get";
+    }
+
+    <script type="text/javascript">
+        function bindEvents_@(sender_ul)() {
+            //Função para causar delay na chamada do evento para que vários keyup não execute diversas vezes a mesma função
+            var delay = (function () {
+                var timer = 0;
+                return function (callback, ms) {
+                    clearTimeout(timer);
+                    timer = setTimeout(callback, ms);
+                };
+            })();
+
+            $('@sender').attr("autocomplete", "off");
+
+            $('@sender').keyup(function () {
+                var input = $(this);
+                var value = input.val();
+                var idparam1 = "@(param1)";
+                var idparam2 = "@(param2)";
+                var idparam3 = "@(param3)";
+
+                var param1Val =  (idparam1 != '') ? $("#" + idparam1).val() : "";
+                var param2Val =  (idparam2 != '') ? $("#" + idparam2).val() : "";
+                var param3Val =  (idparam3 != '') ? $("#" + idparam3).val() : "";
+
+                var ul = $("#ul_" + input.prop("id"));
+
+                //Esconde ul caso nenhum valor tenha sido preenchido
+                var ignorarInputVazio = @(ignorarInputVazio ? "true" : "false");
+                if (ignorarInputVazio) {
+                    if (!value) {
+                        if (ul.length) {
+                            ul.hide();
+                            ul.empty();
+                        }
+
+                        return;
+                    }
+                }
+
+                delay(function () {
+                    //Caso o elemento ul não existir
+                    if (!ul.length) {
+                        //Cria ul
+                        input.parent().append($("<ul id=\"ul_" + input.prop("id") + "\" class=\"typeahead autocomplete-jq dropdown-menu\" data-over='false' />"));
+
+                        ul = $("#ul_" + input.prop("id"));
+                        ul.show();
+
+                        //Posiciona ul abaixo da textbox
+                        ul.css({
+                            "top": "60px",
+                            "left": "15px",
+                            "width": input.outerWidth()
+                        });
+
+                        //Adiciona evento para controlar visibilidade da ul
+                        ul.hover(function () {
+                            $(this).data("over", true);
+                        }, function () {
+                            $(this).data("over", false);
+                        });
+                    }
+
+                    //Esvazia conteúdo de ul
+                    ul.empty();
+
+                    //Exibe mensagem de carregando
+                    $("<li>Carregando...</li>").appendTo(ul);
+
+                    @(requisicaoAjax)("@url", @(requestParam), function (data, ops) {
+                        if (ops == "success") {
+                            var json = data.json || data;
+
+                            if (ul.length) {
+                                //Esvazia conteúdo de ul
+                                ul.empty();
+
+                                //Cria elementos li
+                                if (json.length > 0) {
+                                    if (json.length > 11) {
+                                        ul.css({ height: '250px', overflow: 'auto'});
+                                    }
+
+                                    //Adiciona lista de elementos na ul
+                                    for (i = 0; i < json.length; i++) {
+                                        var a = "<a data-value=\"" + json[i].@(valueJson) + "\" data-text=\"" + json[i].@(textExibicao) + "\" href=\"javascript:;\">" + json[i].@(textJson) + "</a>";
+                                        var li = "<li data-index='" + i + "' class=\"li-lista\">" + a + "</li>";
+
+                                        $(li).appendTo(ul);
+                                    }
+
+                                    ul.show();
+
+                                    //Adiciona evento de click
+                                    ul.find(".li-lista a").click(function () {
+                                        //Valor do texto
+                                        input.val(@HelperContext.Html.Raw(valorJsonExibicao));
+                                        input.data("value", $(this).data("value"));
+
+                                        try {
+                                            change_@(textExibicao)(input); //executa esta ação quando um evento "callback" precisar ser executado na view principal que está chamando o autocomplete
+                                        } catch (e) { }
+
+                                        //Adiciona active para o item selecionado e remove dos demais
+                                        $(".li-lista").removeClass("active");
+                                        $(this).parent().addClass("active");
+
+                                        ul.data("over", false);
+                                        ul.hide();
+                                    });
+                                }
+                                else {
+                                    //Nenhum elemento foi encontrado, então esconde a ul
+                                    ul.hide();
+                                }
+                            }
+                        }
+                    });
+                }, 1000);
+            });
+
+            //Adiciona evento para quando o campo texto perder foco. Esconde ul caso o blur tenha ocorrido fora da ul
+            $('@sender').on("blur", function () {
+                var ul = $("#ul_" + $(this).prop("id"));
+
+                if (ul.length && !ul.data("over")) {
+                    ul.hide();
+                }
+            });
+
+            //Adiciona evento para quando o campo texto ganhar foco. Exibe ul caso tenha conteúdo
+            $('@sender').on("focus", function () {
+                var ul = $("#ul_" + $(this).prop("id"));
+
+                $(".autocomplete-jq").hide();
+
+                if (ul.length && ul.find("li").length > 0) {
+                    ul.show();
+                }
+                else {
+                    if (!ul.length) {
+                        $(this).trigger("keyup");
+                    }
+                }
+            });
+
+            //Adiciona evento para quando o campo texto ganhar foco. Exibe ul caso tenha conteúdo
+            $(window).on("resize", function () {
+                $(".autocomplete-jq").each(function() {
+                    $(this).css({
+                        "width": $(this).parent().find("input").outerWidth()
+                    });
+                });
+            });
+        }
+
+        setTimeout(function() {
+            bindEvents_@(sender_ul)();
+        }, 1000);
+    </script>
+}
+
+@helper PesquisaAvancada(Type TipoModel)
+{
+    var linq = (from e in TipoModel.GetProperties()
+                where e.IsDefined(typeof(Framework.Model.DataField), false)
+                select new { name = e.Name, type = e.PropertyType, dataField = e.GetCustomAttributes(typeof(Framework.Model.DataField), false)[0] as Framework.Model.DataField }
+    ).Where(a => !a.dataField.AutoNumber).ToList();
+
+    for (int i = 0; i < linq.Count; i++)
+    {
+        var nome = linq[i].name;
+        var tipo = Nullable.GetUnderlyingType(linq[i].type);
+
+        for (int x = nome.Length - 1; x >= 0; x--)
+        {
+            if (char.IsUpper(nome[x]))
+            {
+                nome = nome.Insert(x, " ");
+            }
+        }
+
+        <div class="col-sm-12 @(linq[i].type == typeof(bool) ? "checkbox" : "")">
+            <label for="@linq[i].name"><small>@nome</small></label>
+            @if (linq[i].type == typeof(string)) /*Só estão listadas os principais tipos usados na vm2*/
+            {
+                <input type="text" class="form-control input-sm" name="@linq[i].name" id="@linq[i].name" @(linq[i].dataField.Size > -1 ? "maxlength=\"" + linq[i].dataField.Size + "\"" : "") placeholder="@nome" />
+            }
+            else if (linq[i].type == typeof(bool))
+            {
+                <input type="checkbox" name="@linq[i].name" id="@linq[i].name" />
+            }
+            else if (linq[i].type == typeof(int))
+            {
+                <input type="number" class="form-control input-sm" name="@linq[i].name" id="@linq[i].name" placeholder="@nome" onkeypress="validar@(linq[i].name)(event);" />
+                <script type="text/javascript">
+                    function validar@(linq[i].name)(evt) {
+                        var theEvent = evt || window.event;
+                        var key = theEvent.keyCode || theEvent.which;
+                        key = String.fromCharCode( key );
+                        var regex = /[0-9]|\./;
+                        if( !regex.test(key) ) {
+                            theEvent.returnValue = false;
+                            if(theEvent.preventDefault) theEvent.preventDefault();
+                        }
+                    }
+                </script>
+            }
+            else if (linq[i].type == typeof(decimal))
+            {
+
+            }
+        </div>
+    }
+}
+
+@helper OpcaoSelecionarCheckbox(string textoTodos, string textoNenhum, string classCssCheckbox = "", string nameCheckbox = "")
+{
+    <div style="position: absolute; top: 6px; right: 20px;">
+        <a href="javascript:todos('@classCssCheckbox', '@nameCheckbox');" class="btn btn-blue btn-xs">@textoTodos</a>
+        <a href="javascript:nenhum('@classCssCheckbox', '@nameCheckbox');" class="btn btn-green btn-xs">@textoNenhum</a>
+    </div>
+}
+
+@helper ExibirErros(System.Web.Mvc.ModelStateDictionary state)
+{
+    var listaErros = state.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage).ToList();
+    if (listaErros.Count > 0)
+    {
+        <div class="alert alert-danger">
+            <ul>
+                @foreach (string error in listaErros)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </div>
+    }
+}
+
+@helper AbrirPopup()
+{
+    @:function AbrirPopUp(width, height, url) {
+    @:var left = parseInt((screen.availWidth / 2) - (width / 2));
+    @:var top = parseInt((screen.availHeight / 2) - (height / 2));
+    @:var windowSize = "width=" + width + ",height=" + height + ",status,resizable,left=" + left + ",top=" + top + "screenX=" + left + ",screenY=" + top;
+
+    @:window.open(url, 'Continue_to_Application', windowSize);
+
+    @:return false;
+    @:}
+}

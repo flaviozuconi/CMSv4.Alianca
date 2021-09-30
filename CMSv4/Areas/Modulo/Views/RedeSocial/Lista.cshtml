@@ -1,0 +1,18 @@
+﻿@model MLModuloRedeSocial
+<!--mol- social-box -->
+<div class="section--head" id="divListaRedesSociais_@Model.Repositorio">
+    <h2>@(Model.Titulo ?? T("Braskem na Rede"))</h2>
+    <p>@T("Estamos conectados! Siga nossos perfis e fique por dentro dos conteúdos que divulgamos por lá.")</p>
+    @*<ul class="list-social list-inline">
+        <li><a href="https://www.facebook.com/BraskemSA" target="_blank" class="icon icon-social icon-facebook"></a></li>
+        <li><a href="https://twitter.com/braskemsa" target="_blank" class="icon icon-social icon-twitter"></a></li>
+        <li><a href="https://www.linkedin.com/company/braskem" target="_blank" class="icon icon-social icon-linkedin"></a></li>
+    </ul>*@
+</div>
+<div class="section--body">
+    <ul class="list-social list-unstyled" id="ulListaRedesSociais_@Model.Repositorio"></ul>    
+</div>
+<!-- /mol-social-box -->
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptLista", new { model = Model, bEdicao = ViewBag.Edicao }));
+}

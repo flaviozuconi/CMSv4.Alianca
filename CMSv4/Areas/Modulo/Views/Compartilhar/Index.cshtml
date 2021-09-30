@@ -1,0 +1,9 @@
+﻿@model MLModuloCompartilhar
+@try
+{
+    @Html.Action("Renderizar", "Compartilhar", new { model = Model })
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

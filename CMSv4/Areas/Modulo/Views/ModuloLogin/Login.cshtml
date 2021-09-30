@@ -1,0 +1,79 @@
+﻿@model MLModuloLogin
+
+@{ 
+    var hrefAutenticacaoFacebook = "/cms/" + BLPortal.Atual.Diretorio + "/ModuloLogin/FacebookAutenticacao";
+    var key = Request.QueryString["key"];
+    var portal = BLPortal.Atual;
+
+    if(!string.IsNullOrWhiteSpace(key))
+    {
+        hrefAutenticacaoFacebook += "?key=" + key;
+    }
+}
+
+@if (Model.CodigoPagina.HasValue)
+{
+    <div class="logar" id="divLogin_@Model.Repositorio">
+        <h2>@T("Acesso Restrito")</h2>
+
+        <div id="divInfo_@Model.Repositorio" class="alert alert-danger" style="display:none;"></div>
+
+        <form accept-charset="UTF-8" role="form" method="POST" id="Login_@Model.Repositorio">
+            <div id="msg_@Model.Repositorio"></div>
+            <div class="form-group">
+                <label class="sr-only" for="email_@Model.Repositorio">Login</label>
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="icon icon-mail"></span></div>
+                    <input class="form-control jq-key-press-enter" placeholder="@T("E-mail")" id="email_@Model.Repositorio" name="email_@Model.Repositorio" type="text" value="@Model.Email" autofocus required />
+                </div>
+                <label style="display: none;" for="email_@Model.Repositorio" class="help-block">E-mail inválido</label>
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="senha_@Model.Repositorio">Email</label>
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="icon icon-locked"></span></div>
+                    <input class="form-control jq-key-press-enter" placeholder="@T("Senha")" id="senha_@Model.Repositorio" name="senha_@Model.Repositorio" type="password" value="" required />
+                </div>
+            </div>
+        </form>
+
+        <input type="button" id="btnLogin_@Model.Repositorio" class="btn btn-default btn-block jq-btn-submit" value="@T("Acessar")" />
+        @if (portal.Diretorio != "picplast")
+        { 
+            <a class="btn btn-primary btn-block" href="@hrefAutenticacaoFacebook">Entrar com Facebook</a>
+        }
+        <a href="javascript:;" onclick="esqueci_senha@(Model.Repositorio)();" class="esqueci-senha">@T("Esqueci minha senha")</a>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+        }
+    </div>
+
+
+    <div class="logar esqueci-a-senha" style="display:none;" id="divEsqueciSenha_@Model.Repositorio">
+        <h2>@T("Recuperação de senha")</h2>
+        <p><small>Informe seu login e cique no botão Enviar, em instantes você receberá um e-mail com instruções para recuperar sua senha.</small></p>
+
+        <div id="divInfoEsqueciSenha_@Model.Repositorio" style="display:none;"></div>
+
+        <form accept-charset="UTF-8" role="form" method="POST" id="EsqueciSenha_@Model.Repositorio">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><span class="icon icon-mail"></span></div>
+                    <input class="form-control jq-key-press-enter" placeholder="@T("Email")" id="email_esquecisenha_@Model.Repositorio" name="email_esquecisenha_@Model.Repositorio" type="text" value="@Model.Email" @(string.IsNullOrWhiteSpace(Model.Email) ? "autofocus" : "") />
+                </div>
+            </div>
+        </form>
+
+        <button type="button" onclick="submitNovaSenha@(Model.Repositorio)()" id="btnEsqueciSenha_@Model.Repositorio" class="btn btn-default btn-block jq-btn-submit">@T("Enviar")</button>
+        <a href="javascript:;" onclick="voltar_login@(Model.Repositorio)();" class="esqueci-senha">@T("Voltar")</a>
+    </div>
+
+    BLConteudo.AdicionarJavaScript(Html.Partial("Script", Model));
+}
+else
+{
+    <br />
+    <p>@Html.Raw(T("Clique em <u>Editar</u> para configurar o módulo"))</p>
+}

@@ -1,0 +1,58 @@
+﻿@model  MLModuloGaleriaMultimidiaEdicao
+@{
+    var portal = BLPortal.Atual;
+    Layout = "";
+    
+    Model.Galerias = CRUD.Listar<MLGaleriaMultimidia>(new MLGaleriaMultimidia { Ativo = true }, "Titulo", "ASC", portal.ConnectionString) ?? new List<MLGaleriaMultimidia>();
+
+    //ocultar os seguintes arquivos
+    var arquivosOcultos = new string[] { "index", "script", "editar" };
+    //listar views do diretório
+    var viewsInDir = (from e in Directory.GetFiles(Server.MapPath(string.Format("~/Areas/Modulo/Views/{0}", ViewContext.Controller.ValueProvider.GetValue("controller").RawValue)), "*.cshtml")
+                      //regra para ocultação de views principais
+                      where Array.IndexOf(arquivosOcultos, Path.GetFileNameWithoutExtension(e).ToLower()) == -1
+                      select Path.GetFileNameWithoutExtension(e));
+}
+<link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+<script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+<div class="form-group col-md-24">
+    <label>@T("Título")</label>
+    @Html.TextBoxFor(a => a.Titulo, new { @class = "form-control", maxlength = 100, placeholder = T("Título") })
+</div>
+
+<div class="form-group col-md-12">
+    <label>@T("View")</label><br />
+    <select name="NomeView" id="NomeView" class="form-control" required>
+        @foreach (var item in viewsInDir)
+        {
+            <option value="@item" @(item == Model.NomeView ? "selected=\"selected\"" : "")>@item</option>
+        }
+    </select>
+</div>
+<div class="form-group col-md-12">
+    <label>@T("Galeria")</label><br />
+    <select name="CodigoGaleria" class="form-control" id="CodigoGaleria" required>
+        @foreach (var item in Model.Galerias)
+        {
+            <option value="@item.Codigo" @(item.Codigo == Model.CodigoGaleria ? "selected=\"selected\"" : "")>@item.Titulo</option>
+        }
+    </select>
+</div>
+<div class="form-group col-md-12">
+    <br />
+    @Html.CheckBox("Destaques", Model.Destaques.GetValueOrDefault()) <label for="Destaques">@T("Somente Destaques")</label>
+</div>
+<div class="form-group col-md-6">
+    <label>@T("Quantidade")</label>
+    <input type="text" class="form-control" name="Quantidade" maxlength="4" value="@Model.Quantidade" onkeypress="return somenteNumeros(event);">
+</div>
+<div class="form-group col-md-24" style="display:none;">
+    <label>@T("Url Detalhe")</label>
+    <input type="text" class="form-control" name="UrlDetalhe" id="UrlDetalhe" placeholder="@T("Url Detalhe")" value="@Model.UrlDetalhe">
+    @Helpers.BuscarPaginas("UrlDetalhe", portal.Diretorio, portal.Codigo)
+</div>
+<div class="form-group col-md-24">
+    <label>@T("Url Lista")</label>
+    <input type="text" class="form-control" name="UrlLista" id="UrlLista" placeholder="@T("Url Lista")" value="@Model.UrlLista">
+    @Helpers.BuscarPaginas("UrlLista", portal.Diretorio, portal.Codigo)
+</div>

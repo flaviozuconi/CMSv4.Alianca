@@ -1,0 +1,151 @@
+﻿@{
+    var portal = PortalAtual.Diretorio;
+}
+<!-- begin SIDE NAVIGATION -->
+<nav class="navbar-side" role="navigation">
+    <div class="navbar-collapse sidebar-collapse collapse">
+        <ul id="side" class="nav navbar-nav side-nav">
+            <!-- begin SIDE NAV SEARCH -->
+            <li class="nav-search">
+                <input type="search" class="form-control txt-search" placeholder="@TAdm("Procurar...")">
+                <button class="btn" onclick="return false;" style="cursor: default;">
+                    <i class="fa fa-search"></i>
+                </button>
+            </li>
+            <!-- end SIDE NAV SEARCH -->
+            <!-- begin menu CMS  -->
+            <li><a data-url="/cms/@portal/pagina" onclick="return newTab(this, 'paginaadmin');" href="javascript:;"><img src="~/iconpack.axd/16/application_view_gallery" /> @TAdm("Páginas")</a></li>
+            <li class="panel">
+                <a href="javascript:;" data-parent="#side" data-toggle="collapse" class="accordion-toggle" data-target="#modulos">
+                    <img src="~/iconpack.axd/16/application_view_tile" />  @TAdm("Módulos") <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="collapse nav nav-menu" id="modulos">
+                    <li>
+                        <label><i class="fa fa-angle-double-right"></i> @TAdm("Comunicação")</label>
+                        <ul class="nav">
+                            @*@Html.Action("Menu", "ListaAdmin", new { AreaName = "CMS", Portal = portal })*@
+                            <li><a data-url="/cms/@portal/banneradmin" onclick="return newTab(this, 'banneradmin');" href="javascript:;"><img src="~/iconpack.axd/16/advertising" /> @TAdm("Banner")</a></li>
+                            @*<li class="tree">
+                                <ul class="nav">
+                                    <li>
+                                        <a><img src="~/iconpack.axd/16/restaurant_menu" /> @TAdm("Dicionário")</a>
+                                        <ul class="nav">
+                                            <li><a data-url="/cms/@portal/dicionarioadmin/dicionario" onclick="return newTab(this, 'dicionarioadmin');" href="javascript:;"><img src="~/iconpack.axd/16/application" /> @TAdm("Dicionário")</a></li>
+                                            <li><a data-url="/cms/@portal/dicionarioadmin/dicionariogrupo" onclick="return newTab(this, 'dicionariogrupoadmin');" href="javascript:;"><img src="~/iconpack.axd/16/map" /> @TAdm("Grupo")</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>*@
+                            <li><a data-url="/cms/@portal/eventoadmin" onclick="return newTab(this, 'eventoadmin');" href="javascript:;"><img src="~/iconpack.axd/16/microphone" /> @TAdm("Eventos")</a></li>
+                            <li class="tree">
+                                <ul class="nav">
+                                    <li>
+                                        <a><img src="~/iconpack.axd/16/question" /> @TAdm("FAQ")</a>
+                                        <ul class="nav">
+                                            <li><a data-url="/cms/@portal/faqadmin" onclick="return newTab(this, 'faqadmin');" href="javascript:;"> @TAdm("Conteúdo")</a></li>
+                                            <li><a data-url="/cms/@portal/faqadmin/categoria" onclick="return newTab(this, 'faqcategoriaadmin');" href="javascript:;">@TAdm("Categoria")</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                            @*<li><a data-url="/cms/@portal/conteudoadmin" onclick="return newTab(this, 'conteudoadmin');" href="javascript:;"><img src="~/iconpack.axd/16/html" /> @TAdm("Conteúdo")</a></li>
+                            <li><a data-url="/cms/@portal/agrupadoradmin" onclick="return newTab(this, 'agrupadoradmin');" href="javascript:;"><img src="~/iconpack.axd/16/account_balances" /> @TAdm("Agrupador")</a></li>*@
+                        </ul>
+                    </li>
+                    <li>
+                        <label><i class="fa fa-angle-double-right"></i> @TAdm("Multimídia")</label>
+                        <ul class="nav">
+                            <li><a data-url="/cms/@portal/arquivoadmin" onclick="return newTab(this, 'arquivoadmin');" href="javascript:;"><img src="~/iconpack.axd/16/file_extension_zip" /> @TAdm("Arquivos")</a></li>
+                            <li><a data-url="/cms/@portal/multimidiaadmin" onclick="return newTab(this, 'multimidiaadmin');" href="javascript:;"><img src="~/iconpack.axd/16/inbox_images" /> @TAdm("Multimidia")</a></li>
+                            <li><a data-url="/cms/@portal/galeriaadmin" onclick="return newTab(this, 'galeriaadmin');" href="javascript:;"><img src="~/iconpack.axd/16/images" /> @TAdm("Galeria")</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label><i class="fa fa-angle-double-right"></i> @TAdm("Contato com Visitante")</label>
+                        <ul class="nav">
+                            @*<li><a href="#"><img src="~/iconpack.axd/16/email" /> @TAdm("Fale Conosco")</a></li>                            *@
+                            <li><a data-url="/cms/@portal/enqueteadmin" onclick="return newTab(this, 'enqueteadmin');" href="javascript:;"><img src="~/iconpack.axd/16/radiobutton_group" /> @TAdm("Enquete")</a></li>
+                            <li><a data-url="/cms/@portal/newsletteradmin" onclick="return newTab(this, 'newsletteradmin');" href="javascript:;"><img src="~/iconpack.axd/16/email_air" /> @TAdm("Newsletter")</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <label><i class="fa fa-angle-double-right"></i> @TAdm("Fale Conosco")</label>
+                        <ul class="nav">
+                            <li><a data-url="/cms/@portal/FaleConoscoAdmin/ModeloEmail" onclick="return newTab(this, 'faleconoscoadmin_mod');" href="javascript:;"><img src="~/iconpack.axd/16/pop_mail" />@TAdm("Modelos Email")</a></li>
+                            <li><a data-url="/cms/@portal/FaleConoscoAdmin/Formularios" onclick="return newTab(this, 'faleconoscoadmin_form');" href="javascript:;"><img src="~/iconpack.axd/16/application_form" />@TAdm("Formulários")</a></li>
+                            <li><a data-url="/cms/@portal/FaleConoscoAdmin/Mensagens" onclick="return newTab(this, 'faleconoscoadmin_msg');" href="javascript:;"><img src="~/iconpack.axd/16/email" />@TAdm("Mensagens")</a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <label><i class="fa fa-angle-double-right"></i> @TAdm("Navegação")</label>
+                        <ul class="nav">
+                            <li><a data-url="/cms/@portal/MenuAdmin" onclick="return newTab(this, 'MenuAdmin');" href="javascript:;"><img src="~/iconpack.axd/16/menu" /> @TAdm("Menu")</a></li>
+                            <li><a data-url="/cms/@portal/BuscaAdmin" onclick="return newTab(this, 'BuscaAdmin');" href="javascript:;"><img src="~/iconpack.axd/16/find" /> @TAdm("Busca")</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <!-- end menu CMS  -->
+            <!-- begin menu editor  -->
+            <li class="panel">
+                <a href="javascript:;" data-parent="#side" data-toggle="collapse" class="accordion-toggle" data-target="#editor">
+                    <img src="~/iconpack.axd/16/user_edit" />  @TAdm("Gestor do Portal") <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="collapse nav nav-menu" id="editor">
+                    <li><a data-url="/cms/@portal/secao" onclick="return newTab(this, 'secao');" href="javascript:;"><img src="~/iconpack.axd/16/bricks" /> @TAdm("Seções")</a></li>
+                    <li><a data-url="/cms/@portal/grupocliente" onclick="return newTab(this, 'grupocliente');" href="javascript:;"><img src="~/iconpack.axd/16/group" /> @TAdm("Grupo Cliente")</a></li>
+                    <li><a data-url="/cms/@portal/cliente" onclick="return newTab(this, 'cliente');" href="javascript:;"><img src="~/iconpack.axd/16/client_account_template" /> @TAdm("Clientes")</a></li>
+                    <li><a data-url="/cms/@portal/traduzir" onclick="return newTab(this, 'traduzir');" href="javascript:;"><img src="~/iconpack.axd/16/application_form_edit" /> @TAdm("Tradução")</a></li>
+                    <li><a data-url="/cms/@portal/traduzir?adm=1" onclick="return newTab(this, 'traduziradm');" href="javascript:;"><img src="~/iconpack.axd/16/application_form_edit" /> @TAdm("Tradução Admin")</a></li>
+                    <li><a data-url="/cms/@portal/ListaAdmin/ListaConfig" onclick="return newTab(this, 'ListaConfig');" href="javascript:;"><img src="~/iconpack.axd/16/application_view_tile" />@TAdm("Lista Config")</a></li>
+                </ul>
+            </li>
+            <!-- end menu editor -->
+            <!-- begin menu desenvolvedor  -->
+            <li class="panel">
+                <a href="javascript:;" data-parent="#side" data-toggle="collapse" class="accordion-toggle" data-target="#desenvolvedor">
+                    <img src="~/iconpack.axd/16/user_ninja" />  @TAdm("Desenvolvedor") <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="collapse nav nav-menu" id="desenvolvedor">
+                    <li><a data-url="/cms/@portal/layout" onclick="return newTab(this, 'layouts');" href="javascript:;"><img src="~/iconpack.axd/16/bricks" /> @TAdm("Master Pages")</a></li>
+                    <li><a data-url="/cms/@portal/template" onclick="return newTab(this, 'templates');" href="javascript:;"><img src="~/iconpack.axd/16/border_1d_around" /> @TAdm("Templates")</a></li>
+                    <li><a data-url="/cms/@portal/editorarquivos" onclick="return newTab(this, 'editorarquivos');" href="javascript:;"><img src="~/iconpack.axd/16/file_manager" /> @TAdm("Editor de Arquivos")</a></li>
+                    <li><a data-url="/cms/@portal/LimparCache" onclick="return newTab(this, 'LimparCache');" href="javascript:;"><img src="~/iconpack.axd/16/broom" />@TAdm("Limpar Cache")</a></li>
+                </ul>
+            </li>
+            <!-- end menu desenvolvedor -->
+            <!-- begin menu administrador  -->
+            <li class="panel">
+                <a href="javascript:;" data-parent="#side" data-toggle="collapse" class="accordion-toggle" data-target="#administrador">
+                    <img src="~/iconpack.axd/16/user_suit" />  @TAdm("Administrador do Sistema") <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="collapse nav nav-menu" id="administrador">
+                    <li><a data-url="/admin/usuario" onclick="return newTab(this, 'usuario');" href="javascript:;"><img src="~/iconpack.axd/16/user" /> @TAdm("Usuários")</a></li>
+                    <li><a data-url="/admin/portal" onclick="return newTab(this, 'portal');" href="javascript:;"><img src="~/iconpack.axd/16/globe_network" /> @TAdm("Portais")</a></li>
+                    <li><a data-url="/admin/auditoria/completo" onclick="return newTab(this, 'auditoria');" href="javascript:;"><img src="~/iconpack.axd/16/database_error" /> @TAdm("Auditoria")</a></li>
+                    <li><a data-url="/admin/logerro" onclick="return newTab(this, 'logerro');" href="javascript:;"><img src="/iconpack.axd/16/bug"> Log de Erros</a></li>
+                    <li><a data-url="/cms/@portal/Menu" onclick="return newTab(this, 'Menu');" href="javascript:;"><img src="~/iconpack.axd/16/menu_item" /> @TAdm("Menu Admin")</a></li>
+                    <li><a data-url="/cms/@portal/Configuracao" onclick="return newTab(this, 'Configuracao');" href="javascript:;"><img src="~/iconpack.axd/16/setting_tools" /> @TAdm("Configurações")</a></li>
+                    <li>
+                        <label><i class="fa fa-angle-double-right"></i> @TAdm("Segurança")</label>
+                        <ul class="nav">
+                            <li><a data-url="/admin/grupo" onclick="return newTab(this, 'grupo');" href="javascript:;"><img src="~/iconpack.axd/16/group" /> @TAdm("Grupos")</a></li>
+                            <li><a data-url="/admin/funcionalidade" onclick="return newTab(this, 'funcionalidade');" href="javascript:;"><img src="~/iconpack.axd/16/group_key" /> @TAdm("Funcionalidades")</a></li>
+
+                            <li><a data-url="/admin/clienteadm" onclick="return newTab(this, 'clienteadm');" href="javascript:;"><img src="~/iconpack.axd/16/client_account_template" /> @TAdm("Clientes")</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <!-- end menu administrador -->
+            <li><a data-url="/cms/treinamento" onclick="return newTab(this, 'treinamento');" href="javascript:;"><img src="~/iconpack.axd/16/books" /> @TAdm("Treinamento")</a></li>
+        </ul>
+        <!-- /.side-nav -->
+    </div>
+    <!-- /.navbar-collapse -->
+</nav>
+<!-- /.navbar-side -->
+<!-- end SIDE NAVIGATION -->

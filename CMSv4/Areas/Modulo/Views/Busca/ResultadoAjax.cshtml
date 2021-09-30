@@ -1,0 +1,35 @@
+﻿@model List<MLBuscaResultado>
+@{
+    bool? exibirImagem = (bool?)ViewBag.ExibirImagem ?? null;
+    var portal = BLPortal.Atual;
+}
+<div class="col-xs-24 col-md-12">
+    @foreach (var item in Model)
+    {
+        <div class="post-box">
+            <a href="@Portal.ResolveUrl(item.Url, portal)" target="_top">
+                @if (exibirImagem.GetValueOrDefault() && !String.IsNullOrEmpty(item.Imagem))
+                {
+                    if (item.Tipo == "ARQ")
+                    {
+                        <img alt="@item.Titulo" src="@Portal.Url()/thumb/@portal.Diretorio/ImagemArquivos/@item.Codigo/200/200/@(item.Imagem)/" class="pull-left" />
+                    }
+                    else if (item.Tipo == "LIS")
+                    {
+                        <img alt="@item.Titulo" src="@Portal.Url()/thumb/@portal.Diretorio/Listas/@item.Codigo/200/200/capa@(item.Imagem)/" class="pull-left" />
+                    }
+                }
+
+                @if (item.Data.HasValue)
+                {
+                    <time class="post-date">@item.Data.GetValueOrDefault().ToString(BLTraducao.T("dd/MM/yyyy"))</time>
+                    <h2 class="post-title">@item.Titulo</h2>
+                }
+                else
+                {
+                    <p><strong>@item.Titulo</strong></p>
+                }
+            </a>
+        </div>
+    }
+</div>

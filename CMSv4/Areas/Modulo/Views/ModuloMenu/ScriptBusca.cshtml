@@ -1,0 +1,175 @@
+﻿@model MLModuloMenuModulo
+
+@{
+    //Definir página de busca default caso não esteja configurado no módulo
+    if (string.IsNullOrWhiteSpace(Model.Adicional))
+    {
+        Model.Adicional = "/Resultado-busca";
+    }
+
+    var portal = BLPortal.Atual;
+    var urlPortalCms = Portal.UrlCms(portal);
+    var urlPostBusca = urlPortalCms + "/Busca/AutoCompleteLTP";
+    var urlResultadoBusca = Portal.Url(Portal.UrlDiretorio(portal), Model.Adicional);
+}
+
+<script type="text/javascript">
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+
+
+    $(document).ready(function () {
+        $("#submitid").on("click", function () {
+            busca();
+        });
+
+        $("#busca_@Model.Repositorio").keyup(function (ev) {
+            var keycode = (ev.keyCode ? ev.keyCode : ev.which);
+
+            if (keycode == '13') {
+                busca();
+                return;
+            }
+
+            buscaAutoCompleteCabecalho($(this));
+        })
+    });
+
+    function busca() {
+        var len = $("#busca_@Model.Repositorio").val().length;
+
+        if (len > 0) {
+            window.location.href = "@urlResultadoBusca?q=" + decodeURI($("#busca_@Model.Repositorio").val());
+        }
+
+        return false;
+    }
+
+    function buscaAutoCompleteCabecalho(element) {
+        var input = $(element);
+        var value = input.val();
+        var ul = $("#resultBox > ul");
+
+        //Esconde ul caso nenhum valor tenha sido preenchido
+        if (!value) {
+            if (ul.length) {
+                ul.hide();
+                ul.empty();
+            }
+
+            return;
+        }
+
+        delay(function () {
+            //Caso o elemento ul não existir
+            if (!ul.length) {
+                //Cria ul
+                input.parent().append($("<ul id=\"ul_" + input.prop("id") + "\" class=\"typeahead autocomplete-jq dropdown-menu\" data-over='false' />"));
+
+                ul = $("#ul_" + input.prop("id"));
+                ul.show();
+
+                //Posiciona ul abaixo da textbox
+                ul.css({
+                    "top": "60px",
+                    "left": "15px",
+                    "width": input.outerWidth()
+                });
+
+                //Adiciona evento para controlar visibilidade da ul
+                ul.hover(function () {
+                    $(this).data("over", true);
+                }, function () {
+                    $(this).data("over", false);
+                });
+            }
+
+            //Esvazia conteúdo de ul
+            ul.empty();
+
+            //Exibe mensagem de carregando
+            $("<li>Carregando...</li>").appendTo(ul);
+
+            $.post("@urlPostBusca", { "Termo": value, "quantidade": 6 }, function (data, ops) {
+                if (data.success) {
+                    if (ul.length) {
+                        //Esvazia conteúdo de ul
+                        ul.empty();
+
+                        //Cria elementos li
+                        if (data.json != null && data.json != undefined && data.json.length > 0) {
+                            var json = data.json;
+
+                            if (json.length > 11) {
+                                ul.css({ height: '250px', overflow: 'auto'});
+                            }
+
+                            //Adiciona lista de elementos na ul
+                            for (i = 0; i < json.length; i++) {
+                                var a = "<a href=\"@urlResultadoBusca?tag=" + decodeURI(json[i]) + "\">" + json[i] + "</a>";
+                                var li = "<li data-index='" + i + "' class=\"li-lista\">" + a + "</li>";
+
+                                $(li).appendTo(ul);
+                            }
+
+                            ul.show();
+
+                            //Adiciona evento de click
+                            ul.find(".li-lista a").click(function () {
+                                //Valor do texto
+                                input.val(@HelperContext.Html.Raw(""));
+                                input.data("value", $(this).data("value"));
+
+                                ul.data("over", false);
+                                ul.hide();
+                            });
+                        }
+                        else {
+                            //Nenhum elemento foi encontrado, então esconde a ul
+                            ul.hide();
+                        }
+                    }
+                }
+            });
+        }, 1000);
+    }
+
+    //Adiciona evento para quando o campo texto perder foco. Esconde ul caso o blur tenha ocorrido fora da ul
+    $('#busca_@Model.Repositorio').on("blur", function () {
+        var ul = $("#resultBox > ul");
+
+        if (ul.length && !ul.data("over")) {
+            ul.hide();
+        }
+    });
+
+    //Adiciona evento para quando o campo texto ganhar foco. Exibe ul caso tenha conteúdo
+    $('#busca_@Model.Repositorio').on("focus", function () {
+        var ul = $("#resultBox > ul");
+
+        $(".autocomplete-jq").hide();
+
+        if (ul.length && ul.find("li").length > 0) {
+            ul.show();
+        }
+        else {
+            if (!ul.length) {
+                $(this).trigger("keyup");
+            }
+        }
+    });
+
+    //Adiciona evento para quando o campo texto ganhar foco. Exibe ul caso tenha conteúdo
+    $(window).on("resize", function () {
+        $(".autocomplete-jq").each(function () {
+            $(this).css({
+                "width": $(this).parent().find("input").outerWidth()
+            });
+        });
+    });
+</script>

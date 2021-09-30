@@ -1,0 +1,94 @@
+﻿@model MLMenuCompleto
+@{
+    var portal = BLPortal.Atual;
+
+    if (string.IsNullOrEmpty(ViewBag.Classe))
+    {
+        ViewBag.Classe = "menu-principal";
+    }
+}
+
+<!-- begin SIDE NAVIGATION -->
+<nav class="navbar-side" role="navigation">
+    <div class="navbar-collapse sidebar-collapse collapse">
+        <ul id="side" class="nav navbar-nav side-nav">
+            <!-- begin SIDE NAV SEARCH -->
+            <li class="nav-search">
+                <input type="search" class="form-control txt-search" placeholder="@TAdm("Procurar...")">
+                <button class="btn" onclick="return false;" style="cursor: default;">
+                    <i class="fa fa-search"></i>
+                </button>
+            </li>
+            <!-- end SIDE NAV SEARCH -->
+            <!-- begin menu CMS  -->
+
+                @foreach (var item in Model.ItensMenu)
+                {
+                    
+                    if (item.Filhos != null && item.Filhos.Count > 0)
+                    {
+                        <li class="panel">
+                            <a id="Menu_@item.Codigo" class="accordion-toggle" data-parent="#side" data-toggle="collapse" data-target="#@item.Codigo" href="javascript:;">
+                                <img src="@item.Imagem" /> @TAdm(item.Nome)
+                                <i class="fa fa-caret-down"></i>
+                            </a>
+
+                            <ul class="collapse nav nav-menu" id="@item.Codigo">
+                                @Item(item)
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li>
+                            <a data-url="@item.Url" onclick="return newTab(this, '@item.Codigo');" href="javascript:;"><img src="@item.Imagem" /> @TAdm(item.Nome)</a>
+                        </li>
+                    }
+                    
+                }
+        </ul>
+        <!-- /.side-nav -->
+    </div>
+    <!-- /.navbar-collapse -->
+</nav>
+<!-- /.navbar-side -->
+
+@helper Item(MLMenuItem model)
+{
+foreach (var item in model.Filhos)
+{
+    if (item.Filhos.Count > 0)
+    {
+        if (item.Css == "fa-angle-double-right")
+        {
+            <li>
+                <label><i class="fa fa-angle-double-right"></i> @item.Nome</label>
+            </li>
+
+            <ul class="nav">
+                @Item(item)
+            </ul>
+        }
+        else
+        {
+            <li class="tree">
+                <ul class="nav">
+                    <li class="parent">
+                        <a><img src="@item.Imagem"> @T(item.Nome)</a>
+
+                        <ul class="nav">
+                            @Item(item)
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        }
+    }
+    else
+    {
+        <li>
+            <a data-url="@item.Url" onclick="return newTab(this, '@item.Codigo');" href="javascript:;"><img src="@item.Imagem"> @TAdm(item.Nome)</a>
+        </li>
+    }
+}
+}

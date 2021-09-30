@@ -1,0 +1,135 @@
+﻿@model MLModuloLogin
+@{
+    var user = (MLClienteCompleto)ViewBag.UserLogado ?? new MLClienteCompleto();
+    var portal = BLPortal.Atual;
+    var CadastroFacebook = ViewBag.CadastroFacebook ?? false;
+}
+@if (user != null)
+{
+    <div id="divCadastro">
+
+        @if (CadastroFacebook)
+        {
+            <div id="divInfo" class="col-xs-24 alert alert-warning">
+                @T("Preencha os campos obrigatorios e finalize seu cadastro para continuar")
+            </div>
+        }
+
+        <div id="divInfo" class="col-xs-24" style="display:none;"></div>
+
+        <form method="post" class="form-vertical" role="form" enctype="multipart/form-data" id="formCadastro">
+            <input type="hidden" value="@user.Codigo" name="Codigo" />
+
+            @*DADOS DE ACESSO*@
+            <div class="row">
+                <div class="col-xs-24">
+                    <h3>@T("Dados de Acesso")</h3>
+                </div>
+
+                @*EMAIL*@
+                <div class="form-group col-xs-24 col-sm-24 col-md-12">                    
+                    <label class="sr-only">@T("E-mail")</label>
+                    <input type="text" class="form-control" name="Email" value="@user.Email" placeholder="@T("E-mail")">
+                    
+                </div>
+
+                @*SENHA*@
+                <div class="form-group col-sm-12 col-md-6">
+                    <label class="sr-only">@T("Senha")</label>
+                    <input type="password" class="form-control" name="Senha" id="Senha" placeholder="@T("Senha")">
+                </div>
+
+                <div class="form-group col-sm-12 col-md-6">
+                    <label class="sr-only">@T("Confirmar Senha")</label>
+                    <input type="password" class="form-control" name="ConfirmarSenha" placeholder="@T("Confirmar Senha")">
+                </div>
+            </div>
+
+            @*DADOS PESSOAIS*@
+            <div class="row">
+                <div class="col-xs-24">
+                    <h3> Dados Pessoais</h3>
+                </div>
+
+                @*NOME*@
+                <div class="form-group col-xs-24 col-sm-12">
+                    <label class="sr-only">@T("Nome Completo")</label>
+                    <input type="text" class="form-control" name="Nome" value="@user.Nome" autofocus placeholder="@T("Nome Completo")">
+                </div>
+
+                @*TELEFONE*@
+                <div class="form-group col-xs-24 col-sm-12">
+                    <label class="sr-only">@T("Telefone")</label>
+                    <input type="text" class="form-control" name="Telefone" id="Telefone" value="@user.Telefone" maxlength="50" placeholder="@T("Telefone")">
+                </div>
+
+                @*DATA NASCIMENTO*@
+                <div class="form-group col-xs-24 col-sm-12">
+                    <label class="sr-only">@T("Data de Nascimento")</label>
+                    <input type="text" class="form-control" name="DataNascimento" autocomplete="off" id="DataNascimento" value="@(user.DataNascimento.HasValue ? user.DataNascimento.Value.ToString("dd/MM/yyyy") : "")" maxlength="10" placeholder="@T("Data de Nascimento")">
+                </div>
+
+                @*ESTADO*@
+                <div class="form-group col-xs-24 col-sm-12 col-md-8" id="divEstadoSelect" @(user.CodigoEstado.HasValue && user.CodigoEstado > 0 || !user.Codigo.HasValue ? "" : "style=display:none;")>
+                    <label class="sr-only">@T("Estado")</label>
+                    <select class="form-control" name="CodigoEstado" id="CodigoEstado">
+                        <option value="">@T("Selecione")</option>
+                    </select>
+                </div>
+
+                <div class="form-group col-md-3" id="divEstadoInput" @(user.Codigo.HasValue && !user.CodigoEstado.HasValue ? "" : "style=display:none;")>
+                    <label class="sr-only">@T("Estado")</label>
+                    <input type="text" class="form-control" name="Estado" value="@user.Estado" placeholder="@T("Estado")">
+                </div>
+
+                @*CIDADE*@
+                <div class="form-group col-xs-24 col-sm-12 col-md-8">
+                    <label class="sr-only">@T("Cidade")</label>
+                    <input type="text" class="form-control" name="Cidade" value="@user.Cidade" maxlength="200" placeholder="@T("Cidade")">
+                </div>
+
+            </div>
+
+            @*DADOS ACADEMICOS*@
+            <div class="row">
+                <div class="col-xs-24">
+                    <h3>Dados Acadêmicos</h3>
+                </div>
+
+                @*INSTITUIÇÃO DE ENSINO*@
+                <div class="form-group col-xs-24 col-sm-12 col-md-8">
+                    <label class="sr-only">@T("Instituição de ensino")</label>
+                    <input type="text" class="form-control" name="InstituicaoEnsino" id="InstituicaoEnsino" value="@user.InstituicaoEnsino" maxlength="500" placeholder="@T("Instituição de ensino")">
+                </div>
+
+                @*CURSO*@
+                <div class="form-group col-xs-24 col-sm-12 col-md-8">
+                    <label class="sr-only">@T("Curso")</label>
+                    <input type="text" class="form-control" name="Curso" id="Curso" value="@user.Curso" maxlength="200" placeholder="@T("Curso")">
+                </div>
+
+                @*PREVISAO CONCLUSÃO CURSO*@
+                <div class="form-group col-xs-24 col-sm-12 col-md-8">
+                    <label class="sr-only">@T("Previsão de conclusão")</label>
+                    <input type="text" class="form-control" name="CursoPrevisaoConclusao" autocomplete="off" id="CursoPrevisaoConclusao" value="@(user.CursoPrevisaoConclusao.HasValue ? user.CursoPrevisaoConclusao.Value.ToString("MM/yyyy") : null)" maxlength="10" placeholder="@T("Previsão de conclusão MM/AAAA")">
+                </div>
+
+           
+           
+
+
+                <div class="col-xs-24 text-right">
+                    <input type="button" class="btn btn-default" value="@T("Salvar")" id="btnSalvar" />
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+    CMSv4.BusinessLayer.BLConteudo.AdicionarJavaScript(Html.Partial("ScriptPerfil", Model));
+}
+else
+{
+    <br />
+    <p>@Html.Raw(T("Para visualizar o módulo é preciso que o cliente acesse via link no cabeçalho"))</p>
+}

@@ -1,0 +1,44 @@
+﻿@model  List<MLListaConteudoPublicoListagem>
+@{
+    var portal = BLPortal.Atual;
+    var modulo = (MLModuloLista)ViewData["modulo"] ?? new MLModuloLista();
+    if (string.IsNullOrEmpty(modulo.UrlLista)) { modulo.UrlLista = "/noticias"; }
+    var imgpadrao = "/portal/principal/img/news-01.jpg";
+}
+<div class="noticias-recentes">
+    <h2 class="noticias-recentes--title">@Html.Raw(modulo.Titulo)</h2>
+    <div class="news">
+        <div class="container">
+            <div class="owl-carousel owl-news">
+                @foreach (var item in Model)
+                {
+                    var url = @Portal.ResolveUrl(string.IsNullOrEmpty(modulo.UrlDetalhe) ? item.Url : string.Format("{0}/{1}", modulo.UrlDetalhe, item.UrlOriginal), portal);
+                    var imagem = string.IsNullOrEmpty(item.Imagem) ? imgpadrao : string.Format("/portal/{0}/arquivos/listas/{1}/capa{2}", portal.Diretorio, item.Codigo, item.Imagem);
+                    var categoria = BLExtentionMethod.toUrlAmigavel(item.Categoria).ToLower();
+                    var css = categoria == "videos" ? "item-video" : (categoria == "fotos" ? "item-picture" : "");
+                    var href = categoria == "videos" || categoria == "fotos" ? "#modalMedia" : (categoria == "publicacoes" ? item.Extra2 : url);
+                    var src = categoria == "videos" ? item.Extra2 : (categoria == "fotos" ? item.Max1 : "");
+                    var target = categoria == "publicacoes" ? "_blank" : "_self";
+                    var linkContinue = categoria == "videos" ? T("Assistir") : (categoria == "fotos" ? T("Ver") : T("Continuar lendo"));
+                    var complemento = categoria == "videos" || categoria == "fotos" ? "data-toggle=modal" : "";
+                    <a href="@href" class="item @css" data-src="@src" target="@target" @complemento>
+                        <div class="news--img">
+                            <img src="@imagem" alt="">
+                            @if (!string.IsNullOrEmpty(item.Extra1))
+                            {
+                                <span>@item.Extra1</span>
+                            }
+                        </div>
+                        <div class="news--txt">
+                            <h3 class="news--title">@Html.Raw(item.Titulo)</h3>
+                            @if (!string.IsNullOrEmpty(item.Chamada))
+                            {
+                                <p>@Html.Raw(item.Chamada)</p>
+                            }
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

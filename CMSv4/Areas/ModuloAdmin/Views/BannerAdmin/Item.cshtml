@@ -1,0 +1,86 @@
+﻿@model  CMSv4.Model.MLBanner
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/BannerAdmin", portal.Diretorio);
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/advertising" />
+                @TAdm("Banner")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-6">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" maxlength="100" value="@Model.Nome" autofocus>
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Idioma")</label>
+                @Helpers.ComboIdiomas(Model.CodigoIdioma)
+            </div>
+            <div class="form-group col-md-2">
+                <label>@TAdm("Tempo Padrão (seg)")</label>
+                <input type="text" class="form-control" name="TempoPadrao" maxlength="4" value="@Model.TempoPadrao">
+            </div>
+            <div class="form-group col-md-4">
+                <label>CSS Class 1</label>
+                <input type="text" class="form-control" name="CssClass1" maxlength="200" value="@Model.CssClass1">
+            </div>
+            <div class="form-group col-md-4">
+                <label>CSS Class 2</label>
+                <input type="text" class="form-control" name="CssClass2" maxlength="200" value="@Model.CssClass2">
+            </div>
+            <div class="form-group col-md-4">
+                <label>CSS Class 3</label>
+                <input type="text" class="form-control" name="CssClass3" maxlength="200" value="@Model.CssClass3">
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Dimensões (sugeridas) das imagens")</label>
+                <input type="text" class="form-control" name="SugestaoResolucao" maxlength="500" value="@Model.SugestaoResolucao">
+            </div>
+            <div class="form-group col-md-12">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('form').validate({
+            rules: {
+                Titulo: { required: true, maxlength: 100 },
+                Nome: { required: true, maxlength: 100 },
+                TempoPadrao: { number: true },
+                SugestaoResolucao: { maxlength: 500 },
+                CodigoIdioma :{ required: true}
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

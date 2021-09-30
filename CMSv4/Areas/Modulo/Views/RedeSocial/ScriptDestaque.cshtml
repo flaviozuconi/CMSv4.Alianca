@@ -1,0 +1,38 @@
+﻿@model MLModuloRedeSocial
+@{
+    var portal = BLPortal.Atual;
+    var bEdicao = ViewBag.Edicao ?? false;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var e = $("#divDestaqueRedesSociais_@Model.Repositorio");
+        var ul = $("#ulDestaqueRedesSociais_@Model.Repositorio");
+
+        $.ajax({
+            type: "POST",
+            data: {
+                "deCodigoPagina": "@Model.CodigoPagina",
+                "decRepositorio": "@Model.Repositorio",
+                "bEdicao": "@bEdicao",
+                "view": "DestaqueItem"
+            },
+            url: "@Portal.UrlCms(portal)/RedeSocial/Feeds",
+            beforeSend: function(){
+                channelingLoad(e);
+            },
+            success: function (data) {
+                if (data.success) {
+                    ul.html(data.html);
+                } else {
+                    ul.html("@T("Não foi possível carregar os feeds das redes sociais.")");
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            },
+            complete: function () {
+                doneLoad(e);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,50 @@
+﻿@model Dictionary<string, string>
+@{
+    var idiomaAtual = (string)ViewBag.IdiomaAtual ?? "pt-BR";
+    var portal = BLPortal.Atual;
+    var idiomaDisplay = "pt";
+
+
+    switch (idiomaAtual.ToUpper())
+    {
+        case "PT-BR":
+            idiomaDisplay = T("pt");
+            break;
+
+        case "EN-US":
+            idiomaDisplay = T("en");
+            break;
+
+        case "ES-MX":
+            idiomaDisplay = T("es");
+            break;
+    }
+}
+
+<div class="header--lang dropdown">
+    <button class="btn btn-link dropdown-toggle" type="button" id="dropdownLang" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @idiomaDisplay
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownLang">
+        @foreach (var item in Model)
+        {
+            if (!item.Key.Equals(idiomaAtual,StringComparison.InvariantCultureIgnoreCase))
+            {
+                switch (item.Key.ToUpper())
+                {
+                    case "PT-BR":
+                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("pt")</a>
+                        break;
+
+                    case "EN-US":
+                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("en")</a>
+                        break;
+
+                    case "ES-MX":
+                        <a class="dropdown-item" href="@Portal.ResolveUrl(item.Value, portal)@(Request.Url.Query)">@T("es")</a>
+                        break;
+                }
+            }
+        }
+    </div>
+</div>

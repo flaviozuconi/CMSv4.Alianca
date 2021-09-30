@@ -1,0 +1,120 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/broom" />
+                @TAdm("Limpar Cache")
+            </h4>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body col-lg-12">
+        <div id="painelConfirmacao" class="alert alert-warning row" style="display:none;">
+            <div class="col-md-10">
+                <strong id="stgTitulo">@TAdm("Atenção")</strong>
+                @TAdm("Deseja limpar as informações do cache?")
+            </div>
+            <div class="col-md-2" style="text-align: right;">
+                <a class="btn btn-red" href="javascript:;" id="aSim">@TAdm("Sim")</a>
+                <a class="btn btn-white" href="javascript:;" onclick="$('#painelConfirmacao').hide();">@TAdm("Não")</a>
+            </div>
+        </div>
+        <div class="row">
+            @*GERAL*@
+            <div class="col-md-4">
+                <div class="portlet portlet-basic">
+                    <div class="portlet-heading">
+                        <div class="portlet-title">
+                            <h4>@TAdm("Limpar Cache Geral")</h4>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="portlet-body">
+                        <p>@TAdm("Limpar o cache do módulo ")<b>@TAdm("Geral")</b>.</p>
+                        <br />
+                        <br />
+                        <button class="btn btn-green" onclick="exibirPainelConfirmacao('');">@TAdm("Limpar")</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="portlet portlet-basic">
+                    <div class="portlet-heading">
+                        <div class="portlet-title">
+                            <h4>@TAdm("Excluir individualmente")</h4>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="portlet-body" style="max-height: 300px; overflow: auto;">
+                        @{
+                            var lista = new List<string>();
+                            var ignorar = new string[] { "__AppStartPage__~/_appstart.cshtml", "__AppStartPage__~/_appstart.vbhtml", "ConnectionStringDefault" };
+                        }
+                        @foreach (System.Collections.DictionaryEntry item in HttpContext.Current.Cache)
+                        {
+                            if (Array.IndexOf(ignorar, item.Key) == -1)
+                            {
+                                lista.Add(item.Key.ToString());
+                            }
+                        }
+                        @if (lista.Count == 0)
+                        {
+                            <p>@TAdm("Cache vazio")</p>
+                        }
+                        else
+                        {
+                            foreach (var item in lista.OrderBy(a => a))
+                            {
+                                <a href="javascript:;" onclick="exibirPainelConfirmacao('@item');" class="btn btn-link">@item</a><br />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+        function exibirPainelConfirmacao(key) {
+            $("#aSim").attr("onclick", "LimparCache('" + key + "')");
+            $("#painelConfirmacao").show();
+        }
+
+        function LimparCache(key) {
+            $.ajax({
+                type: "POST",
+                url: "/cms/@portal.Diretorio/LimparCache/Limpar",
+                data: { "key": key },
+                success: function (data) {
+                    if (data.success) {
+                        if (key) {
+                            document.location.href = document.location.href;
+                        }
+                        else {
+                            window.parent.$.fn.ModalPadrao({
+                                titulo: "@TAdm("Limpar cache")",
+                                mensagem: "@TAdm("Cache atualizado com sucesso.")",
+                                exibirNaInicializacao: true,
+                                tipo: "success"
+                            });
+                        }
+                    }
+                    else {
+                        window.parent.$.fn.ModalPadrao({
+                            mensagem: "@TAdm("Não foi possível limpar o cache, verifique o log de erro para obter maiores informações.")",
+                            exibirNaInicializacao: true
+                        });
+                    }
+                }
+            });
+
+            $("#painelConfirmacao").hide();
+        }
+    </script>
+}

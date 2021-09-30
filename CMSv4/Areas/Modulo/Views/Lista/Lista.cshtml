@@ -1,0 +1,117 @@
+﻿@model  List<MLListaConteudoPublicoListagem>
+@{
+    var portal = BLPortal.Atual;
+    var modulo = (MLModuloLista)ViewData["modulo"] ?? new MLModuloLista();
+    if (string.IsNullOrEmpty(modulo.UrlLista)) { modulo.UrlLista = "/noticias"; }
+    var quantidade = 4;
+    var imgpadrao = "/portal/Principal/arquivos/listas/4633/capa.png";
+    var conteudo = BLConteudo.ObterAssinatura("titulo-view-noticias", BLIdioma.CodigoAtual, portal);
+    var paginas = Model.Count / quantidade;
+    var configurl = CRUD.Obter(new MLConfiguracao() { Chave = string.Format("ur-home-idioma-{0}-{1}", BLIdioma.Atual.Codigo, portal.Diretorio.ToLower()) });
+    var urlHome = "/";
+    if (configurl != null && configurl.Codigo.HasValue)
+    {
+        urlHome = configurl.Valor;
+    }
+
+
+}
+<input type="hidden" id="hdnPaginaAtual" value="1" />
+<input type="hidden" id="hdnPaginaTotal" value="@paginas" />
+<div class="breadcrumb-wrap">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Portal.ResolveUrl(urlHome,portal)">@T("Home")</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><span>@T("Notícias")</span></li>
+        </ol>
+    </div>
+</div>
+<div class="listagem-noticia--header">
+    <div class="container">
+        <h2 class="listagem-noticia--title">@Html.Raw(modulo.Titulo)</h2>
+        @if (conteudo != null && conteudo.Codigo.HasValue)
+        {
+            @Html.Raw(conteudo.Conteudo)
+        }
+        else
+        {
+            <p>@T("Fique por dentro de todas as novidades da Aliança.")</p>
+            <span class="icon icon-doc"></span>
+            <p class="listagem-noticia--subtitle">@T("Aqui você vai encontrar artigos, nossas publicações nas redes sociais e onde saímos na imprensa, além de ter acesso a um banco de imagens e vídeos.")</p>
+        }
+    </div>
+</div>
+<div class="listagem-noticia">
+    <div class="container">
+        <div class="listagem-noticia--filtro">
+            <div class="filtro--item">
+                <input type="radio" name="tipo" id="todos" checked>
+                <label for="todos">@T("Todos")</label>
+            </div>
+            <div class="filtro--item">
+                <input type="radio" name="tipo" id="artigos">
+                <label for="artigos">@T("Artigos")</label>
+            </div>
+            <div class="filtro--item">
+                <input type="radio" name="tipo" id="publicacoes">
+                <label for="publicacoes">@T("Publicações")</label>
+            </div>
+            <div class="filtro--item">
+                <input type="radio" name="tipo" id="videos">
+                <label for="videos">@T("Vídeos")</label>
+            </div>
+            <div class="filtro--item">
+                <input type="radio" name="tipo" id="fotos">
+                <label for="fotos">@T("Fotos")</label>
+            </div>
+        </div>
+        <div class="listagem-noticia--list">
+
+            @foreach (var item in Model)
+            {
+                var url = @Portal.ResolveUrl(string.IsNullOrEmpty(modulo.UrlDetalhe) ? item.Url : string.Format("{0}/{1}", modulo.UrlDetalhe, item.UrlOriginal), portal);
+                var imagem = string.IsNullOrEmpty(item.Imagem) ? imgpadrao : string.Format("/portal/{0}/arquivos/listas/{1}/capa{2}", portal.Diretorio, item.Codigo, item.Imagem);
+                var categoria = BLExtentionMethod.toUrlAmigavel(item.Categoria).ToLower();
+                var css = categoria == "videos" ? "item-video" : (categoria == "fotos" ? "item-picture" : "");
+                var href = categoria == "videos" || categoria == "fotos" ? "#modalMedia" : (categoria == "publicacoes" ? item.Extra2 : url);
+                var src = categoria == "videos" ? item.Extra2 : (categoria == "fotos" ? item.Max1 : "");
+                var target = categoria == "publicacoes" ? "_blank" : "_self";
+                var linkContinue = categoria == "videos" ? T("Assistir") : (categoria == "fotos" ? T("Ver") : T("Continuar lendo"));
+                var complemento = categoria == "videos" || categoria == "fotos" ? "data-toggle=modal" : "";
+
+
+                <div class="listagem-noticia--item" hidden data-categoria="@categoria" @(Model.IndexOf(item) > modulo.Quantidade ? "hidden" : "")>
+                    <a href="@href" class="item @css" data-src="@src" target="@target" @complemento>
+                        <div class="news--img">
+                            <img src="@imagem" alt="">
+                            @if (!string.IsNullOrEmpty(item.Extra1))
+                            {
+                                <span>@item.Extra1</span>
+                            }
+                        </div>
+                        <div class="news--txt">
+                            <h3 class="news--title">@Html.Raw(item.Titulo)</h3>
+                            @if (!string.IsNullOrEmpty(item.Chamada))
+                            {
+                                <p>@Html.Raw(item.Chamada)</p>
+                            }
+                            <div class="news--mais">
+                                @linkContinue <span class="icon icon-arrow-right-1"></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+
+        <div class="text-center">
+            <a href="#" hidden id="btn-vermais" class="btn btn-blue">@T("Ver mais")</a>
+        </div>
+
+    </div>
+</div>
+@{
+    BLConteudo.AdicionarJavaScript(@"<script src='/portal/principal/modulos/lista.js'></script>", false);
+}
+
+

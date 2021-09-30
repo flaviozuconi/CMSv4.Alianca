@@ -1,0 +1,26 @@
+﻿@model MLModuloArquivos
+@{
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        listarArquivos@(Model.Repositorio)("@DateTime.Now.Year");
+    });
+
+    $("#ano_arquivo_@(Model.Repositorio)").change(function () {
+        var ano = $(this).find("option:selected").val();
+
+        listarArquivos@(Model.Repositorio)(ano);
+    });
+
+    function listarArquivos@(Model.Repositorio)(anoArquivos) {
+        $("#model_arquivo_@(Model.Repositorio)").html("<p>@T("Carregando...")</p>");
+        $.ajax({
+            url: "@Portal.UrlCms(portal)/Arquivos/ListagemAnoAjaxRequest",
+            data: { categorias: '@Model.Categorias', url: '@Model.UrlDetalhe', ano: anoArquivos },
+            success: function (data) {
+                $("#model_arquivo_@(Model.Repositorio)").html(data.view);
+            }
+        });
+    }
+</script>

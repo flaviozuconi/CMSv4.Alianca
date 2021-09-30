@@ -1,0 +1,69 @@
+﻿@model MLMenuItemModulo
+@{
+    var portal = BLPortal.Atual;
+}
+
+<ul class="dropdown-menu" role="menu">
+    @foreach (var item in Model.Filhos)
+    {
+        bool novaJanela = item.AbrirNovaPagina.GetValueOrDefault();
+        string css = "";        
+        if (!string.IsNullOrEmpty(item.Css))
+        {
+            css = string.Format("class={0}",item.Css);
+        }      
+
+        if (item.Filhos.Count > 0)
+        {
+            <li @css>
+                <a href="@Portal.ResolveUrl(item.Href, portal)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" target="@(novaJanela ? "_blank" : "_top")">
+                    @Html.Raw(item.Nome)
+                </a>
+
+                @Html.Partial("HorizontalItem", item)
+            </li>
+        }
+        else
+        {
+            <li @css>
+                <a href="@Portal.ResolveUrl(item.Href, portal)" target="@(novaJanela ? "_blank" : "_top")">
+                    @Html.Raw(item.Nome)
+                </a>
+            </li>
+        }
+    }
+</ul>
+
+@helper Item(MLMenuItemModulo model)
+{
+    <ul class="dropdown-menu" role="menu">
+        @foreach (var item in model.Filhos)
+        {
+            bool novaJanela = item.AbrirNovaPagina.GetValueOrDefault();
+            string css = "";
+            if (!string.IsNullOrEmpty(item.Css))
+            {
+                css = string.Format("class={0}", item.Css);
+            }
+
+            if (item.Filhos.Count > 0)
+            {
+                <li @css>
+                    <a href="@Portal.ResolveUrl(item.Href, BLPortal.Atual)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" target="@(novaJanela ? "_blank" : "_top")">
+                        @Html.Raw(item.Nome)
+                    </a>
+
+                    @Item(item)
+                </li>
+            }
+            else
+            {
+                <li @css>
+                    <a href="@Portal.ResolveUrl(item.Href, BLPortal.Atual)" target="@(novaJanela ? "_blank" : "_top")">
+                        @Html.Raw(item.Nome)
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+}

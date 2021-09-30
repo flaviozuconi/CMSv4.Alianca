@@ -1,0 +1,9 @@
+﻿@model MLModuloEventos
+@try
+{
+    @Html.Action(Model.NomeView ?? "Listagem", "Evento", new { model = Model })
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

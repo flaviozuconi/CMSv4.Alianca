@@ -1,0 +1,56 @@
+﻿@model MLMenuItemModulo
+@{
+    var portal = PortalAtual.Obter;
+}
+
+<div class="modal modal-flex fade teste" id="editar" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="formMenuItem" action="/cms/@portal.Diretorio/MenuAdmin/MenuItemSalvar">
+            <input type="hidden" name="Codigo" value="@Model.Codigo" />
+
+            <div class="modal-body clearfix">
+
+                @*URL*@
+                <div class="form-group col-md-12">
+                    <label>@TAdm("Url")</label>
+                    <input type="text" class="form-control" name="CaminhoPagina" id="CaminhoPagina" value="@Model.CaminhoPagina" maxlength="100"/>
+                </div>
+
+                @*ICONE*@
+                <div class="form-group col-md-6">
+                    <label>@T("Ícone")</label>
+                    <a href="~/Content/img/IconPack.png" target="_blank">
+                        <img src="~/iconpack.axd/16/images" />
+                        <small>@TAdm("Visualizar Ícones")</small>
+                    </a>
+                    <input type="text" class="form-control maxlength" name="Icone" id="Icone" maxlength="100" value="@Model.Icone" />
+                </div>
+
+                @*CSS*@
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Css")</label>
+                    <input type="text" class="form-control" name="Css" id="Css" maxlength="100" value="@Model.Css" />
+                </div>
+                
+                <div class="clearfix"></div>
+
+                @*ABRIR NOVA PÁGINA*@
+                <div class="form-group col-md-6">
+                    <label for="AbrirNovaPagina">@Html.CheckBox("AbrirNovaPagina", (Model.AbrirNovaPagina.HasValue ? Model.AbrirNovaPagina.Value : true)) @T("Abrir em nova janela")</label>
+                </div>
+
+                @*ATIVO*@
+                <div class="form-group col-md-2">
+                    <label for="Ativo">@Html.CheckBox("Ativo", (Model.Ativo.HasValue ? Model.Ativo.Value : true)) @T("Ativo")</label>
+                </div>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@TAdm("Fechar")</button>
+                <button type="button" class="btn btn-green" name="btnsalvar" onclick="return salvar($(this));">@TAdm("Salvar")</button>
+            </div>
+        </form>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

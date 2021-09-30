@@ -1,0 +1,30 @@
+﻿@model MLModuloArquivoRestrito
+@{
+    MLArquivoRestrito objResultados = (MLArquivoRestrito)ViewData["objArquivo"] ?? new MLArquivoRestrito();
+    MLCliente objCliente = CMSv4.BusinessLayer.BLCliente.ObterLogado(); // OBTEM O USUARIO LOGADO
+
+    // VERIFICA SE O USUARIO É EXCLUSIVO, SE NÃO FOR EXCLUSIVO EXIBE A POPUP
+    // E NÃO DEIXA O USUARIO FAZER O DOWNLOAD
+    var isExclusivo = string.Empty;
+    if (objCliente != null && objCliente.Grupos.FindAll(obj => obj.CodigoGrupo == BLConfiguracao.CodigoUsuarioRestrito).Count > 0)
+    {
+        isExclusivo = "true";
+    }
+}
+
+<span class="msgJQ_@Model.Repositorio"></span>
+
+<ferramenta> 
+	<h5 id="linkArquivo_@Model.Repositorio" class="btnDownloadJQ2" @((objCliente == null || !objCliente.Codigo.HasValue) ?  "data-toggle=modal data-target=#modalLogin" : (isExclusivo.ToString() == "") ? "data-toggle=modal data-target=#modalLogin" : "") data-content="@objResultados.Codigo" >
+		DOWNLOAD DA FERRAMENTA
+	</h5>
+</ferramenta>
+
+@if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+{
+    Html.RenderAction("Script", new { model = Model });
+}
+else
+{
+    CMSv4.BusinessLayer.BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+}

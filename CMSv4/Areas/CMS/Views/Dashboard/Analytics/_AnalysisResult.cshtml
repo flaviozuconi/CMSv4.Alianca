@@ -1,0 +1,306 @@
+﻿@using VM2.Google.Analytics.Model;
+
+@model List<MLAnalytics>
+
+
+@if (Model != null && Model.Count > 0)
+{
+    if (Model[0].lstUser != null && Model[0].lstUser.Count > 0)
+    {
+        <div class="row">
+            <div class="col-lg-3 col-sm-3">
+                <div class="circle-tile">
+                    <a href="#">
+                        <div class="circle-tile-heading dark-blue">
+                            <i class="fa fa-users fa-fw fa-3x"></i>
+                        </div>
+                    </a>
+                    <div class="circle-tile-content dark-blue">
+                        <div class="circle-tile-description text-faded">
+                            @T("VISITAS")
+                        </div>
+                        <div class="circle-tile-number text-faded">
+                            @(Model[0].lstUser.Count > 0 ? string.Format("{0:N0}", Convert.ToInt32(Model[0].lstUser[0].value)) : "0")
+                            <span id="sparklineVisitas"></span>
+                        </div>
+                        <span class="circle-tile-footer"><strong>@T("Dados extraídos do analytics")</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-3">
+                <div class="circle-tile">
+                    <a href="#">
+                        <div class="circle-tile-heading blue">
+                            <i class="fa fa-file fa-fw fa-3x"></i>
+                        </div>
+                    </a>
+                    <div class="circle-tile-content blue">
+                        <div class="circle-tile-description text-faded">
+                            @T("PÁGINAS ACESSADAS")
+                        </div>
+                        <div class="circle-tile-number text-faded">
+                            @(Model[0].lstUser.Count > 0 ? String.Format("{0:N0}", Convert.ToDecimal(Model[0].lstUser[0].valueb)) : "0")
+                            <span id="sparklinePaginas"></span>
+                        </div>
+                        <span class="circle-tile-footer"><strong>@T("Dados extraídos do analytics")</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-3">
+                <div class="circle-tile">
+                    <a href="#">
+                        <div class="circle-tile-heading dark-blue">
+                            <i class="fa fa-users fa-fw fa-3x"></i>
+                        </div>
+                    </a>
+                    <div class="circle-tile-content dark-blue">
+                        <div class="circle-tile-description text-faded">
+                            @T("RETORNO DE VISITAS")
+                        </div>
+                        <div class="circle-tile-number text-faded">
+                            @(Model[0].lstUser.Count > 0 ? String.Format("{0:N0}", Convert.ToDecimal(Model[0].lstUser[1].value)) : "0")
+                            <span id="sparklineVisitasRetorno"></span>
+                        </div>
+                        <span class="circle-tile-footer"><strong>@T("Dados extraídos do analytics")</strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-3">
+                <div class="circle-tile">
+                    <a href="#">
+                        <div class="circle-tile-heading blue">
+                            <i class="fa fa-file fa-fw fa-3x"></i>
+                        </div>
+                    </a>
+                    <div class="circle-tile-content blue">
+                        <div class="circle-tile-description text-faded">
+                            @T("RETORNO DE PÁGINAS ACESSADAS")
+                        </div>
+                        <div class="circle-tile-number text-faded">
+                            @(Model[0].lstUser.Count > 0 ? String.Format("{0:N0}", Convert.ToDecimal(Model[0].lstUser[1].valueb)) : "0")
+                            <span id="sparklinePaginasRetorno"></span>
+                        </div>
+                        <span class="circle-tile-footer"><strong>@T("Dados extraídos do analytics")</strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-12">
+            <ul id="ulMaisVisitados" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#cidades" data-toggle="tab" data-morris="initializeMorrisDunitChartCidades"><i class="fa fa-globe"></i> Cidades</a>
+                </li>
+                <li class="">
+                    <a href="#browsers" data-toggle="tab" data-morris="initializeMorrisDunitChartBrowser"><i class="fa fa-code-fork"></i> Browsers</a>
+                </li>
+
+                <li class="">
+                    <a href="#so" data-toggle="tab" data-morris="initializeMorrisDunitChartSO"><i class="fa fa-cog"></i> S.O</a>
+                </li>
+
+                <li class="">
+                    <a href="#paginas" data-toggle="tab" data-morris="initializeMorrisDunitChartPaginas"><i class="fa fa-file"></i> Páginas</a>
+                </li>
+
+                <li class="">
+                    <a href="#dispositivos" data-toggle="tab" data-morris="initializeMorrisDunitChartDispositivos"><i class="fa fa-desktop"></i> Dispositivos</a>
+                </li>
+            </ul>
+
+            <div id="divContentMaisVisitados" class="tab-content">
+                <div class="tab-pane fade active in" id="cidades">
+                    <div class="col-md-8" style="padding-left:0;padding-right:0;">
+                        @{ Html.RenderPartial("Analytics/_TableCidades", Model[0].lstCity); }
+                    </div>
+
+                    <div class="col-md-4" style="padding-left:0;padding-right:0;">
+                        <div id="morrisCidades"></div>
+                    </div>
+
+                </div>
+
+                <div class="tab-pane fade" id="browsers">
+                    <div class="col-md-8" style="padding-left:0;padding-right:0;">
+                        @{ Html.RenderPartial("Analytics/_TableBrowsers", Model[0].lstBrowser); }
+                    </div>
+
+                    <div class="col-md-4" style="padding-left:0;padding-right:0;">
+                        <div id="morrisBrowsers"></div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="so">
+
+                    <div class="col-md-8" style="padding-left:0;padding-right:0;">
+                        @{ Html.RenderPartial("Analytics/_TableSO", Model[0].lstSistOperacional); }
+                    </div>
+
+                    <div class="col-md-4" style="padding-left:0;padding-right:0;">
+                        <div id="morrisSO"></div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="paginas">
+
+                    <div class="col-md-8" style="padding-left:0;padding-right:0;">
+                        @{ Html.RenderPartial("Analytics/_TablePaginas", Model[0].lstPageVisit); }
+                    </div>
+
+                    <div class="col-md-4" style="padding-left:0;padding-right:0;">
+                        <div id="morrisPaginas"></div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="dispositivos">
+
+                    <div class="col-md-8" style="padding-left:0;padding-right:0;">
+                        @{ Html.RenderPartial("Analytics/_TableDispositivos", Model[0].lstDispositivo); }
+                    </div>
+
+                    <div class="col-md-4" style="padding-left:0;padding-right:0;">
+                        <div id="morrisDispositivos"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eventos Analytics  -->
+    @*<div class="row">
+            @foreach (var item in Model[0].lstEvent)
+            {
+                var eventAnalytics = eventoAnalytics.Find(obj => obj.Nome.ToLower() == item.label.ToLower());
+
+                if (eventAnalytics != null && eventAnalytics.Codigo.HasValue)
+                {
+                    <div class="col-lg-4 col-sm-6">
+                        <div class="tile" style="text-align: center; background-color: @eventAnalytics.Hexadecimal;">
+                            <h4><i class="fa fa-comment"></i>  @T("Botão ") @item.label</h4>
+                            <div class="circle-tile-number text-faded">
+                                @item.value
+                                <span id="sparklineB"> @T("cliques")</span>
+                            </div>
+                            <span class="circle-tile-footer"><strong>@T("Dados extraídos do analytics")</strong></span>
+                        </div>
+                    </div>
+                }
+            }
+        </div>*@
+
+    if (Model[0].realTime != null)
+    {
+        @*<div class="col-md-3 text-center">
+                <div class="portlet portlet-green">
+                    <div class="portlet-heading">
+                        <div class="portlet-title">
+                            <h4><i class="fa fa-exchange fa-fw"></i>  @TAdm("Usuário ativo no site")</h4>
+                        </div>
+                        <div class="portlet-widgets">
+                            <span class="divider"></span>
+                            <a data-toggle="collapse" data-parent="#accordion" href="#usuarioRealTime"><i class="fa fa-chevron-down"></i></a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div id="usuarioRealTime" class="panel-collapse collapse in portlet-body portlet-body text-center">
+                        <p style="font-size:20px;">@TAdm("No momento,") </p>
+                        <h1 style="margin-top:0;margin-bottom:0;font-size:65px;" class="qtdUserRealTime">@(Model[0] != null && Model.Count > 0 ? Model[0].realTime : 0)</h1>
+                        <p>@TAdm("usuário(s) ativos no site")</p>
+                    </div>
+                </div>
+            </div>*@
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        initializeMorrisDonutChart('@(Html.Raw(Json.Encode(Model[0].lstCity.Count > 0 ? Model[0].lstCity : null)))', 'morrisCidades');
+    });
+
+    $("#sparklineVisitas").sparkline([200, 215, 221, 214, 232, 265], {
+        type: 'bar',
+        zeroAxis: false,
+        height: 24,
+        chartRangeMin: 100,
+        barColor: 'rgba(255,255,255,0.5)',
+        negBarColor: 'rgba(255,255,255,0.5)'
+    });
+
+    $("#sparklineVisitasRetorno").sparkline([220, 250, 180, 160, 170, 210, 240], {
+        type: 'bar',
+        zeroAxis: false,
+        height: 24,
+        chartRangeMin: 100,
+        barColor: 'rgba(255,255,255,0.5)',
+        negBarColor: 'rgba(255,255,255,0.5)'
+    });
+
+    $("#sparklinePaginas").sparkline([72, 65, 45, 65, 82, 78, 92, 83, 46, 87, 69, 96], {
+        type: 'line',
+        lineColor: 'rgba(255,255,255,0.8)',
+        fillColor: 'rgba(255,255,255,0.3)',
+        spotColor: '#ffffff',
+        minSpotColor: '#ffffff',
+        maxSpotColor: '#ffffff',
+        highlightLineColor: '#ffffff',
+        height: 24,
+        chartRangeMin: 25,
+        drawNormalOnTop: false
+    });
+
+    $("#sparklinePaginasRetorno").sparkline([96, 58, 72, 85, 62, 77, 78, 70, 85, 95, 75, 92], {
+        type: 'line',
+        lineColor: 'rgba(255,255,255,0.8)',
+        fillColor: 'rgba(255,255,255,0.3)',
+        spotColor: '#ffffff',
+        minSpotColor: '#ffffff',
+        maxSpotColor: '#ffffff',
+        highlightLineColor: '#ffffff',
+        height: 24,
+        chartRangeMin: 25,
+        drawNormalOnTop: false
+    });
+
+    function initializeMorrisDunitChartCidades() {
+        return initializeMorrisDonutChart('@(Html.Raw(Json.Encode(Model[0].lstCity.Count > 0 ? Model[0].lstCity : null)))', 'morrisCidades');
+    }
+
+    function initializeMorrisDunitChartPaginas() {
+        return initializeMorrisDonutChart('@(Html.Raw(Json.Encode(Model[0].lstPageVisit.Count > 0 ? Model[0].lstPageVisit : null)))', 'morrisPaginas');
+    }
+
+    function initializeMorrisDunitChartBrowser() {
+        return initializeMorrisDonutChart('@(Html.Raw(Json.Encode(Model[0].lstBrowser.Count > 0 ? Model[0].lstBrowser : null)))', 'morrisBrowsers');
+    }
+
+    function initializeMorrisDunitChartSO() {
+        return initializeMorrisDonutChart('@(Html.Raw(Json.Encode(Model[0].lstSistOperacional.Count > 0 ? Model[0].lstSistOperacional : null)))', 'morrisSO');
+    }
+
+    function initializeMorrisDunitChartDispositivos() {
+        return initializeMorrisDonutChart('@(Html.Raw(Json.Encode(Model[0].lstDispositivo.Count > 0 ? Model[0].lstDispositivo : null)))', 'morrisDispositivos');
+    }
+
+    function initializeMorrisDonutChart(dataContent, selector) {
+        if ($("#" + selector).find('svg').length > 0) {
+            return;
+        }
+
+        return Morris.Donut({
+            element: selector,
+            data: JSON.parse(dataContent),
+            resize: true,
+            colors: ['#16a085', '#2980b9', '#f39c12', '#e74c3c', '#e74c64', '#6b4848', '#38417f', '#66c1b1', '#c166ad', '#480920'],
+            formatter: function (y) { return parseFloat(y).toLocaleString(window.document.documentElement.lang); }
+        });
+    }
+
+    $('#tableCidades, #tableBrowsers').dataTable({
+        searching: false,
+        serverSide: false,
+        lengthChange: false,
+        order: [[1, "desc"]]
+    });
+    </script>

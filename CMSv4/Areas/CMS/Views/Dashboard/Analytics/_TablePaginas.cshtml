@@ -1,0 +1,28 @@
+﻿@using VM2.Google.Analytics.Model;
+
+@model List<MLAnalyticsGrafico>
+
+<div class="table-responsive">
+    <div id="toolbar"></div>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <table id="tableBrowsers" class="table table-striped table-bordered table-hover table-blue" data-default-before-render="false">
+            <thead>
+                <tr>
+                    <th>@TAdm("Páginas mais acessadas")</th>
+                    <th style="width:100px;">@TAdm("Acessos")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pagina in Model)
+                {
+                    <tr>
+                        <td>@pagina.label</td>
+                        <td>@String.Format("{0:N0}", Convert.ToDecimal(pagina.value))</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

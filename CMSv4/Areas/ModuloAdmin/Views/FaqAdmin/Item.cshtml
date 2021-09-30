@@ -1,0 +1,86 @@
+﻿@model MLFaqView
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/FaqAdmin", portal.Diretorio);
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/question" /> @TAdm("Cadastro de FAQ")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" id="formCadastro">
+            @Html.AntiForgeryToken()
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-12">
+                <label>@TAdm("Categoria")</label><br />
+                <select id="CodigoCategoria" class="form-control" name="CodigoCategoria">
+                    <option value="">@TAdm("Selecione")</option>
+                    @foreach (var item in Model.ListaCategorias)
+                    {
+                        <option value="@item.Codigo" @(item.Codigo == Model.CodigoCategoria ? "selected" : "")>@item.Titulo</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Pergunta")</label>
+                <input type="text" class="form-control" name="Pergunta" maxlength="350" value="@Model.Pergunta" autofocus />
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Resposta")</label>
+                <textarea data-ckeditor="@portal.Diretorio" class="form-control" style="height: 300px;" id="Resposta" name="Resposta">@Model.Resposta</textarea>
+            </div>
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $.validator.addMethod("validarSelect", function (value, element, arg) {
+            return arg != value;
+        }, "@TAdm("Selecionar uma opção da lista")");
+
+        $("form").validate({
+            ignore: [],
+            rules: {
+                Pergunta: { required: true, maxlength: 350 },
+                Resposta: { required: true },
+                CodigoCategoria: { validarSelect: "" }
+            }
+        });
+
+        $("select[name=CodigoCategoria]").multiselect({
+            nonSelectedText: "@TAdm("Nenhuma selecionada")"
+        });
+
+        $("input[type=submit]").click(function () {
+            if (!$("form").valid()) {
+                $("#Resposta").val(unescape($("#Resposta").val()));
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+    </script>
+}

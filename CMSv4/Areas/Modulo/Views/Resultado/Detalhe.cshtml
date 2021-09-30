@@ -1,0 +1,80 @@
+﻿@model MLResultado
+@{
+    var modulo = (MLModuloResultado)ViewData["modulo"] ?? new MLModuloResultado();
+    var diretorio = string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloResultado(BLPortal.Atual.Diretorio).TrimEnd('/') + "/" + Model.Codigo);
+    var legenda = Model.Trimestre + (Model.Idioma.HasValue && Model.Idioma == 1 ? "T" : "Q") + Model.Ano.ToString().Substring(2, 2); ;
+}
+
+
+<!-- mod-resultados -->
+<article class="content">
+    <header class="content--header clearfix">
+        <h1 class="section-title-sub">@legenda</h1>
+        <h1 class="section-title-sub pull-right">@T("Downloads")</h1>
+    </header>
+    <div class="content--body">
+        <aside class="action-list">
+            <ul class="list-unstyled">
+                <li>
+                    @if (!string.IsNullOrEmpty(Model.ValueBook) && Model.Ano == DateTime.Now.Year)
+                    {
+                        <a target="_blank" href="@Portal.Url(diretorio, Model.ValueBook)" class="" data-toggle="tooltip" data-placement="left" title="@T("Valuation Book")">
+                            <span class="icon icon-circle-down" aria-hidden="true"></span>
+                        </a>
+                    }
+                </li>
+                <li>
+                    @if (!string.IsNullOrEmpty(Model.ReleaseResultados))
+                    {
+                        <a target="_blank" href="@Portal.Url(diretorio, Model.ReleaseResultados)" class="" data-toggle="tooltip" data-placement="left" title="@T("Release de Resultados")">
+                            <span class="icon icon-circle-down" aria-hidden="true"></span>
+                        </a>
+                    }
+                </li>
+                <li>
+                    @if (!string.IsNullOrEmpty(Model.Dfp))
+                    {
+                        if (Model.Trimestre == 4)
+                        {
+                            <a target="_blank" href="@Portal.Url(diretorio, Model.Dfp)" class="" data-toggle="tooltip" data-placement="left" title="@T("DFP")">
+                                <span class="icon icon-circle-down" aria-hidden="true"></span>
+                            </a>
+                        }
+                        else
+                        {
+                            <a target="_blank" href="@Portal.Url(diretorio, Model.Dfp)" class="" data-toggle="tooltip" data-placement="left" title="@T("ITR")">
+                                <span class="icon icon-circle-down" aria-hidden="true"></span>
+                            </a>
+                        }
+                    }
+                </li>
+                <li>
+                    @if (!string.IsNullOrEmpty(Model.Audio))
+                    {
+                        <a target="_blank" href="@Portal.Url(diretorio, Model.Audio)" class="" data-toggle="tooltip" data-placement="left" title="@T("Download do Áudio")">
+                            <span class="icon icon-mp3" aria-hidden="true"></span>
+                        </a>
+                    }
+                </li>
+                <li>
+                    @if (!string.IsNullOrEmpty(Model.Transcricao))
+                    {
+                        <a target="_blank" href="@Portal.Url(diretorio, Model.Transcricao)" class="" data-toggle="tooltip" data-placement="left" title="@T("Download da Transcrição")">
+                            <span class="icon icon-edit" aria-hidden="true"></span>
+                        </a>
+                    }
+                </li>
+                <li>
+                    @if (!string.IsNullOrEmpty(Model.Apresentacao))
+                    {
+                        <a target="_blank" href="@Portal.Url(diretorio, Model.Apresentacao)" class="" data-toggle="tooltip" data-placement="left" title="@T("Download da Apresentação")">
+                            <span class="icon icon-ppt" aria-hidden="true"></span>
+                        </a>
+                    }
+                </li>
+            </ul>
+        </aside>
+        @Html.Raw(Model.Conteudo)
+    </div>
+</article>
+<!-- /mod-resultados -->

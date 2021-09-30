@@ -1,0 +1,60 @@
+﻿@model MLModuloTakeOrPay
+@{
+    Layout = "";
+}
+
+<div class="container" id="Etapa5" style="display: none;">
+    <div class="container">
+        <div class="step-five">
+            <h3 class="step-title color"><strong>Conclusão da Reserva</strong></h3>
+            <p class="text-center">Por favor, leia atentamente os termos e condições abaixo, referentes ao <strong>Embarque Certo</strong>:</p>
+            <div class="text-box">
+                <div class="text-box--scroll" id="divTermos">
+                </div>
+            </div>
+            <form>
+                <div class="form-row">
+                    <div class="form-group col-24">
+                        <div class="form-checkbox">
+                            <div class="checkbox">
+                                <input type="checkbox" id="1" autocomplete="off">
+                                <label for="1"></label>
+                            </div>
+                            <label for="">Li e aceito os termos e condições referentes ao Embarque Certo</label>
+                        </div>
+                        <div class="form-checkbox">
+                            <div class="checkbox">
+                                <input type="checkbox" id="2" autocomplete="off">
+                                <label for="2"></label>
+                            </div>
+                            <label for="">Li e aceito a <a href="@Model.Link" target="_blank"><strong>política de privacidade</strong></a> de dados da Aliança</label>
+                        </div>
+                        <div class="form-checkbox">
+                            <div class="checkbox">
+                                <input type="checkbox" id="3" autocomplete="off">
+                                <label for="3"></label>
+                            </div>
+                            <label for="">Entendo que minha solicitação será analisada e, ao concordar com este termo, não tenho a garantia de espaço automaticamente confirmada.</label>
+                        </div>
+                        <div class="form-checkbox">
+                            <div class="checkbox">
+                                <input type="checkbox" id="4" autocomplete="off">
+                                <label for="4"></label>
+                            </div>
+                            <label for="">Entendo e concordo que, se minha solicitação for aprovada pela Aliança, deverei assinar digitalmente o termo de contratação que será enviado ao e-mail informado anteriormente.</label>
+                        </div>
+                        <div class="invalid-feedback" id="erroAceite" style="display: none; text-align: center;"><h6>Aceite todos os termos para continuar.</h6></div>
+                    </div>
+                </div>
+            </form>
+            <div class="step-btns">
+                <a href="javascript:void(0)" class="btn btn-default" id="btnVoltarEtapa4_2">Voltar</a>
+                <a href="javascript:void(0)" class="btn btn-navy" id="btnAvancarFinal">Avançar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptConclusaoReserva", new { model = Model }));
+}

@@ -1,0 +1,91 @@
+﻿@model MLConfiguracao
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = "/cms/" + portal.Diretorio + "/Configuracao";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="" /> @T("Cadastro de Configuração")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@T("Voltar")</a>
+        </div>
+    </div>
+
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" action="" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+
+            <div class="form-group col-md-6">
+                <label>@T("Nome")</label>
+                <input type="text" class="form-control" maxlength="150" name="Nome" value="@Model.Nome" autofocus required />
+            </div>
+
+            <div class="form-group col-md-6">
+                <label>@T("Chave")</label>
+                <input type="text" class="form-control" maxlength="100" name="Chave" id="Chave" value="@Model.Chave" @(Model.Codigo.HasValue ? "disabled" : "") />
+            </div>
+
+            <div class="form-group col-md-12">
+                <label>@T("Descrição")</label>
+                <textarea class="form-control" name="Descricao" maxlength="300" style="height:250px;" required>@Model.Descricao</textarea>
+            </div>
+
+            <div class="form-group col-md-12">
+                <label>@T("Valor")</label>
+                <input type="text" class="form-control" maxlength="250" name="Valor" value="@Model.Valor" />
+            </div>
+            
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            {
+                <div class="form-group col-md-12 text-right">
+                    <a class="btn btn-red" href="@urlLista">@T("Cancelar")</a>
+                    <input type="submit" class="btn btn-green" value="@T("Salvar")" />
+                </div>
+            }
+
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('form').validate({
+            rules: {
+                Tipo: { required: true, maxlength: 50 },
+                Chave: {
+                    required: true,
+                    remote: {
+                        url: "/cms/@portal.Diretorio/Configuracao/IsValid",
+                        type: "post",
+                        loadingPanel: false,
+                        data: {
+                            id: "@Model.Codigo",
+                            value: function () {
+                                return $("#Chave").val();
+                            }
+                        }
+                    }
+                },
+                Valor: { required: true }
+            },
+            messages: {
+                Chave: {
+                    remote: "@Html.Raw(TAdm("Já existe um registro cadastrado com essa chave"))"
+                }
+            }
+        });
+
+        @if (!AdminHelper.CheckPermission(Permissao.Modificar))
+        {
+            @:disableForm();
+        }
+
+        $('select').multiselect({ buttonClass: 'btn btn-white' });
+    </script>
+}
+
+
+

@@ -1,0 +1,11 @@
+﻿@model List<MLIdioma>
+@{
+    var selectedValue = Convert.ToString(ViewData["selectedValue"]);
+}
+<select class="form-control" name="@ViewData["name"]">
+    <option value="">@TAdm("Selecione")</option>
+@foreach (var item in Model)
+{
+    <option value="@item.Sigla" @(selectedValue == item.Sigla ? "selected":"")>@item.Nome</option>
+}
+</select>

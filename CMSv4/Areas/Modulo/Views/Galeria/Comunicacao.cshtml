@@ -1,0 +1,185 @@
+﻿@model MLModuloGaleriaMultimidia
+@{
+    var portal = BLPortal.Atual;
+    var msgHtml5 = T("Seu navegador não tem suporte para vídeo HTML5.");
+}
+<div class="gallery-multimedia gallery--header-icons" data-loading data-loading-target>
+    @if (Model != null && Model.CodigoPagina.HasValue && Model.Repositorio.HasValue)
+    {
+        if (!String.IsNullOrEmpty(Model.Titulo))
+        {
+            <h3>@Model.Titulo</h3>
+        }
+
+        if (Model.ArquivosGaleria != null && Model.ArquivosGaleria.Count > 0)
+        {
+            <input type="hidden" id="JsDiretorioGaleria" value="@BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio)" />
+            
+            if (Model.ArquivosGaleria != null && Model.ArquivosGaleria.GroupBy(o => o.Tipo).Select(grp => grp.First()).ToList().Count > 1)
+            {
+                <ul class="nav nav-tabs nav-tabs-primary row tab-multimidia" role="tablist">
+                    <li role="presentation" class="active">
+                        <a class="jq-btn_@Model.Repositorio" href="javascript:;">
+                            <span class="icon icon-all"></span>
+                            @T("Tudo")
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a class="jq-btn_@Model.Repositorio" data-value="1" href="javascript:;" style="@(Model.ArquivosGaleria.Exists(a => a.Tipo == 1) ? "" : "display: none;")">
+                            <span class="icon icon-pictures"></span>
+                            @T("Imagens")
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a class="jq-btn_@Model.Repositorio" data-value="2" href="javascript:;" style="@(Model.ArquivosGaleria.Exists(a => a.Tipo == 2) ? "" : "display: none;")">
+                            <span class="icon icon-youtube"></span>
+                            @T("Videos")
+                        </a>
+                    </li>
+                    <li role="presentation">
+                        <a class="jq-btn_@Model.Repositorio" data-value="4" href="javascript:;" style="@(Model.ArquivosGaleria.Exists(a => a.Tipo == 4) ? "" : "display: none;")">
+                            <span class="icon icon-mic"></span>
+                            @T("Audio")
+                        </a>
+                    </li>
+                </ul>
+            }
+
+            @*<div class="tab-content">
+                <div role="tabpanel" class="tab-pane">*@
+                <!-- um ID personalizado precisa ser criado e referenciado -->
+            <div id="carousel-gallery_@Model.Repositorio" class="carousel-gallery">
+                @for (int i = 0; i < Model.ArquivosGaleria.Count; i++)
+                {
+                    bool visualizarVideoYoutube = Model.ArquivosGaleria[i].Tipo == 2 && !string.IsNullOrEmpty(Model.ArquivosGaleria[i].YouTube);
+                    bool visualizarVideoArquivo = Model.ArquivosGaleria[i].Tipo == 2 && !string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo) && !visualizarVideoYoutube;
+                    bool visualizarImagem = Model.ArquivosGaleria[i].Tipo == 1 && !string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo);
+                    bool visualizarAudio = Model.ArquivosGaleria[i].Tipo == 4 && !string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo);
+
+                    string arquivoCriptografado = "";
+
+                    if (!string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo))
+                    {
+                        arquivoCriptografado = BLEncriptacao.EncriptarQueryString(string.Concat(Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo));
+                    }
+
+                    if (i == 0)
+                    {
+                        var arquivoDownload = "";
+                        var youtubeUrl = "";
+
+                        if (!string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo))
+                        {
+                            arquivoDownload = string.Concat(BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo);
+                        }
+
+                        if (visualizarVideoYoutube)
+                        {
+                            var youtubeId = Model.ArquivosGaleria[i].YouTube;
+
+                            if (Model.ArquivosGaleria[i].YouTube.IndexOf("?") > -1)
+                            {
+                                youtubeUrl = string.Concat("http://www.youtube.com/embed/", youtubeId.Substring(youtubeId.IndexOf("v=") + 2));
+                            }
+                            else
+                            {
+                                youtubeUrl = string.Concat("http://www.youtube.com/embed/", youtubeId.Substring(youtubeId.IndexOf("v=") + 2));
+                            }
+                        }
+
+    <ul class="owl-carousel owl-multimidia" role="listbox">
+        <li class="item">
+            <div id="jq-content-viewer_@Model.Repositorio" class="no-svg" style="height: auto; position: relative;"><!-- height: 300 é o padrao que estava -->
+               
+                <img id="@string.Concat("img_", Model.CodigoPagina, "_", Model.Repositorio)" src="@string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo)"
+                        alt="@Model.ArquivosGaleria[i].AlternateText" style="@(visualizarImagem ? "" : "display: none;")" />                
+                <a style="@(visualizarImagem ? "" : "display: none;")" id="@string.Concat("img_zoom_", Model.CodigoPagina, "_", Model.Repositorio)" data-toggle="lightbox" href="@string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo)">
+                    <span class="icon icon-zoom-in"></span>
+                </a>               
+               
+                <iframe id="@string.Concat("iframe_", Model.CodigoPagina, "_", Model.Repositorio)" width="100%" height="520" src="@youtubeUrl?wmode=opaque" frameborder="0" allowfullscreen
+                        style="width: 100%; height: 520px; padding-bottom: 45px; @(visualizarVideoYoutube ? "" : "display: none;")"></iframe><!-- height: 300 é o padrao que estava -->
+               
+                <video controls width="100%" height="520" style="@(visualizarVideoArquivo ? "" : "display: none;")" id="@string.Concat("player_", Model.CodigoPagina, "_", Model.Repositorio)" preload="metadata"><!-- width:555 height: 300 é o padrao que estava -->
+                    <source src="@(visualizarVideoArquivo ? string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo) : "")" type="@(visualizarVideoArquivo ? string.Concat("video/", Path.GetExtension(Model.ArquivosGaleria[i].Arquivo).Substring(1)) : "")">@msgHtml5
+                    <object width="100%" height="520" type="application/x-shockwave-flash" data="flashmediaelement.swf"><!-- height: 300 é o padrao que estava -->
+                        <param name="movie" value="/Content/js/plugins/mediaelement/flashmediaelement.swf" />
+                        <param name="flashvars" value="controls=true&file=@(visualizarVideoArquivo ? string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo) : "")" />
+                    </object>
+                </video>      
+                
+                @if(visualizarAudio)    
+                {
+                    <audio src="@string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo)" type="audio/mp3" controls="controls" class="audio-player_@Model.Repositorio"></audio>
+                }
+
+                
+            </div>
+            <div class="owl-carousel-caption">
+                <a id="@(string.Concat("download_", Model.CodigoPagina, "_", Model.Repositorio))"
+                   href="@(!string.IsNullOrEmpty(arquivoCriptografado) ? string.Concat(Portal.UrlCms(portal), "/galeria/download?f=", arquivoCriptografado) : "")"
+                   style="@(!string.IsNullOrEmpty(arquivoCriptografado) ? "" : "display:none;")"
+                   target=" _blank"
+                   class="btn btn-default">Download</a>
+                @*<button type="button" class="btn btn-danger">Ver mais</button>*@
+                <p id="jq-content-text_@Model.Repositorio">@Model.ArquivosGaleria[i].Texto</p>
+            </div>
+        </li>
+    </ul>
+    
+
+                    }
+                }
+                <!-- Indicators -->
+                <ul class="carousel-indicators">
+                    @for (int i = 0; i < Model.ArquivosGaleria.Count; i++)
+                    {
+                        bool visualizarVideoYoutube = Model.ArquivosGaleria[i].Tipo == 2 && !string.IsNullOrEmpty(Model.ArquivosGaleria[i].YouTube);
+                        bool visualizarVideoArquivo = Model.ArquivosGaleria[i].Tipo == 2 && !string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo) && !visualizarVideoYoutube;
+                        bool visualizarImagem = Model.ArquivosGaleria[i].Tipo == 1 && !string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo);
+                        string arquivoCriptografado = "";
+                        bool isVideo = !string.IsNullOrEmpty(Model.ArquivosGaleria[i].YouTube) || Model.ArquivosGaleria[i].Tipo == 2;
+
+                        if (!string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo))
+                        {
+                            arquivoCriptografado = BLEncriptacao.EncriptarQueryString(string.Concat(Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo));
+                        }
+
+                    <li class="jq-galeria-thumb_@Model.Repositorio @(i == 0 ? "active" : "")" style="width: 70px; height: 70px;">
+                        <a href="javascript:;" class="jq-tipo_@Model.Repositorio-@(Model.ArquivosGaleria[i].Tipo)@(isVideo ? " thumb-video" : String.Empty)"
+                           data-alt="@Model.ArquivosGaleria[i].AlternateText"
+                           data-text="@Model.ArquivosGaleria[i].Texto"
+                           data-arq="@(!string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo) ? string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/", Model.ArquivosGaleria[i].Arquivo) : "")"
+                           data-ytb="@Model.ArquivosGaleria[i].YouTube"
+                           data-ext="@(!string.IsNullOrEmpty(Model.ArquivosGaleria[i].Arquivo) ? "video/" + Path.GetExtension(Model.ArquivosGaleria[i].Arquivo).Substring(1) : "")"
+                           data-tipo="@Model.ArquivosGaleria[i].Tipo"
+                           data-download="@arquivoCriptografado">
+                            <img src="@string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", Model.ArquivosGaleria[i].CodigoGaleria, "/thumb/", Model.ArquivosGaleria[i].Imagem)"
+                                 alt="@Model.ArquivosGaleria[i].AlternateText"
+                                 width="50" />
+                        </a>
+
+                    </li>
+                    }
+                </ul>
+            </div><!-- /.carousel-gallery -->
+            @*</div>
+                </div>*@
+                    if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+                    {
+                        Html.RenderAction("Script", new { model = Model });
+                    }
+                    else
+                    {
+                        BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+                    }
+        }
+    }
+    else
+    {
+        <br />
+        <p>@T("Clique em ")<u>@T("Editar")</u> @T("para configurar Galeria")</p>
+    }
+
+</div>
+

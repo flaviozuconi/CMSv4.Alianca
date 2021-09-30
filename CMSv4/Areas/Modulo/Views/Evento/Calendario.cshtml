@@ -1,0 +1,53 @@
+﻿@model MLModuloEventos
+@{
+    var portal = BLPortal.Atual;
+}
+<section class="mod-view calendario">
+    <div class="mod-header">
+        <h1 class="section-title">@(Model.Titulo ?? T("Calendário"))</h1>
+    </div>
+    <div class="mod-body">
+        <div class="row">
+            <div class="col-xs-24 col-sm-12 col-md-12">
+                <div class="calendar calendar-jq">
+                </div>
+            </div>
+            <div class="col-xs-24 col-sm-12 col-md-12">
+                <div class="calendar-events mCustomScrollbar _mCS_1">
+                    <div id="mCSB_1" class="mCustomScrollBox mCS-light mCSB_vertical mCSB_inside" tabindex="0">
+                        <div id="mCSB_1_container" class="mCSB_container" style="position: relative; top: 0px; left: 0px;" dir="ltr">
+                            @* O AJAX IRÁ INSERIR O CONTEÚDO (CalendarioAjax.cshtml) AQUI DENTRO *@
+                        </div>
+                        <div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-light mCSB_scrollTools_vertical" style="display: block;">
+                            <div class="mCSB_draggerContainer">
+                                <div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 30px; display: block; height: 191px; max-height: 245px; top: 0px;" oncontextmenu="return false;">
+                                    <div class="mCSB_dragger_bar" style="line-height: 30px;">
+                                    </div>
+                                </div>
+                                <div class="mCSB_draggerRail">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mod-footer">
+        <a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista)" class="btn-action">
+            <span class="icon icon-plus" aria-hidden="true"></span>
+            <span class="btn-txt">@T("Ver mais eventos")</span>
+        </a>
+    </div>
+</section>
+
+@{
+    if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+    {
+        Html.RenderAction("ScriptCalendario", new { model = Model });
+    }
+    else
+    {
+        BLConteudo.AdicionarJavaScript(Html.Action("ScriptCalendario", new { model = Model }));
+    }
+}

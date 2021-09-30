@@ -1,0 +1,76 @@
+﻿@model MLModuloEnquete
+@{
+    var portal = BLPortal.Atual;
+}
+
+<script type="text/javascript">
+    $(document).on('change', 'input[name=enquete_@Model.Repositorio]', function(){
+        if ($(this).val() !== null && $(this).val() !== undefined && $(this).val() != "") {
+            $("#spn_@Model.Repositorio").hide();
+        }
+        else{
+            $("#spn_@Model.Repositorio").show();
+        }
+    });
+
+    $(document).on('click', "#btnSubmit_@Model.Repositorio", function (e) {
+        var selectedValue = $('input[name=enquete_@Model.Repositorio]:checked', '#divEnquete_@Model.Repositorio').val();
+
+        if (selectedValue !== null && selectedValue !== undefined && selectedValue != "") {
+            $("#spn_@Model.Repositorio").hide();
+
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/Enquete/Votar",
+                data: {
+                    "codigoOpcao": selectedValue,
+                    "Restrito": "@Model.VotarRestrito",
+                    "codigoEnquete": "@Model.CodigoEnquete",
+                    "Repositorio": "@Model.Repositorio",
+                    "pagina" : "@Model.CodigoPagina",
+                    "ResultadoRestrito" : "@Model.ResultadoRestrito"
+                },
+                success: function (data) {
+                    $("#divEnqueteIndex_@Model.Repositorio").html(data.conteudo);
+                }
+            });
+        }
+        else {
+            $("#spn_@Model.Repositorio").show();
+        }
+    });
+
+    function exibirResultado() {
+        $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/Enquete/Resultado",
+            data: { "CodigoEnquete": @Model.CodigoEnquete, "ResultadoRestrito": "@Model.ResultadoRestrito", "codRepositorio": "@Model.Repositorio" },
+            success: function(data){
+                $("#divEnqueteIndex_@Model.Repositorio").html(data);
+            }
+        });
+    }
+
+    function exibirVotacao(){
+        var e = $("#divEnqueteIndex_@Model.Repositorio"); //Define o alvo do loading
+
+        $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/Enquete/ControleExibicaoAjax",
+            data: { "codigoPagina": "@Model.CodigoPagina", "repositorio": "@Model.Repositorio" },
+            beforeSend: function () {
+                channelingLoad(e); //Chama a função que compõe o loading
+            },
+            success: function (data) {
+                //Adicionar o conteúdo html na div
+                $("#divEnqueteIndex_@Model.Repositorio").html(data);
+
+                //Remove o loading e chama o resultado
+                doneLoad(e);
+            },
+            error: function (e) {
+                doneLoad(e); //Remove o loading e chama o resultado
+            }
+        });
+    }
+</script>

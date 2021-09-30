@@ -1,0 +1,80 @@
+﻿@model MLModuloEventos
+@{
+    List<MLEventoPublico> lstResultados = (List<MLEventoPublico>)ViewData["lstEventos"] ?? new List<MLEventoPublico>();
+    var eventosPassados = (List<MLEventoPublico>)ViewBag.EventosRealizados ?? new List<MLEventoPublico>();
+
+    double TotalRows = ViewBag.TotalRows ?? 0;
+}
+<div class="row" id="eventos_@Model.Repositorio">
+    <section class="mod-view">
+        <div class="mod-header">
+            <h1 class="section-title">@(Model.Titulo ?? T("Eventos Futuros"))</h1>
+        </div>
+        <div class="mod-body">
+            <table class="table table-default">
+                <thead>
+                    <tr>
+                        <th>@T("Data")</th>
+                        <th>@T("Hora")</th>
+                        <th>@T("Evento")</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="divVerMais_@Model.Repositorio">
+                    @{Html.RenderAction("ItemListagem", new { model = lstResultados, url = Model.UrlDetalhe });}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    @if (lstResultados != null && lstResultados.Count > 0 && lstResultados[0].TotalRows > 0)
+    {
+    <div class="clearfix col-xs-24 text-center">
+        <br />
+        <input type="button" value="@T("Ver Mais")" class="btn btn-primary center-button" id="vermais_@Model.Repositorio" style="@(lstResultados[0].TotalRows > (Model.Quantidade ?? 5) ? "" : "display: none;")">
+        <input type="hidden" id="hdn_@Model.Repositorio" value="2" />
+    </div>
+    }
+</div>
+
+@if (eventosPassados.Count > 0)
+{
+    <div class="row">
+        <section class="mod-view">
+            <div class="mod-header">
+                <h1 class="section-title">@T("Eventos Realizados")</h1>
+            </div>
+            <div class="mod-body">
+                <table class="table table-default">
+                    <thead>
+                        <tr>
+                            <th>@T("Data")</th>
+                            <th>@T("Evento")</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < eventosPassados.Count; i++)
+                    {
+                    <tr>
+                        <td>
+                            <strong>@eventosPassados[i].DataInicio.Value.ToString("ddd")</strong><br />@eventosPassados[i].DataString
+                        </td>
+                        <td>@eventosPassados[i].Titulo</td>
+                    </tr>
+                    }
+                    </tbody>
+
+                </table>
+            </div>
+        </section>
+    </div>
+}
+
+@if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+{
+    Html.RenderAction("Script", new { model = Model });
+}
+else
+{
+    BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+}

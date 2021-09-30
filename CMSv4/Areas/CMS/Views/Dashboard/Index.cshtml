@@ -1,0 +1,371 @@
+﻿@{
+    Layout = "~/areas/cms/views/shared/_masteradmin.cshtml";
+    string controller = Request.QueryString["controller"] ?? "";
+    string action = Request.QueryString["action"] ?? "";
+    string id = Request.QueryString["id"] ?? "";
+    string urlAba = String.Empty;
+    string qs = string.Empty;
+
+    //Id do link do menu do módulo correspondente
+    string idAnchor = Request.QueryString["idAnchor"] ?? "";
+    string idlink = Request.QueryString["idlink"] ?? "";
+
+    /*if (Request.QueryString["l"] != null)
+    {
+        qs = Request.Url.Query;
+    }*/
+
+    if (!String.IsNullOrWhiteSpace(controller) &&
+        !String.IsNullOrWhiteSpace(action) &&
+        !String.IsNullOrWhiteSpace(id) &&
+        !String.IsNullOrWhiteSpace(idAnchor) &&
+        !String.IsNullOrWhiteSpace(idlink))
+    {
+        urlAba = "/admin/" + controller + "/" + action + "/" + id;
+    }
+}
+@section head {
+    <style type="text/css">
+        .tree .parent > a {
+            padding: 7px 15px 7px 20px !important;
+        }
+
+        .tree .parent .nav a {
+            padding-left: 5px !important;
+        }
+
+        .ui-sortable-helper {
+            width: auto !important;
+        }
+
+        #topTab {
+            padding-right: 24px;
+        }
+    </style>
+}
+@section scripts {
+    <script type="text/javascript" id="dashboard">
+
+    var iframeMinHeight = 800;
+
+    $.fn.hasScrollBar = function () {
+        return this.get(0).scrollHeight > this.height();
+    }
+
+    function iResize(sender) {
+
+        try {
+
+            if (sender.contentWindow.document) {
+                var height = sender.contentWindow.document.body.offsetHeight;
+                var scrollHeight = sender.contentWindow.document.documentElement.scrollHeight;
+                var clientHeight = sender.contentWindow.document.documentElement.clientHeight;
+
+                console.log("DocumentHeight: " + height + " scrollHeight: " + scrollHeight + " clientHeight: " + clientHeight);
+
+                //if (scrollHeight > clientHeight) {
+                //    $(sender).height(scrollHeight + 'px');
+                //}
+
+                if (scrollHeight > clientHeight) {
+                    if (height < iframeMinHeight) {
+                        height = iframeMinHeight;
+                    }
+
+                    $(sender).height(height + 50 + 'px');
+                }
+
+                setTimeout(function () {
+                    iResize(sender);
+                }, 2000);
+            }
+        } catch (err) { }
+    }
+
+    // Adiciona uma tab
+    function newTabModulo(anchor, id, nomeAba) {
+        var img = $($(anchor).children('img')).attr('src');
+        var url = $(anchor).data('url');
+
+        if (img == '' || img == null) {
+            img = $($(anchor).parents('.parent')).find('img').attr('src');
+        }
+
+        return addTab(id, nomeAba, url, img);
+    }
+
+    // Adiciona uma tab
+    function newTab(anchor, id) {
+        var img = $($(anchor).children('img')).attr('src');
+        var url = $(anchor).data('url');
+        var nomeAba = $(anchor).text();
+
+        if (img == '' || img == null) {
+            img = $($(anchor).parents('.parent')).find('img').attr('src');
+            if ($($(anchor).parents('.parent')).first('a').text().split(' ')[0].trim() != '')
+                nomeAba = nomeAba + ' - ' + $($(anchor).parents('.parent')).first('a').text().split(' ')[0];
+            else
+                nomeAba = nomeAba + ' - ' + $($(anchor).parents('.parent')).first('a').text().split(' ')[1];
+        }
+
+        return addTab(id, nomeAba, url, img);
+    }
+
+    function addTabFromUrl(anchor, id, url) {
+        var img = $($(anchor).children('img')).attr('src');
+        var nomeAba = $(anchor).text();
+
+        if (img == '' || img == null) {
+            img = $($(anchor).parents('.parent')).find('img').attr('src');
+            if ($($(anchor).parents('.parent')).first('a').text().split(' ')[0].trim() != '')
+                nomeAba = nomeAba + ' - ' + $($(anchor).parents('.parent')).first('a').text().split(' ')[0];
+            else
+                nomeAba = nomeAba + ' - ' + $($(anchor).parents('.parent')).first('a').text().split(' ')[1];
+        }
+
+        return addTab(id, nomeAba, url, img, true);
+    }
+
+    // Adiciona uma tab
+
+    function addTab(id, titulo, url, icon, exibirAlerta) {
+        $(".ui-autocomplete").hide();
+
+        if ($('#tab_' + id).length == 0) {
+
+            if (icon) $('#topTab').append("<li><a href='#tab_" + id + "' data-toggle='tab'><img src='" + icon + "' /> " + titulo + "</a> <i class='fa fa-times' style='position: absolute; right: 5px; top: 0px; cursor: pointer;' onclick=\"closeTab('" + id + "')\"> </i></li>");
+            else $('#topTab').append("<li><a href='#tab_" + id + "' data-toggle='tab'>" + titulo + "</a> <i class='fa fa-times' style='position: absolute; right: 5px; top: 0px; cursor: pointer;' onclick=\"closeTab('" + id + "')\"> </i></li>");
+
+            $('#topTabContent').append("<div class='tab-pane fade in' id='tab_" + id + "'><iframe id='iframe_" + id + "' src=\"" + url + "@qs" + "\" style='width: 100%; border: none; overflow: hidden; min-height:" + iframeMinHeight + "px; display: none;' onload='iResize(this); loadIcon(" + id + ");' ></iframe><p id='carregando_" + id + "'>Carregando...</p></div>");
+
+            // Exibe iframe após carregado
+            $("#iframe_" + id).load(function () {
+                $(this).show();
+                $("#carregando_" + id).remove();
+            });
+        }
+        else {
+            if (exibirAlerta && confirm("A aba já está aberta, deseja prosseguir? Você poderá perder as atualizações")) {
+                $('#iframe_' + id).attr("src", url);
+            }
+        }
+
+        $('a[href=#tab_' + id + ']').click();
+
+        scrollToTop();
+
+        return false;
+    }
+
+    function loadIcon(id) {
+        $('#iframe_' + id).contents().find('h4').find('img').attr('src', $("a[href=#tab_" + id + "]").find('img').attr('src'));
+    }
+
+    // Fecha a tab informada
+    function closeTab(id) {
+        if ($('#tab_' + id).length != 0) {
+            $('a[href=#tab_' + id + ']').closest('li').remove();
+            $('#tab_' + id).remove();
+        }
+
+        $('#topTab a').last().click();
+    }
+
+    function possuiItem(element, text) {
+        return RemoverAcentos(element.text()).toLowerCase().indexOf(text) > -1;
+    }
+
+    //Exibir Mensagem
+    function Mensagem(msg, tipo) {
+        Messenger.options = {
+            extraClasses: 'messenger-fixed messenger-on-bottom messenger-on-right',
+            theme: 'flat'
+        }
+        Messenger().post({
+            message: msg,
+            type: tipo,
+            showCloseButton: false,
+            hideAfter: 4
+        });
+    }
+
+    //atualizar o iframe atual
+    function atualizarIFrame() {
+        var iframe = $($("#topTab .active a").attr("href") + " iframe");
+
+        iframe.attr("src", iframe.attr("src"));
+
+        return false;
+    }
+
+    function adicionarLupa() {
+        var i = $("#side .nav-search .btn i");
+
+        i.removeClass("fa-times").addClass("fa-search");
+        i.parent().css("cursor", "default");
+        i.parent().unbind("click");
+    }
+
+    function adicionarLimpar() {
+        var i = $("#side .nav-search .btn i");
+
+        i.removeClass("fa-search").addClass("fa-times");
+        i.parent().css("cursor", "pointer");
+        i.parent().click(function () {
+            $(".txt-search").val("");
+            $(".txt-search").trigger("keyup");
+
+            adicionarLupa();
+        });
+    }
+
+    //pesquisar funcionalidades cadastradas
+    $(".txt-search").keyup(function () {
+        var input = $(this);
+
+        //adiciona funcionalidade em delay
+        delay(function () {
+            //remove todas as display none
+            $("#side li").show();
+
+            //recolhe menus expandidos
+            $("#side li").find("a.accordion-toggle").removeClass("collapsed");
+            $("#side li").removeClass("item-found");
+            $("#side li.parent").removeClass("active");
+            $("#side li.parent > ul").hide();
+
+            var uls = $("#side li").find("ul.nav-menu");
+            uls.removeClass("in");
+            uls.addClass("collapse");
+
+            //remove li de não encontrado
+            $(".nao-encontrado").remove();
+
+            //texto a pesquisar
+            var texto = RemoverAcentos(input.val()).toLowerCase();
+
+            //texto vazio
+            if (texto.length == 0) {
+                adicionarLupa();
+                return;
+            }
+
+            adicionarLimpar();
+
+            //caso o texto informado não tenha sido encontrada, exibe li com mensagem para o usuário
+            if (!possuiItem($("#side > li").not(".nav-search"), texto)) {
+                //li caso nenhum conteúdo seja encontrado
+                $("#side > li").not(".nav-search").hide();
+                $("#side").append("<li class='panel nao-encontrado'><a href='javascript:;' class='accordion-toggle'>Não encontrado</a></li>");
+            }
+            else {
+                //lista as li's do primeiro nível exceto a li contendo o input de pesquisa
+                $("#side > li").not(".nav-search").each(function () {
+                    pesquisaLi(texto, $(this));
+                });
+            }
+        }, 500);
+    });
+
+    function pesquisaLi(texto, sender) {
+        var li_texto = "";
+
+        //obtem texto do anchor da li e pesquisa pelo texto
+        if ($(sender).find("label").length > 0) {
+            li_texto = RemoverAcentos($(sender).find("label").first().text()).toLowerCase();
+        }
+        else {
+            li_texto = RemoverAcentos($(sender).find("a").first().text()).toLowerCase();
+        }
+
+        if (li_texto.indexOf(texto) == -1) {
+            //verifica se a li possui ul.nav ou se abaixo dela possui alguma li com o texto a encontrar
+            if ($(sender).find(".nav").length == 0 || !possuiItem($(sender), texto)) {
+                if ($(sender).closest(".item-found").length == 0) {
+                    $(sender).hide();
+                }
+            }
+            else {
+                //lista as li's de terceiro nível
+                $(sender).find("li").each(function () {
+                    pesquisaLi(texto, $(this));
+                });
+            }
+        }
+        else {
+            $(sender).addClass("item-found");
+
+            //expande o menu para itens encontrados no nível
+            if ($(sender).hasClass("parent")) {
+                $(sender).addClass("active");
+                $(sender).find("ul").show();
+            }
+            else {
+                var parent = $(sender).closest(".parent");
+                if (parent.length > 0) {
+                    parent.addClass("active");
+                    parent.find("ul").show();
+                }
+
+                var li_pai = $(sender).closest(".panel");
+                var a_pai = li_pai.find("a").first();
+                var ul_pai = li_pai.find(".nav-menu").first();
+
+                if (!a_pai.hasClass("collapsed")) {
+                    a_pai.addClass("collapsed");
+
+                    ul_pai.removeClass("collapse");
+                    ul_pai.addClass("in");
+                    ul_pai.css("height", "auto");
+                }
+            }
+        }
+    }
+
+    $(document).ready(function () {
+        try {
+            $("#topTab").sortable({
+                items: "li:not(.disabled-tab)"
+            });
+            $("#topTab").disableSelection();
+        } catch (err) { }
+
+        $('.tree li').each(function () {
+            if ($(this).children('ul').length > 0) {
+                $(this).addClass('parent');
+            }
+        });
+
+        $('.tree li.parent > a').click(function () {
+            $(this).parent().toggleClass('active');
+            $(this).parent().children('ul').slideToggle('fast');
+        });
+
+        $('#all').click(function () {
+            $('.tree li').each(function () {
+                $(this).toggleClass('active');
+                $(this).children('ul').slideToggle('fast');
+            });
+        });
+    });
+
+    $(window).bind("load", function () {
+        if ("@urlAba" != "") {
+            addTabFromUrl($("#@idAnchor"), "@idlink", "@urlAba");
+        }
+    });
+    </script>
+}
+<div class="col-md-4 col-md-offset-4">
+    <div class="logged-banner text-center">
+        <h1><img src="~/content/css/img/logo.png" class="logo-vm2" alt="@TAdm("Logotipo")" /></h1>
+    </div>
+    <div class="portlet portlet-dark-blue" style="">
+        <div class="portlet-body">
+            <fieldset>
+                <legend class="portlet-dark-blue">@TAdm("Seja Bem vindo")</legend>
+                <p class="small">@String.Concat(BLUsuario.ObterLogado().Nome, ", ", T("o menu lateral contém as funcionalidades que você precisa para utilizar o sistema."))</p>
+            </fieldset>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+﻿@model MLListaConfig
+@{
+    var portal = PortalAtual.Obter;
+    var urlEditar = string.Format("/cms/{0}/listaadmin/item?CodigoIdioma={1}&idLista={2}&CodigoBase={3}", portal.Diretorio, ViewBag.CodigoIdioma, Model.Codigo, ViewBag.CodigoBase);
+    var urlLista = string.Format("/cms/{0}/listaadmin?idLista={1}", portal.Diretorio, Model.Codigo);
+    var urlVincular = string.Format("/cms/{0}/listaadmin/vincular", portal.Diretorio);
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="@(Model.Icone ?? "~/iconpack.axd/16/newspaper")" />@TAdm(Model.Nome)
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+
+    <div class="portlet-body clearfix">
+        <form id="formCadastro" method="post" action="@urlVincular" class="form-vertical tab-content">
+            <div class="form-group col-md-6">
+                <label>@TAdm("Informar à qual registro deseja vincular"):</label>
+                <input type="text" id="Url" name="Url" class="form-control" maxlength="250" />
+                <input type="hidden" id="Codigo" name="Codigo" value="" />
+                <input type="hidden" id="CodigoLista" name="CodigoLista" value="@Model.Codigo" />
+                <input type="hidden" id="CodigoIdioma" name="CodigoIdioma" value="@ViewBag.CodigoIdioma" />
+                <input type="hidden" id="CodigoBase" name="CodigoBase" value="@ViewBag.CodigoBase" />
+                @Helpers.AutoComplete("ListarConteudosPublicados", "listaadmin", "busca", System.Web.Mvc.FormMethod.Post, "Codigo", "Titulo", textExibicao: "Url", portal: portal, idInputTextBox: "Url", param1: "CodigoIdioma", param2: "CodigoLista")
+            </div>
+            <div class="form-group col-md-12">
+                <p>@TAdm("ou")</p>
+                <a class="btn btn-default" href="@urlEditar">@TAdm("Cadastrar uma nova notícia")</a>
+            </div>
+            <div class="clearfix"></div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" id="btnSalvar" class="btn btn-green btn-submit" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        function change_Url(sender) {
+            $("input[name=Codigo]").val(sender.data("value"));
+        }
+
+        $('form').validate({
+            rules: {
+                Url: {
+                    required: true
+                }
+            }
+        });
+    </script>
+}

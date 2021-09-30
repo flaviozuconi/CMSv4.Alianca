@@ -1,0 +1,48 @@
+﻿@{ 
+    Layout = "~/areas/cms/views/shared/_masterexternasenus.cshtml"; 
+    var email = Request["email"] ?? "";
+    var msg = ViewBag.Message ?? "";
+}
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="login-banner text-center">
+            <h1><img src="~/content/css/img/logo.png" class="logo-vm2" alt="logo" /></h1>
+        </div>
+        <div class="portlet portlet-dark-blue">
+            <div class="portlet-body">
+                <form accept-charset="UTF-8" role="form" method="POST" >
+                    <fieldset>
+                        <legend class="portlet-dark-blue">@TAdm("Esqueci minha senha")</legend>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="@TAdm("Email ou Login")" name="usuarioEmail" type="text" value="@email" @(string.IsNullOrWhiteSpace(email) ? "autofocus" : "")  />
+                        </div>
+                        <input type="submit" class="btn btn-lg btn-dark-blue btn-block" value="@TAdm("Enviar")" />
+                        <br />
+                        @if (!ViewData.ModelState.IsValid)
+                        { 
+                            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" }); 
+                        }
+                        @if (!string.IsNullOrEmpty(msg))
+                        {
+                            <p class="small text-orange">@msg</p>
+                        }
+                        else {                            
+                            <p class="small">@TAdm("Digite seu Email ou Login e nós enviaremos um email com um link para resetar sua senha.")</p>                            
+                        }
+                        <p class="small"><a href="/cms/">@TAdm("Voltar")</a></p>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <!-- PAGE LEVEL PLUGIN SCRIPTS -->
+    <script type="text/javascript">
+        $('form').validate({
+            rules: {
+                usuarioEmail: { required: true }
+            }
+        });
+    </script>
+}

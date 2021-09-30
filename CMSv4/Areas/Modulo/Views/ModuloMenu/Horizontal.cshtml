@@ -1,0 +1,65 @@
+﻿@model MLMenuCompletoModulo
+@{
+    var portal = BLPortal.Atual;
+
+    if (string.IsNullOrEmpty(ViewBag.Classe))
+    {
+        ViewBag.Classe = "menu-principal";
+    }
+
+    var urlatual = ViewData["urlatual"].ToString();    
+}
+
+<nav class="navbar">
+    <div class="container">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-main" aria-expanded="false">
+            <span class="sr-only">Expandir menu</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+
+        <div class="collapse navbar-collapse overflow" id="navbar-main">
+            <div class="navbar-title">
+                <span type="button" class="navbar-title__btn" data-toggle="collapse" data-target="#navbar-main" aria-expanded="false">Menu</span>
+            </div>
+            
+            <ul class="nav navbar-nav">
+                @foreach (var item in Model.ItensMenu)
+                {
+                    bool urlAtiva = !string.IsNullOrEmpty(urlatual) && !string.IsNullOrEmpty(item.Href) && item.Href.ToLower().Contains(urlatual.ToLower());
+                    bool novaJanela = item.AbrirNovaPagina.GetValueOrDefault();
+                    string css = "";
+                    string cssactive = !string.IsNullOrEmpty(urlatual) && item.Href.ToLower().Contains(urlatual.ToLower()) ? "active" : "";
+
+                    if (!string.IsNullOrEmpty(item.Css) && !string.IsNullOrEmpty(cssactive))
+                    {
+                        css = string.Format("class={0} {1}", item.Css, cssactive);
+                    }
+                    else if (!string.IsNullOrEmpty(item.Css) || !string.IsNullOrEmpty(cssactive))
+                    {
+                        css = "class=" + item.Css + cssactive;
+                    }
+
+                    if (item.Filhos != null && item.Filhos.Count > 0)
+                    {
+                        <li @css>
+                            <a href="@Portal.ResolveUrl(item.Href, portal)" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" target="@(novaJanela ? "_blank" : "_top")">
+                                @Html.Raw(item.Nome)
+                            </a>
+                            @Html.Partial("HorizontalItem", item)
+                        </li>
+                    }
+                    else
+                    {
+                        <li @css>
+                            <a href="@Portal.ResolveUrl(item.Href, portal)" target="@(novaJanela ? "_blank" : "_top")">
+                                @Html.Raw(item.Nome)
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</nav>

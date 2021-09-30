@@ -1,0 +1,73 @@
+﻿@model MLModuloTakeOrPay
+@{
+    Layout = "";
+    var estados = CRUD.Listar<MLEstado>();
+}
+
+<style>
+    .error {
+        color: #a94442;
+    }
+</style>
+
+<div class="container" id="Etapa2" style="display: none;">
+    <div class="step-two">
+        <h3 class="step-title">Complete o cadastro com os dados do responsável jurídico pela contratação do Embarque Certo</h3>
+        <p class="text-center"><em>Esses dados serão utilizados para a conclusão da contratação e assinatura digital do cliente.</em></p>
+        <form id="formEtapa2">
+            <div class="form-row">
+                <div class="form-group col-24 offset-md-4 col-md-16">
+                    <label for="" class="form-label">Nome Completo</label>
+                    <input type="text" class="form-control" name="Nome" id="Nome" placeholder="Digite o nome do responsável pela contratação" autocomplete="off">
+                </div>
+                <div class="form-group col-24 offset-md-4 col-md-16">
+                    <label for="" class="form-label">E-mail corporativo</label>
+                    <input type="email" class="form-control" name="Email" id="Email" placeholder="Digite o e-mail corporativo" autocomplete="off">
+                </div>
+                <div class="form-group col-24 offset-md-4 col-md-16" id="divCNPJ">
+                    <label for="" class="form-label">CNPJ</label>
+                    <input type="text" class="form-control" name="CNPJ" id="CNPJ" placeholder="00.000.000/0000-00" autocomplete="off">
+                </div>
+                <div class="form-group col-24 col-sm-6">
+                    <label for="" class="form-label">CEP</label>
+                    <div class="input-group" id="divCEP">
+                        <input type="text" class="form-control" name="CEP" id="CEP" placeholder="00000-000" autocomplete="off">
+                        <div class="input-group-append">
+                            <button class="btn btn-default btn-sm" type="button" id="btnBuscaCEP"><span class="icon icon-magnifying-glass"></span></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-24 col-sm-18">
+                    <label for="" class="form-label">Endereço</label>
+                    <input type="text" class="form-control" name="Endereco" id="Endereco" placeholder="Endereço" autocomplete="off">
+                </div>
+                <div class="form-group col-24 col-sm-9">
+                    <label for="" class="form-label">Bairro</label>
+                    <input type="text" class="form-control" name="Bairro" id="Bairro" placeholder="Bairro" autocomplete="off">
+                </div>
+                <div class="form-group col-14 col-sm-9">
+                    <label for="" class="form-label">Cidade</label>
+                    <input type="text" class="form-control" name="Cidade" id="Cidade" placeholder="Cidade" autocomplete="off">
+                </div>
+                <div class="form-group col-10 col-sm-6">
+                    <label for="" class="form-label">Estado</label>
+                    <select class="custom-select form-control" name="Estado" id="Estado" autocomplete="off">
+                        <option disabled selected>Selecione</option>
+                        @foreach (var estado in estados)
+                        {
+                            <option value="@estado.Uf">@estado.Nome</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </form>
+        <div class="step-btns">
+            <a href="javascript:void(0)" class="btn btn-default" id="btnVoltarEtapa1">Voltar</a>
+            <a href="javascript:void(0);" class="btn btn-navy" id="btnAvancarEtapa3">Avançar</a>
+        </div>
+    </div>
+</div>
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptTipoReserva", new { model = Model }));
+}

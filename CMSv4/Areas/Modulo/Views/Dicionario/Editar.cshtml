@@ -1,0 +1,40 @@
+﻿@model MLModuloDicionario
+@{
+    Layout = null;
+    var grupos = (List<MLDicionarioGrupo>)ViewData["grupos-todas"] ?? new List<MLDicionarioGrupo>();
+    var gruposSelecionadas = (List<string>)ViewData["grupos-selecionadas"] ?? new List<string>();
+}
+
+<div class="form-group col-md-12">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" maxlength="100" id="Titulo" placeholder="@T("Título")" value="@Model.Titulo">
+</div>
+
+<div class="form-group col-md-12">
+    <label>@T("Grupos")</label><br />
+    <select name="Grupos" multiple="multiple">
+        @foreach (var grupo in grupos)
+        {
+            <option value="@grupo.Codigo" @(gruposSelecionadas.Find(o => o == grupo.Codigo.ToString()) != null ? "selected" : "")>@grupo.Nome</option>
+        }
+    </select>
+</div>
+
+<div class="form-group col-md-12">
+   @Html.CheckBox("IsOrdem", (Model.IsOrdem.HasValue ? Model.IsOrdem.Value : true)) <label for="IsOrdem">@T("Ordem Alfabetica")</label>
+</div>
+
+<script>
+    var settings = $('#propriedade').validate().settings;
+
+    $.extend(true, settings, {
+        rules: {
+            "Titulo": { required: true, maxlength: 100 }
+        }
+    });
+
+    $('select[name=Grupos]').multiselect({
+        includeSelectAllOption: true,
+        nonSelectedText: '@T("Todas")'
+    });
+</script>

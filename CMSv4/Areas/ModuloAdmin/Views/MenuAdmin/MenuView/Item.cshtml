@@ -1,0 +1,197 @@
+﻿@model Framework.Utilities.MLMenuModuloView
+
+@{
+    var portal = PortalAtual.Obter;
+    var urlControler = string.Format("/cms/{0}/MenuAdmin", portal.Diretorio);
+    var urlLista = urlControler + "/ListarMenuView";
+    var urlListaMenuView = urlControler + "/MenuView";
+    var urlSalvar = urlControler + "/MenuViewItem";
+    var exemploJavaScript = "@helper Javascript(MLPortal portal)\n{\n    <script type=\"text/javascript\">\n        //Código em java script aqui    \n    </script>\n}\n@{\n    BLConteudo.AdicionarJavaScript\n    (\n        Javascript(portal).ToHtmlString(), \n        false\n    );\n}";
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/pop_mail" /> @TAdm("Menu - View")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlListaMenuView">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" action="@urlSalvar">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" name="nomeAntigo" value="@Model.Nome" />
+
+            @*NOME*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control maxlength" name="Nome" value="@Model.Nome" maxlength="100" autofocus>
+                <span class="help-block"><small>@TAdm("Utilize apenas letras e números (sem acentuação e espaço)")</small></span>
+            </div>
+
+            @*CONTEÚDO*@
+            <div class="form-group col-md-12">
+                <label>@TAdm("View")</label>
+                <textarea data-editor="html" name="View" style="height: 400px; width: 100%;">@Model.View</textarea>
+            </div>
+
+            @*SCRIPT PERSONALIZADO*@
+            <div class="form-group col-md-12 collapseJQ">
+                <a data-toggle="collapse" data-parent="#accordion" href="#divScriptEdicao" class="collapsed" id="aScrpt">
+                    <i class="fa fa-chevron-up"></i> Script
+                </a>
+
+                <a href="#" id="aInfo" class="glyphicon glyphicon-question-sign" data-toggle="modal" data-target="#modalAjuda"></a>
+            </div>
+
+            <div class="form-group col-md-12 clearfix clearfix collapse" id="divScriptEdicao" aria-expanded="false" aria-controls="divScriptEdicao" style="height: auto;">
+                <textarea name="Script" id="Script" style="height: 400px; width: 100%;">@Model.Script</textarea>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal modal-flex fade in" id="modalAjuda" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="flexModalLabel">Menu - View</h4>
+            </div>
+            <div class="modal-body">
+                <p>Em alguns casos, pode ser necessário utilizar um script customizado para o menu, nesse caso, adicione abaixo o script que deseja carregar para esse menu.</p>
+
+                <textarea data-editor="html" name="Sample" id="Sample" style="height: 250px; width: 100%;">@exemploJavaScript</textarea>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section scripts{
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script src="/Content/js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+
+    <script type="text/javascript">
+        //o ace editor está armazenado numa variável para que não perca a sessão e assim seja possível sua atualização
+        var editor;
+        var editorSample;
+
+        $(document).ready(function () {
+            //o editor não atualiza width se o componente estiver escondido
+            setTimeout(function () {
+                $(".ace_editor").css("width", "100%");
+            }, 1000);
+
+            @if (Model.Codigo.HasValue && !string.IsNullOrWhiteSpace(Model.Script)){
+                @:$("#aScrpt").click();
+            }
+        });
+
+        $('.glyphicon-question-sign').popover();
+
+        $(".maxlength").maxlength({
+            appendToParent: true,
+            alwaysShow: true,
+            warningClass: "label green",
+            limitReachedClass: "label orange"
+        });
+
+        $('form').validate({
+            onkeyup: false,
+            rules: {
+                Nome: {
+                    required: true,
+                    regex: "^[a-zA-Z][a-zA-Z0-9\-\_]+$",
+                    remote: {
+                        url: "/cms/@portal.Diretorio/MenuAdmin/MenuViewValidarNome",
+                        type: "post",
+                        async: false,
+                        loadingPanel: false,
+                        data: {
+                            codigo: function () {
+                                return $('input[name=Codigo]').val();
+                            },
+                            nome: function () {
+                                return $('input[name=Nome]').val();
+                            }
+                        }
+                    }
+                },
+                View: { required: true }
+            },
+            messages: {
+                Nome:{
+                    regex: "@TAdm("O nome do arquivo conter apenas caracteres e/ou números")",
+                    remote: "@TAdm("Já existe um arquivo com esse nome.")",
+                }
+            }
+        });
+
+        $('#divScriptEdicao').on('shown.bs.collapse', function (e) {
+            //abre editor, por problema do plugin ele não estava atualizando o conteúdo do editor
+
+            //solução:
+            setTimeout(function () {
+                editor.resize();
+                editor.renderer.updateFull();
+            }, 400);
+        })
+
+        //ativar ace editor
+        var textarea = $("#Script");
+        var editDiv = $('<div>', {
+            position: 'absolute',
+            width: textarea.width(),
+            height: textarea.height(),
+            'class': textarea.attr('class')
+        }).insertBefore(textarea);
+
+        //textarea.val(val);
+        textarea.css('visibility', 'hidden');
+        textarea.css('display', 'none');
+
+        editor = ace.edit(editDiv[0]);
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setValue(textarea.val(), 1);
+        editor.getSession().setMode("ace/mode/html");
+
+        // copy back to textarea on form submit...
+        editor.on("blur", function () {
+            textarea.val(escape(editor.getSession().getValue()));
+        });
+
+        textarea.closest('form').submit(function () {
+            textarea.val(escape(editor.getSession().getValue()));
+        });
+
+        //abrir/fechar edicao de html
+        $(".collapseJQ a").click(function () {
+            var i = $(this).find("i");
+            if (i.hasClass("fa-chevron-up")) {
+                i.addClass("fa-chevron-down");
+                i.removeClass("fa-chevron-up");
+            }
+            else {
+                i.removeClass("fa-chevron-down");
+                i.addClass("fa-chevron-up");
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

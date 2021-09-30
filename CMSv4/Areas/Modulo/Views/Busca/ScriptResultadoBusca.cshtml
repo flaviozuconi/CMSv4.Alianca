@@ -1,0 +1,23 @@
+﻿@model MLModuloBusca
+@{
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $(".btn-action").click(function () {
+        var $this = $(this);
+        $.get("@Portal.UrlCms(portal)/Busca/ListarPublicoAjax", { q: $("input[name=TermoBusca]").val(), p: $("input[name=PaginacaoBusca]").val(), t: $("input[name=QtdePaginaBusca]").val() }, function (data) {
+            if (data.success) {
+                $(".post-box").last().after(data.html);
+
+                if (($("input[name=PaginacaoBusca]").val() * $("input[name=QtdePaginaBusca]").val()) >= parseInt($("input[name=TotalBusca]").val())) {
+                    $this.hide();
+                }
+                else {
+                    $this.show();
+                }
+
+                $("input[name=PaginacaoBusca]").val(parseInt($("input[name=PaginacaoBusca]").val()) + 1);
+            }
+        });
+    });
+</script>

@@ -1,0 +1,14 @@
+﻿@model List<MLModulo>
+@{
+    var portal = PortalAtual.Obter;
+}
+<div id="cms-ac-rep-@ViewData["repositorio"]" class="cms-ac-empty">
+    <select name="modulo" onchange="novoModulo(@ViewData["codigoPagina"], @ViewData["repositorio"], this.value, '@portal.Diretorio', this);">
+        <option value="">- @TAdm("escolha um módulo") -</option>
+        @foreach (var item in Model)
+        {
+            <option value="@item.Codigo">@item.Nome</option>
+        }
+    </select>
+    <a href="#" onclick="colarModulo(@ViewData["codigoPagina"], @ViewData["Repositorio"],'@portal.Diretorio',this,'');" rel="colar" style="display: none!important;">@TAdm("Colar Aqui")</a>
+</div>

@@ -1,0 +1,105 @@
+﻿@using VM2.PageSpeed.Model
+
+@model MLPageSpeedViewModel
+
+<main class="main">
+    <div class="portlet portlet-dark-blue portlet-score">
+
+        <div class="portlet-heading"><div class="portlet-title"><h4><img src="~/iconpack.axd/16/chart_bar" /> @TAdm("Performance")</h4></div>
+            <div class="portlet-widgets">
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="container-fluid">
+            <ul class="category-tabs" role="tablist">
+                <li class="category-tabs--item active" role="presentation">
+                    <a href="#performance" aria-controls="performance" role="tab" data-toggle="tab">
+                        <input id="knobPerformance" class="knob" data-fgColor="@Model.Performance.ScoreColor" data-thickness=".2" readonly value="@Model.Performance.Score" data-width="90" data-height="90" data-linecap="round">
+                        <p><strong>Performance</strong></p>
+                    </a>
+                </li>
+                <li class="category-tabs--item" role="presentation">
+                    <a href="#accessibility" aria-controls="accessibility" role="tab" data-toggle="tab">
+                        <input id="knobAccessibility" class="knob" data-fgColor="@Model.Accessibility.ScoreColor" data-thickness=".2" readonly value="@Model.Accessibility.Score" data-width="90" data-height="90" data-linecap="round">
+                        <p><strong>Accessibility</strong></p>
+                    </a>
+                </li>
+                <li class="category-tabs--item" role="presentation">
+                    <a href="#practices" aria-controls="practices" role="tab" data-toggle="tab">
+                        <input id="knobPractices" class="knob" data-fgColor="@Model.BestPractices.ScoreColor" data-thickness=".2" readonly value="@Model.BestPractices.Score" data-width="90" data-height="90" data-linecap="round">
+                        <p><strong>Best Practices</strong></p>
+                    </a>
+                </li>
+                <li class="category-tabs--item" role="presentation">
+                    <a href="#seo" aria-controls="seo" role="tab" data-toggle="tab">
+                        <input id="knobSeo" class="knob" data-fgColor="@Model.Seo.ScoreColor" data-thickness=".2" readonly value="@Model.Seo.Score" data-width="90" data-height="90" data-linecap="round">
+                        <p><strong>SEO</strong></p>
+                    </a>
+                </li>
+            </ul>
+            <div class="text-center">
+                <div class="score">
+                    <div class="score-item">Score scale:</div>
+                    <div class="score-item"><span class="score-color red"></span>0 - 49</div>
+                    <div class="score-item"><span class="score-color yellow"></span>50 - 89</div>
+                    <div class="score-item"><span class="score-color green"></span>90 - 100</div>
+                </div>
+            </div>
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="performance">
+                    @{ Html.RenderPartial("_Performance", Model); }
+                </div>
+
+                <div role="tabpanel" class="tab-pane" id="accessibility">
+                    @{ Html.RenderPartial("_Accessibility", Model); }
+                </div>
+                
+                <div role="tabpanel" class="tab-pane" id="practices">
+                    @{ Html.RenderPartial("_BestPractices", Model); }
+                </div>
+                <div role="tabpanel" class="tab-pane" id="seo">
+                    @{ Html.RenderPartial("_Seo", Model); }
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section head
+{
+    <link href="~/Content/css/pagespeed/bootstrap-custom.css" rel="stylesheet" />
+    <link href="~/Content/css/pagespeed/lighthouse.css" rel="stylesheet" />
+
+    <style type="text/css">
+        .row-bottom-space {
+            margin-bottom: 40px;
+        }
+
+        .pagespeed-progress {
+            height: 5px;
+            margin-bottom: 0;
+            margin-right: 10px;
+            border-radius: 0;
+            background-color: white;
+            -webkit-box-shadow: none;
+            width: 25%;
+        }
+
+        .pagespeed-bar {
+            float:right;
+        }
+    </style>
+}
+
+@section scripts
+{
+    <script src="~/Content/js/plugins/jquery-knob/jquery.knob.min.js"></script>
+    <script src="~/Content/js/pagespeed/pagespeed.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".knob").knob();
+        });
+    </script>
+}

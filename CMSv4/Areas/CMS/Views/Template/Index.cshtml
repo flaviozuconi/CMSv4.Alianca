@@ -1,0 +1,88 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    var urlEditar = string.Format("/cms/{0}/template/item", portal.Diretorio);
+    var salvo = (bool?)TempData["Salvo"] ?? false;
+}
+
+    <div class="portlet portlet-dark-blue">
+        <div class="portlet-heading"><div class="portlet-title"><h4><img src="~/iconpack.axd/16/layout_content" /> @TAdm("Templates")</h4></div>
+            <div class="portlet-widgets">
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                { <a class="btn btn-green" href="@Request.Url.AbsolutePath/item">@TAdm("Adicionar")</a> }
+                @Helpers.BotaoExcluir(T("Excluir"))
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="portlet-body">
+            @if (salvo)
+            {
+                <div class="alert alert-success">
+                    @TAdm("Registro salvo com sucesso!")
+                </div>
+            }
+
+            @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), string.Format("/cms/{0}/template/excluir", portal.Diretorio), false)
+
+            <p>@TAdm("Templates determinam a estrutura que os conteúdos serão apresentados nas páginas do portal. Os arquivos são armazenados físicamente na pasta de arquivos do portal.")</p>
+
+            <div class="table-responsive">
+                <div id="toolbar"></div>
+                <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                    <thead>
+                        <tr>
+                            <th style="width: 75px;text-align: center;"></th>
+                            <th>@TAdm("Nome")</th>
+                            <th style="width: 50px;">@TAdm("Excluir")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+@section scripts {
+    <script type="text/javascript">
+        function callbackGrid() {
+            if ($.fn.dataTable.isDataTable('#lista')) {
+                $('#lista').DataTable().destroy();
+            }
+
+            criarGrid();
+        }
+
+        $(document).ready(function () {
+            criarGrid();
+        });
+
+        function criarGrid() {
+            $("#painelExcluir").hide();
+
+            //DataTables Initialization
+            $('#lista').dataTable(
+                {
+                    "ajax": "@string.Format("/cms/{0}/template/listajson", portal.Diretorio)",
+                    "columnDefs": [
+                        { "className": "text-center", "targets": 0 }
+                    ],
+                    "serverSide": false,
+                    "iDisplayLength": 20,
+                    "columns": [{
+                    "data": "Imagem",
+                    "render": function (data, type, row) {
+                        if (data == null) { data = ''; }
+                            if(data == '') {
+                                return '<a href="@urlEditar.TrimEnd('/')/' + row.Codigo + '"></a>';
+                            }
+
+                            return '<a href="@urlEditar.TrimEnd('/')/' + row.Codigo + '"><img width="50" src="' + data + '?q=@System.Guid.NewGuid().ToString()" /></a>';
+                        }
+                    },
+                    @Helpers.ColunaEditar("Nome", urlEditar, "Codigo"),
+                    @Helpers.ColunaExcluir("Codigo")
+                ]
+                }
+            );
+        }
+    </script>
+}

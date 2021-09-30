@@ -1,0 +1,10 @@
+﻿@model List<MLFeeds>
+@foreach (var item in Model)
+{
+    <li>
+        <a href="@Portal.ResolveUrl(item.Link)" class="block" target="_blank">
+            <i><span class="icon icon-social @item.Class"></span> @item.Data.ToShortDateString()</i>
+            @Html.Raw(item.Mensagem)
+        </a>
+    </li>
+}

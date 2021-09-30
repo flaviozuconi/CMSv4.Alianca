@@ -1,0 +1,144 @@
+﻿@model MLModuloRedeSocial
+@{    
+    Layout = "";
+    var portal = BLPortal.Atual;
+    var views = new List<string> { "Destaque", "Lista" };
+    var IsFacebook = !Model.IsFacebook.HasValue || Model.IsFacebook.Value;
+    var IsTwitter = !Model.IsTwitter.HasValue || Model.IsTwitter.Value;
+    var IsLinkedin = !Model.IsLinkedin.HasValue || Model.IsLinkedin.Value;
+    
+}
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label>@T("Visualização")</label>
+        <select name="NomeView" class="form-control" id="NomeView">
+            <option value="" selected>@T("Selecione")</option>
+            @foreach (var item in views)
+            {
+                <option value="@item" @(item == Model.NomeView ? "selected" : "")>@item</option>
+            }
+        </select>
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Título")</label>
+        <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Título")" value="@Model.Titulo">
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="form-group col-md-4">
+        <label>@T("Quantidade")</label>
+        <input type="text" class="form-control" name="Quantidade" maxlength="4" value="@Model.Quantidade" onkeypress="return somenteNumeros(event);">
+    </div>
+
+    <div class="form-group col-md-16">
+        <label>@T("Url Lista")</label>
+        <input type="text" class="form-control" name="UrlLista" id="UrlLista" placeholder="@T("Url Lista")" value="@Model.UrlLista">
+        @Helpers.BuscarPaginas("UrlLista", portal.Diretorio, portal.Codigo)
+    </div>
+</div>
+
+<div class="row">
+    
+
+    <div class="form-group col-md-8">
+        <input type="checkbox" class="redesocial" data-redesocial="facebook" name="IsFacebook" id="IsFacebook" value="true" @(IsFacebook ? "checked" : "") />
+        <label for="IsFacebook">@T("Facebook")</label>
+    </div>
+    <div class="form-group col-md-8">
+        <input type="checkbox" class="redesocial" data-redesocial="twitter" name="IsTwitter" id="IsTwitter" value="true" @(IsTwitter ? "checked" : "") />
+        <label for="IsTwitter">@T("Twitter")</label>
+    </div>
+
+    <div class="form-group col-md-8">
+        <input type="checkbox" class="redesocial" data-redesocial="linkedin" name="IsLinkedin" id="IsLinkedin" value="true" @(IsLinkedin ? "checked" : "") />
+        <label for="IsLinkedin">@T("Linkedin")</label>
+    </div>
+</div>
+
+<div class="row">
+    <div class="form-group col-md-4">
+        <label>@T("Limite")</label>
+        <input type="text" class="form-control" name="LimiteChar" maxlength="5" value="@Model.LimiteChar">
+    </div>
+</div>
+
+<div class="row facebook">
+    <div class="form-group col-md-24">
+        <label>@T("Dados Facebook")</label>
+    </div>
+
+    <div class="form-group col-md-8">
+        <label>@T("Página")</label>
+        <input type="text" class="form-control" data-redesocial="facebook" name="IdPagina" id="IdPagina" placeholder="@T("Página")" value="@Model.IdPagina">
+    </div>
+
+    <div class="form-group col-md-8">
+        <label>@T("AppID")</label>
+        <input type="text" class="form-control" data-redesocial="twitter" name="FaceAppID" id="FaceAppID" placeholder="@T("AppID")" value="@Model.FaceAppID">
+    </div>
+
+    <div class="form-group col-md-8">
+        <label>@T("AppID Secret")</label>
+        <input type="text" class="form-control" data-redesocial="linkedin" name="FaceAppIDSecret" id="FaceAppIDSecret" placeholder="@T("AppID Secret")" value="@Model.FaceAppIDSecret">
+    </div>
+</div>
+<div class="row twitter">
+    <div class="form-group col-md-24">
+        <label>@T("Dados Twitter")</label>
+    </div>
+    <div class="form-group col-md-10">
+        <label>@T("Página")</label>
+        <input type="text" class="form-control" name="TwitterPagina" id="TwitterPagina" placeholder="@T("Página")" value="@Model.TwitterPagina">
+    </div>
+    <div class="form-group col-md-14">
+        <label>@T("Consumer")</label>
+        <input type="text" class="form-control" name="TwitterConsumer" id="TwitterConsumer" placeholder="@T("Consumer")" value="@Model.TwitterConsumer">
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Consumer Secret")</label>
+        <input type="text" class="form-control" name="TwitterConsumerSecret" id="TwitterConsumerSecret" placeholder="@T("Consumer Secret")" value="@Model.TwitterConsumerSecret">
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Token")</label>
+        <input type="text" class="form-control" name="TwitterToken" id="TwitterToken" placeholder="@T("Token")" value="@Model.TwitterToken">
+    </div>
+    <div class="form-group col-md-24">
+        <label>@T("Token Secret")</label>
+        <input type="text" class="form-control" name="TwitterTokenSecret" id="TwitterTokenSecret" placeholder="@T("Token Secret")" value="@Model.TwitterTokenSecret">
+    </div>
+</div>
+<div class="form-group col-md-24 linkedin">
+    <div class="form-group col-md-24">
+        <label>@T("Dados Linkedin")</label>
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Company")</label>
+        <input type="text" class="form-control" name="LinkedinCompany" id="LinkedinCompany" placeholder="@T("Company")" value="@Model.LinkedinCompany">
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Token")</label>
+        <input type="text" class="form-control" name="LinkedinToken" id="LinkedinToken" placeholder="@T("Token")" value="@Model.LinkedinToken">
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    var facebook = '@(IsFacebook)';
+    var twitter = '@(IsTwitter)';
+    var linkedin = '@(IsLinkedin)';
+
+    if (facebook == 'False') $('.facebook').hide();
+    if (twitter == 'False') $('.twitter').hide();
+    if (linkedin == 'False') $('.linkedin').hide();
+
+    $('.redesocial').on("change", function (event) {        
+        if ($(this).prop("checked"))
+            $('.' + $(this).data("redesocial")).show();
+        else
+            $('.' + $(this).data("redesocial")).hide();
+    });
+
+</script>

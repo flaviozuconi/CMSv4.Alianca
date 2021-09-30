@@ -1,0 +1,15 @@
+﻿@model MLCliente
+
+@{
+    var modulo = (MLModuloLogin)ViewBag.modulo ?? new MLModuloLogin();
+    var portal = BLPortal.Atual;
+    var urlLogin = !string.IsNullOrEmpty(modulo.UrlPaginaPerfil) ? modulo.UrlPaginaPerfil : "javascript:;";
+}
+
+@if (Model != null && Model.Codigo.HasValue)
+{
+    <div class="welcome">
+        <span class="mensagem">Bem-vindo, <strong>@Model.Nome</strong></span>
+        <a href="@Url.Action("Sair", "ModuloLogin")" class="logout">Sair</a>
+    </div>
+}

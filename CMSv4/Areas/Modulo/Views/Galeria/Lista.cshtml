@@ -1,0 +1,40 @@
+﻿@model MLModuloGaleriaMultimidia
+@{
+    if (Model.ArquivosGaleria == null)
+    {
+        Model.ArquivosGaleria = new List<MLGaleriaMultimidiaArquivo>();
+    }
+
+    var portal = BLPortal.Atual;
+    var tipos = (List<MLGaleriaMultimidiaTipo>)ViewBag.Tipos ?? new List<MLGaleriaMultimidiaTipo>();
+    var msgHtml5 = T("Seu navegador não tem suporte para vídeo HTML5.");
+    var tiposDisponiveis = tipos.FindAll(a => Model.ArquivosGaleria.Exists(b => b.Tipo == a.Codigo));
+}
+
+<div class="mgutter-b-lg audio-featured">
+    <h2>
+        @Model.Titulo
+    </h2>
+
+    @foreach (var item in Model.ArquivosGaleria)
+    {
+        
+        <div class="audio-featured--body">
+            @{var arquivo = (!string.IsNullOrEmpty(item.Arquivo) ? string.Concat(Portal.Url(), BLConfiguracao.Pastas.ModuloGaleria(portal.Diretorio), "/", item.CodigoGaleria, "/", item.Arquivo) : "");}
+            <audio src="@arquivo" type="audio/mp3" type="audio/mp3" controls="controls" class="audio-player"></audio>
+            <div class="audio--caption">
+                <h3 class="title">@item.Texto</h3>
+            </div>
+        </div>
+
+        
+                }
+    @if (!string.IsNullOrEmpty(Model.UrlLista))
+    {
+        
+        <div class="text-right">
+            <a href="@Model.UrlLista" class="btn btn-default">@T("Ver Mais")</a>
+        </div>
+    }
+    
+</div>

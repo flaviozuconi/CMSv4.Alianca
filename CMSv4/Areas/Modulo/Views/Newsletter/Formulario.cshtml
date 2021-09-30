@@ -1,0 +1,23 @@
+﻿@model MLModuloNewsletter
+
+<div class="panel newsletter">
+    <div class="panel-heading">
+        <h3>
+            <i class="fa fa-envelope"></i><span class="tituloJQ">@Model.Titulo</span>
+        </h3>
+    </div>
+    <div class="panel-body">
+        <form class="form-inline" id="newsletter_@Model.Repositorio" method="post" name="newsletter_@Model.Repositorio">
+            @Html.AntiForgeryToken()
+            <input type="text" required id="nome" name="nome" class="form-control" placeholder="@T("Digite seu nome completo")" title="@T("Digite seu nome completo")">
+            <input type="email" required id="email" name="email" class="form-control" placeholder="@T("Digite seu e-mail")" title="@T("Digite seu e-mail")">
+            <input type="submit" value="Ok!" class="btn btn-info" />
+        </form>
+
+        @{
+            
+            BLConteudo.AdicionarJavaScript(new MvcHtmlString(@"<script src=""/Content/js/plugins/validate/jquery.validate.js""></script>"));
+            BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+        }
+    </div>
+</div>

@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2BAD5B29-1C5F-4FC9-9A81-15D76D0E4F17}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CMSv4.Model</RootNamespace>
+    <AssemblyName>CMSv4.Model</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>CMSv4.ModelKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\VM2.PageSpeed.1.0.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Mvc, Version=4.0.0.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.30506.0\lib\net40\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VM2.PageSpeed, Version=1.0.0.3, Culture=neutral, PublicKeyToken=e4f822bab11e396f, processorArchitecture=MSIL">
+      <HintPath>..\packages\VM2.PageSpeed.1.0.0.3\lib\net45\VM2.PageSpeed.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Alianca\Site\MLSchedule.cs" />
+    <Compile Include="Base\AdminCommon.cs" />
+    <Compile Include="Base\Agrupador\MLAgrupadorPublico.cs" />
+    <Compile Include="Base\Agrupador\MLCategoriaAgrupador.cs" />
+    <Compile Include="Base\Agrupador\MLModuloAgrupador.cs" />
+    <Compile Include="Base\Aniversariantes\MLModuloAniversariante.cs" />
+    <Compile Include="Base\ArquivosRestritos\MLArquivoRestrito.cs" />
+    <Compile Include="Base\ArquivosRestritos\MLArquivoRestritoCategoria.cs" />
+    <Compile Include="Base\ArquivosRestritos\MLArquivoRestritoCategoriaGrupoCliente.cs" />
+    <Compile Include="Base\ArquivosRestritos\MLArquivoRestritoTipo.cs" />
+    <Compile Include="Base\ArquivosRestritos\MLModuloArquivoRestrito.cs" />
+    <Compile Include="Base\Arquivos\MLArquivo.cs" />
+    <Compile Include="Base\Arquivos\MLArquivoCategoria.cs" />
+    <Compile Include="Base\Arquivos\MLArquivoCategoriaGrupoCliente.cs" />
+    <Compile Include="Base\Arquivos\MLArquivoLista.cs" />
+    <Compile Include="Base\Arquivos\MLArquivoPasta.cs" />
+    <Compile Include="Base\Arquivos\MLModuloArquivos.cs" />
+    <Compile Include="Base\Assuntos\MLAssuntos.cs" />
+    <Compile Include="Base\Assuntos\MLAssuntosXPaginas.cs" />
+    <Compile Include="Base\Banner\MLBanner.cs" />
+    <Compile Include="Base\Banner\MLBannerArquivo.cs" />
+    <Compile Include="Base\Banner\MLModuloBanner.cs" />
+    <Compile Include="Base\Busca\MLBusca.cs" />
+    <Compile Include="Base\Busca\MLBuscaResultado.cs" />
+    <Compile Include="Base\Busca\MLModuloBusca.cs" />
+    <Compile Include="Base\Cliente\MLCliente.cs" />
+    <Compile Include="Base\Cliente\MLClienteAreaInteresse.cs" />
+    <Compile Include="Base\Cliente\MLClienteAreaInteresseRelacionamento.cs" />
+    <Compile Include="Base\Cliente\MLClienteGenero.cs" />
+    <Compile Include="Base\Cliente\MLClienteIdioma.cs" />
+    <Compile Include="Base\Cliente\MLClienteIdiomaNivelRelacionamento.cs" />
+    <Compile Include="Base\Cliente\MLClienteMembro.cs" />
+    <Compile Include="Base\Cliente\MLClienteNivelIdioma.cs" />
+    <Compile Include="Base\Cliente\MLClienteXAgrupador.cs" />
+    <Compile Include="Base\Cliente\MLGrupoCliente.cs" />
+    <Compile Include="Base\Colaborador\MLColaborador.cs" />
+    <Compile Include="Base\Colaborador\MLModuloColaborador.cs" />
+    <Compile Include="Base\Colaborador\MLRegiao.cs" />
+    <Compile Include="Base\Compartilhar\MLModuloCompartilhar.cs" />
+    <Compile Include="Base\Conteudo\ExtensoesArquivoEditavel.cs" />
+    <Compile Include="Base\Conteudo\MLConteudo.cs" />
+    <Compile Include="Base\Conteudo\MLconteudoViewModel.cs" />
+    <Compile Include="Base\Conteudo\MLModuloConteudo.cs" />
+    <Compile Include="Base\Conteudo\MLSeo.cs" />
+    <Compile Include="Base\DataTableFilter\MLDataTableFilter.cs" />
+    <Compile Include="Base\Dicionario\MLDicionarioGrupo.cs" />
+    <Compile Include="Base\Dicionario\MLDicionarios.cs" />
+    <Compile Include="Base\Dicionario\MLModuloDicionario.cs" />
+    <Compile Include="Base\Enquete\MLEnquete.cs" />
+    <Compile Include="Base\Enquete\MLEnqueteOpcao.cs" />
+    <Compile Include="Base\Enquete\MLEnqueteVoto.cs" />
+    <Compile Include="Base\Enquete\MLModuloEnquete.cs" />
+    <Compile Include="Base\Eventos\MLEvento.cs" />
+    <Compile Include="Base\Eventos\MLEventoGaleria.cs" />
+    <Compile Include="Base\Eventos\MLEventoLista.cs" />
+    <Compile Include="Base\Eventos\MLEventoParticipante.cs" />
+    <Compile Include="Base\Eventos\MLModuloEventos.cs" />
+    <Compile Include="Base\Eventos\MLModuloEventosHistorico.cs" />
+    <Compile Include="Base\FaleConosco\MLFaleConoscoAssunto.cs" />
+    <Compile Include="Base\FaleConosco\MLFaleConoscoFormulario.cs" />
+    <Compile Include="Base\FaleConosco\MLFaleConoscoModelo.cs" />
+    <Compile Include="Base\FaleConosco\MLFaleConoscoModeloEmail.cs" />
+    <Compile Include="Base\FaleConosco\MLFaleConoscoPadrao.cs" />
+    <Compile Include="Base\FaleConosco\MLModuloFaleConosco.cs" />
+    <Compile Include="Base\FaleConosco\MLModuloFaleConoscoHistorico.cs" />
+    <Compile Include="Base\Faq\MLFaq.cs" />
+    <Compile Include="Base\Faq\MLFaqCategoria.cs" />
+    <Compile Include="Base\Faq\MLModuloFaq.cs" />
+    <Compile Include="Base\Funcionalidade\MLFuncionalidade.cs" />
+    <Compile Include="Base\GaleriaMultimidia\MLGaleriaMultimidia.cs" />
+    <Compile Include="Base\GaleriaMultimidia\MLGaleriaMultimidiaArquivo.cs" />
+    <Compile Include="Base\GaleriaMultimidia\MLModuloGaleriaMultimidia.cs" />
+    <Compile Include="Base\Galeria\MLGaleriaArquivo.cs" />
+    <Compile Include="Base\Grupo\MLGrupo.cs" />
+    <Compile Include="Base\Grupo\MLGrupoPermissao.cs" />
+    <Compile Include="Base\Grupo\MLGrupoViewModel.cs" />
+    <Compile Include="Base\Html\MLModuloHtml.cs" />
+    <Compile Include="Base\Html\MLModuloHtmlHistorico.cs" />
+    <Compile Include="Base\Layout\MLLayout.cs" />
+    <Compile Include="Base\Listas\MLCompartilharEmail.cs" />
+    <Compile Include="Base\Listas\MLListaConfig.cs" />
+    <Compile Include="Base\Listas\MLListaConteudo.cs" />
+    <Compile Include="Base\Listas\MLListaConteudoPublico.cs" />
+    <Compile Include="Base\Listas\MLListaConteudoSEO.cs" />
+    <Compile Include="Base\Listas\MLModuloLista.cs" />
+    <Compile Include="Base\Login\MLModuloLogin.cs" />
+    <Compile Include="Base\Menu\MLMenuCompletoModulo.cs" />
+    <Compile Include="Base\Menu\MLMenuItemModulo.cs" />
+    <Compile Include="Base\Menu\MLMenuModulo.cs" />
+    <Compile Include="Base\Menu\MLModuloMenu.cs" />
+    <Compile Include="Base\Menu\MLModuloMenuHistorico.cs" />
+    <Compile Include="Base\MLConfiguracao.cs" />
+    <Compile Include="Base\MLJsTree.cs" />
+    <Compile Include="Base\MLModulo.cs" />
+    <Compile Include="Base\MLResultBase.cs" />
+    <Compile Include="Base\ScheduleAdmin\MLScheduleAdminHistorico.cs" />
+    <Compile Include="Base\TakeOrPay\MLModuloTakeOrPay.cs" />
+    <Compile Include="Base\Multimidia\MLModuloMultimidia.cs" />
+    <Compile Include="Base\Multimidia\MLMultimidiaArquivo.cs" />
+    <Compile Include="Base\Multimidia\MLMultimidiaCategoria.cs" />
+    <Compile Include="Base\Multimidia\MLMultimidiaCategoriaGrupoCliente.cs" />
+    <Compile Include="Base\Multimidia\MLMultimidiaPasta.cs" />
+    <Compile Include="Base\Multimidia\MLMultimidiaTipo.cs" />
+    <Compile Include="Base\ProgramacaoNavio\MLProgramacaoNavio.cs" />
+    <Compile Include="Base\Newsletter\MLModuloNewsletter.cs" />
+    <Compile Include="Base\Newsletter\MLModuloNewsletterHistorico.cs" />
+    <Compile Include="Base\Newsletter\MLNewsletter.cs" />
+    <Compile Include="Base\Noticias\MLModuloNoticias.cs" />
+    <Compile Include="Base\Noticias\MLModuloNoticiasHistorico.cs" />
+    <Compile Include="Base\Noticias\MLNoticia.cs" />
+    <Compile Include="Base\Noticias\MLNoticiaCategoria.cs" />
+    <Compile Include="Base\Noticias\MLNoticiaImagem.cs" />
+    <Compile Include="Base\Noticias\MLNoticiaLista.cs" />
+    <Compile Include="Base\Pagina\MLPagina.cs" />
+    <Compile Include="Base\Pagina\MLPaginaAdmin.cs" />
+    <Compile Include="Base\Pagina\MLPaginaCompleta.cs" />
+    <Compile Include="Base\Pagina\MLPaginaEdicaoSimples.cs" />
+    <Compile Include="Base\Pagina\MLPaginaHistorico.cs" />
+    <Compile Include="Base\Pagina\MLPaginaModulo.cs" />
+    <Compile Include="Base\Pagina\MLPaginaPageSpeed.cs" />
+    <Compile Include="Base\Pagina\MLPaginaPermissao.cs" />
+    <Compile Include="Base\Pagina\MLPaginaPermissaoCompleta.cs" />
+    <Compile Include="Base\Pagina\MLPaginaPublico.cs" />
+    <Compile Include="Base\Pagina\MLPaginaSeo.cs" />
+    <Compile Include="Base\Pagina\MLRedirectPortal.cs" />
+    <Compile Include="Base\ProgramacaoNavio\MLProgramacaoNavioHistorico.cs" />
+    <Compile Include="Base\ProgramacaoProposta\MLProgramacaoProposta.cs" />
+    <Compile Include="Base\ProgramacaoProposta\MLProgramacaoPropostaHistorico.cs" />
+    <Compile Include="Base\RedeSocial\MLLinkedin.cs" />
+    <Compile Include="Base\RedeSocial\MLModuloRedeSocial.cs" />
+    <Compile Include="Base\RedeSocial\MLRedeSocial.cs" />
+    <Compile Include="Base\ReplicarArquivo\MLHistoricoReplicacao.cs" />
+    <Compile Include="Base\Resultado\MLModuloResultado.cs" />
+    <Compile Include="Base\Resultado\MLModuloResultadoHistorico.cs" />
+    <Compile Include="Base\Resultado\MLResultado.cs" />
+    <Compile Include="Base\Secao\MLSecao.cs" />
+    <Compile Include="Base\Secao\MLSecaoPermissao.cs" />
+    <Compile Include="Base\TakeOrPay\MLTakeOrPay.cs" />
+    <Compile Include="Base\Telefone\MLModuloTelefone.cs" />
+    <Compile Include="Base\Telefone\MLPaisRegiao.cs" />
+    <Compile Include="Base\Telefone\MLSubRegiao.cs" />
+    <Compile Include="Base\Telefone\MLTelefone.cs" />
+    <Compile Include="Base\Template\MLTemplate.cs" />
+    <Compile Include="Base\Thumb\ThumbModulos.cs" />
+    <Compile Include="Base\Thumb\ThumbResult.cs" />
+    <Compile Include="Base\Thumb\ThumbSpupportedExtensions.cs" />
+    <Compile Include="Base\Youtube\MLYoutube.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FrameworkApplication\FrameworkApplication.csproj">
+      <Project>{124c5d66-b547-4450-bc3b-6c73757f02d1}</Project>
+      <Name>FrameworkApplication</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CMSv4.ModelKey.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
+  </Target>
+</Project>

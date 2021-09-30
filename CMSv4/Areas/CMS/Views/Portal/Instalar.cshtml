@@ -1,0 +1,231 @@
+﻿@model Framework.Utilities.MLPortal
+@{    
+    Layout = "~/areas/cms/views/shared/_masterinternas.cshtml";
+    var tipo = ViewBag.TipoInstalacao != null ? ViewBag.TipoInstalacao : "A";
+    var Isarquivo = ViewBag.Arquivo != null ? true : false;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="portlet portlet-dark-blue">
+            <div class="portlet-body">
+                <form accept-charset="UTF-8" role="form" method="POST" enctype="multipart/form-data">
+                    <fieldset>
+                        <legend class="portlet-dark-blue">@TAdm("Portal")</legend>
+                        <p>@TAdm("Selecione um dos portais cadastrados para iniciar o gerenciamento de conteúdos.")</p>
+                        <div class="col-md-6 form-group">
+                            <label for="nome">@TAdm("Nome")</label>
+                            <input class="form-control" placeholder="@TAdm("Nome")" value="@Model.Nome" name="nome" type="text" maxlength="100"  />
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="diretorio">@TAdm("Diretório")</label>
+                            <input class="form-control jqDiretorio" placeholder="@TAdm("Diretório")" value="@Model.Diretorio" name="diretorio" type="text" maxlength="20"  />
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="url">@TAdm("Domínios")</label>
+
+                            <textarea class="form-control" rows="5" placeholder="@TAdm("www.dominio.com.br")" name="url">@Model.Url</textarea>
+                            <p class="small">@TAdm("Selecione um dos portais cadastrados para iniciar o gerenciamento de conteúdos.")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="col-md-12">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="jqCheckFile" @(Isarquivo ? "checked" : "")>@TAdm("Subir Arquivos Portal")
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 form-group" id="jqFile" style="display: @(Isarquivo ? "block" : "none");">
+                                <label for="arquivosPortals">Arquivos do Portal</label>
+                                <input name="arquivosPortal" type="file" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <fieldset>
+                                <legend class="portlet-dark-blue">@TAdm("Banco de Conteúdo")</legend>
+                                <div class="col-md-10 form-group">
+                                    <label class="radio-inline">
+                                        <input type="radio" class="jqTipo" name="optionTipo" value="A" @(tipo == "A" ? "checked" : "")>@TAdm("Banco Atual")
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" class="jqTipo" name="optionTipo" value="E" @(tipo == "E" ? "checked" : "")>@TAdm("Banco Existente")
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" class="jqTipo" name="optionTipo" value="N" @(tipo == "N" ? "checked" : "")>@TAdm("Criar Novo Banco")
+                                    </label>
+                                </div>
+
+                                <div id="jqDadosBanco" style="display: @(tipo == "A" ? "none" : "block");">
+                                    <div class="col-md-3 form-group">
+                                        <label for="servidorbd">@TAdm("Servidor")</label>
+                                        <input class="form-control jqBD" placeholder="@TAdm("Servidor")" value="@Model.ServidorBD" name="servidorbd" id="servidorbd" type="text" maxlength="100" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="usuariobd">@TAdm("Usuário")</label>
+                                        <input class="form-control jqBD" placeholder="@TAdm("Usuário")" value="@Model.UsuarioBD" name="usuariobd" id="usuariobd" type="text" maxlength="100" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="senhabd">@TAdm("Senha")</label>
+                                        <input class="form-control jqBD" placeholder="@TAdm("Senha")" value="@Model.SenhaBD" name="senhabd" id="senhabd" type="password" maxlength="100" />
+                                    </div>
+                                    <div class="col-md-3 form-group">
+                                        <label for="nomebd">@TAdm("Nome")</label>
+                                        <input class="form-control jqBD" placeholder="@TAdm("Nome")"  value="@Model.NomeBD" name="nomebd" id="nomebd" type="text" maxlength="100" />
+                                    </div>
+                                    <div class="col-md-12 form-group has-error" id="jqErrorConn" style="display: none;">
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6 col-md-offset-6">
+                            <div class="col-md-4">
+                                <input type="submit" class="btn btn-md btn-dark-blue btn-block" value="@TAdm("Salvar")" />
+                            </div>
+                            <div class="col-md-4">
+                                <input type="submit" class="btn btn-md btn-dark-blue btn-block" value="@TAdm("Excluir")" />
+                            </div>
+                            <div class="col-md-4">
+                                <input type="submit" class="btn btn-md btn-dark-blue btn-block" value="@TAdm("Voltar")" />
+                            </div>
+                        </div>
+
+
+                    </fieldset>
+                    <br />
+                    @if (!ViewData.ModelState.IsValid)
+                    { 
+                        @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <!-- PAGE LEVEL PLUGIN SCRIPTS -->
+    <script type="text/javascript">
+
+        $('#jqConn').on("click", function () {
+            testConexao();
+            return false;
+        });
+
+        $('#jqDadosBanco input').on("change", function () {
+            testConexao();
+        });
+
+        function testConexao() {
+
+            var servidor = $('#servidorbd').val();
+            var usuario = $('#usuariobd').val();
+            var senha = $('#senhabd').val();
+            var nomebanco = $('#nomebd').val();
+            var novo = $("input:radio[name=optionTipo]:checked").val() == 'N';
+
+            if (servidor == '' || usuario == '' || senha == '' || nomebanco == '') {
+                callbackConexao(true, "");
+                $('#jqErrorConn').hide();
+                return;
+            }
+
+            var dataSend = {
+                'novo': novo,
+                'servidor': servidor,
+                'usuario': usuario,
+                'senha': senha,
+                'nomebanco': nomebanco
+            };
+            $.ajax({
+                type: 'POST',
+                url: '/portal/ConnectionTest',
+                data: dataSend,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        callbackConexao(true, "");
+                        return true;
+                    }
+                    else {
+                        callbackConexao(false, data.msg);
+                        return false;
+                    }
+                },
+                error: function (data) {
+                    callbackConexao(false, data.error);
+                    return false;
+                }
+            });
+        }
+
+        function callbackConexao(sucess, msg) {
+            $('#jqDadosBanco input').each(function () {
+                if (sucess) {
+                    $(this).closest('.form-group').removeClass('has-error');
+                } else {
+                    $(this).closest('.form-group').addClass('has-error');
+                }
+            });
+
+            if (sucess) {
+                $('#jqErrorConn').html("<span class='help-block'><i class='fa fa-check'></i>@TAdm("Conexão realizada com sucesso!")</span>");
+                $('#jqErrorConn').show();
+                $('#jqErrorConn').removeClass('has-error');
+                $('#jqErrorConn').addClass('has-success');
+            } else {
+                $('#jqErrorConn').html("<span class='help-block'><i class='fa fa-warning'></i>" + msg + "</span>");
+                $('#jqErrorConn').addClass('has-error');
+                $('#jqErrorConn').removeClass('has-success');
+                $('#jqErrorConn').show();
+            }
+
+        }
+
+        $.validator.addMethod("dadosbanco", function (value, element, valida) {
+            if (valida) {
+                var tipo = $("input:radio[name=optionTipo]:checked").val();
+                if (tipo == 'N' || tipo == 'E')
+                    return value != '';
+            }
+            return true;
+
+        }, $.validator.messages.required);
+
+        $('form').validate({
+            rules: {
+                nome: { required: true },
+                diretorio: { required: true, regex: /^[a-zA-Z_\-0-9]+$/ },
+                servidorbd: { dadosbanco: true },
+                usuariobd: { dadosbanco: true },
+                senhabd: { dadosbanco: true },
+                nomebd: { dadosbanco: true },
+                arquivosPortal: { required: true, extension : 'zip|doc' }
+            },
+            messages: {
+                arquivosPortal: {extension: '@TAdm("Por favor selecione um arquivo com extensão zip")'}
+            }
+        });
+
+        $('input:radio[name=optionTipo]').on('change', function (event) {
+            var tipo = $(this).val();
+
+            if (tipo == 'N' || tipo == 'E') {
+                $('#jqDadosBanco').show();
+            } else {
+                $('#jqDadosBanco').hide();
+            }
+        });
+
+        $('#jqCheckFile').on('click', function (event) {
+            
+            if ($(this).is(':checked')) {
+                $('#jqFile').show();
+            } else
+                $('#jqFile').hide();
+        });
+
+
+    </script>
+}

@@ -1,0 +1,94 @@
+﻿@model MLModuloTakeOrPay
+@{ 
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $("#btnBID").click(function () {
+        $('#ModalidadeSelecionada').val("do meu BID")
+
+        $("#divCNPJ").show()
+        $("#CNPJ").attr("disabled", false)
+
+        AvancarEtapa2();
+    });
+
+    $("#btnAvancarEtapa2").click(function () {
+        if ($("#lstNumeroProposta").val() != "") {
+            $('#ModalidadeSelecionada').val("da minha proposta comercial")
+
+            $("#erroNumeroProposta").hide()
+            $("#NumeroProposta").removeClass("is-invalid")
+
+            AvancarEtapa2();
+        }
+        else {
+            $("#erroNumeroProposta").show()
+            $("#NumeroProposta").addClass("is-invalid")
+        }
+
+        $("#divCNPJ").hide()
+        $("#CNPJ").attr("disabled", true)
+    });
+
+    function AvancarEtapa2() {
+        $("#Etapa1").hide()
+        $("#Etapa2").show()
+
+        $("#ProgressoEtapa1").removeClass("active")
+
+        $("#ProgressoEtapa2").removeClass("disabled")
+        $("#ProgressoEtapa2").addClass("active")
+    }
+
+    $("#btnAdicionar").click(function () {
+        let numeroProposta = $("#NumeroProposta").val();
+        let lstnumeroProposta = $("#lstNumeroProposta").val();
+
+        if (lstnumeroProposta.includes(numeroProposta)) {
+            PropostaInvalida();
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/TakeOrPay/isValidNumeroProposta",
+                data: { "numeroProposta": numeroProposta },
+                success: function (data) {
+                    if (data.Sucess == true) {
+                        $("#erroProposta").hide()
+                        $("#NumeroProposta").removeClass("is-invalid")
+
+                        $('#lista').append('<li class="list-propostas--item" id="li-' + numeroProposta + '"><strong>' + numeroProposta + '</strong><a href="javascript:ExcluirLista(' + numeroProposta + ')" class="icon icon-trash"></a></li>');
+
+                        $("#lstNumeroProposta").val(lstnumeroProposta + numeroProposta + ',');
+
+                        $("#erroNumeroProposta").hide()
+                        $("#NumeroProposta").removeClass("is-invalid")
+                        $("#NumeroProposta").val("")
+                    }
+                    else {
+                        PropostaInvalida();
+                    }
+                },
+                error: function (data) {
+                    PropostaInvalida();
+                }
+            });
+
+
+        }
+    });
+
+    function PropostaInvalida() {
+        $("#erroProposta").show()
+        $("#NumeroProposta").addClass("is-invalid")
+    }
+
+    function ExcluirLista(NumeroProposta) {
+        let lstnumeroProposta = $("#lstNumeroProposta").val();
+
+        let newLstnumeroProposta = lstnumeroProposta.replace(NumeroProposta + ',', '');
+        $("#lstNumeroProposta").val(newLstnumeroProposta);
+
+        $("#li-" + NumeroProposta).remove()
+    }
+</script>

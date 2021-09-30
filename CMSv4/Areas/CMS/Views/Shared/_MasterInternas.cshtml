@@ -1,0 +1,146 @@
+﻿@{
+    var isHttps = HttpContext.Current.Request.Url.Scheme == "https";
+    var idioma = BLIdioma.AtualAdm.Sigla.ToLower();
+
+    if (idioma.Equals("en-us"))
+    {
+        idioma = "en";
+    }
+    else if (idioma.Equals("es-mx"))
+    {
+        idioma = "es";
+    }
+    else
+    {
+        idioma = "pt-br";
+    }
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>CMS :: @TAdm("Área Administrativa")</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PACE LOAD BAR PLUGIN - This creates the subtle load bar effect at the top of the page. -->
+    <link href="~/content/css/plugins/pace/pace.min.css" rel="stylesheet">
+    <script data-pace-options='{ "ajax": false }' src="~/content/js/plugins/pace/pace.min.js"></script>
+
+    <!-- GLOBAL STYLES -->
+    <link href="~/content/css/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href='@(isHttps ? "https" : "http")://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel="stylesheet" type="text/css">
+    <link href='@(isHttps ? "https" : "http")://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel="stylesheet" type="text/css">
+    <link href="~/content/icons/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="~/content/icons/lock.png" />
+
+    <link href="~/Content/css/plugins/dropzone/css/dropzone.min.css" rel="stylesheet" />
+
+    <!-- THEME STYLES -->
+    <link href="~/content/css/style.css" rel="stylesheet">
+    <link href="~/content/css/plugins.min.css" rel="stylesheet">
+
+    <link href="~/content/css/plugins/datatables/datatables.min.css" rel="stylesheet" />
+
+    <link href="~/Content/css/plugins/messenger/messenger.min.css" rel="stylesheet">
+    <link href="~/Content/css/plugins/messenger/messenger-theme-flat.min.css" rel="stylesheet">
+
+    <link href="~/Content/css/vm2-custom.css" rel="stylesheet" />
+
+    @RenderSection("head", false)
+
+    <!--[if lt IE 9]>
+        <script src="~/content/js/html5shiv.js"></script>
+        <script src="~/content/js/respond.min.js"></script>
+    <![endif]-->
+
+    <style type="text/css">
+        .pace-done div.row
+        {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        legend
+        {
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+
+    @Helpers.LoadingPanel()
+    @Helpers.PainelAuditoria()
+
+    <div style="margin-top: 5px;">
+        @RenderBody()
+    </div>
+
+    <!-- GLOBAL SCRIPTS -->
+    <script src="~/Content/js/jquery.min.js"></script>
+    <script src="~/content/js/plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-multiselect/bootstrap-multiselect.js"></script>
+    <script src="~/Content/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Content/js/plugins/shiftcheckbox/jquery.shiftcheckbox.js"></script>
+
+    <!-- PopUp / Overlay -->
+    <script src="~/content/js/plugins/popupoverlay/jquery.popupoverlay.js"></script>
+    <script src="~/content/js/plugins/popupoverlay/defaults.js"></script>
+
+    <!-- Dates -->
+    <script src="~/content/js/plugins/daterangepicker/moment.js"></script>
+    <script src="~/Content/js/plugins/moment/moment-with-langs.js"></script>
+    <script src="~/content/js/plugins/daterangepicker/daterangepicker.js"></script>
+
+    <!-- Validate -->
+    <script src="~/Content/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="~/Content/js/plugins/validate/additional-methods.js"></script>
+
+    <!-- DataTables (paging,sorting,theming tables) -->
+    <script src="~/content/js/plugins/datatables/jquery.dataTables.js"></script>
+    <script src="~/content/js/plugins/datatables/datatables-bs3.js"></script>
+
+    <!-- Editors -->
+    <script src="~/Content/js/plugins/ckeditor/ckeditor.js"></script>
+    <script src="~/Content/js/plugins/ckeditor/adapters/jquery.js"></script>
+
+    <!-- HubSpot Messenger -->
+    <script src="~/content/js/plugins/messenger/messenger.min.js"></script>
+    <script src="~/content/js/plugins/messenger/messenger-theme-flat.js"></script>
+
+    <!-- Upload -->
+    <script src="~/Content/js/plugins/dropzone/dropzone.min.js"></script>
+
+    <!-- THEME SCRIPTS -->
+    <script src="~/content/js/flex.min.js"></script>
+
+       <script type="text/javascript">
+           var arquivotraducaodatatable = '/content/js/plugins/datatables/pt_BR.txt';
+        </script>
+
+    @if (!BLIdioma.AtualAdm.Sigla.StartsWith("en"))
+    {
+        <script src="~/Content/js/plugins/validate/messages_pt_br.js"></script>
+    }
+    else
+    {
+        <script src="~/Content/js/plugins/validate/messages_en_us.js"></script>
+    }
+
+    @if (BLIdioma.AtualAdm.Codigo > 1)
+    {
+        <script type="text/javascript">
+            arquivotraducaodatatable = '/content/js/plugins/datatables/@(BLIdioma.AtualAdm.Sigla).txt';
+        </script>
+    }
+
+    <!-- function gerais -->
+    <script src="~/content/js/jq-principal.min.js"></script>
+    <script id="flexInternaJs" src="~/Content/js/flex-internas.js?sigla=@idioma"></script>
+
+    @RenderSection("scripts", false)
+
+</body>
+
+</html>

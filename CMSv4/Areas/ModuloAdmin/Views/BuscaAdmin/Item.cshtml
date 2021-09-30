@@ -1,0 +1,159 @@
+﻿@model MLBusca
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/BuscaAdmin", portal.Diretorio);
+    var listaModulos = (List<MLModulo>)ViewData["listaModulos"] ?? new List<MLModulo>();
+    var listaIdiomas = (List<MLIdioma>)ViewData["listaIdiomas"] ?? new List<MLIdioma>();
+    var listaAgrupadores = (List<MLCategoriaAgrupador>)ViewData["listaAgrupadores"] ?? new List<MLCategoriaAgrupador>();
+    var listas = (List<MLListaConfig>)ViewData["listas"] ?? new List<MLListaConfig>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/advertising" />
+                @TAdm("Páginas de Busca")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" id="formCadastro">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-4">
+                <label>@TAdm("Módulo")</label>
+
+                <select name="CodigoModulo" id="CodigoModulo" class="form-control" @(Model.Codigo.HasValue ? "disabled" : "")>
+
+                    <option value="">- @TAdm("escolha um módulo") -</option>
+
+                    @foreach (var item in listaModulos)
+                    {
+                        <option value="@item.Codigo" @(item.Codigo == Model.CodigoModulo ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Idioma")</label>
+
+                <select name="CodigoIdioma" id="CodigoIdioma" class="form-control">
+
+                    <option value="">- @TAdm("escolha um idioma") -</option>
+
+                    @foreach (var item in listaIdiomas)
+                    {
+                        <option value="@item.Codigo" @( @item.Codigo == Model.CodigoIdioma ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Agrupador")</label>
+
+                <select name="CodigoAgrupador" id="CodigoAgrupador" class="form-control">
+
+                    <option value="">- @TAdm("escolha um agrupador") -</option>
+
+                    @foreach (var item in listaAgrupadores)
+                    {
+                        <option value="@item.Codigo" @( @item.Codigo == Model.CodigoAgrupador ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label>@TAdm("Lista")</label>
+
+                <select name="CodigoLista" id="CodigoLista" class="form-control">
+                    <option value="">- @TAdm("escolha um módulo") -</option>
+
+                    @foreach (var item in listas)
+                    {
+                        <option value="@item.Codigo" @(item.Codigo == Model.CodigoLista ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group col-md-8">
+                <label>@TAdm("Url da Página")</label>
+                <input type="text" class="form-control" name="UrlPagina" id="UrlPagina" maxlength="300" value="@Model.UrlPagina">
+                @Helpers.AutoComplete("ListarPaginaspublicadas", "pagina", "busca", System.Web.Mvc.FormMethod.Post, "Codigo", "Titulo", textExibicao: "Url", portal: portal, idInputTextBox: "UrlPagina", param1: "CodigoIdioma", mascaraValueJson: "/{0}")
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('#formCadastro').submit(function () {
+            var is_valid = false;
+
+            if ($('#formCadastro').valid()) {
+                $.ajax({
+                    url: "/cms/@(portal.Diretorio)/buscaadmin/validarUrl",
+                    async: false,
+                    type: "post",
+                    data: {
+                        Codigo: "@Model.Codigo",
+                        CodigoModulo: function () {
+                            return $("#CodigoModulo option:selected").val();
+                        },
+                        CodigoIdioma: function () {
+                            return $("#CodigoIdioma option:selected").val();
+                        },
+                        CodigoAgrupador: function () {
+                            return $("#CodigoAgrupador option:selected").val();
+                        },
+                        CodigoLista: function () {
+                            return $("#CodigoLista option:selected").val();
+                        }
+                    }, complete: function (data) {
+                        var _parent = $("#CodigoModulo").parent();
+
+                        _parent.removeClass("has-error");
+                        _parent.find(".help-block-custom").remove();
+
+                        if (!data.responseJSON) {
+                            _parent.addClass("has-error");
+                            _parent.append('<span for="CodigoModulo" class="text-red help-block-custom">@TAdm("Já existe um registro para o módulo, idioma, lista e agrupador informado")</span>');
+
+                            is_valid = false;
+                        }
+                        else {
+                            is_valid = true;
+                        }
+                    }
+                });
+            }
+
+            return is_valid;
+        });
+
+        $('#formCadastro').validate({
+            rules: {
+                CodigoModulo: { required: true },
+                CodigoIdioma: { required: true },
+                UrlPagina: { required: true, maxlength: 300 }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

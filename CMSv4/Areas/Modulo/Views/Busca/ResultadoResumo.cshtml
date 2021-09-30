@@ -1,0 +1,88 @@
+﻿@model MLModuloBusca
+@{
+    var portal = BLPortal.Atual;
+    string url = ViewBag.Url;
+    string query = ViewBag.Query;
+    string mensagem = ViewBag.Mensagem;
+    string urlProdutos = ViewBag.UrlProdutos ?? string.Empty;
+    int totalSite = ViewBag.TotalSite ?? 0;
+    int totalProdutos = ViewBag.TotalProdutos ?? 0;
+    
+    List<MLBuscaResultado> resultadosSite = (List<MLBuscaResultado>)ViewBag.ResultadosSite ?? new List<MLBuscaResultado>();
+    List<MLBuscaResultado> resultadosProduto = (List<MLBuscaResultado>)ViewBag.ResultadosProduto ?? new List<MLBuscaResultado>();
+}
+<div class="content--body search-result">
+    @if (!string.IsNullOrEmpty(mensagem))
+    {
+        <p class="help-block">@mensagem</p>
+    }
+    else
+    {
+        if ((totalSite + totalProdutos) > 0)
+        {
+            <div class="col-sm-12">
+                <h1>@T("Site")</h1>
+                @if (resultadosSite.Count > 0)
+                {
+                    foreach (var item in resultadosSite)
+                    {
+                        <div class="post-box">
+                            <a href="@Portal.ResolveUrl(item.Url, portal)" target="_top">
+                                @if (item.Data.HasValue)
+                                {
+                                    <time class="post-date">@item.Data.GetValueOrDefault().ToString(BLTraducao.T("dd/MM/yyyy"))</time>
+                                    <h2 class="post-title">@item.Titulo</h2>
+                                }
+                                else
+                                {
+                                    <p><strong>@item.Titulo</strong></p>
+                                }
+                            </a>
+                        </div>
+                    }
+                    if (totalSite > resultadosSite.Count)
+                    {
+                        <p class="help-block">
+                            <a href="@Portal.Url(url, query,"&busca=site")" target="_top">
+                                @string.Format(T("VEJA TODOS OS {0} RESULTADOS DO SITE AQUI"), totalSite)
+                            </a><br />
+                            <small>@T("Clicando aqui direcionaremos o usuário para a página com resultados de busca + paginação.")</small>
+                        </p>
+                    }
+                }
+                else
+                {
+                    <p class="help-block">@T("Nenhum resultado encontrado no site")</p>
+                }
+            </div>
+            <div class="col-sm-12">
+                <h1>@T("Produtos")</h1>
+                @if (resultadosProduto.Count > 0)
+                {
+                    foreach (var item in resultadosProduto)
+                    {
+                        <div class="post-box">
+                            <a href="@Portal.ResolveUrl(item.Url, portal)" target="_top">
+                                <h2 class="post-title">@item.Titulo</h2>
+                                <p>@item.Chamada</p>
+                            </a>
+                        </div>
+                    }
+                    if (totalProdutos > resultadosProduto.Count)
+                    {
+                        <p class="help-block">
+                            <a href="@Portal.ResolveUrl(string.Concat(urlProdutos, "?q=", Request.QueryString["q"]), portal)" target="_top">
+                                @string.Format(T("VEJA TODOS OS {0} RESULTADOS DE PRODUTOS AQUI"), totalProdutos)
+                            </a><br />
+                            <small>@T("Clicando aqui direcionaremos o usuário para a lista de busca de produtos.")</small>
+                        </p>
+                    }
+                }
+                else
+                {
+                    <p class="help-block">@T("Nenhum produto encontrado")</p>
+                }
+            </div>
+        }
+    }
+</div>

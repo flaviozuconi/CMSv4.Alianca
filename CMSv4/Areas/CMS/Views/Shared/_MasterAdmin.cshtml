@@ -1,0 +1,165 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    var isHttps = HttpContext.Current.Request.Url.Scheme == "https";
+}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <title>CMS :: @TAdm("Área Administrativa")</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- PACE LOAD BAR PLUGIN - This creates the subtle load bar effect at the top of the page. -->
+    <link href="~/content/css/plugins/pace/pace.min.css" rel="stylesheet">
+    <script data-pace-options='{ "ajax": false }' src="~/content/js/plugins/pace/pace.min.js"></script>
+
+    <!-- GLOBAL STYLES -->
+    <link href="~/content/css/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href='@(isHttps ? "https" : "http")://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700,300italic,400italic,500italic,700italic' rel="stylesheet" type="text/css">
+    <link href='@(isHttps ? "https" : "http")://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel="stylesheet" type="text/css">
+    <link href="~/content/icons/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="~/content/icons/lock.png" />
+
+    <!-- THEME STYLES -->
+    <link href="~/content/css/style.min.css" rel="stylesheet">
+    <link href="~/content/css/plugins.min.css" rel="stylesheet">
+
+    <link href="~/Content/css/plugins/messenger/messenger.min.css" rel="stylesheet">
+    <link href="~/Content/css/plugins/messenger/messenger-theme-flat.min.css" rel="stylesheet">
+    <link href="~/Content/css/VM2Modal.min.css" rel="stylesheet" />
+
+    @RenderSection("head", false)
+
+    <!--[if lt IE 9]>
+        <script src="~/content/js/html5shiv.js"></script>
+        <script src="~/content/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- begin TOP NAVIGATION -->
+        <nav class="navbar-top" role="navigation">
+
+            <!-- begin BRAND HEADING -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle pull-right" data-toggle="collapse" data-target=".sidebar-collapse">
+                    <i class="fa fa-bars"></i> @TAdm("Menu")
+                </button>
+                <div class="navbar-brand" style="color:white;">
+                    <i class="fa fa-home"></i>
+                    CMS :: Portal ::
+                    <p>@portal.Nome</p>
+                </div>
+            </div>
+            <!-- end BRAND HEADING -->
+
+            <div class="nav-top">
+                <!-- begin LEFT SIDE WIDGETS -->
+                <ul class="nav navbar-left">
+                    <li class="tooltip-sidebar-toggle">
+                        <a href="#" id="sidebar-toggle" data-toggle="tooltip" data-placement="bottom" title="@TAdm("Esconder barra lateral")">
+                            <i class="fa fa-bars"></i>
+                        </a>
+                    </li>
+                    @if (BLPortal.Portais.Count > 1)
+                    {
+                        <li class="tooltip-sidebar-toggle">
+                            <a href="/cms" title="@TAdm("Trocar portal")" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-sign-out"></i></a>
+                        </li>    
+                    }
+                </ul>
+                <!-- end LEFT SIDE WIDGETS -->
+
+                @Html.Partial("~/areas/cms/views/dashboard/userbar.cshtml")
+
+            </div>
+            <!-- /.nav-top -->
+        </nav>
+        <!-- /.navbar-top -->
+        <!-- end TOP NAVIGATION -->
+
+        @*CONSTRUIR O MENU DE ACORDO COM A CONFIGURAÇÃO DO PORTAL.*@
+        @try
+        {
+            @Html.Action("CarregarMenuAdmin", "Menu");
+        }
+        catch (Exception ex)
+        {
+            //Carregar menu fixo em caso de erro.
+            @Html.Partial("~/areas/cms/views/dashboard/sidebar.cshtml")
+            ApplicationLog.ErrorLog(ex);
+        }
+
+        <!-- begin MAIN PAGE CONTENT -->
+        <div id="page-wrapper">
+            <div class="page-content">
+                <a href="javascript:;" onclick="return atualizarIFrame();" class="badge red" style="float: right; margin-top: 12px;" title="@TAdm("Atualizar Aba")"><i class="fa fa-refresh"></i></a>
+                <ul id="topTab" class="nav nav-tabs">
+                    <li class="active disabled-tab">
+                        <a href="#home" data-toggle="tab"><i class="fa fa-dashboard"></i></a>
+                    </li>
+                </ul>
+                <div id="topTabContent" class="tab-content">
+                    <div class="tab-pane fade active in" id="home">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+            <!-- /.page-content -->
+        </div>
+        <!-- /#page-wrapper -->
+        <!-- end MAIN PAGE CONTENT -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Logout Notification Box -->
+    <div id="logout">
+        <div class="logout-message">
+            <img class="img-circle img-logout" alt="">
+            <h3>
+                <i class="fa fa-sign-out text-green"></i> @TAdm("Deseja realmente sair?")
+            </h3>
+            <p>@TAdm("Selecione \"Sair\" se você deseja encerrar a sessão no sistema.")</p>
+            <ul class="list-inline">
+                <li>
+                    <a href="/cms/sair" class="btn btn-green">
+                        <strong>@TAdm("Sair")</strong>
+                    </a>
+                </li>
+                <li>
+                    <button class="logout_close btn btn-green">@TAdm("Cancelar")</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- /#logout -->
+
+    <!-- GLOBAL SCRIPTS -->
+    <script src="~/Content/js/jquery.min.js"></script>
+    <script src="~/content/js/plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="~/content/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="~/content/js/plugins/popupoverlay/jquery.popupoverlay.min.js"></script>
+    <script src="~/content/js/plugins/popupoverlay/defaults.min.js"></script>
+
+    <!-- Logout Notification jQuery -->
+    <script src="~/content/js/plugins/popupoverlay/logout.min.js"></script>
+
+    <!-- PAGE LEVEL PLUGIN SCRIPTS -->
+    <!-- HubSpot Messenger -->
+    <script src="~/content/js/plugins/messenger/messenger.min.js"></script>
+    <script src="~/content/js/plugins/messenger/messenger-theme-flat.min.js"></script>    
+
+    <script src="~/Content/js/jquery.sortable.min.js"></script>
+    <script src="~/Content/js/VM2Modal.min.js"></script>
+
+    @RenderSection("scripts", false)
+
+    <!-- THEME SCRIPTS -->
+    <script src="~/content/js/flex.min.js"></script>
+</body>
+</html>

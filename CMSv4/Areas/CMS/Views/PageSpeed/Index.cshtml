@@ -1,0 +1,111 @@
+﻿@model MLPaginaPageSpeed
+
+@{ 
+    var temAnalise = Model.Codigo.HasValue;
+}
+
+<div id="divResultadoAnalise" @(temAnalise ? "" : "style=display:none;")>
+    <div class="row score-row">
+
+        <div class="col-xs-6 col-sm-2 col-sm-offset-2 text-center">
+            <p>@TAdm("Performance")</p>
+            <input id="knobPerformance" class="knob" data-fgColor="@Model.Performance.ScoreColor" data-thickness=".3" readonly value="@Model.Performance.Score" data-width="95" data-height="95" data-linecap="round">
+        </div>
+
+        <div class="col-xs-6 col-sm-2 text-center">
+            <p>@TAdm("Acessibilidade")</p>
+            <input id="knobAccessibility" class="knob" data-fgColor="@Model.Accessibility.ScoreColor" data-thickness=".3" readonly value="@Model.Accessibility.Score" data-width="95" data-height="95" data-linecap="round">
+        </div>
+
+        <div class="col-xs-6 col-sm-2 text-center">
+            <p>@TAdm("Boas Práticas")</p>
+            <input id="knobBestPractices" class="knob" data-fgColor="@Model.BestPractices.ScoreColor" data-thickness=".3" readonly value="@Model.BestPractices.Score" data-width="95" data-height="95" data-linecap="round">
+        </div>
+
+        <div class="col-xs-6 col-sm-2 text-center">
+            <p>@TAdm("Seo")</p>
+            <input id="knobSeo" class="knob" data-fgColor="@Model.Seo.ScoreColor" data-thickness=".3" readonly value="@Model.Seo.Score" data-width="95" data-height="95" data-linecap="round">
+        </div>
+
+    </div>
+
+    <div class="text-center">
+        <div class="score">
+            <div class="score-item">@TAdm("Score scale:")</div>
+            <div class="score-item"><span class="score-color red"></span>0 - 49</div>
+            <div class="score-item"><span class="score-color yellow"></span>50 - 89</div>
+            <div class="score-item"><span class="score-color green"></span>90 - 100</div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a href="#" class="btn btn-default" onclick="return window.parent.addTab('pagespeed', 'Ver análise completa', '/cms/@PortalAtual.Obter.Diretorio/PageSpeed/Item/@Model.CodigoPagina', '/iconpack.axd/16/chart_bar');">Ver análise completa <span class="glyphicon glyphicon-share-alt"></span></a>
+    </div>
+</div>
+
+<div id="divAnaliseNaoRealizada" @(temAnalise ? "style=display:none;" : "") class="col-xs-12">
+    <h3 class="text-center">Opss :(</h3>
+    <p class="text-center">@TAdm("Está página ainda não foi analisada pelo Google PageSpeed V5.")</p>
+    <p class="text-center">@TAdm("Por isso eu não tenho nenhum resultado para exibir aqui ainda, o que acha de clicar em \"Executar nova análise\" para fazer uma avaliação ?")</p>
+    <p class="text-center">@TAdm("Isso só vai levar alguns segundos.")</p>
+</div>
+
+<div class="text-right">
+    <div class="run-score">
+
+        <p id="pDataUltimaModificacao" class="small">@TAdm("Última verificação:") - @(Model.DataUltimaAvaliacao.HasValue ? Model.DataUltimaAvaliacao.Value.ToString("dd/MM/yyyy HH:mm") : "")</p>
+
+        <button id="btnExecutarNovaAnalise" data-pagina="@Model.CodigoPagina" type="button" class="btn btn-green btn-xs">@TAdm("Executar nova análise")</button>
+    </div>
+</div>
+
+<style type="text/css" id="stylePageSpeed">
+    .pace-done .row.score-row {
+        margin-top: 15px;
+        margin-right: -15px;
+        margin-left: -15px;
+    }
+    .score-row .knob {
+        font-size: 30px !important;
+    }
+    .score {
+        display: inline-flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 10px;
+        margin: 20px 0 10px;
+        border: 1px solid #ccc;
+        border-radius: 999px;
+    }
+    .score-item {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 10px;
+    }
+    .score-color {
+        width: 18px;
+        height: 7px;
+        margin-right: 10px;
+        border-radius: 999px;
+    }
+    .score-color.green {
+        background-color: #0CCE6B;
+    }
+    .score-color.yellow {
+        background-color: #FFA400;
+    }
+    .score-color.red {
+        background-color: #FF4E42;
+    }
+    .run-score {
+        display: inline-flex;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+    .run-score p {
+        display: inline-block;
+        margin-right: 15px;
+        margin-bottom: 0;
+    }
+</style>

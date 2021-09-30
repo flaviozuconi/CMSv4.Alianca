@@ -1,0 +1,103 @@
+﻿@model  MLArquivoRestritoCategoria
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/arquivorestritoadmin", portal.Diretorio);
+    var lstGruposSelecionados = (List<MLArquivoRestritoCategoriaGrupoCliente>)ViewData["GruposClientesSelecionados"] ?? new List<MLArquivoRestritoCategoriaGrupoCliente>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/active_sessions" />
+                @TAdm("Grupo de arquivos")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {
+                @Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)
+            }
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-6">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" id="Nome" name="Nome" maxlength="100" value="@Model.Nome" autofocus />
+            </div>
+            <div class="form-group col-md-3">
+                <label>@TAdm("Grupo de cliente")</label><br />
+                <select name="GruposUsuario" multiple="multiple">
+                    @foreach (var item in ViewBag.GruposCliente)
+                    {
+                        <option value="@item.Codigo" @(lstGruposSelecionados.Find(o => o.CodigoGrupoCliente == item.Codigo) != null ? "selected=\"selected\"" : "") >@item.Nome</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-3">
+                <label>@TAdm("Ativo")</label><br />
+                <input type="checkbox" name="Ativo" value="true" @(Model.Ativo.GetValueOrDefault(false) ? "checked" : "") />                
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Título")</label>
+                <input type="text" class="form-control" name="Titulo" maxlength="200" value="@Model.Titulo">
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{
+
+    <script type="text/javascript">
+
+        $('select[name=GruposUsuario]').multiselect({
+            selectAllText: '@TAdm("Selecionar todos")',
+            selectAllValue: '0',
+            includeSelectAllOption: true,
+            nonSelectedText: '@TAdm("Nenhuma selecionada")',
+            nSelectedText: '@TAdm("Selecionado(s)")'
+        });
+
+
+        $('form').validate({
+            rules: {
+                Nome: {
+                    required: true, maxlength: 100,
+                    remote: {
+                        url: "/cms/@portal.Diretorio/arquivorestritoadmin/ValidarNome",
+                        type: "POST",
+                        loadingPanel: false,
+                        data: { nome: $("#Nome").val(), id: "@Model.Codigo" }
+                    }
+                },
+                Titulo: { required: true, maxlength: 200 }
+            },
+            messages: {
+                Nome: {
+                    remote: "@TAdm("Já existe uma categoria de arquivo cadastrada com esse Nome")"
+                }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $('select').multiselect({ buttonClass: 'btn btn-white' });
+
+    </script>
+}

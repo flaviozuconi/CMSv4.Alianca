@@ -1,0 +1,85 @@
+﻿@model MLModuloTakeOrPay
+@{ 
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $("#btnVoltarEtapa4_2").click(function () {
+        VoltarEtapa4_2();
+    });
+
+    $("#btnAvancarFinal").click(function () {
+        if ($("#1").is(":checked") == true && $("#2").is(":checked") == true && $("#3").is(":checked") == true && $("#4").is(":checked") == true) {
+            $("#erroAceite").hide()
+
+            $("#btnAvancarFinal").addClass("disabled");
+
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/TakeOrPay/FinalizarReserva",
+                data: { "Codigo": $("#Codigo").val(), "CodigoPagina": "@Model.CodigoPagina", "Repositorio": "@Model.Repositorio" },
+                success: function (data) {
+                    if (data.Sucess == true) {
+                        AvancarFinal();
+                    }
+                    else {
+                        ErroGenerico();
+                    }
+
+                    $("#btnAvancarFinal").removeClass("disabled");
+                },
+                error: function (data) {
+                    ErroGenerico();
+                    $("#btnAvancarFinal").removeClass("disabled");
+                }
+            });
+        }
+        else {
+            $("#erroAceite").show()
+        }
+    });
+
+    function VoltarEtapa4_2() {
+        $("#Etapa5").hide()
+        $("#Etapa4_1").show()
+
+        $("#ProgressoEtapa5").removeClass("active")
+
+        $("#ProgressoEtapa4").removeClass("disabled")
+        $("#ProgressoEtapa4").addClass("active")
+    }
+
+    function AvancarFinal() {
+        $("#Etapa5").hide()
+        $("#Final").show()
+
+        $("#divSteps").hide()
+        $("#Final").show()
+    }
+
+    function CarregarEtapa5() {
+        $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/CarregarTermos",
+            data: { "Codigo": $("#Codigo").val() },
+            success: function (data) {
+                if (data.Sucess == true) {
+                    $("#divTermos").html(data.Termos)
+
+                    $("#Etapa4_2").hide()
+                    $("#Etapa5").show()
+
+                    $("#ProgressoEtapa4").removeClass("active")
+
+                    $("#ProgressoEtapa5").removeClass("disabled")
+                    $("#ProgressoEtapa5").addClass("active")
+                }
+                else {
+                    ErroGenerico();
+                }
+            },
+            error: function (data) {
+                ErroGenerico();
+            }
+        });
+    }
+</script>

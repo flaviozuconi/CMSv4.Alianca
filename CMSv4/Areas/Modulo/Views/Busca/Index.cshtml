@@ -1,0 +1,19 @@
+﻿@model MLModuloBusca
+
+<article class="content">
+@try
+{
+    if (!String.IsNullOrEmpty(Model.Titulo))
+    {
+        <header class="content--header clearfix">
+            <h1 class="section-title-sub">@Model.Titulo</h1>
+        </header>
+    }
+
+    @Html.Action("ListarPublico", "Busca", new { model = Model })
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}
+</article>

@@ -1,0 +1,20 @@
+﻿@using VM2.PageSpeed.Model
+
+@model MLPageSpeedViewModel
+
+<div class="text-center">
+    <input id="knobPerformance" class="knob" data-fgColor="@Model.Accessibility.ScoreColor" data-thickness=".2" readonly value="@Model.Accessibility.Score" data-width="120" data-height="120" data-linecap="round">
+    <h2 class="category-title">@TAdm("Accessibility")</h2>
+</div>
+
+<div class="text-center row-bottom-space">
+    <span>These checks highlight opportunities to <a rel="noopener" target="_blank" href="https://developers.google.com/web/fundamentals/accessibility?utm_source=lighthouse&amp;utm_medium=extension">improve the accessibility of your web app</a>. Only a subset of accessibility issues can be automatically detected so manual testing is also encouraged.</span>
+</div>
+
+<div class="row row-bottom-space">
+    @HelpersPageSpeed.Audits(Model.Accessibility.Audits, "accessibility")
+</div>
+
+<div class="row">
+    @HelpersPageSpeed.PassedAudits(Model.Accessibility.Passed)
+</div>

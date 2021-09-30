@@ -1,0 +1,1256 @@
+﻿@model  MLListaConteudo
+@{
+    var portal = PortalAtual.Diretorio;
+    var usuario = BLUsuario.ObterLogado();
+    var config = (MLListaConfig)ViewData["listaConfig"];
+    var urlLista = "/cms/" + portal + "/listaadmin?idLista=" + config.Codigo;
+
+    var json = Json.Decode(config.Configuracao);
+    var categorias = (List<MLListaConfigCategoria>)ViewData["categorias-todas"] ?? new List<MLListaConfigCategoria>();
+    var categoriasSelecionadas = (List<MLListaConteudoCategoria>)ViewData["categorias-selecionadas"] ?? new List<MLListaConteudoCategoria>();
+    var aprovadores = (List<MLUsuario>)ViewData["aprovadores"] ?? new List<MLUsuario>();
+    aprovadores.RemoveAll(o => o.Codigo == usuario.Codigo);
+
+    var podeAprovar = ((usuario.Grupos.Find(o => o.CodigoGrupo == config.CodigoGrupoAprovador)) != null) || (aprovadores.Count == 0);
+
+
+    if (!Model.GUID.HasValue) { Model.GUID = Guid.NewGuid(); }
+
+    // GALERIA IMAGENS
+    var lista = (List<MLListaConteudoImagem>)ViewData["lista"] ?? new List<MLListaConteudoImagem>();
+
+    var urlUploadGaleria = "/cms/" + portal + "/listaadmin/uploadgaleria";
+    var urlIncluirGaleria = "/cms/" + portal + "/listaadmin/incluirarquivogaleria";
+    var urlRemoverGaleria = "/cms/" + portal + "/listaadmin/removerarquivogaleria";
+    var urlExcluirGaleria = "/cms/" + portal + "/listaadmin/excluirarquivogaleria";
+
+    //VIDEOS
+    var listaVideo = (List<MLListaConteudoVideo>)ViewData["listaVideo"] ?? new List<MLListaConteudoVideo>();
+
+    var urlUploadVideos = "/cms/" + portal + "/listaadmin/uploadvideo";
+    var urlIncluirVideos = "/cms/" + portal + "/listaadmin/incluirarquivovideo";
+    var urlRemoverVideos = "/cms/" + portal + "/listaadmin/removerarquivovideo";
+    var urlExcluirVideos = "/cms/" + portal + "/listaadmin/excluirarquivovideo";
+    var urlIncluirUrlVideos = "/cms/" + portal + "/listaadmin/incluirvideourl";
+
+    //AUDIO
+    var listaAudio = (List<MLListaConteudoAudio>)ViewData["listaAudio"] ?? new List<MLListaConteudoAudio>();
+
+    var urlUploadAudios = "/cms/" + portal + "/listaadmin/UploadAudio";
+    var urlIncluirAudios = "/cms/" + portal + "/listaadmin/incluirarquivoAudio";
+    var urlRemoverAudios = "/cms/" + portal + "/listaadmin/removerarquivoAudio";
+    var urlExcluirAudios = "/cms/" + portal + "/listaadmin/excluirarquivoAudio";
+
+    var urlSeo = "/cms/" + portal + "/listaadmin/seooutros";
+
+    var showGaleria = false;
+    var showVideos = false;
+    var showAudios = false;
+    var showSEO = false;
+
+    var adicionarValidacaoArquivo = false;
+
+    int limiteVideos = 0;
+
+    for (var i = 0; i < json.config.Length; i++)
+    {
+        if (json.config[i].campo == "Galeria") { showGaleria = true; }
+        if (json.config[i].campo == "Videos")
+        {
+            showVideos = true;
+
+            if (json.config[i].limite != null)
+            {
+                limiteVideos = Convert.ToInt16(json.config[i].limite);
+            }
+        }
+        if (json.config[i].campo == "Audio") { showAudios = true; }
+        if (json.config[i].campo == "SEO") { showSEO = true; }
+    }
+    var extra1IsSelect = false;
+    var extra2IsSelect = false;
+    var extra3IsSelect = false;
+
+
+}
+
+
+<div class="modal modal-flex fade " id="seoModal" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">@TAdm("SEO Outros")</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div class="form-group col-md-12">
+                    <div class="form-group col-md-12">
+                        <input type="hidden" name="CodigoLista" id="CodigoLista" value="@Model.Codigo" />
+                        <textarea data-editor="html" id="SeoOutros" name="Seo.Outros" class="SeoOutros" style="height: 300px; width: 500px;">@Model.Seo.Outros</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@TAdm("Fechar")</button>
+                <button type="button" onclick="return SalvarSeoOutros(@Model.Codigo);" class="btn btn-white">@TAdm("Salvar")</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+</div>
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="@(config.Icone ?? "~/iconpack.axd/16/newspaper")" />@TAdm(config.Nome)
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#cadastro" data-toggle="tab">@TAdm("Cadastro")</a></li>
+            @if (showGaleria)
+            {
+                <li><a href="#galeria" data-toggle="tab"><span class="glyphicon glyphicon-camera"></span>@TAdm("Galeria")</a></li>
+            }
+            @if (showVideos)
+            {
+                <li><a href="#videos" data-toggle="tab"><span class="glyphicon glyphicon-film"></span>@TAdm("Vídeos")</a></li>
+            }
+
+            @if (showAudios)
+            {
+                <li><a href="#audios" data-toggle="tab"><span class="glyphicon glyphicon-headphones"></span>@TAdm("Áudio")</a></li>
+            }
+
+            @if (showSEO)
+            {
+                <li><a href="#seo" data-toggle="tab"><span class="glyphicon glyphicon-list-alt"></span>@TAdm("Seo - Redes Sociais")</a></li>
+            }
+        </ul>
+
+        <form id="formCadastro" method="post" action="item" class="form-vertical tab-content" role="form" enctype="multipart/form-data" on>
+
+            <div id="cadastro" class="tab-pane active">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+                }
+
+                <div class="form-group col-md-12">
+                    <label>@TAdm("Idioma")</label>
+                    @Helpers.ComboIdiomas(Model.CodigoIdioma, false)
+                </div>
+
+                @for (var i = 0; i < json.config.Length; i++)
+                {
+                    var campo = (string)json.config[i].campo;
+
+                    switch (campo)
+                    {
+                        case "Titulo":
+                            <div class="form-group @(json.config[i].css ?? "col-md-10")">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                <input type="text" class="form-control" name="Titulo" value="@Model.Titulo" maxlength="250" autofocus>
+                            </div>
+                            break;
+                        case "Data":
+                            <div class="form-group @(json.config[i].css ?? "col-md-2")">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                <input type="text" class="form-control" name="Data" maxlength="16" value="@( (Model.Data ?? DateTime.Now).ToString("dd/MM/yyyy HH:mm"))">
+                            </div>
+                            break;
+                        case "Chamada":
+                            <div class="form-group @(json.config[i].css ?? "col-md-12")">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                <textarea class="form-control" name="Chamada" style="height: 80px;">@Model.Chamada</textarea>
+                            </div>
+                            break;
+                        case "Imagem":
+                            <div class="form-group @(json.config[i].css ?? "col-md-3")">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                <input type="file" name="ImagemCapa" />
+                                <input type="hidden" name="Imagem" id="Imagem" value="@Model.Imagem" />
+
+                                @if (!string.IsNullOrEmpty(Model.Imagem))
+                                {
+                                    <img id="imagemCapa" src="@string.Concat(BLConfiguracao.Pastas.ModuloListas(portal), "/", Model.Codigo, "/capa", Model.Imagem)" alt="" style="max-width: 300px;" /><br />
+                                    <input type="checkbox" id="RemoverCapa" name="RemoverCapa" value="True" /><label for="RemoverCapa">@TAdm("Remover")</label>
+                                }
+                            </div>
+
+                            break;
+                        case "Conteudo":
+
+                            //string plugins = string.Empty;
+
+                            //if (showGaleria)
+                            //{
+                            //    plugins += "galeria,";
+                            //}
+
+                            //if (showAudios)
+                            //{
+                            //    plugins += "audio,";
+                            //}
+
+                            //if (showVideos)
+                            //{
+                            //    plugins += "video,";
+                            //}
+
+                            <div class="form-group @(json.config[i].css ?? "col-md-12")">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                <textarea @*data-plugins="@plugins.TrimEnd(',')"*@ data-ckeditor="@portal" class="form-control" style="height: 300px;" name="Conteudo" id="conteudo">@Model.Conteudo</textarea>
+                            </div>
+
+                            break;
+
+                        @*case "Max3":
+                            if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "data")
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-2")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <input type="text" class="form-control jq-date-time" name="Max3" maxlength="16" value="@(!string.IsNullOrWhiteSpace(Model.Max3) ? Convert.ToDateTime(Model.Max3).ToString("dd/MM/yyyy HH:mm") : "")">
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-12")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <textarea class="form-control" name="Max3">@Model.Max3</textarea>
+                                </div>
+                            }
+                            break;*@
+
+                        case "Categoria":
+                            bool multiplaEscolha = (bool?)json.config[i].multipla_escolha ?? true;
+
+                            <div class="form-group @(json.config[i].css ?? "col-md-6")">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label><br />
+                                <select name="Categorias" @(multiplaEscolha ? "multiple = \"multiple\"" : "")>
+                                    @if (multiplaEscolha)
+                                    {
+                                        <option value="multiselect-all">@TAdm("Selecionar todos")</option>
+                                    }
+                                    @foreach (var categoria in categorias)
+                                    {
+                                        <option value="@categoria.Codigo" @(categoriasSelecionadas.Find(o => o.CodigoCategoria == categoria.Codigo) != null ? "selected" : "")>@categoria.Nome</option>
+                                    }
+                                </select>
+                            </div>
+
+                            break;
+                        case "Tags":
+                            <div class="form-group @(json.config[i].css ?? "col-md-6") tokenfield" data-value="blue">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                <input type="text" class="form-control" name="@json.config[i].campo" value="@Model.Tags">
+                                <span class="help-block"><small>@TAdm("Pressione TAB para separar as Tags")</small></span>
+                            </div>
+
+                            break;
+                        case "Url":
+                            <div class="form-group @(json.config[i].css ?? "col-md-6")">
+                                <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                <input type="text" class="form-control" name="Url" value="@Model.Url" maxlength="250">
+                            </div>
+                            break;
+                        case "Extra1":
+                            if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "checkbox")
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-3")">
+                                    <input type="checkbox" name="Extra1" id="Extra1" value="true" @((!string.IsNullOrWhiteSpace(Model.Extra2) && Model.Extra1.ToLower() == "true") ? "checked" : "") />
+                                    <label for="Extra1">@TAdm("Free")</label>
+                                </div>
+                            }
+                            else if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "dropbox")
+                            {
+                                extra1IsSelect = true;
+                                bool multiplaEscolhas = (bool?)json.config[i].multipla_escolha ?? true;
+                                String valor = json.config[i].item;
+                                String[] arrEscolha = valor.Split(',');
+                                var listSelecionados = !string.IsNullOrEmpty(Model.Extra1) ? Model.Extra1.Split(',').ToList() : new List<string>();
+
+                                <div class="form-group @(json.config[i].css ?? "col-md-3")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label><br />
+                                    <select name="Extra1" @(multiplaEscolhas ? "multiple = \"multiple\"" : "")>
+                                        @if (multiplaEscolhas)
+                                        {
+                                            <option value="multiselect-all">@TAdm("Selecionar todos")</option>
+                                        }
+                                        @foreach (var x in arrEscolha)
+                                        {
+                                            <option value="@(x)" @(listSelecionados.Find(o => o.Equals(x, StringComparison.InvariantCultureIgnoreCase)) != null ? "selected" : "")>@(x)</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                break;
+                            }
+                            else
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-6")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <input type="text" class="form-control" name="Extra1" value="@Model.Extra1" maxlength="250">
+                                </div>
+                            }
+
+                            break;
+                        case "Extra2":
+                            if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "checkbox")
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-3")">
+                                    <input type="checkbox" name="Extra2" id="Extra2" value="true" @((!string.IsNullOrWhiteSpace(Model.Extra2) && Model.Extra2.ToLower() == "true") ? "checked" : "") />
+                                    <label for="Extra2">@TAdm("Free")</label>
+                                </div>
+                            }
+                            else if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "dropbox")
+                            {
+                                extra2IsSelect = true;
+                                bool multiplaEscolhas = (bool?)json.config[i].multipla_escolha ?? true;
+                                String valor = json.config[i].item;
+                                String[] arrEscolha = valor.Split(',');
+                                var listSelecionados = !string.IsNullOrEmpty(Model.Extra2) ? Model.Extra2.Split(',').ToList() : new List<string>();
+
+                                <div class="form-group @(json.config[i].css ?? "col-md-3")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label><br />
+                                    <select name="Extra2" @(multiplaEscolhas ? "multiple = \"multiple\"" : "")>
+                                        @if (multiplaEscolhas)
+                                        {
+                                            <option value="multiselect-all">@TAdm("Selecionar todos")</option>
+                                        }
+                                        @foreach (var x in arrEscolha)
+                                        {
+                                            <option value="@(x)" @(listSelecionados.Find(o => o.Equals(x, StringComparison.InvariantCultureIgnoreCase)) != null ? "selected" : "")>@(x)</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                break;
+                            }
+                            else
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-6")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <input type="text" class="form-control" name="Extra2" value="@Model.Extra2" maxlength="250">
+                                </div>
+                            }
+
+                            break;
+                        case "Extra3":
+                            if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "checkbox")
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-3")">
+                                    <input type="checkbox" name="Extra3" id="Extra3" value="true" @((!string.IsNullOrWhiteSpace(Model.Extra3) && Model.Extra3.ToLower() == "true") ? "checked" : "") />
+                                    <label for="Extra3">@TAdm(json.config[i].rotulo)</label>
+                                </div>
+                            }
+                            else if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "dropbox")
+                            {
+                                extra3IsSelect = true;
+                                bool multiplaEscolhas = (bool?)json.config[i].multipla_escolha ?? true;
+                                String valor = json.config[i].item;
+                                String[] arrEscolha = valor.Split(',');
+
+                                <div class="form-group @(json.config[i].css ?? "col-md-3")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label><br />
+                                    <select name="Extra3" @(multiplaEscolhas ? "multiple = \"multiple\"" : "")>
+                                        @if (multiplaEscolhas)
+                                        {
+                                            <option value="multiselect-all">@TAdm("Selecionar todos")</option>
+                                        }
+                                        @foreach (var x in arrEscolha)
+                                        {
+                                            <option value="@(x)" @(Model.Extra3 == x ? "selected" : "")>@(x)</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                break;
+                            }
+                            else
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-6")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <input type="text" class="form-control" name="Extra3" value="@Model.Extra3" maxlength="250">
+                                </div>
+                            }
+                            break;
+                        case "Max1":
+                            if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "data")
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-2")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <input type="text" class="form-control jq-date-time" name="Max1" maxlength="16" value="@(!string.IsNullOrWhiteSpace(Model.Max2) ? Convert.ToDateTime(Model.Max1).ToString("dd/MM/yyyy HH:mm") : "")">
+                                </div>
+                            }
+                            else if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "file")
+                            {
+                                adicionarValidacaoArquivo = true;
+
+                                <div class="form-group @(json.config[i].css ?? "col-md-6")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <input type="file" name="Max1Imagem">
+
+                                    @if (!string.IsNullOrEmpty(Model.Max1))
+                                    {
+                                        <input type="hidden" name="Max1" id="Max1" value="@Model.Max1" />
+                                        <img id="imagemThumb" src="@string.Concat(BLConfiguracao.Pastas.ModuloListas(portal), "/", Model.Codigo, "/thumb", System.IO.Path.GetExtension(Model.Max1))" alt="" style="max-width: 300px;" /><br />
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-12")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <textarea class="form-control" name="Max1">@Model.Max1</textarea>
+                                </div>
+                            }
+
+
+                            break;
+                        case "Max2":
+                            if (json.config[i].tipo != null && !string.IsNullOrWhiteSpace(json.config[i].tipo) && json.config[i].tipo == "data")
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-2")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <input type="text" class="form-control jq-date-time" name="Max2" maxlength="16" value="@(!string.IsNullOrWhiteSpace(Model.Max2) ? Convert.ToDateTime(Model.Max2).ToString("dd/MM/yyyy HH:mm") : "")">
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group @(json.config[i].css ?? "col-md-12")">
+                                    <label>@TAdm(json.config[i].rotulo ?? json.config[i].campo)</label>
+                                    <textarea class="form-control" data-ckeditor="@portal" style="height: 300px;" name="Max2">@Model.Max2</textarea>
+                                </div>
+                            }
+                            break;
+                    }
+                }
+
+                <div class="col-md-6 col-md-offset-3">
+                    @if (config.CodigoGrupoAprovador.HasValue)
+                    {
+                        <fieldset>
+                            <legend>Aprovação</legend>
+                            <div class="form-group col-md-12">
+
+                                <input type="hidden" id="IsRevisar" name="IsRevisar" value="false" />
+
+                                @if (podeAprovar)
+                                {
+                                    <input type="radio" id="Autorizar" name="Autorizar" value="@(!Model.CodigoUsuarioSolicitado.HasValue ? "true" : "false")" @(!Model.CodigoUsuarioSolicitado.HasValue ? "checked" : "") onclick="TemRevisar('false');" /> <label for="Autorizar">@TAdm("Autorizar conteúdo")</label><br />
+                                }
+                                @if (aprovadores.Count > 0)
+                                {
+                                    <input type="radio" id="Revisar" name="Autorizar" value="@(Model.CodigoUsuarioSolicitado.HasValue ? "true" : "false")" @(Model.CodigoUsuarioSolicitado.HasValue ? "checked" : "") onclick="TemRevisar('true');" /> <label for="Revisar">@TAdm("Solicitar aprovação")</label>
+                                    <select name="CodigoUsuarioSolicitado" class="form-control">
+                                        @foreach (var item in aprovadores)
+                                        {
+                                            <option value="@item.Codigo" @(item.Codigo == Model.CodigoUsuarioSolicitado ? "selected" : "")>@item.Nome (@item.Email)</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-info">@TAdm("Não há outros aprovadores configurados.")</div>
+                                }
+                            </div>
+                        </fieldset>
+                    }
+
+                    <fieldset>
+                        <legend>@TAdm("Publicação")</legend>
+                        <div class="form-group col-md-12">
+                            <input type="radio" id="Publicar" name="Publicar" value="true" @(!Model.DataPublicacao.HasValue ? "checked='checked'" : "") />
+                            <label for="Publicar">@TAdm("Publicar imediatamente")</label><br />
+                            <input type="radio" id="Agendar" name="Publicar" value="false" @(Model.DataPublicacao.HasValue ? "checked='checked'" : "") />
+                            <label for="Agendar">@TAdm("Agendar publicação")</label>
+                            <input type="text" class="form-control" style="max-width: 150px;" name="DataPublicacao" maxlength="16" value="@(Model.DataPublicacao.HasValue ? Model.DataPublicacao.Value.ToString("dd/MM/yyyy HH:mm") : new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 8, 0, 0).AddDays(1).ToString("dd/MM/yyyy HH:mm"))">
+                        </div>
+                    </fieldset>
+                </div>
+
+                <input type="hidden" value="@Model.Codigo" name="Codigo" />
+                <input type="hidden" value="@Model.CodigoBase" name="CodigoBase" />
+                <input type="hidden" value="@Model.GUID" name="GUID" id="GUID" />
+                <input type="hidden" value="@config.Codigo" name="CodigoLista" />
+
+                <div class="clearfix"></div>
+                <div class="form-group col-md-3">
+                    <input type="checkbox" name="Destaque" id="Destaque" value="true" @(((!Model.Destaque.HasValue && Model.Codigo.HasValue) || Model.Destaque.GetValueOrDefault()) ? "checked" : "") />
+                    <label for="Destaque">@TAdm("Destaque")</label>
+                </div>
+                <div class="form-group col-md-3">
+                    <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") />
+                    <label for="Ativo">@TAdm("Ativo")</label>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+            <!-- GALERIA -->
+            @if (showGaleria)
+            {
+                foreach (var imagem in lista.FindAll(o => o.Codigo.HasValue))
+                {
+                    imagem.GuidConteudo = Model.GUID;
+                }
+
+                <div id="galeria" class="tab-pane">
+
+                    <div id="galeriaUpload" class="dropzone">
+                        <div class="fallback">
+                            <input type="file" name="file" />
+                        </div>
+                    </div>
+                    <ul id="galeriaImagens" class="ui-sortable">
+                        @Html.Partial("GaleriaItem", lista.FindAll(o => o.Codigo.HasValue))
+                    </ul>
+
+                    <div class="col-md-12">
+                        <input type="checkbox" onclick="$('#galeriaImportar').toggle();" id="showDisk" />
+                        <label for="showDisk" style="font-weight: normal;">@TAdm("Mostrar arquivos em disco")</label>
+                    </div>
+
+                    <ul id="galeriaImportar" class="ui-sortable" style="display: none;">
+                        @{
+                            foreach (var imagem in lista.FindAll(o => !o.Codigo.HasValue))
+                            {
+                                <li class="form-group col-md-2 galeria-imagem-item">
+                                    @Html.Partial("GaleriaImportar", imagem)
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+
+            <!-- VIDEOS -->
+            @if (showVideos)
+            {
+                <div id="videos" class="tab-pane">
+
+                    <div id="videosUpload" class="col-md-6 dropzone">
+                        <div class="fallback">
+                            <input type="file" name="file" />
+                        </div>
+                    </div>
+
+                    <div id="videosAdd" class="col-md-6 dropzone" onclick="incluirVideoUrl();">
+                        <div class="fallback">
+                            <a href="#">@TAdm("Adicionar (Youtube ou Vimeo)")</a>
+                        </div>
+                    </div>
+                    <ul id="galeriaVideos" class="ui-sortable" style="clear: both; padding: 0;">
+                        @{
+                            foreach (var video in listaVideo.FindAll(o => o.Codigo.HasValue))
+                            {
+                                video.GuidConteudo = Model.GUID;
+                                <li class="form-group col-md-12 galeria-video-item">
+                                    @Html.Partial("VideoItem", video)
+                                </li>
+                            }
+                        }
+                        <li class="tesata"></li>
+                    </ul>
+
+                    <div class="col-md-12">
+                        <input type="checkbox" onclick="$('#videoImportar').toggle();" id="showVideoDisk" />
+                        <label for="showVideoDisk" style="font-weight: normal;">@TAdm("Mostrar arquivos em disco")</label>
+                    </div>
+
+                    <ul id="videoImportar" class="ui-sortable" style="display: none;">
+                        @{
+                            foreach (var video in listaVideo.FindAll(o => !o.Codigo.HasValue))
+                            {
+                                <li class="form-group col-md-12 galeria-video-item">
+                                    @Html.Partial("VideoImportar", video)
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+
+            <!-- AUDIO -->
+            @if (showAudios)
+            {
+                <div id="audios" class="tab-pane">
+
+                    <div id="AudiosUpload" class="col-md-6 dropzone">
+                        <div class="fallback">
+                            <input type="file" name="file" />
+                        </div>
+                    </div>
+
+                    <ul id="galeriaAudios" class="ui-sortable" style="clear: both; padding: 0;">
+                        @{
+                            foreach (var Audio in listaAudio.FindAll(o => o.Codigo.HasValue))
+                            {
+                                Audio.GuidConteudo = Model.GUID;
+                                <li class="form-group col-md-12 galeria-Audio-item">
+                                    @Html.Partial("AudioItem", Audio)
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <div class="col-md-12">
+                        <input type="checkbox" onclick="$('#AudioImportar').toggle();" id="showAudioDisk" />
+                        <label for="showAudioDisk" style="font-weight: normal;">@TAdm("Mostrar arquivos em disco")</label>
+                    </div>
+
+                    <ul id="AudioImportar" class="ui-sortable" style="display: none;">
+                        @{
+                            foreach (var audio in listaAudio.FindAll(o => !o.Codigo.HasValue))
+                            {
+                                <li class="form-group col-md-12 galeria-Audio-item">
+                                    @Html.Partial("AudioImportar", audio)
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            }
+
+            @if (showSEO)
+            {
+                <div id="seo" class="col-md-12 tab-pane">
+                    <div class="col-md-2">
+                        <ul id="myStacked" class="nav nav-pills nav-stacked">
+                            <li class="active">
+                                <a href="#seo_principal" data-toggle="tab">@TAdm("Gerais")</a>
+                            </li>
+                            <li>
+                                <a href="#seo_twitter" data-toggle="tab">Twitter Card</a>
+                            </li>
+                            <li>
+                                <a href="#seo_facebook" data-toggle="tab">Facebook Open Graph</a>
+                            </li>
+                            <li>
+                                <a href="#seo_icons" data-toggle="tab">Icons</a>
+                            </li>
+                            <li>
+                                <a data-toggle="modal" data-target="#seoModal" href="#">@TAdm("Outros")</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-10">
+                        <div id="myStackedContent" class="tab-content">
+                            <div class="tab-pane fade in active" id="seo_principal">
+                                <div class="form-group col-md-6">
+                                    <label for="Schema">schema</label>
+                                    <input type="text" class="form-control" name="Seo.Schema" id="Schema" placeholder="schema" value="@Model.Seo.Schema">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="Image">image</label>
+                                    <input type="text" class="form-control" name="Seo.Image" id="Image" placeholder="image" value="@Model.Seo.Image">
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="Copyright">copyright</label>
+                                    <input type="text" class="form-control" name="Seo.Copyright" id="Copyright" placeholder="copyright" value="@Model.Seo.Copyright">
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="RevisitAfter">revisit-after</label>
+                                    <input type="text" class="form-control" name="Seo.RevisitAfter" id="RevisitAfter" placeholder="revisit-after" value="@Model.Seo.Revisitafter">
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="Author">author</label>
+                                    <input type="text" class="form-control" name="Seo.Author" id="Author" placeholder="author" value="@Model.Seo.Author">
+                                </div>
+                            </div>
+                            <div class="tab-pane fade in" id="seo_twitter">
+                                <div class="form-group col-md-4">
+                                    <label for="Card">twitter:card</label>
+                                    <input type="text" class="form-control" name="Seo.TwitterCard" id="TwitterCard" placeholder="twitter:card" value="@Model.Seo.Twittercard">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="Site">twitter:site</label>
+                                    <input type="text" class="form-control" name="Seo.TwitterSite" id="TwitterSite" placeholder="twitter:site" value="@Model.Seo.Twittersite">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="TwitterTitle">twitter:title</label>
+                                    <input type="text" class="form-control" name="Seo.TwitterTitle" id="TwitterTitle" placeholder="twitter:title" value="@Model.Seo.Twittertitle">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="TwitterDescription">twitter:description</label>
+                                    <input type="text" class="form-control" name="Seo.TwitterDescription" id="TwitterDescription" placeholder="twitter:description" value="@Model.Seo.Twitterdescription">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="TwitterImage">twitter:image</label>
+                                    <input type="text" class="form-control" name="Seo.TwitterImage" id="TwitterImage" placeholder="twitter:image" value="@Model.Seo.Twitterimage">
+                                </div>
+                            </div>
+                            <div class="tab-pane fade in" id="seo_facebook">
+                                <div class="form-group col-md-4">
+                                    <label for="OgTitle">og:title</label>
+                                    <input type="text" class="form-control" name="Seo.Ogtotitle" id="OgTitle" placeholder="og:title" value="@Model.Seo.Ogtotitle">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="OgSite_name">og:site_name</label>
+                                    <input type="text" class="form-control" name="Seo.OgSiteName" id="OgSite_name" placeholder="og:site_name" value="@Model.Seo.Ogsitename">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="OgDescription">og:description</label>
+                                    <input type="text" class="form-control" name="Seo.OgDescription" id="OgDescription" placeholder="og:description" value="@Model.Seo.Ogdescription">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="OgImage">og:image</label>
+                                    <input type="text" class="form-control" name="Seo.OgImage" id="OgImage" placeholder="og:image" value="@Model.Seo.Ogimage">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="OgType">og:type</label>
+                                    <input type="text" class="form-control" name="Seo.OgType" id="OgType" placeholder="og:type" value="@Model.Seo.Ogtype">
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="OgLocale">og:locale</label>
+                                    <input type="text" class="form-control" name="Seo.OgLocale" id="OgLocale" placeholder="og:locale" value="@Model.Seo.Oglocale">
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label for="OgAuthor">og:author</label>
+                                    <input type="text" class="form-control" name="Seo.OgAuthor" id="OgAuthor" placeholder="og:author" value="@Model.Seo.OgAuthor">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="OgPublisher">og:publisher</label>
+                                    <input type="text" class="form-control" name="Seo.OgPublisher" id="OgPublisher" placeholder="og:publisher" value="@Model.Seo.Ogpublisher">
+                                </div>
+                            </div>
+                            <div class="tab-pane fade in" id="seo_icons">
+                                <div class="form-group col-md-4">
+                                    <label for="ShortcutIcon">shortcut icon</label>
+                                    <input type="text" class="form-control" name="Seo.ShortcutIcon" id="ShortcutIcon" placeholder="shortcut icon" value="@Model.Seo.Shortcuticon">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="AppleTouchIcon">apple-touch-icon</label>
+                                    <input type="text" class="form-control" name="Seo.AppleTouchIcon" id="AppleTouchIcon" placeholder="apple-touch-icon" value="@Model.Seo.Appletouchicon">
+                                </div>
+                            </div>
+                            <input type="hidden" name="Seo.Outros" value="@Model.Seo.Outros" />
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" id="btnSalvar" class="btn btn-green btn-submit" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section head {
+    <link href="~/Content/css/plugins/bootstrap-tokenfield/bootstrap-tokenfield.css" rel="stylesheet" />
+    <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+
+    <link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.theme.css" rel="stylesheet" />
+}
+
+@section scripts{
+
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-tokenfield/bootstrap-tokenfield.min.js"></script>
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script type="text/javascript">
+        $('select[name=Categorias]').multiselect({
+            includeSelectAllOption: true,
+            nonSelectedText: '@TAdm("Nenhuma selecionada")'
+        });
+
+        $("#removercapa").on("click", function(){
+            $("#imagemCapa").hide();
+            $("#Imagem").val("");
+            return false;
+        });
+
+
+        $('form').validate({
+            rules: {
+                Titulo: { required: true, maxlength: 250 },
+                Url: {
+                    maxlength: 250,
+                    regex: "^[a-zA-Z][a-zA-Z0-9\-\_]+$" ,
+                    remote: {
+                        url: "/cms/@PortalAtual.Diretorio/ListaAdmin/ValidarUrl",
+                        type: "post",
+                        async: false,
+                        loadingPanel: false,
+                        data: {
+                            id: function() {
+                                return $('input[name=Codigo]').val()
+                            },
+                            Url: function(){
+                                return $('input[name=Url]').val()
+                            },
+                            CodigoLista: "@config.Codigo"
+                        }
+                    }
+                },
+                Extra1: { maxlength: 250 },
+                Extra2: { maxlength: 250 },
+                Extra3: { maxlength: 250 },
+                file: { extension: "png|jpg|jpeg|gif" }
+                @if(adicionarValidacaoArquivo)
+                {
+                    @:,Max1: { extension: "png|jpg|jpeg|gif" }
+                }
+            },
+            messages: {
+                file: {
+                    extension: "@TAdm("Extensão Inválida.")"
+                }
+
+                @if(adicionarValidacaoArquivo)
+                {
+                    @:,Max1: { extension: "@TAdm("Extensão Inválida.")" }
+                }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $('input[name=Tags]').tokenfield();
+
+        $("input[name=Data], input[name=DataPublicacao]").blur(function () {
+            if ($(this).val() == "__/__/____ __:__") {
+                $(this).val("");
+            }
+        });
+
+        $('form').submit(function () {
+            if ($(this).valid()) {
+                if ($("input[name=Data]").val() == "__/__/____ __:__") {
+                    $("input[name=Data]").val("");
+                }
+
+                if ($("input[name=DataPublicacao]").val() == "__/__/____ __:__") {
+                    $("input[name=DataPublicacao]").val("");
+                }
+            }
+        });
+
+        $('input[name=Data]').datetimepicker({
+            timepicker: true, mask: true, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false
+        });
+        $('input[name=DataPublicacao]').datetimepicker({
+            timepicker: true, mask: true, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false
+        });
+
+        $('.jq-date-time').datetimepicker({
+            timepicker: true, mask: true, format: 'd/m/Y H:i', scrollMonth: true, scrollTime: true, scrollInput: false
+        });
+
+        $('input[name=Titulo]').keyup(function () {
+            var url = $('input[name=Url]');
+            if (url) {
+                if (url.data('editado')) return;
+
+                url.val(UrlAmigavel($(this).val()));
+            }
+        });
+
+
+
+        /*
+        *   Tenta apresentar previamente a imagem antes de upload
+        *   IE10 ou superior
+        */
+        function previewImage(input) {
+
+            try {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#imagemCapa').attr('src', e.target.result);
+                }
+
+                var files = input.files ? input.files : input.currentTarget.files;
+
+                reader.readAsDataURL(files[0]);
+            }
+            catch (e) { }
+
+        }
+
+        function TemRevisar(str) {
+            document.getElementById("IsRevisar").value = str;
+
+        }
+    </script>
+
+
+    <script src="~/Content/js/jquery.sortable.min.js"></script>
+
+    <!-- GALERIA -->
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            /*
+            *   FORM UPLOAD
+            */
+            Dropzone.options.galeriaUpload = {
+                url: "@urlUploadGaleria",
+                acceptedFiles: "image/*",
+                dictDefaultMessage: "@TAdm("Arraste ou clique aqui para realizar upload de arquivos")",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                sending: function (file, xhr, formData) {  formData.append("guid", '@(Model.GUID)'); },
+                processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
+                completemultiple: function (files) {
+                    var arrayNames = [];
+
+                    for (i = 0; i < files.length; i++) {
+                        arrayNames.push(files[i].name);
+                    }
+
+                    ajaxIncluirImagem(arrayNames);
+                }
+            };
+
+            /*
+            * SORTABLE
+            */
+            $('#galeriaImagens').sortable();
+
+        });
+
+        function ajaxIncluirImagem(arrayNames) {
+            $.ajax({
+                type: "POST",
+                url: "@urlIncluirGaleria",
+                datatype: "json",
+                traditional: true,
+                data: {
+                    guid: '@Model.GUID',
+                    files: arrayNames
+                },
+                beforeSend: function () {
+                    $("#spinner").show();
+                },
+                complete: function () {
+                    Dropzone.forElement('#galeriaUpload').removeAllFiles(true);
+                    $("#spinner").hide();
+                },
+                success: function (response) {
+                    if (response.Sucesso != null && response.Sucesso) {
+                        $('#galeriaImagens').append(response.html);
+                    }
+                },
+                error: function(err){
+                    console.log(err);
+                }
+            });
+        }
+
+        /*
+        *   INCLUIR IMAGEM DO ARQUIVO EM DISCO PARA A GALERIA
+        */
+        function incluirImagem(botao) {
+
+            var array = []
+            var arquivo = botao.data('file');
+
+            array.push(arquivo);
+
+            ajaxIncluirImagem(array);
+            botao.parent('li.galeria-imagem-item').remove();
+        }
+
+        /*
+        *   REMOVER IMAGEM DA GALERIA (MANTER NO DISCO)
+        */
+        function removerImagem(botao, codigo, imagem) {
+
+            $.post(
+                '@urlRemoverGaleria', { guid: codigo, file: imagem },
+                function (response) {
+                    $(botao.parents('li.galeria-imagem-item')[0]).remove();
+                    $('#galeriaImportar').append('<li class="form-group col-sm-2 galeria-imagem-item">' + response + '</li>');
+                }
+            );
+
+        }
+
+        /*
+        *   REMOVER IMAGEM DA GALERIA (MANTER NO DISCO)
+        */
+        function excluirImagem(botao) {
+
+            var imagem = botao.data('file');
+            $.post(
+                '@urlExcluirGaleria', { guid: '@Model.GUID', file: imagem },
+                function (response) {
+                    $(botao.parents('li.galeria-imagem-item')[0]).remove();
+                }
+            );
+
+        }
+
+    </script>
+
+    <!-- VÍDEOS -->
+
+
+    <script type="text/javascript">
+
+        function ValiadarQtdeUploadVideos(){
+            var videosCadastrados = $('ul#galeriaVideos li').length;
+
+            if("@limiteVideos" > 0 && videosCadastrados > "@limiteVideos")
+            {
+                $("#videosUpload").hide();
+                $("#videosAdd").hide();
+            }
+            else{
+                $("#videosUpload").show();
+                $("#videosAdd").show();
+            }
+        }
+
+        $(document).ready(function () {
+            ValiadarQtdeUploadVideos();
+
+            /*
+            *   FORM UPLOAD
+            */
+            Dropzone.options.videosUpload = {
+                maxFileSize: @(limiteVideos == 0 ? 99999999 : limiteVideos ),
+                url: "@urlUploadVideos",
+                acceptedFiles: ".mp4",
+                dictDefaultMessage: "@TAdm("Arraste ou clique aqui para realizar upload de arquivos")",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                sending: function (file, xhr, formData) { formData.append("guid", '@(Model.GUID)'); },
+                complete: function (file) {
+                    var nome = file.name;
+
+                    $.post(
+                        '@urlIncluirVideos', { guid: '@Model.GUID', file: nome },
+
+                        function (response) {
+                            $('#galeriaVideos').append('<li class="form-group col-sm-12 galeria-video-item">' + response + '</li>');
+                            $(file.previewElement).remove();
+                            ValiadarQtdeUploadVideos();
+                        }
+                    );
+                }
+            };
+
+
+
+            /*
+            * SORTABLE
+            */
+            $('#galeriaVideos').sortable();
+        });
+
+
+        /*
+        *   INCLUIR VÍDEO DO ARQUIVO EM DISCO PARA A GALERIA
+        */
+        function incluirVideo(botao) {
+
+            var arquivo = botao.data('file');
+            $.post('@urlIncluirVideos', { guid: '@Model.GUID', file: arquivo },
+                function (response) {
+                    botao.parent('li.galeria-video-item').remove();
+                    $('#galeriaVideos').append('<li class="form-group col-sm-12 galeria-video-item">' + response + '</li>');
+                }
+            );
+        }
+
+        /*
+        *   REMOVER VÍDEO DA GALERIA (MANTER NO DISCO)
+        */
+        function removerVideo(botao, codigo, imagem) {
+
+            $.post(
+                '@urlRemoverVideos', { guid: codigo, file: imagem },
+                function (response) {
+                    $(botao.parents('li.galeria-video-item')[0]).remove();
+                    $('#videoImportar').append('<li class="form-group col-sm-12 galeria-video-item">' + response + '</li>');
+                    ValiadarQtdeUploadVideos();
+                }
+            );
+
+        }
+
+        /*
+        *   REMOVER VÍDEO DA GALERIA (MANTER NO DISCO)
+        */
+        function excluirVideo(botao) {
+            ValiadarQtdeUploadVideos();
+            var imagem = botao.data('file');
+            $.post(
+                '@urlExcluirVideos', { guid: '@Model.GUID', file: imagem },
+                function (response) {
+                    $(botao.parents('li.galeria-video-item')[0]).remove();
+                }
+            );
+        }
+
+        /*
+        *   INCLUIR VÍDEO POR URL (YOUTUBE, VIMEO E ETC)
+        */
+        function incluirVideoUrl() {
+            $.post('@urlIncluirUrlVideos', { guid: '@Model.GUID' },
+            function (response) {
+                contentHtml = $('#galeriaVideos').clone();
+                $('#galeriaVideos').empty();
+                $('#galeriaVideos').append('<li class="form-group col-sm-12 galeria-video-item">' + response + '</li>');
+                $('#galeriaVideos').append(contentHtml);
+                ValiadarQtdeUploadVideos();
+            });
+        }
+
+
+
+    </script>
+
+    <!-- AUDIO -->
+
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("div#AudiosUpload").dropzone({
+                maxFilesize: 1000,
+                url: "@urlUploadAudios",
+                acceptedFiles: ".mp3, .wma",
+                dictDefaultMessage: "Upload",
+                sending: function (file, xhr, formData) { formData.append("guid", '@(Model.GUID)'); },
+                complete: function (file) {
+                    var nome = file.name;
+
+                    $.post(
+                        '@urlIncluirAudios', { guid: '@Model.GUID', file: nome },
+                        function (response) {
+                            $('#galeriaAudios').append('<li class="form-group col-sm-12 galeria-Audio-item">' + response + '</li>');
+                            $(file.previewElement).remove();
+                        }
+                    );
+                }
+            });
+
+            $('#galeriaAudios').sortable();
+        });
+
+
+        /*
+        *   INCLUIR VÍDEO DO ARQUIVO EM DISCO PARA A GALERIA
+        */
+        function incluirAudio(botao) {
+
+            var arquivo = botao.data('file');
+            $.post('@urlIncluirAudios', { guid: '@Model.GUID', file: arquivo },
+            function (response) {
+                botao.parent('li.galeria-Audio-item').remove();
+                $('#galeriaAudios').append('<li class="form-group col-sm-12 galeria-Audio-item">' + response + '</li>');
+            }
+        );
+        }
+
+        /*
+        *   REMOVER VÍDEO DA GALERIA (MANTER NO DISCO)
+        */
+        function removerAudio(botao, codigo, imagem) {
+
+            $.post(
+                '@urlRemoverAudios', { guid: codigo, file: imagem },
+                function (response) {
+                    $(botao.parents('li.galeria-Audio-item')[0]).remove();
+                    $('#AudioImportar').append('<li class="form-group col-sm-12 galeria-Audio-item">' + response + '</li>');
+                }
+            );
+
+        }
+
+        /*
+        *   REMOVER VÍDEO DA GALERIA (MANTER NO DISCO)
+        */
+        function excluirAudio(botao) {
+
+            var imagem = botao.data('file');
+            $.post(
+                '@urlExcluirAudios', { guid: '@Model.GUID', file: imagem },
+                function (response) {
+                    $(botao.parents('li.galeria-Audio-item')[0]).remove();
+                }
+            );
+        }
+
+    </script>
+
+
+    @if (extra1IsSelect)
+    {
+        <script>
+              $('select[name=Extra1]').multiselect({
+            includeSelectAllOption: true,
+            nonSelectedText: '@TAdm("Nenhuma selecionada")'
+        });
+        </script>
+    }
+
+    @if (extra2IsSelect)
+    {
+        <script>
+              $('select[name=Extra2]').multiselect({
+            includeSelectAllOption: true,
+            nonSelectedText: '@TAdm("Nenhuma selecionada")'
+        });
+        </script>
+    }
+
+    @if (extra3IsSelect)
+    {
+        <script>
+              $('select[name=Extra3]').multiselect({
+            includeSelectAllOption: true,
+            nonSelectedText: '@TAdm("Nenhuma selecionada")'
+        });
+        </script>
+    }
+
+    @if (!showSEO) { return; }
+
+    <script type="text/javascript">
+        function SalvarSeoOutros(codigo) {
+            $.post('@urlSeo', { codigoConteudo: codigo, seooutros: escape(ace.edit($("div.SeoOutros")[0]).getSession().getValue()) },
+                function (response) {
+                    if (response.Sucesso) {
+                        $("#seoModal").modal("hide");
+                        return false;
+                    }
+                }
+            )
+
+            return false;
+        }
+
+    </script>
+}

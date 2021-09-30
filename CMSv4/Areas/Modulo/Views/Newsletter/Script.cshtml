@@ -1,0 +1,56 @@
+﻿@model MLModuloNewsletter
+
+@{
+    string repositorio = @Model.Repositorio.Value.ToString() ?? "0";
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $("#newsletter_@repositorio").validate({
+        rules: {
+            email: {
+                required: true,
+                email: true,
+                maxlength: 250
+            },
+            nome:{
+                required: true,
+                maxlength: 250
+                }
+        },
+        messages: {
+            email: {
+                required: "@T("Informe seu e-mail.")",
+                email: "@T("E-mail inválido")",
+                maxlength: "@T("Informe no máximo 250 caracteres")"
+            },
+            nome:{
+                required: "@T("Informe seu nome.")",
+                maxlength: "@T("Informe no máximo 250 caracteres")"
+                }
+        }
+    });
+
+    $("#newsletter_@repositorio").submit(function (e) { 
+        if ($("#newsletter_@repositorio").valid()) {
+            var token = $("#newsletter_@repositorio").find('input[name="__RequestVerificationToken"]').val();
+           
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/Newsletter/Salvar",
+                data: {
+                    __RequestVerificationToken: token,
+                    'nome': $("#nome").val(), "email": $("#email").val(), "assunto": $(".tituloJQ").html()
+                },
+                success: function (data) {
+                    if (data.success)
+                        $("#newsletter_@repositorio").prepend("<div class='alert alert-success'>@T("E-mail cadastrado com sucesso")</div>");
+                    else
+                        $("#newsletter_@repositorio").prepend("<div class='alert alert-danger'>@T("Ocorreu um erro na tentativa de cadastrar o e-mail")</div>");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                }
+            });
+        }
+    });
+</script>

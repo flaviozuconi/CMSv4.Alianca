@@ -1,0 +1,16 @@
+﻿@model MLModuloEnquete
+
+@{
+    try
+    {
+        <div class="Enquete enquete_@Model.Repositorio" id="divEnqueteIndex_@Model.Repositorio" data-loading data-loading-target>
+            @{ Html.RenderAction("ControleExibicao", new { model = Model }); }
+        </div>
+    }
+    catch (Exception ex)
+    {
+        ApplicationLog.ErrorLog(ex);
+    }
+
+    BLConteudo.AdicionarJavaScript(Html.Partial("Script"));
+}

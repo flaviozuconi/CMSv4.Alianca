@@ -1,0 +1,10 @@
+﻿@model MLModuloLogin
+
+@try
+{
+    { Html.RenderAction("Login", "ModuloLogin", Model); }
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

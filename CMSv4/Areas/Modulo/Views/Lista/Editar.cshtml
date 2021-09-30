@@ -1,0 +1,138 @@
+﻿@model MLModuloLista
+@{
+    Layout = "";
+    var portal = BLPortal.Atual;
+    var listas = (List<MLListaConfig>)ViewData["listas"] ?? new List<MLListaConfig>();
+    var views = (List<string>)ViewData["views"] ?? new List<string>();
+    var categorias = (List<MLListaConfigCategoria>)ViewData["categorias-todas"] ?? new List<MLListaConfigCategoria>();
+    var categoriasSelecionadas = (List<string>)ViewData["categorias-selecionadas"] ?? new List<string>();
+    var listaconfigurado = ViewData["listaconfigurado"] != null ? true : false;
+}
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label>@T("Lista")</label>
+        <select name="@(!listaconfigurado ? "CodigoLista" : "CodigoListaFake")" id="@(!listaconfigurado ? "CodigoLista" : "CodigoListaFake")" class="form-control" @(listaconfigurado ? "disabled" : "")>
+            <option value="" selected>@T("Selecione")</option>
+            @foreach (var item in listas)
+            {
+                <option value="@item.Codigo" @(item.Codigo == Model.CodigoLista ? "selected" : "")>@item.Nome</option>
+            }
+        </select>
+
+        @if (listaconfigurado)
+        {
+            <input type="hidden" name="CodigoLista" value="@Model.CodigoLista" />
+        }
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Visualização")</label>
+        <select name="NomeView" class="form-control" id="NomeView">
+            <option value="" selected>@T("Selecione")</option>
+            @foreach (var item in views)
+            {
+                <option value="@item" @(item == Model.NomeView ? "selected" : "")>@item</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label>@T("Categorias")</label><br />
+        <select name="Categorias" multiple="multiple">
+            @foreach (var categoria in categorias)
+            {
+                <option value="@categoria.Codigo" @(categoriasSelecionadas.Find(o => o == categoria.Codigo.ToString()) != null ? "selected" : "")>@categoria.Nome</option>
+            }
+        </select>
+    </div>
+    <div class="form-group col-md-6">
+        <label>@T("Quantidade")</label>
+        <input type="text" class="form-control" name="Quantidade" maxlength="4" value="@Model.Quantidade" onkeypress="return somenteNumeros(event);">
+    </div>
+</div>
+<div class="clearfix"></div>
+
+<div class="row">
+    <div class="form-group col-md-24">
+        <label>@T("Título")</label>
+        <input type="text" class="form-control" name="Titulo" id="Titulo" placeholder="@T("Nome")" value="@Model.Titulo">
+    </div>
+</div>
+
+<div class="row">
+    <div class="form-group col-md-12">
+        <label>@T("Url Detalhe")</label>
+        <input type="text" class="form-control" name="UrlDetalhe" id="UrlDetalhe" placeholder="@T("Url Detalhe")" value="@Model.UrlDetalhe">
+        @Helpers.BuscarPaginas("UrlDetalhe", portal.Diretorio, portal.Codigo)
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Url Lista")</label>
+        <input type="text" class="form-control" name="UrlLista" id="UrlLista" placeholder="@T("Url Lista")" value="@Model.UrlLista">
+        @Helpers.BuscarPaginas("UrlLista", portal.Diretorio, portal.Codigo)
+    </div>
+</div>
+
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+    // Modify validation settings
+    $.extend(true, settings, {
+        rules: {
+            "CodigoLista": { required: true },
+            "NomeView": { required: true },
+            "Quantidade": { number: true },
+            "UrlDetalhe": { maxlength: 250 },
+            "UrlLista": { maxlength: 250 }
+        }
+    });
+
+    $('select[name=Categorias]').multiselect({
+        includeSelectAllOption: false,
+        nonSelectedText: '@T("Todas")'
+    });
+
+    $('select[name=CodigoLista]').on('change', function (event) {
+        PopularCombos($(this).val());
+    });
+
+    function PopularCombos(id) {
+
+        $('select[name=Categorias] option').remove();
+        $('select[name=NomeView] option').remove();
+
+        if (id != "") {
+
+            $.post('@Portal.UrlCms(portal)/lista/combos',
+               {
+                   idlista: id
+               },
+               function (data, opts) {
+                   if (data.success) {
+                       //Categorias
+                       $('select[name=Categorias]').append('<option value="multiselect-all">@T("Selecionar todos")</option>');
+
+                       $.each(data.categorias, function (i, item) {
+                           $('select[name=Categorias]').append('<option value="' + item.Codigo + '">' + item.Nome + '</option>');
+                       });
+
+                       //$('select[name=Categorias]').multiselect("textall", "@T("Selecionar todos")");
+                       $('select[name=Categorias]').multiselect("rebuild");
+
+                       //Views
+                       $('select[name=NomeView]').append('<option value="" selected>@T("Selecione")</option>');
+
+                       $.each(data.views, function (i, item) {
+                           $('select[name=NomeView]').append('<option value="' + item + '">' + item + '</option>');
+                       });
+
+                   }
+               }
+           );
+        } else {
+            $('select[name=NomeView]').append('<option value="" selected>@T("Selecione")</option>');
+
+            $('select[name=Categorias]').multiselect("rebuild");
+        }
+    }
+</script>

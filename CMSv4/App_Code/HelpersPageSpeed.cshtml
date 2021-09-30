@@ -1,0 +1,130 @@
+﻿@using VM2.PageSpeed.Model
+
+@helper TableHeaderWidthByValueType(string valueType)
+{
+    if (valueType == "url")
+    {
+        @:width="75%"
+    }
+}
+
+@helper FormatValueTypeToHtmlString(string valueType, string key, dynamic row)
+{
+    var value = Convert.ToString(row[key]);
+
+    switch (valueType)
+    {
+        case "url":
+            <a target="_blank" href="@value">@Framework.Utilities.BLUtilitarios.PageSpeed.UrlToShortText(value)</a>
+            break;
+
+        case "bytes":
+            @:@Framework.Utilities.BLUtilitarios.PageSpeed.BytesToReadibleSize(value)
+            break;
+
+        case "timespanMs":
+            @:@TimeSpan.FromMilliseconds(Convert.ToDouble(value))
+            break;
+
+        case "thumbnail":
+            <img src="@value" width="48" height="48" />
+            break;
+
+        case "ms":
+            @:@Framework.Utilities.BLUtilitarios.PageSpeed.MillisecondsToReadibleTime(value)
+            break;
+
+        case "node":
+            @:<p>@row.node.nodeLabel</p><small>@row.node.snippet</small>
+            break;
+
+        case "link":
+            <a href="@row.entity.url" target="_blank">@row.entity.text</a>
+            break;
+
+        default:
+            @:@value
+            break;
+    }
+}
+
+@helper PassedAudits(List<MLPageSpeedAudit> passeds)
+{
+    <div class="col-xs-12">
+        <h3 class="category-subtitle">Passed (@(passeds.Count))</h3>
+    </div>
+
+    <div class="col-xs-12">
+        @foreach (var passed in passeds)
+        {
+            <div class="category--item category--@passed.ScoreColorClass">
+                <div class="category--item-wrap" role="button" data-toggle="collapse" href="#@passed.Id" aria-expanded="false" aria-controls="@passed.Id">
+                    <span class="icon"></span>
+                    <h4 class="category--name">@passed.Title</h4>
+                </div>
+
+                <div class="category--collapse collapse" id="@passed.Id">
+                    <p>@(new HtmlString(passed.Description))</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+
+@helper Audits(List<MLPageSpeedAudit> audits, string uniqueId)
+{
+    <div class="col-xs-12">
+        @foreach (var audit in audits)
+        {
+            <div class="category--item category--@audit.ScoreColorClass">
+                <div class="category--item-wrap" role="button" data-toggle="collapse" href="#@(uniqueId)-@(audit.Id)" aria-expanded="false" aria-controls="@(uniqueId)-@(audit.Id)">
+                    <span class="icon"></span>
+                    <h4 class="category--name">@audit.Title</h4>
+
+                    @if (!string.IsNullOrWhiteSpace(audit.SubTitle))
+                    {
+                        <p class="category--time">@audit.SubTitle</p>
+                    }
+                </div>
+
+                <div class="category--collapse collapse" id="@(uniqueId)-@(audit.Id)">
+                    <p>@(new HtmlString(audit.Description))</p>
+
+                    @if (audit.Details != null && audit.Details.ContainsKey("headings"))
+                    {
+                        dynamic tableHader = audit.Details["headings"];
+                        dynamic tableRows = audit.Details["items"];
+
+                        if (tableHader != null && tableHader.Count > 0)
+                        {
+                            <table class="table-url">
+                                <thead>
+                                    <tr>
+                                        @foreach (var header in tableHader)
+                                        {
+                                            <th @TableHeaderWidthByValueType(header.itemType.ToString())>@header.text</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var row in tableRows)
+                                    {
+                                        <tr>
+                                            @foreach (var header in tableHader)
+                                            {
+                                                <td>
+                                                    @FormatValueTypeToHtmlString(header.itemType.ToString(), header.key.ToString(), row)
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}

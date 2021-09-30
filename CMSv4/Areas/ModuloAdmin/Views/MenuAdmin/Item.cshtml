@@ -1,0 +1,415 @@
+﻿@model MLMenuCompletoModulo
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/MenuAdmin", portal.Diretorio);
+    var objMenuItem = new MLMenuItemModulo();
+}
+
+<style type="text/css">
+    .multi-select-border {
+        border: 1px solid #ccc;
+    }
+</style>
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/menu" />
+                @TAdm("Menu")</h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model != null && Model.Codigo.HasValue)
+            {
+                @Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)
+            }
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix" style="height:100%;min-height:500px;">
+
+            <form id="formMenu" action="/cms/@portal.Diretorio/MenuAdmin/MenuSalvar" method="post">
+                <input type="hidden" name="Codigo" id="Codigo" value="@Model.Codigo"/>
+
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Nome")</label>
+                    <input type="text" class="form-control" name="Nome" maxlength="100" value="@Model.Nome">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label>@TAdm("Ícone")</label>
+                    <input type="text" class="form-control" name="Icone" maxlength="100" value="@Model.Icone">
+                </div>
+
+                <div class="form-group col-md-12">
+                    <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
+                </div>
+                <div class="form-group col-md-12 text-right">
+                    <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                    @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                    {
+                        <input type="submit" class="btn btn-green" id="btnSalvarMenu" value="@TAdm("Salvar")" />
+                    }
+                </div>
+            </form>
+            @{
+    if (Model != null && Model.Codigo.HasValue)
+    {
+        <form method="post" id="formEdicao"  class="form-vertical" role="form">
+            <fieldset class="col-md-12">
+                <legend>@TAdm("Itens")</legend>
+
+
+                <div id="confirmExclusao" class="alert alert-warning col-md-12" style="display:none;">
+                    <div class="col-md-10">
+                        <strong>@TAdm("AVISO"):</strong> @TAdm("Confirma a exclusão do item selecionado?")
+                    </div>
+                    <div class="col-md-2" style="text-align: right;">
+                        <a class="btn btn-red" href="javascript:;" onclick="AjaxDeletar();">Sim</a>
+                        <a class="btn btn-white" href="javascript:;" onclick="$('#confirmExclusao').hide();">Não</a>
+                    </div>
+                </div>
+
+                <input type="hidden" value="@Model.Codigo" name="Codigo" />
+                <div class="form-group col-md-12">
+                    @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                    {
+                        <a class="btn btn-green" onclick="criar('click');"><i class="fa fa-plus"></i> @TAdm("Criar")</a>
+                        <a class="btn btn-orange edit" onclick="editar();" style="display:none;"><i class="fa fa-pencil"></i> @TAdm("Editar")</a>
+                        <a class="btn btn-orange edit" onclick="renomear();" style="display:none;"><i class="fa fa-exchange"></i> @TAdm("Renomear")</a>
+                    }
+
+                    @if (AdminHelper.CheckPermission(Permissao.Excluir))
+                    {
+                        <a class="btn btn-red edit" onclick="deletar();" style="display:none;"><i class="fa fa-trash-o"></i> @TAdm("Deletar")</a>
+                    }
+                </div>
+                <div class="form-group col-md-12">
+                    <div style="float:left;height:30px;margin-top: 3px;">
+                        <a href="javascript:void(0)" id="expandirRetrairTodos" style="outline:0;" onclick="expandirRetrairJsTree();" title="@TAdm("Clique para expandir / retrair todos")" class="fa fa-plus-square-o"></a> @Model.Nome
+                    </div>
+
+                    <div style="float:left;margin-left:10px;height:30px;">
+                        <input class="form-control input-sm" id="busca" type="text" style="height:25px;width: 150px;" placeholder="@TAdm("Digite para pesquisar...")">
+                    </div>
+                    <div id="jstree" class="demo"></div>
+                </div>
+            </fieldset>
+
+        </form>
+    }
+}
+    </div>
+</div>
+
+<div id="edicao"></div>
+
+@section scripts {
+    <link href="~/Content/js/plugins/jstree/themes/default/style.min.css" rel="stylesheet" />
+    <script src="~/Content/js/plugins/jstree/jstree.min.js"></script>
+
+    <script>
+
+        function expandirRetrairJsTree() {
+            var expandir = $("#expandirRetrairTodos").hasClass("fa-plus-square-o");
+
+            if (expandir) {
+                $("#jstree").jstree('open_all');
+            }
+            else {
+                $("#jstree").jstree('close_all');
+            }
+
+            $("#expandirRetrairTodos").toggleClass("fa-plus-square-o fa-minus-square-o");
+        }
+
+        $('#formMenu').validate({
+            rules: {
+                Nome: {
+                    required: true,
+                    onkeyup: false,
+                    remote: {
+                        url: "/cms/@PortalAtual.Diretorio/MenuAdmin/ValidarNome",
+                        type: "post",
+                        async: false,
+                        loadingPanel: false,
+                        data: {
+                            Codigo: function () {
+                                return $('input[name=Codigo]').val()
+                            },
+                            Nome: function () {
+                                return $('input[name=Nome]').val()
+                            }
+                        }
+                    }
+                }
+            },
+            messages: {
+                Nome: {
+                    remote: "@TAdm("Já existe um cadastro com esse nome")"
+                }
+            }
+        });
+
+        $("#btnSalvarMenu").click(function (e) {
+            if ($('#formMenu').valid()) {
+                $('#formMenu').submit();
+            }
+
+            e.preventDefault();
+        });
+
+        function salvar(botao) {
+            var form = botao.parents('form')[0];
+
+            $.post(
+                form.action,
+                $(form).serialize(),
+                function (response) {
+                    botao.parents('.modal').modal('hide');
+                    $(".modal-backdrop").remove();
+
+                    $("#jstree").jstree(true).set_icon(response.CodigoMenuItem, response.Icon);
+                }
+            );
+            
+        }
+
+        function click_criar() {
+            criar("click");
+        }
+
+        function criar(tipo) {
+            var ref = $('#jstree').jstree(true),
+                sel = ref.get_selected();
+
+            var codigopai = 0;
+
+            if (sel.length > 0) {
+                codigopai = sel[0];
+            }
+
+            var dataSend = { 'codigopai': codigopai, "codigoMenu": "@Model.Codigo" }
+
+            $.ajax({
+                type: "POST",
+                url: "/cms/@portal.Diretorio/MenuAdmin/CriarItem",
+                data: dataSend,
+                async: true,
+                success: function (data, status, xhr) {
+                    if (tipo == "click") {
+                        $("#jstree").jstree('create_node', codigopai == 0 ? '#' : codigopai, { 'id': data.codigo, 'text': '@TAdm("Novo item")', "codigo": data.codigo, "ordem": data.ordem }, 'last');
+                    }
+                    else {
+                        if (!sel.length) { return false; }
+                        sel = sel[0];
+                        sel = ref.create_node(sel, { "id": data.codigo, "type": "file" });
+                        if (sel) {
+                            ref.edit(sel);
+                        }
+                    }
+                },
+                error: function (data) {
+                    $('#jstree').jstree("refresh");
+                }
+            });
+        }
+
+        function renomear() {
+            var ref = $('#jstree').jstree(true),
+                sel = ref.get_selected();
+
+            if (!sel.length) { return false; }
+            sel = sel[0];
+            ref.edit(sel);
+        }
+
+        function deletar() {
+            var ref = $('#jstree').jstree(true),
+                sel = ref.get_selected();
+
+            if (sel.length > 0) {
+                $("#confirmExclusao").fadeIn("slow");
+            }
+        }
+
+        function AjaxDeletar() {
+            var ref = $('#jstree').jstree(true),
+                sel = ref.get_selected();
+
+            if (sel.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/MenuAdmin/ExcluirItem",
+                    data: { "id": sel[0] },
+                    async: true,
+                    success: function (data, status, xhr) {
+                        if (data != null && data.Sucesso == true) {
+                            if (!sel.length) { return false; }
+                            ref.delete_node(sel);
+                        }
+                        else {
+                            $('#jstree').jstree("refresh");
+                        }
+                        $("#confirmExclusao").hide();
+                    },
+                    error: function (data) {
+                        $("#confirmExclusao").hide();
+                        $('#jstree').jstree("refresh");
+                    }
+                });
+            }
+        }
+
+        function editar() {
+            var ref = $('#jstree').jstree(true),
+                sel = ref.get_selected();
+
+            if (!sel.length) { return false; }
+            sel = sel[0];
+
+            $.ajax({
+                type: "POST",
+                url: "/cms/@portal.Diretorio/MenuAdmin/ObterItem",
+                data: { "codigo": sel },
+                success: function (data, status, xhr) {
+                    if (data != null) {
+                        $("#edicao").html("");
+                        $("#edicao").html(data);
+                        $('#editar').modal("show");
+                    }
+                    else {
+                        $('#jstree').jstree("refresh");
+                    }
+                },
+                error: function (data) {
+                    $('#jstree').jstree("refresh");
+                }
+            })
+        }
+
+        $(document).on('show.bs.modal', '#editar', function () {
+            $(".jq-multiselect").multiselect({
+                    enableFiltering: true,
+                    enableCaseInsensitiveFiltering: true,
+                    buttonClass: 'btn btn-white multi-select-border',
+                    buttonWidth: "100%",
+                    maxHeight: "250",
+                    nSelectedText: "@TAdm("Selecione...")",
+                    nonSelectedText: '@TAdm("Todos")',
+                    filterPlaceholder: '@TAdm("Digite para buscar...")'
+                });
+        })
+
+        $(document).ready(function () {
+            $('#jstree').jstree({
+                "core": {
+                    'data': {
+                        'url': "/cms/@portal.Diretorio/MenuAdmin/ListarMenu",
+                        'type': "POST",
+                        'data': { "codigoMenu": "@Model.Codigo" }
+                    },
+                    "animation": 0,
+                    "check_callback": true,
+                    "themes": { "stripes": true },
+                    "multiple": false
+                },
+                "plugins": ["contextmenu", "search", "ui", "dnd"],
+                "contextmenu": {
+                    "items": function ($node) {
+                        return {
+                            "Create": {
+                                "label": "Criar",
+                                "action": function (obj) {
+                                    criar("menu");
+                                }
+                            },
+                            "Rename": {
+                                "label": "Renomear",
+                                "action": function (obj) {
+                                    renomear();
+                                }
+                            },
+                            "Editar": {
+                                "label": "Editar",
+                                "action": function (obj) {
+                                    editar();
+                                }
+                            },
+                            "Delete": {
+                                "label": "Deletar",
+                                "action": function (obj) {
+                                    deletar();
+                                }
+                            }
+                        };
+                    }
+                }
+            });
+
+            $('#jstree').bind('rename_node.jstree', function (e, data) {
+                 var dataSend = { "codigo": data.node.id, "novoNome": data.text }
+                 var nomeAntigo = data.old;
+
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/MenuAdmin/Renomear",
+                    data: dataSend,
+                    async: true,
+                    success: function (data) {
+                        VerificarSucess(data, "Sucesso");
+                    },
+                    error: function (data){
+                        data.text = nomeAntigo;
+                        $('#jstree').jstree("refresh");
+                    }
+                })
+            });
+
+            $("#jstree").bind("move_node.jstree", function (e, data) {
+                 $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/MenuAdmin/OrdenarItem",
+                    data: { "codigo" : data.node.id, "newParent" : data.parent, "posicao" : data.position },
+                    async: true,
+                    success: function (data) {
+                        VerificarSucess(data, "Sucesso");
+                    },
+                    error: function (data) {
+                    }
+                })
+            });
+
+        });
+
+        var to = false;
+
+        $('#busca').keyup(function () {
+            if (to) { clearTimeout(to); }
+            to = setTimeout(function () {
+                var v = $('#busca').val();
+                $('#jstree').jstree(true).search(v);
+            }, 250);
+        });
+
+        var _selectedNodeId;
+        $("#jstree").bind("select_node.jstree", function (e, data) {
+            if (_selectedNodeId === data.node.id) {
+                data.instance.deselect_node(data.node);
+                _selectedNodeId = "";
+                $(".edit").hide();
+            } else {
+                _selectedNodeId = data.node.id;
+                $(".edit").show();
+            }
+        });
+
+        function VerificarSucess(data, msg) {
+            if (data != null && data.Sucesso == true) {
+            }
+            else {
+                $('#jstree').jstree("refresh");
+            }
+        }
+    </script>
+}

@@ -1,0 +1,936 @@
+﻿@model MLTakeOrPayEmbarqueCertoCompleto
+@{
+    var portal = BLPortal.Atual;
+    var baseUrl = "/portal/" + BLPortal.Atual.Diretorio + "/";
+    var Arquivo = string.Format("/portal/{0}/arquivos/takeorpay/pdf/{1}.pdf", portal.Diretorio, Model.Codigo);
+
+    var urlLista = string.Format("/cms/{0}/takeorpayadmin", portal.Diretorio);
+    var urlDownload = string.Format("/cms/{0}/takeorpayadmin", portal.Diretorio);
+    var URL = string.Format("/cms/{0}/takeorpayadmin/itemsalvar", portal.Diretorio);
+
+    var urlCep1 = "https://viacep.com.br/ws/";
+    var urlCep2 = "/json/unicode/";
+
+    var estados = CRUD.Listar<MLEstado>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/price_alert" />
+                @TAdm("Take Or Pay")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form class="modal-content" id="form" name="form" method="post" enctype="multipart/form-data">
+            <div class="form-group col-md-12">
+                @*Modalidade de Contratação*@
+                <fieldset>
+                    <legend>@TAdm("Modalidade de Contratação")</legend>
+                    <input type="hidden" name="Codigo" id="Codigo" value="@Model.Codigo" />
+                    <div class="form-group col-md-12">
+                        <label>@TAdm("Tipo de Contratação")</label><br />
+                        <label for="isBID1"><input type="radio" name="isBID" id="isBID1" value="1" @(Model.isBID.GetValueOrDefault(false) ? "checked" : "")>&nbsp;@T("BID")</label>&nbsp;&nbsp;&nbsp;
+                        <label for="isBID0"><input type="radio" name="isBID" id="isBID0" value="0" @(Model.isBID.GetValueOrDefault(false) ? "" : "checked")>&nbsp;@T("Proposta Comercial")</label>
+                    </div>
+
+                    <div class="form-group col-md-12" id="divPropostas" @(Model.isBID.GetValueOrDefault(false) ? "style=display:none;" : "")>
+                        <input type="hidden" class="form-control" id="lstNumeroProposta" autocomplete="off" value="@string.Join(",", Model.lstProposta.Select(x => x.NumeroProposta)),">
+                        <label>@TAdm("Propostas")</label><br />
+                        <div class="form-group col-14 col-sm-3">
+                            <input type="number" class="form-control" id="NumeroProposta" autocomplete="off">
+                            <div class="alert alert-danger" id="erroProposta" style="display: none;">@T("Número da proposta inválido.")</div>
+                            <div class="alert alert-danger" id="erroAdicionarProposta" style="display: none;">@T("Adicione ao menos um item.")</div>
+                        </div>
+                        <div class="form-group col-10 col-sm-6">
+                            <a href="javascript:void(0);" class="btn btn-primary" id="btnAdicionar">Adicionar</a>
+                        </div>
+                        <div class="row">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">@TAdm("Proposta")</th>
+                                        <th scope="col">@TAdm("Excluir")</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="listaPropostas">
+                                    @foreach (var item in Model.lstProposta)
+                                    {
+                                        <tr id="tr-prop-@item.NumeroProposta">
+                                            <td class="form-group col-md-4">
+                                                @item.NumeroProposta
+                                            </td>
+                                            <td class="form-group col-md-4">
+                                                <a href="javascript:ExcluirProposta(@item.NumeroProposta)" class="fa fa-trash"></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </fieldset>
+
+                @*Dados Cadastrais*@
+                <fieldset>
+                    <legend>@TAdm("Dados Cadastrais")</legend>
+
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Nome")</label>
+                        <input type="text" class="form-control" maxlength="150" id="Nome" value="@Model.Nome" />
+                        <div class="alert alert-danger" id="erroNome" style="display: none;">@T("Preencha este campo.")</div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("E-mail")</label>
+                        <input type="email" class="form-control" maxlength="100" id="Email" value="@Model.Email" />
+                        <div class="alert alert-danger" id="erroEmail" style="display: none;">@T("Preencha este campo.")</div>
+                    </div>
+                    <div class="form-group col-md-3" id="divCNPJ" @(Model.isBID.GetValueOrDefault(false) ? "" : "style=display:none;")>
+                        <label>@TAdm("CNPJ")</label>
+                        <input type="text" class="form-control" maxlength="20" id="CNPJ" value="@Model.CNPJ" />
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>@TAdm("Cep")</label>
+                        <input type="text" class="form-control" maxlength="15" id="CEP" value="@Model.CEP" />
+                        <div class="alert alert-danger" id="erroCEP" style="display: none;">@T("Preencha este campo.")</div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Endereço")</label>
+                        <input type="text" class="form-control" maxlength="50" id="Logadouro" value="@Model.Logadouro" />
+                        <div class="alert alert-danger" id="erroLogadouro" style="display: none;">@T("Preencha este campo.")</div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>@TAdm("Bairro")</label>
+                        <input type="text" class="form-control" maxlength="50" id="Bairro" value="@Model.Bairro" />
+                        <div class="alert alert-danger" id="erroBairro" style="display: none;">@T("Preencha este campo.")</div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Cidade")</label>
+                        <input type="text" class="form-control" maxlength="100" id="Cidade" value="@Model.Cidade" />
+                        <div class="alert alert-danger" id="erroCidade" style="display: none;">@T("Preencha este campo.")</div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>@TAdm("Estado")</label>
+                        <select class="custom-select form-control" name="Estado" id="Estado">
+                            <option disabled selected>Selecione</option>
+                            @foreach (var estado in estados)
+                            {
+                                <option value="@estado.Uf" @(Model.Estado == estado.Uf ? "selected" : "")>@estado.Nome</option>
+                            }
+                        </select>
+                        <div class="alert alert-danger" id="erroEstado" style="display: none;">@T("Preencha este campo.")</div>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>@TAdm("Data Cadastro")</label>
+                        <input type="text" class="form-control" maxlength="10" value="@Model.DataCadastro.ToString()" disabled />
+                    </div>
+                </fieldset>
+
+                @*Tipo de Reserva*@
+                <fieldset>
+                    <legend>@TAdm("Tipo de Reserva")</legend>
+
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Deseja reservar seu espaço conosco para os próximos embarques também?")</label><br />
+                        <label for="ReservarEspaco1"><input type="radio" name="ReservarEspaco" id="ReservarEspaco1" value="1" @(Model.ReservarEspaco.GetValueOrDefault(false) ? "checked" : "")>&nbsp;@T("Sim")</label>&nbsp;&nbsp;&nbsp;
+                        <label for="ReservarEspaco0"><input type="radio" name="ReservarEspaco" id="ReservarEspaco0" value="0" @(Model.ReservarEspaco.GetValueOrDefault(false) ? "" : "checked")>&nbsp;@T("Não")</label>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("O seu volume de Embarque Certo será semanal ou mensal ? ")</label><br />
+                        <label for="IsSemanal1"><input type="radio" name="IsSemanal" id="IsSemanal1" value="1" @(Model.IsSemanal.GetValueOrDefault(false) ? "checked" : "")>&nbsp;@T("Semanal")</label>&nbsp;&nbsp;&nbsp;
+                        <label for="IsSemanal0"><input type="radio" name="IsSemanal" id="IsSemanal0" value="0" @(Model.IsSemanal.GetValueOrDefault(false) ? "" : "checked")>&nbsp;@T("Mensal")</label>
+                    </div>
+                </fieldset>
+
+                @*Distribuição de Carga*@
+                <fieldset>
+                    <legend>@TAdm("Distribuição de Carga")</legend>
+
+                    <div class="form-group col-md-12">
+                        <button class="btn btn-blue" data-toggle="modal" data-target="#modalAdicionarContainer" id="btnAbrirModal">@TAdm("Adicionar")</button>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Navio/Viagem")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Navio/Viagem 2ª opçao")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Navio/Viagem 3ª opçao")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Tipo container")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Tamanho container")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Tonelagem média")</th>
+
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("RIG para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("IBB para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("IOA para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("SSZ para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("SPB para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("VIX para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("SSA para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("SUA para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("PEC para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Excluir")</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listaContainer">
+                                @foreach (var item in Model.lstContainer)
+                                {
+                                    <tr id="tr-cont-@item.Codigo">
+                                        <td class="form-group">@item.NavioViagem</td>
+                                        <td class="form-group">@item.NavioViagemOp2</td>
+                                        <td class="form-group">@item.NavioViagemOp3</td>
+                                        <td class="form-group">@item.TipoContainer</td>
+                                        <td class="form-group">@item.TamanhoContainer</td>
+                                        <td class="form-group">@item.TonelagemMedia</td>
+                                        <td class="form-group">@item.RIG</td>
+                                        <td class="form-group">@item.IBB</td>
+                                        <td class="form-group">@item.IOA</td>
+                                        <td class="form-group">@item.SSZ</td>
+                                        <td class="form-group">@item.SPB</td>
+                                        <td class="form-group">@item.VIX</td>
+                                        <td class="form-group">@item.SSA</td>
+                                        <td class="form-group">@item.SUA</td>
+                                        <td class="form-group">@item.PEC</td>
+                                        <td class="form-group col-md-4"><a href="javascript:ExcluirContainer(@item.Codigo)" class="fa fa-trash"></a></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <div class="alert alert-danger" id="erroContainer" style="display: none;">@T("Adicione ao menos um item.")</div>
+                    </div>
+                </fieldset>
+
+                @*Conclusão da reserva*@
+                <fieldset>
+                    <legend>@TAdm("Conclusão da reserva")</legend>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Li e aceito todos os termos e condições referentes ao Embarque Certo")</label><br />
+                        <label for="TermoAceito1"><input type="radio" name="TermoAceito" id="TermoAceito1" value="1" @(Model.TermoAceito.GetValueOrDefault(false) ? "checked" : "")>&nbsp;@T("Sim")</label>&nbsp;&nbsp;&nbsp;
+                        <label for="TermoAceito0"><input type="radio" name="TermoAceito" id="TermoAceito0" value="0" @(Model.TermoAceito.GetValueOrDefault(false) ? "" : "checked")>&nbsp;@T("Não")</label>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Arquivo PDF")</label>
+                        <br />
+                        <a href="@Arquivo" download>@TAdm("Clique aqui para fazer o download")</a>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <button class="btn btn-green" data-toggle="modal" data-target="#modalAvisoSalvar">@TAdm("Salvar")</button>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Modal Adicionar Container -->
+<div class="modal fade" id="modalAdicionarContainer" tabindex="-1" aria-labelledby="modalAdicionarContainer" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">@TAdm("Adicionar container")</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group col-md-12 row" id="divNavioViagem">
+                    <div class="form-group col-md-4" id="divNavioViagem">
+                        <label for="NavioViagem">@T("Navio/Viagem/Direção")</label>
+                        <select type="text" class="form-control" name="NavioViagem" id="NavioViagem"></select>
+                        <div class="invalid-feedback" id="erroNavioViagem" style="display: none;"><h6>Preencha este campo.</h6></div>
+                    </div>
+                    <div class="form-group col-md-4" id="divNavioViagemOp2">
+                        <label for="NavioViagemOp2">@T("Navio/Viagem/Direção (2ª opção)")</label>
+                        <select type="text" class="form-control" name="NavioViagemOp2" id="NavioViagemOp2"></select>
+                    </div>
+                    <div class="form-group col-md-4" id="divNavioViagemOp3">
+                        <label for="NavioViagemOp3">@T("Navio/Viagem/Direção (3ª opção)")</label>
+                        <select type="text" class="form-control" name="NavioViagemOp3" id="NavioViagemOp3"></select>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12 row">
+                    <div class="form-group col-md-4">
+                        <label>@TAdm("Tipo container:")</label>
+                        <select class="form-control" name="TipoContainer" id="TipoContainer">
+                            <option disabled selected>Selecione</option>
+                            <option value="Refrigerado">Refrigerado</option>
+                            <option value="Seco">Seco</option>
+                        </select>
+                        <div class="invalid-feedback" id="erroTipoContainer" style="display: none;"><h6></h6>Preencha este campo.</div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>@TAdm("Tamanho container:")</label>
+                        <select class="form-control" name="TamanhoContainer" id="TamanhoContainer">
+                            <option disabled selected>Selecione</option>
+                            <option value="20'">20'</option>
+                            <option value="40'">40'</option>
+                        </select>
+                        <div class="invalid-feedback" id="erroTamanhoContainer" style="display: none;"><h6></h6>Preencha este campo.</div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>@TAdm("Tonelagem média:")</label>
+                        <input type="number" class="form-control" id="TonelagemMedia" name="TonelagemMedia" />
+                        <div class="invalid-feedback" id="erroTonelagemMedia" style="display: none;"><h6></h6>Preencha este campo.</div>
+                        <div class="invalid-feedback" id="erroTonelagemDecimal" style="display: none; text-align: center;"><h6>Utilize apenas valores inteiros.</h6></div>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <div class="form-group col-md-12">
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Rio Grande</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="RIG" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-RIG"><span>deadline</span></p>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Imbituba</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="IBB" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-IBB"><span>deadline</span></p>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Itapoá</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="IOA" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-IOA"><span>deadline</span></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Santos</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="SSZ" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-SSZ"><span>deadline</span></p>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Itaguaí/Sepetiba</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="SPB" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-SPB"><span>deadline</span></p>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Vitória</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="VIX" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-VIX"><span>deadline</span></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Salvador</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="SSA" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-SSA"><span>deadline</span></p>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Suape</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="SUA" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-SUA"><span>deadline</span></p>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <p>
+                                Unidades de <br>
+                                <strong>Pecém</strong> para <strong>Manaus</strong>
+                            </p>
+                            <div class="input-qtd">
+                                <input class="form-control porto" type="number" id="PEC" value="0" min="0">
+                            </div>
+
+                            <p class="flow-deadline" id="deadline-PEC"><span>deadline</span></p>
+                        </div>
+                    </div>
+                    <div class="invalid-feedback" id="erroContagemContainer" style="display: none; text-align: center;"><h6>Adicione ao menos uma unidade.</h6></div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnModelAdicionarContainer">@TAdm("Adicionar")</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Aviso Salvar-->
+<div class="modal fade" id="modalAvisoSalvar" tabindex="-1" aria-labelledby="modalAvisoSalvar" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">@TAdm("Salvar")</h3>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h3>@T("Ao clicar em salvar um e-mail será enviado para o cliente.")</h3>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-green" id="btnSalvar" value="@TAdm("Salvar")" />
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    table tr th {
+        background: #34495e;
+        color: #fff;
+        text-align: center;
+    }
+
+    table tr td {
+        background: #cccccc73;
+        text-align: center;
+        border: 1px solid #fff;
+    }
+</style>
+
+@section scripts{
+    <script src="@baseUrl/js/plugins/jquery.mask/jquery.mask.min.js"></script>
+    <script src="@baseUrl/js/plugins/select2/select2.min.js"></script>
+    <link href="@baseUrl/css/select2.css" rel="stylesheet" />
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#CEP").mask("00000-000");
+            $("#CNPJ").mask("00.000.000/0000-00");
+
+            $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/ListarNaviosAutocomplete",
+            success: function (data) {
+                $('#NavioViagem').empty();
+                $('#NavioViagem').append(data.autocomplete);
+                $('#NavioViagem').select2();
+
+                $('#NavioViagemOp2').empty();
+                $('#NavioViagemOp2').append(data.autocomplete);
+                $('#NavioViagemOp2').select2();
+
+                $('#NavioViagemOp3').empty();
+                $('#NavioViagemOp3').append(data.autocomplete);
+                $('#NavioViagemOp3').select2();
+            },
+            error: function (data) {
+            }
+        });
+        });
+
+        $("#CEP").focusout(function () {
+            $.ajax({
+                url: '@urlCep1' + $("#CEP").val() + '@urlCep2',
+                dataType: 'json',
+                success: function (resposta) {
+                    $("#Logadouro").val(resposta.logradouro);
+                    $("#Bairro").val(resposta.bairro);
+                    $("#Cidade").val(resposta.localidade);
+                    $("#Estado").val(resposta.uf);
+                }
+            });
+        });
+
+        $("input[name=isBID]").change(function () {
+            if ($("#isBID1").prop("checked")) {
+                $("#divPropostas").hide()
+                $('#listaPropostas').html("")
+                $("#lstNumeroProposta").val("")
+
+                $("#divCNPJ").show()
+            }
+            else {
+                $("#divCNPJ").hide()
+                $('#CNPJ').html("")
+
+                $("#divPropostas").show()
+            }
+        });
+
+        $("#TonelagemMedia").change(function () {
+            if ($(this).val().includes(".") || $(this).val().includes(",")) {
+                $(this).val($(this).val().split('.')[0]);
+
+                $("#erroTonelagemDecimal").show()
+                $("#TonelagemMedia").addClass("is-invalid")
+            }
+            else {
+                $("#erroTonelagemDecimal").hide()
+                $("#TonelagemMedia").removeClass("is-invalid")
+            }
+
+        });
+
+        $("#NavioViagem").change(function () {
+            if (!$("#ReservarEspaco1").prop("checked"))
+                AtualizarDeadline();
+        });
+
+        $("#btnAdicionar").click(function () {
+            let numeroProposta = $("#NumeroProposta").val();
+            let lstnumeroProposta = $("#lstNumeroProposta").val();
+
+            if (lstnumeroProposta.includes(numeroProposta)) {
+                PropostaInvalida();
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/isValidNumeroProposta",
+                    data: { "numeroProposta": numeroProposta },
+                    success: function (data) {
+                        if (data.Sucess == true) {
+                            $("#erroProposta").hide()
+                            $("#NumeroProposta").removeClass("has-error")
+
+                            $('#listaPropostas').append("<tr id='tr-prop-" + numeroProposta + "'><td class='form-group col-md-4'>" + numeroProposta + "</td><td class='form-group col-md-4'><a href='javascript: ExcluirProposta(" + numeroProposta + ")' class='fa fa-trash'></a></td></tr>");
+
+                            $("#lstNumeroProposta").val(lstnumeroProposta + numeroProposta + ',');
+
+                            $("#erroNumeroProposta").hide()
+                            $("#NumeroProposta").removeClass("has-error")
+                            $("#NumeroProposta").val("")
+                        }
+                        else {
+                            PropostaInvalida();
+                        }
+                    },
+                    error: function (data) {
+                        PropostaInvalida();
+                    }
+                });
+            }
+        });
+
+        $("#btnAbrirModal").click(function () {
+            if (!$("#ReservarEspaco1").prop("checked")) {
+                $("#divNavioViagem").show()
+                $("#divNavioViagemOp2").show()
+                $("#divNavioViagemOp3").show()
+
+                DesabilitarUnidades()
+            }
+            else if (!$("#IsSemanal1").prop("checked")) {
+                $("#divNavioViagem").show()
+                $("#divNavioViagemOp2").hide()
+                $("#divNavioViagemOp3").hide()
+
+                HabilitarUnidades()
+            }
+            else {
+                $("#divNavioViagem").hide()
+                $("#divNavioViagemOp2").hide()
+                $("#divNavioViagemOp3").hide()
+
+                HabilitarUnidades()
+            }
+        });
+
+        $("#btnModelAdicionarContainer").click(function () {
+            let erro = 0;
+
+            let RIG = $("#RIG").val();
+            let IBB = $("#IBB").val();
+            let IOA = $("#IOA").val();
+            let SSZ = $("#SSZ").val();
+            let SPB = $("#SPB").val();
+            let VIX = $("#VIX").val();
+            let SSA = $("#SSA").val();
+            let SUA = $("#SUA").val();
+            let PEC = $("#PEC").val();
+
+            if (!$("#ReservarEspaco1").prop("checked") && $("#NavioViagem").val() == "" || $("#ReservarEspaco1").prop("checked") && !$("#IsSemanal1").prop("checked") && $("#NavioViagem").val() == "") {
+                $("#erroNavioViagem").show();
+                $("#NavioViagem").addClass("is-invalid")
+
+                return;
+            }
+            else {
+                $("#erroNavioViagem").hide();
+                $("#NavioViagem").removeClass("is-invalid")
+            }
+
+            if ($("#TipoContainer").val() == null) {
+                $("#erroTipoContainer").show()
+
+                erro++
+            }
+            else {
+                $("#erroTipoContainer").hide()
+            }
+
+            if ($("#TamanhoContainer").val() == null) {
+                $("#erroTamanhoContainer").show()
+
+                erro++
+            }
+            else {
+                $("#erroTamanhoContainer").hide()
+            }
+
+            if ((RIG + IBB + IOA + SSZ + SPB + VIX + SSA + SUA + PEC) == 0) {
+                $("#erroContagemContainer").show();
+
+                erro++;
+            }
+            else {
+                $("#erroContagemContainer").hide();
+            }
+
+            if ($("#TonelagemMedia").val() <= 0) {
+                $("#erroTonelagemMedia").show();
+                $("#TonelagemMedia").addClass("is-invalid")
+
+                erro++;
+            }
+            else {
+                $("#erroTonelagemMedia").hide();
+                $("#TonelagemMedia").removeClass("is-invalid")
+            }
+
+            if (erro == 0) {
+                let dados = {
+                    "CodigoEmbarqueCerto": $("#Codigo").val(),
+                    "NavioViagem": !$("#ReservarEspaco1").prop("checked") || !$("#IsSemanal1").prop("checked") ? $("#NavioViagem").val() : "",
+                    "NavioViagemOp2": !$("#ReservarEspaco1").prop("checked") ? $("#NavioViagemOp2").val() : "",
+                    "NavioViagemOp3": !$("#ReservarEspaco1").prop("checked") ? $("#NavioViagemOp3").val() : "",
+                    "TipoContainer": $("#TipoContainer").val(),
+                    "TamanhoContainer": $("#TamanhoContainer").val(),
+                    "TonelagemMedia": $("#TonelagemMedia").val(),
+                    "RIG": RIG,
+                    "IBB": IBB,
+                    "IOA": IOA,
+                    "SSZ": SSZ,
+                    "SPB": SPB,
+                    "VIX": VIX,
+                    "SSA": SSA,
+                    "SUA": SUA,
+                    "PEC": PEC
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/AdicionarContainer",
+                    data: dados,
+                    success: function (data) {
+                        if (data.Sucess == true) {
+                            $('#listaContainer').append('<tr id="tr-cont-' + data.Codigo + '"><td class="form-group">' + $("#NavioViagem").val() + '</td><td class="form-group">' + $("#NavioViagemOp2").val() + '</td><td class="form-group">' + $("#NavioViagemOp3").val() + '</td><td class="form-group">' + $("#TipoContainer").val() + '</td><td class="form-group">' + $("#TamanhoContainer").val() + '</td><td class="form-group">' + $("#TonelagemMedia").val() + '</td><td class="form-group">' + RIG + '</td><td class="form-group">' + IBB + '</td><td class="form-group">' + IOA + '</td><td class="form-group">' + SSZ + '</td><td class="form-group">' + SPB + '</td><td class="form-group">' + VIX + '</td><td class="form-group">' + SSA + '</td><td class="form-group">' + SUA + '</td><td class="form-group">' + PEC + '</td><td class="form-group col-md-4"><a href="javascript:ExcluirContainer(' + data.Codigo + ')" class="fa fa-trash"></a></td></tr>');
+
+                            if (!$("#ReservarEspaco1").prop("checked")) {
+                                DesabilitarUnidades()
+                            }
+
+                            LimparCampos();
+
+                            $('#modalAdicionarContainer').modal('hide')
+                        }
+                        else {
+                            ErroGenerico();
+                        }
+                    },
+                    error: function (data) {
+                        ErroGenerico();
+                }});
+            }
+        });
+
+        $("#btnSalvar").click(function () {
+            let erro = 0
+
+            if (!$("#isBID1").prop("checked") && $("#lstNumeroProposta").val().length <= 1) {
+                $("#erroAdicionarProposta").show()
+                erro++
+            }
+            else {
+                $("#erroAdicionarProposta").hide()
+            }
+
+            if ($("#Nome").val().length == 0) {
+                $("#erroNome").show()
+                erro++
+            }
+            else {
+                $("#erroNome").hide()
+            }
+
+            if ($("#Email").val().length == 0) {
+                $("#erroEmail").show()
+                erro++
+            }
+            else {
+                $("#erroEmail").hide()
+            }
+
+            if ($("#CEP").val().length == 0) {
+                $("#erroCEP").show()
+                erro++
+            }
+            else {
+                $("#erroCEP").hide()
+            }
+
+            if ($("#Logadouro").val().length == 0) {
+                $("#erroLogadouro").show()
+                erro++
+            }
+            else {
+                $("#erroLogadouro").hide()
+            }
+
+            if ($("#Bairro").val().length == 0) {
+                $("#erroBairro").show()
+                erro++
+            }
+            else {
+                $("#erroBairro").hide()
+            }
+
+            if ($("#Cidade").val().length == 0) {
+                $("#erroCidade").show()
+                erro++
+            }
+            else {
+                $("#erroCidade").hide()
+            }
+
+            if ($("#Estado").val() == null || $("#Estado").val() == '') {
+                $("#erroEstado").show()
+                erro++
+            }
+            else {
+                $("#erroEstado").hide()
+            }
+
+            if ($("#listaContainer").html().length < 300) {
+                $("#erroContainer").show()
+                erro++
+            }
+            else {
+                $("#erroContainer").hide()
+            }
+
+            if (erro > 0) {
+                $('#modalAvisoSalvar').modal('hide')
+            }
+            else {
+                $("#form").submit()
+            }
+        });
+
+        function ExcluirContainer(CodigoTabela)
+ {
+            $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/ExcluirContainer",
+            data: { "CodigoTabela": CodigoTabela },
+            success: function (data) {
+                if (data.Sucess == true) {
+                    $("#tr-cont-" + CodigoTabela).remove();
+                }
+                else {
+                    ErroGenerico();
+                }
+            },
+            error: function (data) {
+                ErroGenerico();
+            }});
+        }
+
+        function PropostaInvalida() {
+            $("#erroProposta").show()
+            $("#NumeroProposta").addClass("has-error")
+        }
+
+        function ExcluirProposta(NumeroProposta) {
+            let lstnumeroProposta = $("#lstNumeroProposta").val();
+
+            let newLstnumeroProposta = lstnumeroProposta.replace(NumeroProposta + ',', '');
+            $("#lstNumeroProposta").val(newLstnumeroProposta);
+
+            $("#tr-prop-" + NumeroProposta).remove()
+        }
+
+        function AtualizarDeadline() {
+            $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/ListarDeadLine",
+            data: { "NavioViagem": $("#NavioViagem").val() },
+            success: function (data) {
+                if (data.Sucess == true) {
+                    AtualizaUnidade(data.DeadlineRIG, data.DeadlineRIGAtivo, "RIG")
+                    AtualizaUnidade(data.DeadlineIBB, data.DeadlineIBBAtivo, "IBB")
+                    AtualizaUnidade(data.DeadlineIOA, data.DeadlineIOAAtivo, "IOA")
+                    AtualizaUnidade(data.DeadlineSSZ, data.DeadlineSSZAtivo, "SSZ")
+                    AtualizaUnidade(data.DeadlineSPB, data.DeadlineSPBAtivo, "SPB")
+                    AtualizaUnidade(data.DeadlineVIX, data.DeadlineVIXAtivo, "VIX")
+                    AtualizaUnidade(data.DeadlineSSA, data.DeadlineSSAAtivo, "SSA")
+                    AtualizaUnidade(data.DeadlineSUA, data.DeadlineSUAAtivo, "SUA")
+                    AtualizaUnidade(data.DeadlinePEC, data.DeadlinePECAtivo, "PEC")
+                }
+                else {
+                    ErroGenerico();
+                }
+            },
+            error: function (data) {
+                ErroGenerico();
+            }});
+    }
+
+        function AtualizaUnidade(deadLine, deadLineAtivo, porto) {
+            if (deadLineAtivo == null) {
+                DesabilitarUnidade(porto)
+            }
+            else {
+                $("#" + porto).val(0)
+                $("#" + porto).attr("disabled", !deadLineAtivo)
+                $("#deadline-" + porto).html(deadLine + "<span><br/>deadline</span>")
+            }
+        }
+
+        function LimparCampos() {
+            $('#NavioViagem').val(null);
+            $('#NavioViagemOp2').val(null);
+            $('#NavioViagemOp3').val(null);
+
+            $('#TipoContainer').val(null);
+            $('#TamanhoContainer').val(null);
+
+            $("#RIG").val(0);
+            $("#IBB").val(0);
+            $("#IOA").val(0);
+            $("#SSZ").val(0);
+            $("#SPB").val(0);
+            $("#VIX").val(0);
+            $("#SSA").val(0);
+            $("#SUA").val(0);
+            $("#PEC").val(0);
+
+            $("#TonelagemMedia").val("");
+        }
+
+        function HabilitarUnidades() {
+            HabilitarUnidade("RIG")
+            HabilitarUnidade("IBB")
+            HabilitarUnidade("IOA")
+            HabilitarUnidade("SSZ")
+            HabilitarUnidade("SPB")
+            HabilitarUnidade("VIX")
+            HabilitarUnidade("SSA")
+            HabilitarUnidade("SUA")
+            HabilitarUnidade("PEC")
+        }
+
+        function HabilitarUnidade(porto) {
+            $("#" + porto).val(0)
+            $("#" + porto).attr("disabled", false)
+            $("#deadline-" + porto).html("")
+        }
+
+        function DesabilitarUnidades() {
+            DesabilitarUnidade("RIG")
+            DesabilitarUnidade("IBB")
+            DesabilitarUnidade("IOA")
+            DesabilitarUnidade("SSZ")
+            DesabilitarUnidade("SPB")
+            DesabilitarUnidade("VIX")
+            DesabilitarUnidade("SSA")
+            DesabilitarUnidade("SUA")
+            DesabilitarUnidade("PEC")
+        }
+
+        function DesabilitarUnidade(porto) {
+            $("#" + porto).val(0)
+            $("#" + porto).attr("disabled", true)
+            $("#deadline-" + porto).html("")
+        }
+
+        function ErroGenerico() {
+            alert("Algo deu errado, tente novamente mais tarde.");
+        }
+
+        $("#form").submit(function (event) {
+            var formData = {
+                "Codigo": $("#Codigo").val(),
+                "Nome": $("#Nome").val(),
+                "Email": $("#Email").val(),
+                "CNPJ": $("#CNPJ").val(),
+                "CEP": $("#CEP").val(),
+                "Logadouro": $("#Logadouro").val(),
+                "Bairro": $("#Bairro").val(),
+                "Cidade": $("#Cidade").val(),
+                "Estado": $("#Estado").val(),
+                "isBID": $("#isBID1").prop("checked"),
+                "ReservarEspaco": $("#ReservarEspaco1").prop("checked"),
+                "IsSemanal": $("#IsSemanal1").prop("checked"),
+                "TermoAceito": $("#TermoAceito1").prop("checked"),
+                "lstNumeroProposta": $("#lstNumeroProposta").val()
+            };
+            $.ajax({
+                url: "@URL",
+                type: "POST",
+                data: formData,
+                success: function (data, status, xhr) {
+
+                }
+            })
+        });
+    </script>
+}

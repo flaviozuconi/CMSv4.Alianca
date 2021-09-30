@@ -1,0 +1,271 @@
+﻿@model MLPaginaAdmin
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/pagina", portal.Diretorio);
+    var urlNova = string.Format("/cms/{0}/pagina/nova", portal.Diretorio);
+    var listaLayouts = (string[])ViewData["layouts"] ?? new string[] { };
+    var listaTemplates = (List<MLTemplate>)ViewData["templates"] ?? new List<MLTemplate>();
+    var listaSecao = (List<MLSecao>)ViewData["secoes"] ?? new List<MLSecao>();
+    var listaIdioma = (List<MLIdioma>)ViewData["idiomas"] ?? new List<MLIdioma>();
+    var duplicar = ViewData["duplicar"] != null ? true : false;
+    var nomeLayoutEdicao = duplicar && Model.PaginaEdicao != null ? Model.PaginaEdicao.NomeLayout : "";
+    var nomeTemplateEdicao = duplicar && Model.PaginaEdicao != null ? Model.PaginaEdicao.NomeTemplate : "";
+    var traducaoPagina = Convert.ToBoolean(ViewBag.TraducaoPagina);
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/application_view_gallery" />
+                @TAdm("Nova Página")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" role="form" action="@urlNova">
+            @*@if (Model.CodigoPai.HasValue)
+                {
+                    <div class="form-group col-md-6">
+                        <label>@TAdm("Informar qual página deseja relacionar")</label>
+                        <input type="text" id="paginaPublicada" name="paginaPublicada" class="form-control" />
+                        <input type="hidden" name="Codigo" value="" />
+                        @Helpers.AutoComplete("ListarPaginaspublicadas", "pagina", "busca", System.Web.Mvc.FormMethod.Post, "Codigo", "Titulo", textExibicao: "Url", portal: portal, idInputTextBox: "paginaPublicada", param1: "CodigoIdioma")
+                    </div>
+                    <div class="form-group col-md-12 clearfix">
+                        <p class="text-center">
+                            <strong>@TAdm("ou")</strong>
+                        </p>
+                    </div>
+
+                }*@
+            @if (duplicar)
+            {
+                <input type="hidden" name="duplicar" value="@Model.Codigo" />
+                <input type="hidden" name="publicado" value="@(Model.PaginaPublicada.Codigo.HasValue ? "true" : "false")" />
+            }
+            <input type="hidden" name="CodigoPai" value="@Model.CodigoPai" />
+            <div class="form-group col-md-6">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Url")</label>
+                <input type="text" class="form-control" name="Url" id="Url" value="@Model.Url">
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Idioma")</label>
+                <select id="CodigoIdioma" class="form-control" name="CodigoIdioma" @(!traducaoPagina ? "" : "disabled")>
+                    <option value="">@TAdm("Selecione")</option>
+                    @foreach (var item in listaIdioma)
+                    {
+                        <option value="@item.Codigo" @(item.Codigo == Model.CodigoIdioma ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+
+                @if (traducaoPagina)
+                {
+                    <input type="hidden" name="CodigoIdioma" value="@Model.CodigoIdioma" />
+                }
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Seção")</label>
+                <select id="secao" class="form-control" name="CodigoSecao">
+                    <option value="">@TAdm("Selecione")</option>
+                    @foreach (var item in listaSecao)
+                    {
+                        <option value="@item.Codigo" @(item.Codigo == Model.CodigoSecao ? "selected" : "")>@item.Nome</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Layout")</label>
+                <div class="col-md-12">
+
+                    <div class="owl-carousel owl-theme owl-layout" id="carrosselLayout">
+                        @for (var i = 0; i < listaLayouts.Length; i++)
+                        {
+                            var nome = Path.GetFileNameWithoutExtension(listaLayouts[i]);
+                            var isChecked = (!string.IsNullOrEmpty(nomeLayoutEdicao) && nome == nomeLayoutEdicao) || (string.IsNullOrEmpty(nomeLayoutEdicao) && i == 0);
+
+                            <div class="item @(isChecked ? "checado" : "")">
+                                <small>@nome</small>
+                                <figure>
+                                    <img src="@BLLayout.ObterImagemDiretorioVirtual(nome, portal.Diretorio)" for="Layout_@nome" />
+                                </figure>
+                                <input class="form-control highlight" type="radio" name="PaginaEdicao.NomeLayout" id="Layout_@nome" value="@nome" @(isChecked ? "checked" : "") />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Template")</label>
+                <div class="col-md-12">
+                    <div class="owl-carousel owl-theme owl-layout" id="carrosselTemplate">
+                        @for (var i = 0; i < listaTemplates.Count; i++)
+                        {
+                            var nome = Path.GetFileNameWithoutExtension(listaTemplates[i].Nome);
+                            var isChecked = (!string.IsNullOrEmpty(nomeTemplateEdicao) && nome == nomeTemplateEdicao) || (string.IsNullOrEmpty(nomeTemplateEdicao) && i == 0);
+
+                            <div class="item @(isChecked ? "checado" : "")">
+                                <small>@nome</small>
+                                <figure>
+                                    <img src="@BLTemplate.ObterImagemDiretorioVirtual(nome, portal.Diretorio)" for="Template_@nome" />
+                                </figure>
+                                <input class="form-control highlight" type="radio" name="PaginaEdicao.NomeTemplate" id="Template_@nome" value="@nome" @(isChecked ? "checked" : "") />
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" onclick="validarCriacao();" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+            <input type="hidden" name="Ativo" value="True" />
+        </form>
+    </div>
+</div>
+@section head {
+    <link href="~/Content/js/plugins/OwlCarousel2/assets/owl.carousel.min.css" rel="stylesheet" />
+    <link href="~/Content/js/plugins/OwlCarousel2/assets/owl.theme.default.min.css" rel="stylesheet" />
+}
+@section scripts {
+    <script src="~/Content/js/plugins/OwlCarousel2/owl.carousel.min.js"></script>
+    <script type="text/javascript">
+        $('.owl-carousel').owlCarousel({
+            items: 6,
+            margin: 10,
+            nav: true,
+            dots: false,
+            onInitialized: setImageSizeAndGoToSelectedItem,
+            onResized: callbackImgSize
+        });
+
+        function setImageSizeAndGoToSelectedItem(event) {
+            callbackImgSize(event);
+
+            var carousel = $(event.currentTarget);
+
+            irAteItemSelecionado(carousel);
+        }
+
+        function callbackImgSize(event) {
+            var img = $('.owl-carousel .owl-item figure');
+
+            img.each(function () {
+                var imgWidth = $(this).width();
+                $(this).css('height', imgWidth * 1.5);
+            });
+        }
+
+        function irAteItemSelecionado(carousel) {
+            var $checkedInput = carousel.find('input:checked');
+
+            var $divItem = $checkedInput.parent();
+            var $divOwlItem = $checkedInput.closest('.owl-item');
+
+            var divItemVisivel = $divOwlItem.hasClass('active');
+
+            $divItem.addClass('checado');
+
+            if (divItemVisivel || $checkedInput.length == 0) {
+                return;
+            }
+
+            var limit = carousel.find('.owl-item').length;
+            var count = 0;
+
+            while (!divItemVisivel || (count < limit)) {
+                $(carousel).find('.owl-next').trigger('click');
+                divItemVisivel = $divOwlItem.hasClass('active');
+
+                count++;
+            }
+        }
+
+        $(document).on('click', '.owl-item', function () {
+            $(this).find('input').prop("checked", true);
+            $(this).parents('.owl-carousel').find('.item').removeClass('checado');
+            $(this).find('input').parents('.item').toggleClass('checado');
+        });
+
+
+    var validator = $('form').validate({
+        rules: {
+            Nome: { required: true, maxlength: 100 },
+            CodigoIdioma: { required: true },
+            CodigoSecao: { required: true },
+            Url: {
+                required: true,
+                maxlength: 100,
+                regex: /^[a-zA-Z_\-0-9]+$/, remote: {
+                    url: "/cms/@portal.Diretorio/pagina/ValidarUrl",
+                    type: "POST",
+                    async: false,
+                    loadingPanel: false,
+                    data: { url: $("#Url").val() }
+                }
+            }
+        },
+        messages: {
+            Url: {
+                remote: "@TAdm("Já existe uma página cadastrada com essa Url")"
+            }
+        }
+    });
+
+    $('input[name=Nome]').keyup(function () {
+        var url = $('input[name=Url]');
+        if (url) {
+            if (url.data('editado')) return;
+
+            url.val(UrlAmigavel($(this).val()));
+        }
+    });
+
+    $(".check-img-jq").error(function () {
+        $(this).hide();
+    });
+
+    $(".check-img-jq").load(function () {
+        $(this).parent().css("height", "180px");
+    });
+
+    @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+    function change_Url(sender) {
+        $("input[name=Codigo]").val(sender.data("value"));
+    }
+
+    function validarCriacao() {
+        $("input[name=paginaPublicada]").rules("remove", "required");
+        $("input[name=Nome]").rules("remove", "required");
+        $("select[name=CodigoIdioma]").rules("remove", "required");
+        $("select[name=CodigoSecao]").rules("remove", "required");
+        $("input[name=Url]").rules("remove", "required");
+
+        if ($("#paginaPublicada").val()) {
+            $("input[name=paginaPublicada]").rules("add", "required");
+        }
+        else {
+            $("input[name=Nome]").rules("add", "required");
+            $("select[name=CodigoIdioma]").rules("add", "required");
+            $("select[name=CodigoSecao]").rules("add", "required");
+            $("input[name=Url]").rules("add", "required");
+        }
+    }
+    </script>
+}

@@ -1,0 +1,74 @@
+﻿@model List<MLBannerArquivo>
+
+@{
+    Layout = null;
+    var portal = PortalAtual.Obter;
+    var diretorio = Convert.ToString(ViewData["diretorioGaleria"]);
+}
+
+@foreach (MLBannerArquivo item in Model)
+{
+    <li class="form-group col-sm-4 banner-imagem-item" data-codigo="@item.Codigo">
+
+        @if (!item.CodigoTipo.HasValue || item.CodigoTipo == (int)MLBannerArquivo.Tipo.ArquivoItem)
+        {
+        <div class="galeria-imagem-div">
+            <small><strong id="nomeImagem">@item.MontarNomeImagem</strong></small>
+            <img src="@BLBannerArquivo.GerarUrlThumb(portal.Diretorio, item.CodigoBanner.GetValueOrDefault(0), 325, 135, item.Imagem)" border="0" alt="" style="width: 100%;" />
+            @*<img src="/cms/Principal/Thumb/Teste?file=@item.Imagem" border="0" alt="" style="width: 100%;" />*@
+            <p class="small">
+                @if (!string.IsNullOrWhiteSpace(item.ImagemMobile))
+                {
+                    @:Mobile: <strong>@item.ImagemMobile</strong>&nbsp;
+                }
+                @if (!string.IsNullOrWhiteSpace(item.ImagemTablet))
+                {
+                    @:Tablet: <strong>@item.ImagemTablet</strong>&nbsp;
+                }
+                @if (item.CodigoBannerHover.HasValue)
+                {
+                    @:Hover: <strong>@item.CodigoBannerHover</strong>
+                }
+            </p>
+            <div class="galeria-imagem-botoes">
+                @if (item.Codigo.HasValue)
+                {
+                    <button type="button" name="editar" class="btn btn-blue btn-sm" title="@TAdm("Editar")" onclick="exibirModalEdicao(@item.Codigo);"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+                    <button type="button" name="visualizar" class="btn btn-orange btn-sm" title="@TAdm("Visualizar")" onclick="exibirModalImagem('@diretorio/@item.Imagem');"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span></button>
+                    <button type="button" name="remover" class="btn btn-default btn-sm" onclick="@string.Format("removerImagem($(this),'{0}');", item.Codigo)" title="@TAdm("Remover")"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                }
+                else
+                {
+                    <button type="button" name="incluir" data-file="@item.Imagem" onclick="incluirImagem($(this), '');" class="btn btn-white" title="@TAdm("Salvar arquivo")"><span class="glyphicon glyphicon-floppy-save" aria-hidden="true"></span></button>
+                    <button type="button" name="removerPc" class="btn btn-red btn-sm" onclick="@Html.Raw(string.Format("removerImagemServidor($(this),'{0}','{1}');", item.CodigoBanner, item.Imagem))" title="@TAdm("Excluir Arquivo")"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                }
+            </div>
+        </div>
+        }
+        else
+        {
+            var urlTitulo = item.Url;
+
+            if (!string.IsNullOrWhiteSpace(item.Url) && urlTitulo.Length > 40)
+            {
+                urlTitulo = urlTitulo.Substring(0, 39) + "...";
+            }
+
+            <div class="galeria-imagem-div">
+                <small><strong id="nomeImagem_@item.Codigo">@(item.Titulo ?? urlTitulo)</strong></small>
+
+                <iframe name="iframe_@(item.Codigo ?? 0)" id="iframe_@(item.Codigo ?? 0)" src="@item.Url" class="iframe" frameBorder="0" marginwidth="0" marginheight="0" hspace="0" vspace="0" scrolling="no"></iframe>
+
+                <div class="galeria-imagem-botoes">
+                    <button type="button" name="editar" class="btn btn-blue btn-sm" onclick="exibirModalEdicao(@item.Codigo);" title="@TAdm("Editar")"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></button>
+                    <button type="button" name="remover" class="btn btn-default btn-sm" onclick="@string.Format("removerImagem($(this),'{0}');", item.Codigo)" title="@TAdm("Remover")"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        }
+
+    </li>
+}
+
+@section head {
+    <link href="~/Content/css/plugins/dropzone/css/dropzone.min.css" rel="stylesheet" />
+}

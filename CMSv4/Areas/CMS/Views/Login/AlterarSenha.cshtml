@@ -1,0 +1,51 @@
+﻿@model  Framework.Utilities.MLUsuarioAlterarSenha
+@{ 
+    Layout = "~/areas/cms/views/shared/_masterexternasenus.cshtml";
+    var email = Request["email"] ?? "";
+    var msg = ViewBag.Message ?? "";
+}
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="login-banner text-center">
+            <h1><img src="~/content/css/img/logo.png" class="logo-vm2" alt="logo" /></h1>
+        </div>
+        <div class="portlet portlet-dark-blue">
+            <div class="portlet-body">
+                <form action="/cms/@BLPortal.Atual.Diretorio/Login/AlterarSenha" method="post">
+                    <fieldset>
+                        <legend class="portlet-dark-blue">@TAdm("Esqueci minha senha")</legend>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="@TAdm("Nova senha")" id="Senha" name="Senha" type="password" autofocus />
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control" placeholder="@TAdm("Confirme a nova senha")" id="ConfirmarSenha" name="ConfirmarSenha" type="password" />
+                        </div>
+                        <input type="hidden" name="TokenNovaSenha" id="TokenNovaSenha" value="@Model.TokenNovaSenha" />
+                        <input type="submit" class="btn btn-lg btn-dark-blue btn-block" value="@TAdm("Enviar")" />
+                        
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+                        }
+                        @if (!string.IsNullOrEmpty(msg))
+                        {
+                            <p class="small text-orange">@msg</p>
+                        }
+                        <p class="small"><a href="/cms/">@TAdm("Entrar")</a></p>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <!-- PAGE LEVEL PLUGIN SCRIPTS -->
+    <script type="text/javascript">
+        $('form').validate({
+            rules: {
+                Senha: { required: true },
+                ConfirmarSenha: { required: true, equalTo: "#Senha" }
+            }
+        });
+    </script>
+}

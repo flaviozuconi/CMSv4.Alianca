@@ -1,0 +1,64 @@
+﻿@model MLListaConteudoAudio
+
+@{
+    var itemId = Model.GuidConteudo.ToString().Replace("-", string.Empty);
+    bool isFile = (!(Model.Audio.Contains("http") || Model.Audio.Contains("www") || string.IsNullOrEmpty(Model.Audio)));
+    var frmId =  Guid.NewGuid().ToString().Replace("-", string.Empty);
+
+    if(!isFile)
+    {
+        <div class="galeria-video-youtube-container col-md-6" onclick="$(this).next('.galeria-Video-botoes').toggle();" >
+            <div class="js-Video vimeo widescreen">
+                <iframe height="100%" src="@Model.Audio" frameborder="0" allowfullscreen  id="@frmId"></iframe>
+            </div>
+        </div>
+    }
+    else if (ViewData.ContainsKey("diretorioAudio") && File.Exists(Server.MapPath(ViewData["diretorioAudio"] + "\\" + Model.Audio)))
+    {
+        var diretorio = Convert.ToString(ViewData["diretorioAudio"]);
+        <div class="galeria-Video-container col-md-6" onclick="$(this).next('.galeria-Video-botoes').toggle();" >
+            <Audio width="100%" height="100%" controls>
+                <source src="@((diretorio + "/" + Model.Audio))" type="Audio/@(Path.GetExtension(diretorio + "/" + Model.Audio).Replace(".", ""))"/> 
+            </Audio>    
+        </div>
+    }
+}   
+
+<div class="form-group col-md-6 form-Audios">
+    @{
+        if(isFile)
+        {
+            <input type="hidden" name="GaleriaAudio" value="@Model.Audio" />
+        }
+        else
+        {
+            <input type="text" class="form-control" maxlength="500" name="GaleriaAudio" value="@Model.Audio" placeholder="@TAdm("Url")" id="txtUrl" 
+                onchange="reloadAudio($(this), $('#@(frmId)'));" onblur="reloadAudio($(this), $('#@(frmId)'));"/>
+        }
+    }
+    <input type="text" class="form-control" name="AudioTitulo" value="@Model.Titulo" maxlength="250" placeholder="@TAdm("Título")" style="margin-bottom: 10px;">
+    <textarea class="form-control" name="AudioTexto" placeholder="@TAdm("Descrição")">@Model.Texto</textarea>
+    <input type="text" class="form-control" name="AudioFonte" value="@Model.Fonte" maxlength="250" placeholder="@TAdm("Fonte / Autor")"  style="margin-bottom: 10px; margin-top: 10px;">
+    <input type="button" class="btn btn-link" name="remover" value="@TAdm("remover vídeo")" onclick="@string.Format("removerAudio($(this),'{0}', '{1}');", itemId, Model.Audio)" />
+    <input type="hidden" name="AudioGuid" id="AudioGuid" value="@Model.Guid" />
+</div>
+
+@{
+    if(!isFile)
+    {
+        <script src="~/Content/js/jquery.min.js"></script>
+        <script type="text/javascript">
+            var reloadAudio = function (objTxt, objFrm){ 
+                var newAudioUrl = $(objTxt).val();
+                if (/^(http:\/\/|http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/|www\.)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/.test(newAudioUrl)) {
+                    $(objFrm).attr('src', $(objTxt).val());
+                } else {
+                    $(objTxt).val($(objFrm).attr('src'));
+                    alert("@TAdm("URL inválida!!")");
+                }
+            }
+        </script>
+    }
+}
+
+

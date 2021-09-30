@@ -1,0 +1,13 @@
+﻿@model MLModuloTakeOrPay
+@{
+    Layout = "";
+}
+
+<div class="container" id="Etapa1">
+    @Html.Action("Etapa1", new { model = Model })
+    @Html.Action("SelecPropostas", new { model = Model })
+</div>
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptCadastro", new { model = Model }));
+}

@@ -1,0 +1,28 @@
+﻿@model MLModuloBusca
+
+@{
+    var edicao = (Model is MLModuloBuscaEdicao);
+    var portal = BLPortal.Atual;
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#search_@Model.Repositorio").on("click", function () {
+            busca();
+        });
+
+        $("#TermoBusca_@Model.Repositorio").keyup(function (ev) {
+            var keycode = (ev.keyCode ? ev.keyCode : ev.which);
+
+            if (keycode == '13') {
+                busca();
+            }
+        })
+    });
+
+    function busca() {
+        if (chars >= 3) {
+            window.location.href = "@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlDetalhe, "1?busca=")" + escape($("#TermoBusca_@Model.Repositorio").val());
+        }
+    }
+ </script>

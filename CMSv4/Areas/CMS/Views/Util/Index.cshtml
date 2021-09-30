@@ -1,0 +1,44 @@
+﻿<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/user" />
+                @TAdm("Util")</h4>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+
+        <form method="post" class="form-vertical" role="form">
+            <div class="form-group col-md-12">
+                <label>@TAdm("Valor")</label>
+                <input type="text" class="form-control" name="valor" id="valor" autofocus>
+            </div>
+            <div class="form-group col-md-12">
+                <label>@TAdm("Resultado")</label>
+                <input type="text" class="form-control" name="resultado" id="resultado">
+            </div>
+            <div class="form-group col-md-3">
+                <input type="checkbox" name="Criptografar" id="criptografar" checked value="true" />
+                <label for="Criptografar">@TAdm("Criptografar")</label>
+            </div>
+            <div class="form-group col-md-12 text-right">
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="button" onclick="Processar();" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        function Processar() {
+            
+            $.post('/cms/principal/util/Criptografar', { valor: $('#valor').val(), criptografar: $('#criptografar').prop('checked') }, function (data) {
+                if (data.success) {
+                    $('#resultado').val(data.resultado);
+                }                
+            });
+        }
+    </script>
+}

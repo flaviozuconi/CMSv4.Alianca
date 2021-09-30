@@ -1,0 +1,29 @@
+﻿@model  MLModuloHtml
+@if (ViewData["editavel"] != null)
+{
+    <div id="div_@(Model.CodigoPagina)_@(Model.Repositorio)"
+         contenteditable="true"
+         data-pagina="@Model.CodigoPagina"
+         data-rep="@Model.Repositorio"
+         data-portal="@BLPortal.Atual.Diretorio"
+         data-ckeditor="html"
+         style="display: inline-block; height: 200px; width: 100%;">
+        @if (!string.IsNullOrEmpty(Model.Conteudo))
+        {
+            @Html.Raw(Model.Conteudo)
+        }
+        else
+        {
+            @:+ adicionar +
+        }
+    </div>
+}
+else
+{
+    @Html.Raw(Model.Conteudo)
+}
+
+@if (ViewData["editavel"] != null)
+{
+    CMSv4.BusinessLayer.BLConteudo.AdicionarJavaScript("fixInlineEditor('div_" + Model.CodigoPagina + "_" + Model.Repositorio + "');");
+}

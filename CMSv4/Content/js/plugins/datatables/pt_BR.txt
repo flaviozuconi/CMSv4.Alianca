@@ -1,0 +1,23 @@
+﻿{
+    "emptyTable":     "Nenhum registro encontrado",
+    "info":           "Mostrando do _START_ ao _END_ | Total: _TOTAL_",
+    "infoEmpty":      "",
+    "infoFiltered":   "(Total sem filtro: _MAX_)",
+    "infoPostFix":    "",
+    "thousands":      ",",
+    "lengthMenu":     "_MENU_",
+    "loadingRecords": "Carregando...",
+    "processing":     "Processando...",
+    "search":         "Procurar:",
+    "zeroRecords":    "Nenhum registro encontrado",
+    "paginate": {
+        "first": "Primeira",
+        "last": "Última",
+        "next": "Próxima",
+        "previous": "Anterior"
+    },
+    "aria": {
+        "sortAscending":  ": ative para ordenar",
+        "sortDescending": ": ative para ordenar"
+    }
+}

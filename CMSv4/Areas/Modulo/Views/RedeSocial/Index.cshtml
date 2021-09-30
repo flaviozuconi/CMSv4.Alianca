@@ -1,0 +1,10 @@
+﻿@model MLModuloRedeSocial
+
+@try
+{
+    Html.RenderAction(Model.NomeView ?? "Lista", new { model = Model, bEdicao = ViewBag.Edicao });
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}

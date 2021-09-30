@@ -1,0 +1,155 @@
+﻿@model MLModuloLista
+
+@{
+    decimal codigo = ViewBag.Codigo;
+}
+
+<script src="~/Content/js/plugins/validate/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        
+
+        $("#aDiminuir").click(function (e) {
+            resizeText(-1, '.post-in--body');
+
+            e.preventDefault();
+        });
+    });
+
+    function resizeText(multiplier, target) {
+        //Todos os elementos dentro do target
+        var element = $(target).find('*');
+
+        //Modificar fonte do próprio elemento.
+        $(target).css('font-size', CalcularFonte($(target), multiplier));
+
+        //Modificar a fonte dos elementos filho
+        element.each(function (i) {
+            $(this).css('font-size', CalcularFonte($(this), multiplier));
+        });
+
+        return false;
+    }
+
+    function CalcularFonte(element, multiplier) {
+        var fontSize = element.css('font-size').replace("px", "");
+        var fontResized = parseInt(fontSize) + (multiplier + 0.2);
+
+        if (fontResized < 12) {
+            fontResized = 12;
+        }
+        else if (fontResized > 24) {
+            fontResized = 24;
+        }
+
+        return String(fontResized) + "px";
+    }
+
+
+    function AbrirPopUp(width, height, url) {
+        var left = parseInt((screen.availWidth / 2) - (width / 2));
+        var top = parseInt((screen.availHeight / 2) - (height / 2));
+        var windowSize = "width=" + width + ",height=" + height + ",status,resizable,left=" + left + ",top=" + top + "screenX=" + left + ",screenY=" + top;
+
+        window.open(url, 'Continue_to_Application', windowSize);
+
+        return false;
+    }
+
+    $('#link').on('shown.bs.popover', function () {
+        $("#urlLink").select();
+    })
+
+    function enviarEmail() {
+        $("#formEmail").validate({
+            highlight: function (element) {
+                $(element).parent().find(".validate").removeClass("hide");
+                $(element).parent().find(".validate").removeClass("alert-success").addClass("alert-danger");
+                $(element).parents(".form-group").addClass("has-error").removeClass("has-success");
+            },
+            unhighlight: function (element) {
+                $(element).parent().find(".validate").removeClass("alert-danger").addClass("alert-success");
+                $(element).parents(".form-group").addClass("has-success").removeClass("has-error");
+            },
+            errorPlacement: function (error, element) {
+                $(element).parent().find(".validate").html(error.text());
+            },
+            success: function (success, element) {
+                $(element).parent().find(".validate").html("@T("Campo preenchido corretamente")");
+            },
+            rules: {
+                modalNome: { required: true, maxlength: 250 },
+                modalEmail: { required: true, maxlength: 250, email: true },
+                modalAmigoNome: { required: true, maxlength: 250 },
+                modalAmigoEmail: { required: true, maxlength: 250, email: true },
+                modalComentario: { maxlength: 250 }
+
+            },
+            messages: {
+                modalNome: {
+                    required: "*",
+                    maxlength: "@T("O nome deve ter menos de 250 caracteres.")",
+                },
+                modalEmail: {
+                    required: "*",
+                    email: "@T("E-mail inválido.")"
+                },
+                modalAmigoNome: {
+                    required: "*",
+                    maxlength: "@T("O nome deve ter menos de 250 caracteres.")",
+                },
+                modalAmigoEmail: {
+                    required: "*",
+                    email: "@T("E-mail inválido.")"
+                },
+                modalComentario: {
+                    maxlength: "@T("O comentário deve ter no máximo 500 caracteres.")"
+                }
+            }
+        });
+
+        if ($("#formEmail").valid()) {
+            var dataSend = {
+                "Nome": $("#modalNome").val(),
+                "Email": $("#modalEmail").val(),
+                "NomeAmigo": $("#modalAmigoNome").val(),
+                "EmailAmigo": $("#modalAmigoEmail").val(),
+                "Comentario": $("#modalComentario").val(),
+                "url": "@Server.UrlEncode(Request.Url.ToString())",
+                "codigo": "@codigo"
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(BLPortal.Atual)/Lista/EnviarEmailNoticia",
+                data: dataSend,
+                beforeSend: function () {
+                    $("#btnEnviarEmail").addClass("disabled");
+                    $("#btnEnviarEmail").val("@T("Enviando...")");
+                },
+                success: function (data) {
+                    if (data != null) {
+                        if (data.success) {
+                            alert("@T("Seu e-mail foi enviado com sucesso.")");
+                            $("#formEmail input[type=text]").val("");
+                            $("#modalComentario").val("");
+                            $("#modelEnviarEmail").modal("hide");
+                        }
+                        else if (!data.success && data.msg != "") {
+                            alert(data.msg);
+                        }
+
+                        $("#btnEnviarEmail").removeClass("disabled");
+                        $("#btnEnviarEmail").val("Enviar");
+                    }
+                },
+                error: function (data) {
+                    alert("@T("Não foi possível enviar o e-mail.")");
+                }
+            });
+        }
+
+        return false;
+    }
+</script>

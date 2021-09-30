@@ -1,0 +1,27 @@
+﻿@model List<MLListaConteudoImagem>
+
+@{
+    var diretorio = Convert.ToString(ViewData["diretorioGaleria"]);
+}
+
+@foreach (var item in Model)
+{
+    var itemId = item.GuidConteudo.ToString().Replace("-", "");
+
+    <li class="form-group col-sm-6 galeria-imagem-item">
+
+        <div class="galeria-imagem-container col-md-4" onclick="$(this).next('.galeria-imagem-botoes').toggle();">
+            <small> @item.Imagem </small>
+            <img src="@diretorio/@item.Imagem" />
+        </div>
+        <div class="col-md-8 form-group">
+            <input type="text" class="form-control" name="GaleriaTitulo" value="@item.Titulo" maxlength="250" placeholder="@TAdm("Título ou Legenda")" style="margin-bottom: 10px;">
+            <textarea class="form-control" name="GaleriaTexto" placeholder="@TAdm("Descrição")">@item.Texto</textarea>
+            <input type="text" class="form-control" name="GaleriaFonte" value="@item.Fonte" maxlength="250" placeholder="@TAdm("Fonte, autor ou crédito")" style="margin-bottom: 10px; margin-top: 10px;">
+            <input type="button" class="btn btn-link" name="remover" value="@TAdm("remover imagem")" onclick="@string.Format("removerImagem($(this),'{0}', '{1}');", itemId, item.Imagem)" />
+
+            <input type="hidden" name="GaleriaImagem" value="@item.Imagem" />
+        </div>
+    </li>
+}
+

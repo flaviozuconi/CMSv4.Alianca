@@ -1,0 +1,26 @@
+﻿@model MLListaConteudoAudio
+
+@{
+    var diretorio = Convert.ToString(ViewData["diretorioAudio"]);
+}
+
+<input name="incluir" data-file="@Model.Audio" type="button" class="btn btn-link" value="@TAdm("importar")" onclick="incluirAudio($(this));" />
+@if (AdminHelper.CheckPermission(Permissao.Excluir))
+{
+<input name="excluir" data-file="@Model.Audio" type="button" class="btn btn-link" style="color: red;" value="@TAdm("excluir")" onclick="excluirAudio($(this));" />    
+}
+
+<div class="galeria-Audio-container col-md-6" onclick="$(this).next('.galeria-Audio-botoes').toggle();" >
+        @{
+            if(Model.Audio.Contains("http") || Model.Audio.Contains("www"))
+            {}
+            else if(File.Exists(Server.MapPath(diretorio + "\\" + Model.Audio)))
+            {
+                <Audio width="100%" height="100%" controls>
+                    <source src="@((diretorio + "/" + Model.Audio))" type="Audio/@(Path.GetExtension(diretorio + "/" + Model.Audio).Replace(".", ""))" /> 
+                </Audio>    
+            }
+        }
+</div>
+
+

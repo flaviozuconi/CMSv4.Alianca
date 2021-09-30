@@ -1,0 +1,119 @@
+﻿@using CMSv4.Model
+@model  MLSecao
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/secao", portal.Diretorio);
+    var grupos = (List<MLGrupo>)ViewData["Grupos"] ?? new List<MLGrupo>();
+    var gruposCliente = (List<MLGrupoCliente>)ViewData["GruposCliente"] ?? new List<MLGrupoCliente>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/bricks" />
+                @TAdm("Seções")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="form-group col-md-12">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" value="@Model.Nome" autofocus>
+            </div>
+            <fieldset class="col-md-12">
+                <legend>@TAdm("Permissão Edição")</legend>
+                @for (int i = 0; i < grupos.Count; i++)
+                {
+                    var item = Model.Grupos.Find(o => o.CodigoGrupo == grupos[i].Codigo);
+
+                    <div class="form-group col-sm-3">
+                        <input class="highlight" type="checkbox" id="group_@i" name="listaCodigoGrupo" value="@grupos[i].Codigo" @(Model.Grupos.Find(o => o.CodigoGrupo == grupos[i].Codigo) != null ? "checked" : "") />
+                        <label for="group_@i">@grupos[i].Nome</label>
+                    </div>
+                }
+            </fieldset>
+            <fieldset class="col-md-12">
+                <legend>@TAdm("Permissão Pública")</legend>
+                <div class="form-group col-md-4">
+                    <select name="Restrito" class="form-control">
+                        <option value="" @(!Model.Restrito.HasValue ? "selected" : "")>@TAdm("Usar Permissões do Portal")</option>
+                        <option value="false" @(Model.Restrito.HasValue && !Model.Restrito.Value ? "selected" : "")>@TAdm("Liberado")</option>
+                        <option value="true" @(Model.Restrito.GetValueOrDefault() ? "selected" : "")>@TAdm("Restrito")</option>
+                    </select>
+                </div>
+                <div class="col-md-12 jqPermissao" style="display:@(Model.Restrito.GetValueOrDefault() ? "block" : "none")">
+                    @for (int i = 0; i < gruposCliente.Count; i++)
+                    {
+                        var item = Model.Permissao.Find(o => o.CodigoGrupoCliente == gruposCliente[i].Codigo);
+
+                        <div class="form-group col-sm-3">
+                            <input class="highlight" type="checkbox" id="groupcliente_@i" name="listaCodigoGrupoCliente" value="@gruposCliente[i].Codigo" @(item != null ? "checked" : "") />
+                            <label for="groupcliente_@i">@gruposCliente[i].Nome</label>
+                        </div>
+                    }
+                </div>
+            </fieldset>
+
+            <input type="hidden" name="GruposPublico" id="jqGruposPublico" value="" />
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+
+        </form>
+
+    </div>
+</div>
+
+@section scripts{
+
+    <script type="text/javascript">
+
+        $('form').validate({
+            rules: {
+                Nome: { required: true, maxlength: 50 }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+
+        $('select').change();
+
+        $('.jqGrupoPublico input').on('click', function (event) {
+            var checados = '';
+            $('#jqGruposPublico').val('');
+            $(".jqGrupoPublico input").each(function () {
+                if ($(this).is(':checked')) {
+                    checados += $(this).attr("value") + ",";
+                }
+            });
+            $('#jqGruposPublico').val(checados);
+        });
+
+        $('select[name=Restrito]').on('change', function (event) {
+            if ($(this).val() == 'true')
+                $('.jqPermissao').show();
+            else
+                $('.jqPermissao').hide();
+        });
+
+
+    </script>
+}

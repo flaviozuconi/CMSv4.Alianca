@@ -1,0 +1,23 @@
+﻿@model MLModuloResultado
+@{
+    Layout = "";
+    var portal = BLPortal.Atual;
+    var views = (List<string>)ViewData["views"] ?? new List<string>();
+}
+<div class="form-group col-md-6">
+    <label>@T("Visualização")</label>
+    <select name="View" class="form-control" id="View">
+        <option value="" selected>@T("Selecione")</option>
+        @foreach (var item in views)
+        {
+            <option value="@item" @(item == Model.View ? "selected" : "")  >@item</option>
+        }
+    </select>
+</div>
+<div class="form-group col-md-6">
+    <label>@T("Url Detalhe")</label>
+    <input type="text" class="form-control" name="UrlDetalhe" id="UrlDetalhe" placeholder="@T("Url Detalhe")" value="@Model.UrlDetalhe" maxlength="250">
+    @Helpers.BuscarPaginas("UrlDetalhe", portal.Diretorio, portal.Codigo)
+</div>
+
+

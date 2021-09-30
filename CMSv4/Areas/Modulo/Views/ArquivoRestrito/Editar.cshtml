@@ -1,0 +1,67 @@
+﻿@model  MLModuloArquivoRestrito
+@{
+    Layout = "";
+    var portal = BLPortal.Atual;
+}
+<div class="form-group col-md-12">
+    <label>@T("Grupo de arquivos - Pastas")</label><br />
+    @Html.ListBox("CodigosCategoriaArquivo", ((IEnumerable<SelectListItem>)ViewBag.Pastas))
+</div>
+<div class="form-group col-md-12">
+    <label>@T("Visualização")</label><br />
+    @Html.DropDownList("NomeView", ((IEnumerable<SelectListItem>)ViewBag.Views))
+</div>
+
+
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+      
+
+    // Valida o multiselect
+    $.validator.addMethod("validateCategoria", function (value, element) {
+
+        try {
+            return $(element).multiselect("getChecked").length > 0;
+        }
+        catch (ex) {
+            return (value != '');
+        }
+    });
+
+    // Modify validation settings
+    $.extend(true, settings, {
+        rules: {
+            "Quantidade": { number: true, required: true },          
+            CodigosCategoriaArquivo: "required validateCategoria"
+        },
+        messages: {
+            CodigosCategoriaArquivo: "@T("Selecione uma pasta.")",
+            Quantidade: "@T("Informe a quantidade.")"
+        },
+        ignore: ":hidden:not('select[name=CodigosCategoriaArquivo]')"
+    });
+
+    $('select[name=CodigosCategoriaArquivo]').multiselect({
+        selectAllText: '@T("Todos")',
+        selectAllValue: '0',
+        includeSelectAllOption: true,
+        nonSelectedText: '@T("Nenhuma selecionada")'
+    });
+
+    $('select[name=NomeView]').multiselect({
+        selectAllText: '@T("Todos")',
+        selectAllValue: '0',
+        includeSelectAllOption: true,
+        nonSelectedText: '@T("Nenhuma selecionada")'
+    });
+
+    ///Retorna as propriedades de um objeto json
+    var getKeys = function (obj) {
+        var keys = [];
+        aert(keys);
+        for (var key in obj) {
+            keys.push(key);
+        }
+        return keys;
+    }
+</script>

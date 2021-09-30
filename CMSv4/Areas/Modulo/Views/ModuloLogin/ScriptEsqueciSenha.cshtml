@@ -1,0 +1,78 @@
+﻿@model MLModuloLogin
+@{
+    var portal = BLPortal.Atual;
+}
+<!-- PAGE LEVEL PLUGIN SCRIPTS -->
+
+<script src="~/Content/js/plugins/validate/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+    $('#AlterarSenha_@Model.Repositorio').validate({
+        errorPlacement: function (error, element) { },
+        highlight: function (element) {
+            $(element).closest(".form-group").addClass("has-error");
+        },
+        unhighlight: function (element) {
+            $(element).closest(".form-group").removeClass("has-error");
+        },
+        rules: {
+            "senha_@Model.Repositorio": { required: true, maxlength: 50, minlength: 6 },
+            "senhaConfirmar_@Model.Repositorio": { required: true, maxlength: 16, minlength: 6, equalTo: $("#senha_@Model.Repositorio") }
+        },
+        messages: {
+            "senha_@Model.Repositorio": {
+                required: "@T("O campo Nova Senha é de preenchimento obrigatório")",
+                minlength: "@T("A senha deve ter no mínimo 6 caracteres")"
+            },
+            "senhaConfirmar_@Model.Repositorio": {
+                required: "@T("O campo Nova Senha é de preenchimento obrigatório")",
+                minlength: "@T("A senha deve ter no mínimo 6 caracteres")",
+                equalTo: "@T("O campo Confirmar Senha deve ser igual a Nova Senha")",
+            }
+        },
+        errorPlacement: function (error, element) {
+            var placement = $(element).parent('.input-group');
+
+            if (placement) {
+                $(error).addClass('help-block').insertAfter(placement)
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+    $("#btnNovaSenha_@Model.Repositorio").click(function () {
+        var button = $(this);
+        var form = $("#AlterarSenha_@Model.Repositorio");
+
+        if (form.valid()) {
+            button.addClass("disabled");
+
+            $.post("@Portal.UrlCms(portal)/ModuloLogin/AtualizarSenha", {
+                Senha: $("#senha_@Model.Repositorio").val(),
+                returnUrl: "@Model.UrlRetorno",
+                TokenNovaSenha: "@Model.Token"
+            }, function (data, textStatus, jqXHR) {
+                if (data.success) {
+                    $("#msg_@Model.Repositorio").html("<div class='alert alert-success'>@T("Sua senha foi redefinida com sucesso, aguarde enquanto redirecionamos você...")</div>");
+
+                    var urlRetorno = "@Model.UrlRetorno";
+                    if (urlRetorno)
+                        window.location.href = urlRetorno;
+                    else
+                        window.location.href = "/@BLPortal.Atual.Diretorio";
+                }
+                else {
+                    $("#senha_@Model.Repositorio").val("");
+                    $("#senhaConfirmar_@Model.Repositorio").val("");
+
+                    if (data.msg != null) {
+                        $("#msg_@Model.Repositorio").html("<div class='alert alert-danger'>" + data.msg + "</div>");
+                    }
+                }
+
+                button.removeClass("disabled");
+            });
+        }
+    });
+</script>

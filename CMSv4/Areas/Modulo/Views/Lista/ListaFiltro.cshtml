@@ -1,0 +1,96 @@
+﻿@model  MLModuloLista
+
+@{
+    var lstAnos = (List<MLFiltroAno>)ViewBag.Anos;
+    var lstTemas = (List<MLListaConfigCategoria>)ViewBag.Temas;
+    var lstNoticias = (List<MLListaConteudoPublicoListagem>)ViewBag.Conteudo;
+    var TotalPaginas = ViewBag.TotalPaginas ?? 1;
+}
+
+<div class="filter-bar">
+    <div class="row">
+        <div class="col-xs-24">
+            <h2>@T("Filtrar por:")</h2>
+        </div>
+        <div class="col-sm-6 col-md-4 form-group">
+            <label for="ano_@(Model.Repositorio)" class="label-xs">@T("Ano")</label>
+            <select id="ano_@(Model.Repositorio)" class="selectpicker" data-style="btn-secondary">
+                <option value="" selected>@T("Ano")</option>
+
+                @foreach (var item in lstAnos)
+                {
+                    <option value="@item.Ano">@item.Ano</option>
+                }
+            </select>
+        </div>
+        <div class="col-sm-6 col-md-4 form-group">
+            <label for="mes_@(Model.Repositorio)" class="label-xs">@T("Mês")</label>
+            <select id="mes_@(Model.Repositorio)" class="selectpicker" data-style="btn-secondary">
+                <option value="" selected>@T("Mês")</option>
+                <option value="1">@T("Janeiro")</option>
+                <option value="2">@T("Fevereiro")</option>
+                <option value="3">@T("Março")</option>
+                <option value="4">@T("Abril")</option>
+                <option value="5">@T("Maio")</option>
+                <option value="6">@T("Junho")</option>
+                <option value="7">@T("Julho")</option>
+                <option value="8">@T("Agosto")</option>
+                <option value="9">@T("Setembro")</option>
+                <option value="10">@T("Outubro")</option>
+                <option value="11">@T("Novembro")</option>
+                <option value="12">@T("Dezembro")</option>
+            </select>
+        </div>
+        @if (lstTemas.Count > 0)
+        {
+        <div class="col-sm-6 col-md-4 form-group">
+            <label for="temas_@(Model.Repositorio)" class="label-xs">@T("Tema")</label>
+            <select id="temas_@(Model.Repositorio)" class="selectpicker" data-style="btn-secondary">
+                <option value="" selected>@T("Tema")</option>
+
+                @foreach (var item in lstTemas)
+                {
+                    <option value="@item.Codigo">@item.Nome</option>
+                }
+            </select>
+        </div>
+        }
+        <div class="col-sm-6 col-md-4 form-group">
+            <input type="button" id="btnPesquisarPorData_@Model.Repositorio" value="@T("PESQUISAR")" class="btn btn-md btn-default" />
+        </div>
+        <div class="col-sm-18 col-md-4 form-group">
+            <label for="inputBusca_@(Model.Repositorio)" class="label-xs">@T("Palavra-chabe")</label>
+            <input type="text" placeholder="@T("Busque por palavra chave")" id="inputBusca_@Model.Repositorio" class="form-control" />
+        </div>
+        <div class="col-sm-6 col-md-4 form-group">
+            <input type="button" id="btnPesquisarPorTermo_@Model.Repositorio" value="@T("PESQUISAR")" class="btn btn-md btn-default" />
+        </div>
+    </div>
+
+    <div class="gutter-h-lg">
+        <h2>@(Model.Titulo ?? T("Notícias"))</h2>
+        <div id="resultado_@Model.Repositorio" class="row block-list">
+            @Html.Action("ListaFiltroItem", new { Model = lstNoticias, urlDetalhe = Model.UrlDetalhe })
+        </div>
+    </div>
+</div>
+
+<!--CSS-->
+<style type="text/css">
+    .selectboxit-option {
+        clear: both;
+    }
+</style>
+<!--./CSS-->
+
+<input type="hidden" id="hdnPagina_@Model.Repositorio" value="2"/>
+<input type="hidden" id="hdnAnoSelecionado_@Model.Repositorio" value=""/>
+<input type="hidden" id="hdnMesSelecionado_@Model.Repositorio" value=""/>
+<input type="hidden" id="hdnTemaSelecionado_@Model.Repositorio" value=""/>
+<input type="hidden" id="hdnCategoriaConfigurada_@Model.Repositorio" value="@Model.Categorias"/>
+<input type="hidden" id="hdnTermoSelecionado_@Model.Repositorio" value=""/>
+<input type="hidden" id="hdnTotalPaginas_@Model.Repositorio" value=""/>
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptListaFiltro", new { model = Model, TotalPaginas = TotalPaginas }));
+}

@@ -1,0 +1,48 @@
+﻿@model MLModuloTakeOrPay
+@{
+    Layout = "";
+}
+
+<div class="container" id="Etapa4_2" style="display: none;">
+    <div class="step-four">
+        <h3 class="step-title mb-4">Resumo da Contratação via Embarque Certo</h3>
+        <h3 class="step-title color mb-4">Contratação <span id="TipoContratacao"></span></h3>
+        <p class="step-subtitle">Total de unidades a serem contratadas como Embarque Certo:</p>
+
+        <div class="resumo">
+            <div id="divResumoSemanal" class="col-md-24 row" style="display: none;">
+                <div class="resumo-item col-md-8">
+                    <input class="form-control" type="text" id="UnidadesSemana" disabled>
+                    <p>Unidades <br> <strong>por semana</strong></p>
+                </div>
+                <div class="resumo-item col-md-8">
+                    <input class="form-control" type="text" id="ToneladasSemana" disabled>
+                    <p>Toneladas <br> <strong>por semana</strong></p>
+                </div>
+                <div class="resumo-item col-md-8">
+                    <input class="form-control" type="text" id="TEUSemana" disabled>
+                    <p>TEU <br> <strong>por semana</strong></p>
+                </div>
+            </div>
+            <div class="col-md-24 row">
+                <div class="resumo-item col-md-8">
+                    <input class="form-control" type="text" id="UnidadesMes" disabled>
+                    <p>Unidades <br> <strong>por mês</strong></p>
+                </div>
+                <div class="resumo-item col-md-8">
+                    <input class="form-control" type="text" id="ToneladasMes" disabled>
+                    <p>Toneladas <br> <strong>por mês</strong></p>
+                </div>
+                <div class="resumo-item col-md-8">
+                    <input class="form-control" type="text" id="TEUMes" disabled>
+                    <p>TEU <br> <strong>por mês</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step-btns">
+            <a href="javascript:void(0);" class="btn btn-default" id="btnVoltarEtapa4_1">Voltar</a>
+            <a href="javascript:void(0);" class="btn btn-navy" id="btnAvancarEtapa5">Avançar</a>
+        </div>
+    </div>
+</div>

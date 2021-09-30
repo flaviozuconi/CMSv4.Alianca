@@ -1,0 +1,30 @@
+﻿@model MLModuloLogin
+@{
+    var portal = BLPortal.Atual;
+    Layout = "~/areas/cms/views/shared/_masterexternas.cshtml";
+}
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="login-banner text-center">
+        </div>
+        <div class="alert alert-danger">
+            <h2>@T("Acesso Negado")</h2>
+            <p>@T("Você não tem permissão para acessar esta página.")</p>
+            <br />
+            <p>@T("Para realizar o login novamente")
+            @if (!string.IsNullOrEmpty(Model.UrlPaginaLogin))
+            {
+                <a href="@Portal.ResolveUrl(Model.UrlPaginaLogin)">@T("clique aqui")</a>@:.
+            }
+            else if (!string.IsNullOrEmpty(Model.UrlRetorno))
+            {
+                <a href="@Portal.ResolveUrl(Model.UrlRetorno)">@T("clique aqui")</a>@:.
+            }
+            else
+            {
+                <a href="@Portal.UrlDiretorio(portal)/ModuloLogin?UrlRetorno=@BLEncriptacao.EncriptarQueryString(Model.UrlRetorno)">@T("clique aqui")</a>@:.
+            }
+            </p>
+        </div>
+    </div>
+</div>

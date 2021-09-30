@@ -1,0 +1,99 @@
+﻿@model MLModuloBusca
+
+@{
+    var edicao = (Model is MLModuloBuscaEdicao);
+    var portal = BLPortal.Atual;
+}
+
+<script type="text/javascript" id="rafael">
+    function pesquisarTermo(sender) {
+        var $this = $(sender);
+
+        delay(function () {
+            var chars = $this.val().length;
+            var ul;
+
+            if (!$this.next().length) {
+                $this.after($("<ul class='jq-autocomplete dropdown-menu' style='width: 100%;' />"));
+            }
+
+            ul = $this.next();
+
+            if (chars >= 1) {
+                $.get("@Portal.UrlCms(portal)/Busca/AutoComplete", { termo: $this.val() },
+                    function (data, opts) {
+                        if (data.success) {
+                            ul.html(data.html);
+                            ul.show();
+
+                            $this.unbind("focus");
+                            $this.unbind("blur");
+
+                            $this.focus(function () {
+                                ul.show();
+                            });
+                            $this.blur(function () {
+                                ul.hide();
+                            });
+                        }
+                    }
+                );
+            }
+            else {
+                div.html("");
+            }
+        }, 300);
+    }
+
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
+
+    function busca() {
+        var chars = $("#TermoBusca_@Model.Repositorio").val().length;
+
+        if (chars >= 3) {
+            if ("@edicao" == "False")
+                window.location.href = "@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlDetalhe, "1?busca=")" + escape($("#TermoBusca_@Model.Repositorio").val());
+            else
+                window.parent.location = "@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlDetalhe, "1?busca=")" + escape($("#TermoBusca_@Model.Repositorio").val())
+        }
+
+        return false;
+    }
+
+    function busca_autocomplete() {
+        var chars = $("#TermoBusca_@Model.Repositorio").val().length;
+
+        $("#result_autocomplete_@Model.Repositorio").html("");
+        if (chars >= 3) {
+            $.post("@Portal.UrlCms(portal)/Busca/BuscaAutoComplete",
+                {
+                    strTermo: $("#TermoBusca_@Model.Repositorio").val(),
+                    strExibirImagem: "@Model.ExibirImagem"
+                },
+                function (data, opts) {
+                    if (data.success) {
+                        $("#result_autocomplete_@Model.Repositorio").html(data.html);
+                    }
+                }
+            );
+        }
+    }
+
+    function keyUp(ev) {
+        var keycode = (ev.keyCode ? ev.keyCode : ev.which);
+
+        if (keycode == '13') {
+            busca();
+        }
+        else {
+            busca_autocomplete();
+        }
+        return false;
+    }
+</script>

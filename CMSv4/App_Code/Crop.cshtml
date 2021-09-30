@@ -1,0 +1,357 @@
+﻿@helper Script(string urlToPostCroppedImage, string actionParamName = "file")
+{
+    <script src="~/Content/js/plugins/cropper/cropper.min.js"></script>
+
+    <script type="text/javascript">
+        var image = document.getElementById('image');
+        var cropBoxData;
+        var canvasData;
+        var cropper;
+        var dataWidth = document.getElementById("dataWidth");
+        var dataHeight = document.getElementById("dataHeight");
+
+        var dataX = document.getElementById("dataX");
+        var dataY = document.getElementById("dataY");
+
+        $(document).ready(function () {
+            @if(string.IsNullOrWhiteSpace(urlToPostCroppedImage))
+            {
+                @:$("#btnPostCroppedImage").hide();
+            }
+        });
+
+        $('#modalCropper').on('shown.bs.modal', function () {
+            cropper = new Cropper(image, {
+                preview: '.img-preview',
+                autoCropArea: 0.5,
+                aspectRatio: NaN,
+                ready: function () {
+                    //Should set crop box data first here
+                    //cropper.setCropBoxData(cropBoxData).setCanvasData(canvasData);
+
+                    $("#aspectRatio5").trigger('click');
+                }
+                ,crop(e) {
+                    var data = e.detail;
+
+                    dataWidth.value = Math.round(data.width);
+                    dataHeight.value = Math.round(data.height);
+
+                    dataX.value = Math.round(data.x);
+                    dataY.value = Math.round(data.y);
+                }
+            });
+        })
+        .on('hidden.bs.modal', function () {
+            cropBoxData = cropper.getCropBoxData();
+            canvasData = cropper.getCanvasData();
+            cropper.destroy();
+        });
+
+        function cropperZoomIn() {
+            cropper.zoom(0.1);
+        }
+
+        function cropperZoonOut() {
+            cropper.zoom(-0.1);
+        }
+
+        function scaleX() {
+            cropper.scaleX(cropper.getData().scaleX * -1);
+        }
+
+        function scaleY() {
+            cropper.scaleY(cropper.getData().scaleY * -1);
+        }
+
+        function setAspectRatio(number) {
+            cropper.setAspectRatio(number);
+        }
+
+        function cropperRotate(number) {
+            cropper.rotate(number);
+        }
+
+        function postSelectedArea() {
+            cropper.getCroppedCanvas().toBlob(function (blob) {
+                var formData = new FormData();
+                formData.append('@actionParamName', blob);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@urlToPostCroppedImage',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: function (response) {
+                        try {
+                            callBackSuccess(response);
+                        } catch (e)
+                        {
+                            console.warn(e);
+                        }
+                    }
+                });
+            });
+        }
+
+        function setNewImageToCrop(newImgUrl) {
+            image.src = newImgUrl;
+        }
+
+        function downloadCropped() {
+            var a = createFakeElementToDownloadImage();
+
+            a.click();
+        }
+
+        function createFakeElementToDownloadImage() {
+            var a = document.createElement("a");
+            var dataUrl = cropper.getCroppedCanvas().toDataURL();
+            var fileName = getFileNameToCroppedImage();
+
+            document.body.appendChild(a);
+
+            a.style = "display: none";
+            a.href = dataUrl;
+            a.download = fileName;
+
+            return a;
+        }
+
+        function getFileNameToCroppedImage() {
+            var fileName = getFileNameFromUrl();
+            var indexLastDot = fileName.lastIndexOf('.');
+            var imageDimensionText = '-' + String(dataWidth.value) + 'x' + String(dataHeight.value);
+
+            return fileName.substring(0, indexLastDot) + imageDimensionText + fileName.substring(indexLastDot);
+        }
+
+        function getFileNameFromUrl() {
+            var filename = image.src.substring(image.src.lastIndexOf('/') + 1);
+
+            return filename;
+        }
+
+        function setCropBoxData(element) {
+            var ratio = cropper.imageData.width / cropper.imageData.naturalWidth;
+            var width = parseInt(dataWidth.value) * ratio;
+            var height = parseInt(dataHeight.value) * ratio;
+
+            console.log(dataWidth.value);
+
+            cropper.setCropBoxData({
+                width: width,
+                height: height
+            });
+        }
+    </script>
+}
+
+@helper Style()
+{
+    <link href="~/Content/css/plugins/cropper/cropper.min.css" rel="stylesheet" />
+
+    <style type="text/css">
+        .img-preview {
+            overflow: hidden;
+            width: 150px;
+            height: 150px;
+        }
+
+        /* Ensure the size of the image fit the container perfectly */
+        .img-container img {
+            display: block;
+            /* This rule is very important, please don't ignore this */
+            max-width: 100%;
+        }
+
+        .modal-dialog {
+            width: 65%;
+        }
+
+        .buttons-container {
+            margin-top: 15px;
+        }
+
+        .margin-top {
+            margin-top: 5px;
+        }
+
+        .cropperInfo > .col-md-12 {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .input-group-addon {
+            min-width: 32px;
+        }
+    </style>
+}
+
+@helper Modal()
+{
+    <div class="modal modal-flex fade" id="modalCropper" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="flexModalLabel">Crop</h4>
+                </div>
+                <form class="modal-body" enctype="multipart/form-data">
+
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="img-container">
+                                <img id="image" src="https://fengyuanchen.github.io/cropperjs/images/picture.jpg" alt="Picture">
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 cropperInfo">
+
+                            <div class="col-md-12">
+                                <label>Dimensões</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">W</span>
+                                    <input type="text" class="form-control" id="dataWidth" placeholder="width" onfocusout="setCropBoxData(this);">
+                                    <span class="input-group-addon">px</span>
+                                </div>
+
+                                <div class="input-group input-group-sm margin-top">
+                                    <span class="input-group-addon">H</span>
+                                    <input type="text" class="form-control" id="dataHeight" placeholder="height" onfocusout="setCropBoxData(this);">
+                                    <span class="input-group-addon">px</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label style="margin-top:10px;">Coordenadas</label>
+
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">X</span>
+                                    <input type="text" class="form-control" id="dataX" placeholder="x" disabled>
+                                    <span class="input-group-addon">px</span>
+                                </div>
+
+                                <div class="input-group input-group-sm margin-top">
+                                    <span class="input-group-addon">Y</span>
+                                    <input type="text" class="form-control" id="dataY" placeholder="y" disabled>
+                                    <span class="input-group-addon">px</span>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <label style="margin-top:10px;">"Preview"</label>
+
+                                <div class="img-preview">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row buttons-container">
+                        <div class="col-md-9">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" data-method="zoom" data-option="0.1" title="Zoom In" onclick="return cropperZoomIn();">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-search-plus"></span>
+                                    </span>
+                                </button>
+                                <button type="button" class="btn btn-primary" data-method="zoom" data-option="-0.1" title="Zoom Out" onclick="return cropperZoonOut();">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-search-minus"></span>
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" data-method="scaleX" data-option="-1" title="Flip Horizontal" onclick="return scaleX();">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-arrows-h"></span>
+                                    </span>
+                                </button>
+                                <button type="button" class="btn btn-primary" data-method="scaleY" data-option="-1" title="Flip Vertical" onclick="return scaleY();">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-arrows-v"></span>
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" data-method="rotate" data-option="-45" title="Rotate Left" onclick="return cropperRotate(-45);">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-rotate-left"></span>
+                                    </span>
+                                </button>
+                                <button type="button" class="btn btn-primary" data-method="rotate" data-option="45" title="Rotate Right" onclick="return cropperRotate(45);">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-rotate-right"></span>
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
+                                <label class="btn btn-primary active" id="ratioDefault" onclick="return setAspectRatio(1.7777777777777777)">
+                                    <input type="radio" class="sr-only" id="aspectRatio1" name="aspectRatio" value="1.7777777777777777">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="aspectRatio: 16 / 9">
+                                        16:9
+                                    </span>
+                                </label>
+                                <label class="btn btn-primary" onclick="return setAspectRatio(1.3333333333333333)">
+                                    <input type="radio" class="sr-only" id="aspectRatio2" name="aspectRatio" value="1.3333333333333333">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="aspectRatio: 4 / 3">
+                                        4:3
+                                    </span>
+                                </label>
+                                <label class="btn btn-primary" onclick="return setAspectRatio(1)">
+                                    <input type="radio" class="sr-only" id="aspectRatio3" name="aspectRatio" value="1">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="aspectRatio: 1 / 1">
+                                        1:1
+                                    </span>
+                                </label>
+                                <label class="btn btn-primary" onclick="return setAspectRatio(0.6666666666666666)">
+                                    <input type="radio" class="sr-only" id="aspectRatio4" name="aspectRatio" value="0.6666666666666666">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="aspectRatio: 2 / 3">
+                                        2:3
+                                    </span>
+                                </label>
+                                <label class="btn btn-primary" onclick="return setAspectRatio(NaN)">
+                                    <input type="radio" class="sr-only" id="aspectRatio5" name="aspectRatio" value="NaN">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="aspectRatio: NaN">
+                                        Free
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" data-method="reset" title="Reset" onclick="cropper.reset()">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-refresh"></span>
+                                    </span>
+                                </button>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary" title="Download da área selecionada" onclick="downloadCropped();">
+                                    <span class="docs-tooltip" data-toggle="tooltip" title="">
+                                        <span class="fa fa-download"></span>
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btnPostCroppedImage" class="btn btn-green" data-dismiss="modal" onclick="postSelectedArea();">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

@@ -1,0 +1,123 @@
+﻿@model  MLModuloResultado
+@if (Request.QueryString["id"] != null)
+{
+    try
+    {
+        @Html.Action("Detalhe", "Resultado", new { id = Request.QueryString["id"] })
+    }
+    catch (Exception ex)
+    {
+        ApplicationLog.ErrorLog(ex);
+    }
+}
+else
+{
+    var listaAnos = (List<MLResultadoAno>)ViewData["listaAnos"];
+    var portal = BLPortal.Atual;
+    var AnoSelecionado = (int)ViewData["ano_selecionado"];
+    var UltimoAno = DateTime.Now.Year;
+
+    <!-- mod-resultados -->
+    <article class="content">
+        <header class="content--header clearfix">
+            <h1 class="section-title-sub">
+                @T("Resultados")
+            </h1>
+            <div class="select-top">
+                @T("Selecione o Ano"): <select id="Ano" name="Ano" onchange="OnDddlChanged()" class="selectpicker" data-style="btn-danger">
+                    @{
+    if (listaAnos != null)
+    {
+        
+        var newList = listaAnos.OrderByDescending(x => x.Ano).ToList();
+        for (int i = 0; i < newList.Count; i++)
+        {
+            var item = newList[i];
+
+            if (i == 0 && AnoSelecionado == 0)
+            {
+                UltimoAno = (int)item.Ano.Value;
+            }
+            else
+            {
+                UltimoAno = AnoSelecionado;
+            }
+           
+
+
+            @:
+                        <option value="@item.Ano" @((item.Ano == UltimoAno) ? "selected" : "")>@item.Ano</option>
+        }
+    }
+                    }
+                </select>
+
+            </div>
+
+        </header>
+
+        <!-- whatever -->
+        <form id='myform' >
+        <div class="content--body">
+            <div id="divResultado">
+                @{
+    try
+    {
+        @Html.Action("Lista", "Resultado", new { model = Model })
+    }
+    catch (Exception ex) { ApplicationLog.ErrorLog(ex); }
+                }
+            </div>
+
+        </div>
+        </form>
+    </article>
+
+    <script type="text/javascript">
+        function OnDddlChanged() {
+            
+            $('#divResultado').html('');
+            var dataSend = {
+                'CodigoPagina': '@Model.CodigoPagina',
+                 'Repositorio': '@Model.Repositorio',
+                 'View': '@Model.View',
+                 'UrlDetalhe': '@Model.UrlDetalhe'
+            };
+            //guardar a consulta no cache (wgoes)            
+             $.ajax({
+                url: "@Portal.UrlCms(portal)/resultado/lista?ano=" + $("#Ano").val() + '&CodigoIdioma=@(BLIdioma.Atual.Codigo.GetValueOrDefault())',
+                data: dataSend,
+                dataType: 'html',
+                success: function (r) {
+                    location.reload();
+            },
+            error: function () {                
+            }
+             });
+            
+        }
+        $(document).ready(function () {
+            var dataSend = {
+                'CodigoPagina': '@Model.CodigoPagina',
+                'Repositorio': '@Model.Repositorio',
+                'View': '@Model.View',
+                'UrlDetalhe': '@Model.UrlDetalhe'
+            };         
+
+            $.ajax({
+                url: "@Portal.UrlCms(portal)/resultado/lista?ano=" + $("#Ano").val() + '&CodigoIdioma=@(BLIdioma.Atual.Codigo.GetValueOrDefault())',
+                data: dataSend,
+                dataType: 'html',
+                success: function (r) {
+                    $('#divResultado').html(r);
+                },
+                error: function () {
+                    alert('Error');
+                }
+            });
+        });
+    </script>
+
+    <!-- /mod-resultados -->
+
+}

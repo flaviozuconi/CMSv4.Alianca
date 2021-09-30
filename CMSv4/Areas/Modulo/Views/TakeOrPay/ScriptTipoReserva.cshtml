@@ -1,0 +1,121 @@
+﻿@model MLModuloTakeOrPay
+@{ 
+    var portal = BLPortal.Atual;
+}
+<script type="text/javascript">
+    $("#btnVoltarEtapa2").click(function () {
+        VoltarEtapa2();
+    });
+
+    $("#btnVoltarEtapa3_1").click(function () {
+        VoltarEtapa3_1();
+    });
+
+    $("#btnAvancarEtapa3_2").click(function () {
+        if ($("input[name=tipoReserva]").is(':checked')) {
+            let isSim = $("#sim").prop("checked")
+
+            SalvarEtapa3_1(isSim)
+
+            $("#divErroEtapa3_1").hide()
+        }
+        else {
+            $("#divErroEtapa3_1").show()
+        }
+    });
+
+    $("#btnAvancarEtapa4").click(function () {
+        if ($("input[name=frequencia]").is(':checked')) {
+            let isSemanal = $("#semanal").prop("checked")
+
+            SalvarEtapa3_2(isSemanal)
+
+            $("#divErroEtapa3_2").hide()
+        }
+        else {
+            $("#divErroEtapa3_2").show()
+        }
+    });
+
+    function AvancarEtapa3_2() {
+        $("#Etapa3_1").hide()
+        $("#Etapa3_2").show()
+    }
+
+    function AvancarEtapa4() {
+        $("#Etapa3_1").hide()
+        $("#Etapa3_2").hide()
+        $("#Etapa4_1").show()
+
+        $("#ProgressoEtapa3").removeClass("active")
+
+        $("#ProgressoEtapa4").removeClass("disabled")
+        $("#ProgressoEtapa4").addClass("active")
+
+        CarregarEtapa4_1()
+    }
+
+    function VoltarEtapa2() {
+        $("#Etapa3_1").hide()
+        $("#Etapa2").show()
+
+        $("#ProgressoEtapa3").removeClass("active")
+
+        $("#ProgressoEtapa2").removeClass("disabled")
+        $("#ProgressoEtapa2").addClass("active")
+    }
+
+    function VoltarEtapa3_1() {
+        $("#Etapa3_2").hide()
+        $("#Etapa3_1").show()
+    }
+
+    function SalvarEtapa3_1(ReservarEspaco) {
+        $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/SalvarEtapa3",
+            data:
+            {
+                "Codigo": $("#Codigo").val(),
+                "ReservarEspaco": ReservarEspaco
+            },
+            success: function (data) {
+                if (data.Sucess == true) {
+                    if (ReservarEspaco)
+                        AvancarEtapa3_2();
+                    else
+                        AvancarEtapa4();
+                }
+                else {
+                    ErroGenerico();
+                }
+            },
+            error: function (data) {
+                ErroGenerico();
+            }
+        });
+    }
+
+    function SalvarEtapa3_2(isSemanal) {
+        $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(portal)/TakeOrPay/SalvarEtapa3",
+            data:
+            {
+                "Codigo": $("#Codigo").val(),
+                "IsSemanal": isSemanal
+            },
+            success: function (data) {
+                if (data.Sucess == true) {
+                    AvancarEtapa4();
+                }
+                else {
+                    ErroGenerico();
+                }
+            },
+            error: function (data) {
+                ErroGenerico();
+            }
+        });
+    }
+</script>

@@ -1,0 +1,147 @@
+﻿@{
+    var sigla = BLIdioma.ObterSiglaParaMomentJs();
+    var portal = PortalAtual.Obter;
+}
+
+<div class="row">
+    <div class="col-lg-12" style="padding-left:0; padding-right:0;">
+        <div class="page-title">
+            <ol class="breadcrumb">
+                <li class="active"><i class="fa fa-dashboard"></i> Dashboard</li>
+                <li class="pull-right">
+                    <div id="reportrange" class="btn btn-green btn-square date-picker">
+                        <i class="fa fa-calendar"></i>
+                        <span class="date-range">September 10, 2019 - October 9, 2019</span> <i class="fa fa-caret-down"></i>
+                    </div>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div id="analytics-content"></div>
+
+@section head {
+    <link href="~/Content/css/plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" />
+
+    <style>
+        .table {
+            border-collapse: collapse !important;
+        }
+    </style>
+}
+
+@section scripts {
+    <script src="~/Content/js/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="~/Content/js/plugins/sparkline/jquery.sparkline.min.js"></script>
+    @*<script src="~/Content/js/plugins/flot/jquery.flot.js"></script>
+        <script src="~/Content/js/plugins/flot/jquery.flot.pie.js"></script>*@
+
+    <script src="~/Content/js/plugins/morris/raphael-2.1.0.min.js"></script>
+    <script src="~/Content/js/plugins/morris/morris.js"></script>
+
+    <script type="text/javascript">
+
+        var morrisCidades;
+        var startDate = moment().subtract('days', 29);
+        var endDate = moment();
+
+        $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+            var functionToExecute = $(this).data('morris');
+
+            window[functionToExecute]();
+        });
+
+        $(document).ready(function () {
+
+            moment.lang("@sigla");
+
+            initializeDataRangePicker()
+
+            getAnalyticsData();
+        });
+
+        function getAnalyticsData() {
+            $.get('/cms/@portal.Diretorio/Dashboard/GetAnalyticsData', { start: startDate.format('YYYY-MM-DD'), end: endDate.format('YYYY-MM-DD') }, function (response) {
+                $("#analytics-content").html(response);
+            });
+        }
+
+        function initializeDataRangePicker() {
+            $('#reportrange').daterangepicker({
+                startDate: startDate,
+                endDate: endDate,
+                //minDate: '01/01/2012',
+                //maxDate: '12/31/2014',
+                dateLimit: {
+                    days: 60
+                },
+                showDropdowns: true,
+                showWeekNumbers: false,
+                timePicker: false,
+                timePickerIncrement: 1,
+                timePicker12Hour: true,
+
+                format: 'DD/MM/YYYY',
+
+                ranges: {
+                    '@TAdm("Hoje")': [moment(), moment()],
+                    '@Html.Raw(TAdm("Últimos 30 dias"))': [moment().subtract('days', 29), moment()],
+                    '@Html.Raw(TAdm("Últimos 6 meses"))': [moment().subtract('month', 6).startOf('month'), moment()]
+                },
+
+                opens: 'left',
+                buttonClasses: ['btn btn-default'],
+                applyClass: 'btn-small btn-primary',
+                cancelClass: 'btn-small',
+                separator: ' to ',
+                locale: {
+                    applyLabel: 'Submit',
+                    fromLabel: '@TAdm("De")',
+                    toLabel: '@TAdm("Até")',
+                    customRangeLabel: '@TAdm("Customizado")',
+                    daysOfWeek: ['@TAdm("Dom")', '@TAdm("Seg")', '@TAdm("Ter")', '@TAdm("Qua")', '@TAdm("Qui")', '@TAdm("Sex")', '@TAdm("Sab")'],
+                    monthNames: ['@TAdm("Janeiro")', '@TAdm("Fevereiro")', '@TAdm("Março")', '@TAdm("Abril")', '@TAdm("Maio")', '@TAdm("Junho")', '@TAdm("Julho")', 'Agosto', '@TAdm("Setembro")', '@TAdm("Outubro")', '@TAdm("Novembro")', '@TAdm("Dezembro")'],
+                    firstDay: 1
+                }
+            },
+            function (start, end) {
+                startDate = start;
+                endDate = end;
+
+                $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+
+                getAnalyticsData();
+            });
+
+            //Set the initial state of the picker label
+            $('#reportrange span').html(moment().subtract('days', 29).format('MMMM D, YYYY') + ' - ' + moment().format('MMMM D, YYYY'));
+        }
+
+        $(document).on('click', '.btn-primary', getAnalyticsData);
+
+
+        //setInterval(serviceRealTimer, 60000);
+
+        @*function serviceRealTimer() {
+            $.ajax({
+                loadingPanel: false,
+                url: "/cms/@portal.Diretorio/Dashboard/GetAmountOfUserOnlineInRealTime",
+                async: true,
+                success: function (data, status, xhr) {
+                    if (data != null && data.Sucesso) {
+                        $(".qtdUserRealTime").text(data.data);
+                    }
+                    else {
+                        $(".qtdUserRealTime").text(0);
+                    }
+                },
+                error: function (data) {
+
+                }
+            });
+        }*@
+
+
+    </script>
+}

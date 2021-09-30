@@ -1,0 +1,58 @@
+﻿@model MLModuloTakeOrPayEdicao
+@{ 
+    Layout = "";
+    var portal = BLPortal.Atual;
+
+    var modelos = (List<MLFaleConoscoModeloEmail>)ViewData["modelos"] ?? new List<MLFaleConoscoModeloEmail>();
+}
+
+<div class="form-group col-md-24">
+    <label>@T("Link")</label>
+    <input type="text" class="form-control" name="Link" id="Link" placeholder="@T("Link")" value="@Model.Link" />
+</div>
+<div class="form-group col-md-24">
+    <label for="ex">@T("Email")</label> <i class="fa fa-question-circle help" data-content="@T("Para utilizar mais de um e-mail, separar utilizando \",\"")" data-placement="right" data-original-title="" title=""></i>
+    <input type="text" class="form-control" name="Email" id="Email" placeholder="@T("Email")" value="@Model.Email" />
+</div>
+<div class="clearfix"></div>
+<div class="col-md-24">
+    <label>@T("Modelo de Email Admin")</label>
+    <select name="ModeloEmailAdmin" class="form-control">
+        <option value="" selected>@T("Selecione")</option>
+        @foreach (var item in modelos)
+        {
+            <option value="@item.Codigo" @(item.Codigo == Model.ModeloEmailAdmin ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+</div>
+<div class="col-md-24">
+    <label>@T("Modelo de Email Cliente")</label>
+    <select name="ModeloEmailCliente" class="form-control">
+        <option value="" selected>@T("Selecione")</option>
+        @foreach (var item in modelos)
+        {
+            <option value="@item.Codigo" @(item.Codigo == Model.ModeloEmailCliente ? "selected" : "")>@item.Nome</option>
+        }
+    </select>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+
+    $(".help").popover({
+        trigger: "hover",
+        delay: { show: 200, hide: 0 }
+    });
+
+    // Modify validation settings
+    $.extend(true, settings, {
+        rules: {
+            "Link": { maxlength: 250, required: true },
+            "Email": { required: true },
+            "ModeloEmailAdmin": { required: true },
+            "ModeloEmailCliente": { required: true }
+        }
+    });
+</script>

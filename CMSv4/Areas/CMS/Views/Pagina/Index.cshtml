@@ -1,0 +1,202 @@
+﻿@{
+    var portal = PortalAtual.Obter;
+    var urlListar = string.Format("/cms/{0}/pagina/listar", portal.Diretorio);
+    var urlGerarSitemap = string.Format("/cms/{0}/pagina/GerarSitemap", portal.Diretorio);
+    var urlEditar = string.Format("/cms/{0}/pagina/editar/", portal.Diretorio);
+    var urlNova = string.Format("/cms/{0}/pagina/item/", portal.Diretorio);
+    var urlDefinirHome = string.Format("/cms/{0}/pagina/DefinirHome", portal.Diretorio);
+    var listaSecao = (List<MLSecao>)ViewData["secoes"] ?? new List<MLSecao>();
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/application_view_gallery" />
+                @TAdm("Páginas")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            {
+                <a class="btn btn-green" href="@urlNova">@TAdm("Adicionar")</a>
+                <a class="btn btn-orange" onclick="gerarSiteMap();">@TAdm("Gerar sitemap")</a>
+            }
+            @Helpers.BotaoExcluir(T("Excluir"))
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="portlet-body">
+
+        @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), Request.Url.AbsolutePath + "/excluir")
+
+        <div class="table-responsive">
+            <div id="filter">
+                <select id="filtroSecao" class="form-control" onchange="javascript:$('#lista').DataTable().ajax.reload();">
+                    <option value="">@TAdm("Todos")</option>
+                    <optgroup label="@TAdm("Seções")">
+                        @foreach (var item in listaSecao)
+                        {
+                            <option value="@item.Codigo">@item.Nome</option>
+                        }
+                    </optgroup>
+                </select>
+                @Helpers.ComboIdiomas(PortalAtual.Obter.CodigoIdioma, false)
+
+                <select name="Ativo" class="form-control" onchange="javascript:$('#lista').DataTable().ajax.reload();">
+                    <option value="">@TAdm("Todos")</option>
+                    <option value="True" selected>@TAdm("Ativos")</option>
+                    <option value="False">@TAdm("Inativos")</option>
+                </select>
+            </div>
+            <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">@TAdm("Página")</th>
+                        <th>@TAdm("Nome")</th>
+                        <th>@TAdm("Seção")</th>
+                        <th style="width: 80px;">@TAdm("Em edição")</th>
+                        <th style="width: 80px;">@TAdm("Publicado")</th>
+                        @*<th style="width: 50px;">@TAdm("Ativo")</th>*@
+                        <th style="width: 90px;">@TAdm("Relacionados")</th>
+                        <th style="width: 50px;">@TAdm("Excluir")</th>
+                        <th style="width: 50px;">@TAdm("Home")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<iframe id="downloader" style="display:none;"></iframe>
+
+@section scripts {
+<script type="text/javascript">
+    var lista;
+
+    function gerarSiteMap() {
+        document.getElementById('downloader').src = '@urlGerarSitemap';
+    }
+
+    //DataTables Initialization
+    $(document).ready(function () {
+        $("#CodigoIdioma").change(function () {
+            $('#lista').DataTable().ajax.reload();
+        });
+
+        lista = $('#lista').dataTable(
+            {
+                "ajax": {
+                    "url": "@urlListar", "data": function (d) {
+                        d.CodigoSecao = $('#filtroSecao').val(); d.CodigoIdioma = $("#CodigoIdioma").val();
+                        d.Ativo = $("select[name=Ativo]").val();
+                    }
+                },
+                "orderMulti": false,
+                "columns": [
+                    {
+                        "data": "Codigo", "render": function (data, type, row) {
+                            var url = "/cms/@portal.Diretorio/pagina/ImagemMiniatura/?idPagina=" + data;
+                            var linha = "<div style='overflow: hidden; width: 100px; height: 70px;'>";
+
+                            linha = linha + "<a style='display: block;' href='@urlEditar" + data + "'>";
+                            linha = linha + "<img style='max-width: 100%;' alt='' src='/portal/braskem/img/spinner.gif' data-src='" + url + "' title='" + data + "' />";
+                            linha = linha + "</a>";
+                            linha = linha + "</div>";
+
+                            return linha;
+                        },
+                        "sClass": "center"
+                    },
+                    {
+                        "data": "Nome", "render": function (data, type, row) {
+                            var linha = '<a href="@urlEditar' + row["Codigo"] + '"> <span style="font-size: 18px;">' + row["Titulo"] + '</span><br/><small style="color: green;">/' + row["Url"].toLowerCase() + '</small></a>';
+
+                            if (row.DataPublicacao) {
+                                linha = linha + ' <a href="/@(portal.Diretorio)/' + row.Url + '" class="tooltip-idioma" title="@TAdm("Abrir em uma nova janela")" target="_blank"><small style="color: green;"><i class="glyphicon glyphicon-new-window" style="font-size: 12px;" aria-hidden="true"></i></small></a>'
+                            }
+
+                            if (row["Descricao"]) { linha = linha + '<p style="font-size: 12px;"><a href="#">' + row["Descricao"] + '</a></p>'; }
+                            else { linha = linha + '<p style="font-size: 11px;"><i class="fa fa-warning" style="color: orange;"></i> @(T("SEO: Nenhuma descrição definida")) </p>'; }
+
+                            if (row.Https) {
+                                linha = linha + '<span class="label green tooltip-idioma" title="@TAdm("Página deve ser exibida somente por HTTPS")"><i class="fa fa-lock"></i> @TAdm("HTTPS")</span> ';
+                            }
+
+                            if (!row.Ativo) {
+                                linha = linha + '<span class="label red tooltip-idioma" title="@TAdm("Desativada")">@TAdm("Desativada")</span>';
+                            }
+
+                            return linha;
+                        }
+                    },
+                    @Helpers.ColunaEditar("NomeSecao", urlEditar, "Codigo"),
+                    @Helpers.ColunaDataHora("DataEdicao", urlEditar, "Codigo"),
+                    @Helpers.ColunaDataHora("DataPublicacao", urlEditar, "Codigo"),
+                    @*@Helpers.ColunaEditarBoolean("Ativo", urlEditar, "Codigo", "Sim", "Não"),*@
+                    @Helpers.ColunaEditarIdioma("Idiomas","Codigo",urlEditar,T("Idiomas Cadastrados")),
+                    @Helpers.ColunaExcluir("Codigo"),
+                    {
+                        "data": null, "bSortable": false, "render": function (data, type, row) {
+                            if (row["PaginaPrincipal"]) {
+                                return "<input type='radio' value='" + row["Url"].toLowerCase() + "' class='radio-home' name='HomePortal' checked />";
+                            }
+                            else
+                                return "<input type='radio' value='" + row["Url"].toLowerCase() + "' class='radio-home' name='HomePortal' />";
+                        },
+                        "sClass": "center"
+                    }
+                ],
+                "fnCreatedRow": function (nRow, aData, iDataIndex) {
+                    $(nRow).find("img").each(function () {
+                        var $this = $(this);
+                        $this.attr("src", $this.data("src"));
+                    });
+
+                    $(nRow).find(".radio-home").click(function () {
+                        salvarPaginaInicial($(this).val());
+                    });
+                }
+            }
+        );
+
+        function salvarPaginaInicial(urlPagina) {
+            $.ajax({
+                type: "PUT",
+                url: "@urlDefinirHome",
+                data: { portal: '@portal.Codigo', url: urlPagina }
+            })
+            .success(function (data) {
+                if (data.success) {
+                    window.parent.Mensagem('@TAdm("Página definida como principal do portal")', 'success');
+                }
+                else {
+                    if (data.msg) {
+                        window.parent.Mensagem(data.msg, 'error');
+                    }
+                    else {
+                        window.parent.Mensagem('@TAdm("Houve um erro ao executar a tarefa solicitada")', 'error');
+                    }
+                }
+            });
+        }
+
+        var nav = $(".navbar-side", window.parent.document);
+
+        if (nav.hasClass("collapsed-construcao")) {
+            nav.removeClass("collapsed");
+            nav.removeClass("collapsed-construcao");
+            $("#page-wrapper", window.parent.document).removeClass("collapsed");
+        }
+    });
+
+    function salvarImagem(data) {
+        $.post('/cms/@portal.Diretorio/pagina/ScreenShot', { file: data },
+           function (response, opts) {
+               // depois remove a referência do módulo na página
+           }
+       );
+    }
+</script>
+}

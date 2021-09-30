@@ -1,0 +1,46 @@
+﻿@model MLModuloTakeOrPay
+@{
+    var portal = BLPortal.Atual;
+    var baseUrl = "/portal/" + portal.Diretorio + "/";
+    Layout = "";
+}
+
+@if (!string.IsNullOrEmpty(Model.Link))
+{
+<div class="container container__sm">
+    <p class="text-center">
+        Com o objetivo de atender o fluxo de embarques para Manaus, a Aliança, líder em logística integrada no Brasil, disponibilizou uma nova modalidade de contratação, o Embarque Certo, que proporciona garantia de espaço adicional, trazendo assim maior previsibilidade, segurança e agilidade para a sua cadeia logística.
+    </p>
+    <h2 class="embarque-certo--title">Se interessou?</h2>
+    <p class="text-center">Faça a sua solicitação agora por meio do formulário abaixo e não se esqueça de aceitar os termos e condições.</p>
+</div>
+    <div class="steps">
+        <div class="container" id="divSteps">
+            <ul class="steps--list">
+                <li class="list-item"><a class="list-link active" id="ProgressoEtapa1" href="#">Modalidade de contratação</a></li>
+                <li class="list-item"><a class="list-link disabled" id="ProgressoEtapa2" href="#">Dados Cadastrais</a></li>
+                <li class="list-item"><a class="list-link disabled" id="ProgressoEtapa3" href="#">Tipo de Reserva</a></li>
+                <li class="list-item"><a class="list-link disabled" id="ProgressoEtapa4" href="#">Contratação de Volume</a></li>
+                <li class="list-item"><a class="list-link disabled" id="ProgressoEtapa5" href="#">Conclusão da Reserva</a></li>
+            </ul>
+        </div>
+        <div class="container" id="divConclusao" style="display: none;">
+            <h2>Envio efetuado com sucesso!</h2>
+        </div>
+    </div>
+
+    <input type="hidden" name="Codigo" id="Codigo" autocomplete="off"/>
+
+    @Html.Action("Cadastro", new { model = Model })
+    @Html.Action("DadosCadastrais", new { model = Model })
+    @Html.Action("TipoReserva", new { model = Model })
+    @Html.Action("DistribuicaoCarga", new { model = Model })
+    @Html.Action("ConclusaoReserva", new { model = Model })
+    @Html.Action("Conclusao", new { model = Model })
+}
+else
+{
+    <br />
+    <p>@T("Clique em ")<u>@T("Editar")</u> @T("para configurar Take Or Pay")</p>
+}
+

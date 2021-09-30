@@ -1,0 +1,96 @@
+﻿@model MLModuloBusca
+@{
+    Layout = "";
+
+    var views = (List<string>)ViewData["views"] ?? new List<string>();
+}
+<div class="form-group col-md-12">
+    <label>@T("Tipo de Exibição")</label>
+    <select name="View" class="form-control" id="View">
+        <option value=""  selected>@T("Selecione")</option>
+        @foreach (var item in views)
+        {
+            <option value="@item" @(item == Model.View ? "selected" : "")>@item</option>
+        }
+    </select>
+</div>
+
+<div class="form-group col-md-12">
+    <label>@T("Título")</label>
+    <input type="text" class="form-control" name="Titulo" maxlength="100" value="@Model.Titulo">
+</div>
+
+<div id="Resultado" class="viewJQ" style="display:none;">
+    <div class="form-group col-md-12">
+        <label>@T("Tipo Paginação")</label>
+        <select name="IsSetas" class="form-control">
+            <option value="true" @(Model.IsSetas.GetValueOrDefault(true) ? "selected" : "")>@T("Exibir botões Próximo e Anterior")</option>
+            <option value="false" @(!Model.IsSetas.GetValueOrDefault(true) ? "selected" : "")>@T("Exibir botão Ver Mais")</option>
+        </select>
+    </div>
+    <div class="form-group col-md-12">
+        <label>@T("Itens por Página")</label>
+        <input type="text" class="form-control dimensaoJQ" name="QtdePorPagina" id="QtdePorPagina" maxlength="4" value="@Model.QtdePorPagina">
+    </div>
+</div>
+
+    
+<div id="Busca"  class="viewJQ" style="display:none;">
+    <div class="form-group col-md-24">
+        <label>@T("Url página de resultado.")</label>
+        <input type="text" class="form-control" name="UrlDetalhe" maxlength="100" value="@Model.UrlDetalhe">
+    </div>
+
+    <div class="form-group col-md-12">
+        <label>@T("Place Holder.")</label>
+        <input type="text" class="form-control" name="TextoPlaceHolder" maxlength="300" value="@Model.TextoPlaceHolder">
+    </div>
+
+    <div class="form-group col-md-12">
+        <br />
+        @Html.CheckBox("IsAutoComplete", (Model.IsAutoComplete.HasValue ? Model.IsAutoComplete.Value : true)) @T("Busca com Auto Complete")
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="form-group col-md-12">
+    <br />
+    @Html.CheckBox("ExibirImagem", (Model.ExibirImagem.HasValue ? Model.ExibirImagem.Value : true)) @T("Exibir imagens")
+</div>
+
+<script type="text/javascript">
+    var settings = $('#propriedade').validate().settings;
+
+    // Modify validation settings
+    $.extend(true, settings, {
+        rules: {
+            "QtdePorPagina": { number: true },
+            "QtdePaginador": { number: true }
+        }
+    });
+
+    $("#View").on("change", function () {
+        $(".viewJQ").hide();
+
+        if ($(this).val() == "Busca") {
+            $("#Busca").show();
+        }
+        else{
+            $("#Resultado").show();
+        }
+    });
+
+    $(document).ready(function () {
+        var val = $("#View option:selected").val();
+
+        $(".viewJQ").hide();
+
+        if (val == "Resultado") {
+            $("#Resultado").show();
+        }
+        else if (val == "Busca") {
+            $("#Busca").show();
+        }
+    });
+</script>

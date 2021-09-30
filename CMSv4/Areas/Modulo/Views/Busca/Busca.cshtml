@@ -1,0 +1,29 @@
+﻿@model MLModuloBusca
+@{
+    string strPlaceHolder = !String.IsNullOrEmpty(Model.TextoPlaceHolder) ? Model.TextoPlaceHolder : @T("Buscar...");
+    var edicao = (Model is MLModuloBuscaEdicao);
+}
+<form method="post" id="form_busca_@Model.Repositorio">
+    <div class="input-group">
+        <input type="text" name="TermoBusca" id="TermoBusca_@Model.Repositorio" placeholder="@strPlaceHolder"  class="form-control" autocomplete="off" onkeyup="return keyUp(event);"/>
+        <span class="input-group-btn">
+            <button class="btn btn-default" id="search_@Model.Repositorio" onclick="return busca();">
+                <i class="fa fa-search"></i>
+            </button>
+        </span>
+    </div>                  
+    
+    @if (Model.IsAutoComplete.HasValue && Model.IsAutoComplete.Value)
+    {
+        <div id="result_autocomplete_@Model.Repositorio"></div>
+    }
+</form>
+
+@if (!edicao)
+{
+    BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
+}
+else
+{
+    @Html.Action("Script", "Busca", new { model = Model });
+}

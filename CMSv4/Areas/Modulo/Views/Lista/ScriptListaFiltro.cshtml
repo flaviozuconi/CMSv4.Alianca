@@ -1,0 +1,147 @@
+﻿@model  MLModuloLista
+@{
+    var TotalPaginas = ViewBag.TotalPaginas ?? 1;
+}
+<style type="text/css">
+    .selectboxit-option, .selectboxit-optgroup-header {
+        clear: both;
+    }
+
+    i.glyphicon {
+        position: relative !important;
+        top: inherit !important;
+        font-family: 'Glyphicons Halflings';
+    }
+
+    .selectboxit.selectboxit-disabled {
+        -moz-box-shadow: 0px 0px !important;
+        -webkit-box-shadow: 0px 0px !important;
+        box-shadow: 0px 0px !important;
+        background: #e0e0e0;
+    }
+</style>
+
+
+<script type="text/javascript">    
+
+    var executandoAjax = false;
+    
+    
+
+    $(window).scroll(function () {
+        if ($(window).scrollTop() + $(window).height() > $(document).height() - 500 && !executandoAjax) {
+            OnScroll();
+        }
+    });
+
+    
+
+    function OnScroll() {
+        var pag = $("#hdnPagina_@Model.Repositorio");
+        var totalPaginas = $("#hdnTotalPaginas_@Model.Repositorio").val();
+
+        if (parseInt(pag.val()) <= parseInt(totalPaginas) && !executandoAjax) {
+            ListarAjax(false);
+        }
+    }
+
+    function ListarAjax(LimparConteudo) {
+        var e = $("#resultado_@Model.Repositorio");
+        var pag = $("#hdnPagina_@Model.Repositorio");
+        executandoAjax = true;
+
+        var tema = $("#hdnTemaSelecionado_@(Model.Repositorio)").val();
+        if (tema == "") {
+            tema = $("#hdnCategoriaConfigurada_@(Model.Repositorio)").val();
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "@Portal.UrlCms(BLPortal.Atual)/Lista/ListaFiltroBuscar",
+                data: {
+                    "decCodigoLista": "@Model.CodigoLista",
+                    "strCategorias": tema,
+                    "intPagina": pag.val(),
+                    "intQuantidade": "@Model.Quantidade",
+                    "intAno": $("#hdnAnoSelecionado_@(Model.Repositorio)").val(),
+                    "intMes": $("#hdnMesSelecionado_@(Model.Repositorio)").val(),
+                    "strBusca": $("#hdnTermoSelecionado_@(Model.Repositorio)").val(),
+                    "urlDetalhe": "@Model.UrlDetalhe",
+                    "nomeViewItem": "ListaFiltroItem"
+                },
+            beforeSend: function () {
+                channelingLoad(e);
+            },
+            success: function (data) {
+                setTimeout(function () {
+                    if (data.success) {
+                        if (LimparConteudo) {
+                            e.html(data.html);
+                        }
+                        else {
+                            e.append(data.html);
+                        }
+
+                        $("#hdnTotalPaginas_@Model.Repositorio").val(data.total);
+                        pag.val(parseInt(pag.val()) + 1);
+                    }
+
+                    doneLoad(e);
+                    executandoAjax = false;
+                }, 500);
+            }
+        });
+    }
+
+    
+
+
+    $("#hdnTotalPaginas_@Model.Repositorio").val("@TotalPaginas");
+
+    $("#btnPesquisarPorData_@Model.Repositorio").click(function () {
+        //Salva os valores selecionados na pesquisa, para utiliazr como parâmetro na páginação.
+        var ano = $("#ano_@(Model.Repositorio)").val();
+        var mes = $("#mes_@(Model.Repositorio)").val();
+        var tema = $("#temas_@(Model.Repositorio)").val();
+
+        //Remover termo buscado da tela.
+        $("#inputBusca_@Model.Repositorio").val("");
+
+        //Definir Parametros de busca por data para paginação
+        $("#hdnAnoSelecionado_@Model.Repositorio").val(ano);
+        $("#hdnMesSelecionado_@Model.Repositorio").val(mes);
+        $("#hdnTemaSelecionado_@Model.Repositorio").val(tema);
+
+        //Limpar parametros de busca por termo
+        $("#hdnTermoSelecionado_@Model.Repositorio").val("");
+
+        //Resetar Paginação
+        $("#hdnPagina_@Model.Repositorio").val("1");
+
+        //Nova Busca
+        ListarAjax(true);
+    });
+
+    $("#btnPesquisarPorTermo_@Model.Repositorio").click(function () {
+        var busca = $("#inputBusca_@(Model.Repositorio)").val();
+
+        $("#ano_@(Model.Repositorio)").val("");
+        $("#mes_@(Model.Repositorio)").val("");
+        $("#temas_@(Model.Repositorio)").val("");
+
+        //Limpar parametros de busca
+        $("#hdnAnoSelecionado_@Model.Repositorio").val("");
+        $("#hdnMesSelecionado_@Model.Repositorio").val("");
+        $("#hdnTemaSelecionado_@Model.Repositorio").val("");
+
+        //Definir Parametros de busca
+        $("#hdnTermoSelecionado_@Model.Repositorio").val(busca);
+
+        //Resetar paginação
+        $("#hdnPagina_@Model.Repositorio").val("1");
+
+        //Nova Busca
+        ListarAjax(true);
+    });
+    
+</script>

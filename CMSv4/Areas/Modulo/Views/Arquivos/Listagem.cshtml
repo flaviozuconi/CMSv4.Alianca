@@ -1,0 +1,89 @@
+﻿@model MLModuloArquivos
+@{
+    var portal = BLPortal.Atual;
+    List<MLArquivoPublico> lstResultados = (List<MLArquivoPublico>)ViewData["lstArquivos"] ?? new List<MLArquivoPublico>();
+    double TotalPaginas = ViewBag.TotalPaginas ?? 1;
+    double TotalRows = ViewBag.TotalRows ?? 0;
+    int Pagina = ViewBag.PaginaAtual ?? 1;
+}
+<div class="row" id="eventos_@Model.Repositorio">
+    @if (!String.IsNullOrEmpty(Model.Titulo))
+    {
+        <h2>
+            @Model.Titulo
+        </h2>
+    }
+    @if (lstResultados.Count > 0)
+    {
+
+        <ul class="row list-news list-unstyled block-list clipping" id="divVerMais_@Model.Repositorio">
+            @{Html.RenderAction("ItemListagem", new { model = lstResultados, url = Model.UrlDetalhe, repositorio = Model.Repositorio });}
+        </ul>
+
+        if (Model.TipoPaginacao != "VerMais")
+        {
+            if (TotalPaginas > 1)
+            {
+                double i = 1;
+                double fim = 1;
+                double preInicio = 0;
+                double posFim = 0;
+
+                if (Pagina > 5)
+                {
+                    i = Pagina - 5;
+                    preInicio = Pagina - 6;
+                }
+                if (TotalPaginas > 10 && (Pagina + 5) <= TotalPaginas)
+                {
+                    fim = Pagina + 5;
+                    posFim = Pagina + 6;
+
+                }
+                else
+                {
+                    fim = TotalPaginas;
+                }
+
+                <div class="paginacao paginacaoJQ">
+                    @if (Pagina > 1)
+                    {
+                        <a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista, (Pagina - 1))" class="anterior">Anterior</a>
+                    }
+                    <ul>
+                        @if (preInicio > 0)
+                        {
+                            <li><a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista, preInicio)">...</a></li>
+                        }
+
+                        @for (; i <= fim; i++)
+                        {
+                            <li><a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista, i)" class="@(i == Pagina ? "active" : "")">@i</a></li>
+                        }
+
+                        @if (posFim > 0)
+                        {
+                            <li><a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista, posFim)">...</a></li>
+                        }
+                    </ul>
+                    @if (Pagina < TotalPaginas)
+                    {
+                        <a href="@Portal.Url(Portal.UrlDiretorio(portal), Model.UrlLista, (Pagina + 1))" class="proximo">@T("Próxima")</a>
+                    }
+                </div>
+            }
+        }
+        else
+        {
+            if (TotalPaginas > 1)
+            {
+ 
+                    <input type="button" value="Ver mais" class="btn btn-default mgutter-t" id="vermais_@Model.Repositorio">
+
+                <input type="hidden" id="hdn_@Model.Repositorio" value="2" />
+
+                CMSv4.BusinessLayer.BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model, totalRows = TotalRows }));
+            }
+        }
+    }
+</div>

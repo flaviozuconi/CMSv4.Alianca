@@ -1,0 +1,11 @@
+﻿@model MLModuloTakeOrPay
+@{
+    Layout = "";
+}
+
+@Html.Action("Etapa4_1", new { model = Model })
+@Html.Action("Etapa4_2", new { model = Model })
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptDistribuicaoCarga", new { model = Model }));
+}

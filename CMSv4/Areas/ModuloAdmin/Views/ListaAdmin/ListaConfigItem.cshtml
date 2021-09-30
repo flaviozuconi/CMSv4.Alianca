@@ -1,0 +1,181 @@
+﻿@model MLListaConfig
+@{
+    var urlLista = "/cms/" + PortalAtual.Diretorio + "/ListaAdmin/ListaConfig";
+    var grupos = (List<MLGrupo>)ViewBag.Aprovadores ?? new List<MLGrupo>();
+
+    if (string.IsNullOrWhiteSpace(Model.Configuracao))
+    {
+        //Model.Configuracao = "{ \"config\": [{\"campo\": \"\", \"rotulo\": \"\", \"multipla_escolha\": false, \"css\": \"\"}], \"views\": [{ \"nome\": \"\", \"action\": \"\" }]}";
+        
+        //Padrão
+        Model.Configuracao = "{\"config\": [{\"campo\": \"Titulo\",\"rotulo\": \"Título\"},{\"campo\": \"Data\"},{\"campo\": \"Chamada\"},{\"campo\": \"Conteudo\",\"rotulo\": \"Conteúdo\"},{\"campo\": \"Categoria\"},{\"campo\": \"Tags\"},{\"campo\": \"Url\"},{\"campo\": \"Extra1\",\"rotulo\": \"Linha Fina\"},{\"campo\": \"Extra2\",\"rotulo\": \"Legenda da Imagem\"},{\"campo\": \"Imagem\",\"css\": \"col-md-3\"},{\"campo\": \"Galeria\"},{\"campo\": \"Videos\"},{\"campo\": \"Audio\"}],\"views\": [{\"nome\": \"lista\"},{\"nome\": \"Detalhe\",\"action\": \"DetalheNovo\"},{\"nome\": \"destaque\"},{\"nome\": \"DestaqueList\",\"action\": \"lista\"},{\"nome\": \"DestaqueListTwoCols\",\"action\": \"lista\"},{\"nome\": \"Listagem Comunicação\",\"action\": \"ListaFiltro\"}]}";
+    }
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/application_view_tile" /> @TAdm("Lista Config")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @Helpers.ExibirErros(ViewData.ModelState)
+
+        <form method="post" class="form-vertical" role="form" id="formModulos">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            @*Nome*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control maxlength" name="Nome" maxlength="50" value="@Model.Nome" autofocus>
+            </div>
+
+            @*Descrição*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Descrição")</label>
+                <input type="text" class="form-control maxlength" name="Descricao" maxlength="150" value="@Model.Descricao" />
+            </div>
+
+            @*Icone*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Ícone")</label>
+                <input type="text" class="form-control maxlength" name="Icone" maxlength="50" value="@Model.Icone">
+                <small>@TAdm("Exemplo"): /iconpack.axd/16/bricks</small>
+            </div>
+
+            <div class="clearfix"></div>
+
+            @*Código do Grupo Aprovador*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Grupo Editor")</label>
+                <select name="CodigoGrupoEditor" class="form-control">
+                    <option value="">@TAdm("Selecione")</option>
+
+                    @for (int i = 0; i < grupos.Count; i++)
+                    {
+                        <option value="@grupos[i].Codigo.Value" @(grupos[i].Codigo.Value == (Model.CodigoGrupoEditor ?? 0) ? "selected" : "")>@grupos[i].Nome</option>
+                    }
+                </select>
+            </div>
+
+            @*Código do Grupo Aprovador*@
+            <div class="form-group col-md-4">
+                <label>@TAdm("Grupo Aprovador")</label>
+                <select name="CodigoGrupoAprovador" class="form-control">
+                    <option value="">@TAdm("Selecione")</option>
+
+                    @for (int i = 0; i < grupos.Count; i++)
+                    {
+                        <option value="@grupos[i].Codigo.Value" @(grupos[i].Codigo.Value == (Model.CodigoGrupoAprovador ?? 0) ? "selected" : "")>@grupos[i].Nome</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group col-md-12" id="jsoneditor" style="min-height:250px;"></div>
+            <input type="hidden" id="hiddenJson" name="Configuracao" value="@Model.Configuracao" />
+            
+            <div class="form-group col-md-8">
+                <label>@TAdm("Propriedades permitidas")</label>
+                <div class="clearfix"></div>
+                <div class="form-group col-md-6">
+                    <p>config</p>
+                    <ul>
+                        <li>campo</li>
+                        <li>rotulo</li>
+                        <li>multipla_escolha (true/false)</li>
+                        <li>css</li>
+                    </ul>
+                </div>
+                <div class="form-group col-md-6">
+                    <p>views</p>
+                    <ul>
+                        <li>nome</li>
+                        <li>action</li>
+                    </ul>
+                </div>
+            </div>
+            
+            
+            @if (AdminHelper.CheckPermission(Permissao.Modificar))
+            {
+                <div class="form-buttons col-md-12 text-right">
+                    <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                </div>
+            }
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section head {
+    <link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.structure.css" rel="stylesheet" />
+    <link href="~/Content/css/jquery-ui.theme.css" rel="stylesheet" />
+    <link href="~/Content/js/plugins/jsoneditor/jsoneditor.min.css" rel="stylesheet" />
+
+    <style type="text/css">
+        .jsoneditor-contextmenu .menu { width: 200px; padding: 0 !important; }
+        .jsoneditor-contextmenu button { width: 100% !important; }
+        .jsoneditor-contextmenu button.expand { width: 32px !important; position: absolute; right: 0; top: 0; }
+
+        .jsoneditor-contextmenu .menu li { position: relative; }
+
+        .jsoneditor-contextmenu ul li ul { left: 0; }
+        .jsoneditor-contextmenu ul li ul li button { padding: 0; }
+
+        #jsoneditor { height: 300px; }
+    </style>
+}
+
+@section scripts{
+    <script src="~/Content/js/plugins/jsoneditor/jsoneditor.min.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
+    <script type="text/javascript">
+        var editor;
+
+        $('.maxlength').maxlength({
+            alwaysShow: true,
+            warningClass: "label green",
+            limitReachedClass: "label orange"
+        });
+
+        $('#formModulos').validate({
+            rules: {
+                Nome: { required: true, maxlength: 50 },
+                Icone: { required: true, maxlength: 50 },
+                Descricao: { required: true, maxlength: 150 }
+            }
+        });
+
+        $("#formModulos").submit(function (e) {
+            if ($(this).valid()) {
+                try {
+                    editor.setMode("tree");
+                    $("#hiddenJson").val(editor.getText());
+                } catch (e) { }
+            }
+        });
+
+        $(document).ready(function () {
+            try {
+                var json = JSON.parse('@Html.Raw(Model.Configuracao)');
+
+                editor = new JSONEditor(document.getElementById('jsoneditor'), {
+                    mode: 'tree',
+                    modes: ['tree','code'],
+                    error: function (err) { }
+                }, json);
+            } catch (e) {
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

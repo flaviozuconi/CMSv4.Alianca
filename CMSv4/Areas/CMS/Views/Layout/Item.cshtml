@@ -1,0 +1,254 @@
+﻿@model CMSv4.Model.MLLayout
+@{
+    var portal = PortalAtual.Obter;
+    var edicao = !string.IsNullOrWhiteSpace(Model.Nome);
+    
+}
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4><img src="~/iconpack.axd/16/bricks" /> @TAdm("Layouts")</h4>
+        </div>
+        <div class="portlet-widgets">
+            <a class="btn btn-orange" href="/cms/@portal.Diretorio/layout">@TAdm("Voltar")</a>
+
+            @if (edicao)
+            {
+                <a class="btn btn-blue" href="#" data-toggle="modal" data-target="#historicoModal">@TAdm("Histórico")</a>
+            }
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        @Helpers.ExibirErros(ViewData.ModelState)
+
+        <form method="post" class="form-vertical" role="form" enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Model.Nome" name="NomeAnterior" />
+
+            <div class="form-group col-md-12">
+                <label>@TAdm("Nome")</label>
+
+                @if (edicao)
+                {
+                    <input type="text" class="form-control" name="Nome" value="@Model.Nome" disabled>
+                    <input type="hidden" name="Nome" value="@Model.Nome">
+                }
+                else
+                {
+                    <input type="text" class="form-control" name="Nome" value="@Model.Nome">
+                }
+
+                <span><small>@TAdm("Utilize apenas letras sem acentuação e números.")</small></span>
+            </div>
+            <div class="form-group col-md-12">
+                <input type="file" name="Imagem" accept="image/jpeg">
+
+                @if (!string.IsNullOrEmpty(Model.Imagem))
+                {
+                    <img id="imagemCapa" src="@(Model.Imagem)?q=@Guid.NewGuid()" alt="" style="max-width: 300px;" /><br />
+                }
+            </div>
+            <div class="form-group col-md-12">
+                <textarea data-editor="html" name="Conteudo" style="height: 400px; width: 100%;">@Model.Conteudo</textarea>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="/cms/@portal.Diretorio/layout">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal modal-flex fade" id="historicoModal" tabindex="-1" role="dialog" aria-labelledby="flexModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width:70%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="standardModalLabel">@T("Histórico")</h4>
+            </div>
+            <div class="modal-body clearfix">
+                <div id="painelHistorico" class="alert alert-warning col-md-24" style="height: 70px;display:none;">
+                    <div class="col-md-9">
+                        <strong>Recuperar Master Page:</strong> Deseja recuperar a versão selecionada ? As alterações realizadas na página serão perdidas e não podem ser restauradas.
+                    </div>
+                    <div style="text-align: right;" class="col-md-3">
+                        <a class="btn btn-red" href="javascript:;" onclick="RecuperarHistorico();">Sim</a>
+                        <a class="btn btn-white" href="javascript:;" onclick="$('#painelHistorico').hide();">Não</a>
+                    </div>
+                </div>
+
+                <div class="table-responsive" id="divLista">
+                    <div id="toolbar"></div>
+                    <table id="lista" class="table table-striped table-bordered table-hover table-blue">
+                        <thead>
+                            <tr>
+                                <th style="width:60px;">@T("Código")</th>
+                                <th>@T("Data")</th>
+                                <th style="width:120px;">@T("Visualizar")</th>
+                                <th style="width:100px;">@T("Recuperar")</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div id="divVisualizacao" style="display:none;">
+
+                    <div class="col-md-6">
+                        <label>Código: </label><span id="spnCodigoVisualizacao"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label>Data: </label><span id="spnDataVisualizacao"></span>
+                    </div>
+
+                    <textarea name="ConteudoVisualizacao" id="ConteudoVisualizacao" style="height: 300px; width: 50%;"></textarea>
+                </div>
+            </div>
+            <input type="hidden" id="codigohistorico" />
+            <div class="modal-footer">
+                <button type="button" class="btn btn-white" data-dismiss="modal">@T("Fechar")</button>
+                <button type="button" class="btn jq-btn-visualizacao btn-orange" style="display:none;" onclick="$('#divLista').show(); $('#divVisualizacao, .jq-btn-visualizacao').hide(); return false">Voltar</button>
+                @*<button type="button" class="btn jq-btn-visualizacao btn-green" style="display:none;" onclick="$('#divLista').show(); $('#divVisualizacao, .jq-btn-visualizacao').hide(); return false">Restaurar</button>*@
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+
+    <input type="hidden" id="hdnCodigoRecuperar" />
+
+</div>
+
+@section scripts{
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script type="text/javascript">
+        var editor;
+
+        var datatableInicializada = false;
+
+        $(document).ready(function () {
+            //o editor não atualiza width se o componente estiver escondido
+            setTimeout(function () {
+                $(".ace_editor").css("width", "100%");
+            }, 1000);
+        });
+
+        $('#historicoModal').on('shown.bs.collapse', function (e) {
+            //abre editor, por problema do plugin ele não estava atualizando o conteúdo do editor
+
+            //solução:
+            setTimeout(function () {
+                editor.resize();
+                editor.renderer.updateFull();
+            }, 400);
+        });
+
+        //ativar ace editor
+        var textarea = $("#ConteudoVisualizacao");
+
+        var editDiv = $('<div>', {
+            position: 'absolute',
+            width: textarea.width(),
+            height: textarea.height(),
+            'class': textarea.attr('class')
+        }).insertBefore(textarea);
+
+        //textarea.val(val);
+        textarea.css('visibility', 'hidden');
+        textarea.css('display', 'none');
+        editor = ace.edit(editDiv[0]);
+        editor.setTheme("ace/theme/chrome");
+        editor.getSession().setValue(textarea.val(), 1);
+        editor.getSession().setMode("ace/mode/html");
+
+        function showVisualizar(data, type, row) {
+            return '<a href="#" onclick="visualizar(\'' + data + '\')"> <span class="glyphicon glyphicon-search" style="font-size: 24px;"></span> </a>';
+        }
+
+        function visualizar(id) {
+
+            $.post('/cms/@PortalAtual.Diretorio/Layout/VisualizarHistorico', { id: id },
+            function (data) {
+                if (data.Sucesso) {
+                    editor.getSession().setValue(data.Conteudo, 1);
+
+                    $("#spnCodigoVisualizacao").html(data.Codigo);
+                    $("#spnDataVisualizacao").html(data.DataCadastro);
+
+
+                    $("#divLista").hide();
+                    $("#divVisualizacao, .jq-btn-visualizacao").show();
+                }
+            });
+        }
+
+        function showRecuperar(data, type, row) {
+            return '<a href="#" onclick="Recuperar(\'' + data + '\');return false;"> <span class="glyphicon glyphicon-edit" style="font-size: 24px;"></span> </a>';
+
+        }
+
+        function Recuperar(id) {
+            $('#hdnCodigoRecuperar').val(id);
+            $('#painelHistorico').show(); return false;
+        }
+
+        function RecuperarHistorico() {
+            $.post('/cms/@PortalAtual.Diretorio/Layout/RecuperarHistorico', { id: $('#hdnCodigoRecuperar').val() },
+            function (data) {
+                window.location.href = "/cms/@portal.Diretorio/layout";
+            });
+        }
+
+        $('form').validate({
+            ignore: [],
+            rules: {
+                Nome: {
+                    required: true,
+                    regex: /^[_a-z|A-Z|0-9][\w|\s|-]*$/
+                },
+                Conteudo: { required: true },
+                Imagem: {
+                    @*required: @(string.IsNullOrEmpty(Model.Nome) ? "true" : "false"),*@
+                    extension: "jpg"
+                }
+            },
+            messages: {
+                Imagem: {
+                    extension: "@TAdm("Selecione um arquivo JPG")"
+                }
+            }
+        });
+
+        $("#historicoModal").bind("shown.bs.modal", function () {
+
+            if (!datatableInicializada) {
+                $('#lista').dataTable(
+                {
+                    "ajax": {
+                        'url': "/cms/@PortalAtual.Diretorio/Layout/ListarHistorico",
+                        "data": { 'NomeLayout': "@Model.Nome" }
+                    },
+                    "initComplete": function(settings, json) {
+                        datatableInicializada = true;
+                    },
+                    "columns": [
+                        @Helpers.Coluna("Codigo"),
+                        @Helpers.ColunaDataHora("DataCadastro"),
+                        { "data": "Codigo", "render": function (data, type, row) { return showVisualizar(data, type, row); }, "sClass": "center", "bSortable": false },
+                        { "data": "Codigo", "render": function (data, type, row) { return showRecuperar(data, type, row); }, "sClass": "center", "bSortable": false },
+                    ],
+                    "lengthChange": false,
+                    "pageLength": 5,
+                    "order": [0, 'desc'],
+                    "searching": false
+                }
+            );
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

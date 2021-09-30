@@ -1,0 +1,51 @@
+﻿@model MLListaConteudo
+@{
+    var portal = BLPortal.Atual;
+    var modulo = (MLModuloLista)ViewData["modulo"] ?? new MLModuloLista();
+    if (string.IsNullOrEmpty(modulo.UrlLista)) { modulo.UrlLista = "/noticias"; }
+    var configurl = CRUD.Obter(new MLConfiguracao() { Chave = string.Format("ur-home-idioma-{0}-{1}", BLIdioma.Atual.Codigo, portal.Diretorio.ToLower()) });
+    var urlHome = "/";
+    if (configurl != null && configurl.Codigo.HasValue)
+    {
+        urlHome = configurl.Valor;
+    }
+}
+<div class="breadcrumb-wrap">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Portal.ResolveUrl(urlHome,portal)">Home</a></li>
+            <li class="breadcrumb-item"><a href="@Portal.ResolveUrl(modulo.UrlLista, portal)">@(string.IsNullOrEmpty(modulo.Titulo)? "Notícias" : modulo.Titulo)</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><span> @(Model != null && Model.Codigo.HasValue ? Model.Titulo : "Titulo da Noticia")</span></li>
+        </ol>
+    </div>
+</div>
+
+@if (Model != null && Model.Codigo.HasValue)
+{
+    var imagem = string.IsNullOrEmpty(Model.Imagem) ? "" : string.Format("/portal/{0}/arquivos/listas/{1}/capa{2}", portal.Diretorio, Model.Codigo, Model.Imagem);
+    <div class="container">
+        <div class="detalhe-noticia">
+            <h2 class="detalhe-noticia--title">@Html.Raw(Model.Titulo)</h2>
+            <time class="detalhe-noticia--date">@Model.Data.Value.ToString("dd/MM/yyyy")</time>
+            <span class="detalhe-noticia--tag">@(string.IsNullOrEmpty(Model.Extra1) ? modulo.Titulo : Model.Extra1)</span>
+
+            <div class="detalhe-noticia--txt clearfix">
+                @if (!string.IsNullOrEmpty(imagem))
+                {
+                    <figure class="img">
+                        <img src="@imagem" alt="">
+                    </figure>
+                }
+                @Html.Raw(Model.Conteudo)
+            </div>
+
+        </div>
+    </div>
+    <figure class="detalhe-noticia--bg">
+        <img src="/portal/principal/img/bg-category.png" alt="">
+    </figure>
+}
+else
+{
+    <p>@T("Conteúdo não encontrado")</p>
+}

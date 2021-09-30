@@ -1,0 +1,348 @@
+﻿@{
+    var baseUrl = "~/portal/Principal/";
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Header funcional: estilos e scripts -->
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="@Url.Content(baseUrl + "css/bootstrap-custom.css")">
+  <link rel="stylesheet" href="@Url.Content(baseUrl + "css/plugins.css")">
+  <link rel="stylesheet" href="@Url.Content(baseUrl + "css/main.css")">
+
+  <!-- SCRIPTS -->
+  <script src="@Url.Content(baseUrl + "js/vendor/modernizr-2.6.2-respond-1.1.0.min.js")"></script>
+  <script src="@Url.Content(baseUrl + "js/plugins/picturefill.min.js")"></script> <!-- responsive images -->
+
+   <!-- fav icon / touch icon -->
+    <link rel="shortcut icon"  href="@Url.Content(baseUrl + "/favicon.gif")" />
+    <link rel="apple-touch-icon" href="@Url.Content(baseUrl + "/apple-touch-icon-precomposed.png")">
+
+
+
+    @RenderSection("head", false)
+
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-7046199-30', 'auto');
+        ga('create', 'UA-7046199-32', 'auto', { 'name': 'newTracker' });
+        ga('send', 'pageview');
+        ga('newTracker.send', 'pageview');
+
+</script>
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1701661606768052');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1701661606768052&ev=PageView&noscript=1"
+/></noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code -->
+</head>
+<body>
+<!--[if lt IE 8]>
+    <p class="browserupgrade">Você está usando um navegador <strong>antigo e que não tem suporte a muitas de nossas funcionalidades </strong>. Por favor <a href="http://browsehappy.com/">faça a atualizaçãor</a> para uma melhor experiência.</p>
+<![endif]-->
+
+<!-- mol-header -->
+<header class="header">
+@{
+    var portal = BLPortal.Atual;
+    @RenderSection("body", false
+}
+
+   
+      <!-- menu portugues -->
+      <div class="main-header hide-on-mobile">
+          <h1 class="brand-header">
+          <a href="@Portal.UrlDiretorio(portal)">Braskem</a>
+          </h1>
+          <span class="icon icon-menu"></span>
+          <div class="collapse navbar-collapse hide-on-mobile" id="main-menu-collapse">
+            <div class="recipiente">
+              <!-- menu superior -->
+              @try
+              {
+                  @Html.Action("ListarPublico", "ModuloMenu", new { model = new MLModuloMenuModulo() { CodigoMenu = 1, View="Horizontal", ClasseCSS="nav nav-header" } })
+              }
+              catch (Exception ex)
+              {
+                  ApplicationLog.ErrorLog(ex);
+              }
+              <!-- /menu superior -->
+              </div>
+          </div>
+          <ul class="nav nav-header">
+              <li class="dropdown languages">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="icon icon-globe"></span>Português</a>
+                  <div class="dropdown-menu" role="menu">
+                    
+                    @try
+                    {
+                        @Html.Action("Index", "Idioma", new { view = "Principal"  })
+                    }
+                    catch (Exception ex)
+                    {
+                        ApplicationLog.ErrorLog(ex);
+                    }
+                    
+                    <ul class="portal-list">
+                      <li class="title">Sites Globais</li>
+                      <!-- <li><a href="@Portal.UrlDiretorio(portal)/home">Brasil</a></li> -->
+                      <li><a href="http://www.braskem.com.br/usa">United States</a></li>
+                      <li><a href="http://www.braskemidesa.com.mx">Mexico</a></li>
+                      <li><a href="http://www.braskem.com.br/europe">Europe</a></li>
+                    </ul>
+                  </div>
+              </li>
+          </ul>
+          @try
+          {
+              @Html.Action("ListarPublico", "ModuloAvisos")
+          }
+          catch (Exception ex)
+          {
+              ApplicationLog.ErrorLog(ex);
+          }
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-menu-mobile">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+          </button>
+          <!-- /menu superior -->
+          <!-- busca -->
+          <div class="search-header" role="search">
+
+                @try
+                {
+                    @Html.Action("FormularioPesquisa", "Busca")
+                }
+                catch (Exception ex)
+                {
+                    ApplicationLog.ErrorLog(ex);
+                }
+
+          </div>
+          <!-- busca -->
+      </div>
+      <!-- menu principal -->
+      try
+      {
+          @Html.Action("ListarPublico", "ModuloMenu", new { model = new MLModuloMenuModulo() { CodigoMenu = 2, View="TopoSingleCol", ClasseCSS="navbar main-menu hide-on-mobile" } })
+      }
+      catch (Exception ex)
+      {
+          ApplicationLog.ErrorLog(ex);
+      }
+      <!-- /menu principal -->
+      <!-- menu mobile -->
+      <div class="menu-mobile">
+        <h1 class="brand-header"><a href="@Portal.UrlDiretorio(portal)">Braskem</a></h1>
+        <ul class="menu-mobile--calls list-unstyled">
+          <li class="languages" data-subcall="sub-languages">
+            <span class="dropdown-toggle" role="button" aria-label="true" aria-expanded="false"><span class="icon icon-globe-noborder"></span> PT-BR</span>
+          </li>
+          <li class="message-box" data-subcall="sub-messages">
+            <span class="box">
+                  <i></i>
+                <span class="icon icon-chat" aria-hidden="true"></span>
+            </span>
+          </li>
+          <li class="search-mobile" data-subcall="sub-search">
+            <span class="icon icon-search"></span>
+          </li>
+          <li class="submenu-mobile" data-toggle="offcanvas">
+            <span class="icon icon-menu"></span>
+          </li>
+        </ul>
+        <div class="sub-menu">
+          <div class="sub-languages" data-subtarget="sub-languages">
+            <div class="dropdown-menu" role="menu">
+                    
+              @try
+              {
+                  @Html.Action("Index", "Idioma", new { view = "Principal"  })
+              }
+              catch (Exception ex)
+              {
+                  ApplicationLog.ErrorLog(ex);
+              }
+              
+              <ul class="portal-list">
+                <li class="title">Sites Globais</li>
+                <!-- <li><a href="@Portal.UrlDiretorio(portal)/home">Brasil</a></li> -->
+                <li><a href="http://www.braskem.com.br/usa">United States</a></li>
+                <li><a href="http://www.braskemidesa.com.mx">Mexico</a></li>
+                <li><a href="http://www.braskem.com.br/europe">Europe</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="sub-messages" data-subtarget="sub-messages">
+            <div class="dropdown-menu message-box--list" aria-labelledby="new-messages">
+              <h3>Feed de Notícias <em>Braskem</em></h3>
+            </div>
+          </div>
+          <div class="sub-search" data-subtarget="sub-search">
+            @try
+            {
+                @Html.Action("FormularioPesquisa", "Busca")
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+            }
+          </div>
+          <div class="sub-menu-o sidebar-offcanvas">
+            <!-- main menu mobile -->
+            @try
+            {
+                @Html.Action("ListarPublico", "ModuloMenu", new { model = new MLModuloMenuModulo() { CodigoMenu = 2, View="TopMobileLateral"} })
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+            }
+            <!-- /main menu mobile -->
+            <!-- menu superior mobile -->
+            @try
+            {
+                @Html.Action("ListarPublico", "ModuloMenu", new { model = new MLModuloMenuModulo() { CodigoMenu = 1, View="Horizontal", ClasseCSS="menu-institucional list-unstyled" } })
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+            }
+            <!-- /menu superior mobile -->
+          </div>
+        </div>
+      </div>
+      <!-- /menu mobile -->
+      <!-- /menu portugues -->
+
+
+
+
+</header>
+<!-- /mol-header -->
+<main role="main">
+        @RenderBody()
+</main>
+<!-- mol-footer -->
+<footer class="footer">
+      <!-- footer pt -->
+      <nav class="nav-footer">
+        <div class="container">
+          @try
+          {
+              @Html.Action("ListarPublico", "ModuloMenu", new { model = new MLModuloMenuModulo() { CodigoMenu = 20, View="Horizontal", ClasseCSS="list-unstyled list-inline" } })
+          }
+          catch (Exception ex)
+          {
+              ApplicationLog.ErrorLog(ex);
+          }
+          <div class="gotop">
+            <span class="icon icon-chevron-up" aria-hidden="true"></span>
+            <span class="title">
+                TOPO
+            </span>
+          </div>
+        </div>
+      </nav>
+      <div class="nav-footer-max">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-24 col-sm-19 col-md-19">
+                    @try
+                    {
+                        @Html.Action("ListarPublico", "ModuloMenu", new { model = new MLModuloMenuModulo() { CodigoMenu = 2, View="FooterSingleCol", ClasseCSS="menu-main row list-unstyled" } })
+                    }
+                    catch (Exception ex)
+                    {
+                        ApplicationLog.ErrorLog(ex);
+                    }
+                </div>
+                <div class="col-xs-24 col-sm-5 col-md-5">
+                    <h4 class="section-title">Braskem na rede</h4>
+                    <p>Confira o que estamos postando na rede.</p>
+                    <ul class="social-media list-unstyled list-inline">
+                        <li><a href="https://www.facebook.com/BraskemSA" class="icon icon-facebook" title="Facebook" target="_blank"></a></li>
+                          <li><a href="https://twitter.com/BraskemSA" class="icon icon-twitter" title="Twitter" target="_blank"></a></li>
+                          <li><a href="https://www.linkedin.com/company/braskem" class="icon icon-linkedin" title="LinkedIn" target="_blank"></a></li>
+                        <li><a href="https://plus.google.com/u/0/106003173637402418615/posts" class="icon icon-gplus" title="Google+" target="_blank"></a></li>
+                          <li><a href="https://instagram.com/braskemsa/" class="icon icon-instagram" title="Instagram" target="_blank"></a></li>
+                    </ul>
+                    <ul class="more-braskem list-unstyled">
+                      <li><a href="@Portal.UrlDiretorio(portal)/Carreira">Carreira</a></li>
+                      <li><a href="@Portal.UrlDiretorio(portal)/comunicacao">Comunicação</a></li>
+                      <li><a href="@Portal.UrlDiretorio(portal)/Contato">Contato</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="copy">
+          <ul class="list-inline">
+              <li>Copyright &copy; 2016 - Braskem</li>
+              <li>
+                  <a href="@Portal.UrlDiretorio(portal)/termos-de-uso">Termos de Uso</a>
+              </li>
+              <li>
+                  <a href="@Portal.UrlDiretorio(portal)/politica-de-privicidade">Política de Privacidade</a>
+              </li>
+          </ul>
+          <a href="" class="vm2" title="Agência VM2">
+              <span class="icon icon-vm2"></span>
+              <span class="sr-only">Agência VM2</span>
+          </a>
+      </div>
+      <!-- /footer pt -->
+    
+
+</footer>
+<!-- /mol-footer -->
+
+<!-- default area admininistrativa -->
+<script src="@Url.Content(baseUrl + "js/vendor/jquery-1.11.1.min.js")"></script> <!-- Usado como lib geral -->
+<script src="@Url.Content(baseUrl + "js/vendor/bootstrap.min.js")"></script> <!-- Usado para os plugins do Bootstrap -->
+<script src="@Url.Content(baseUrl + "js/vendor/jquery-ui.js")"></script> <!-- Usado para o selectboxit -->
+<script src="@Url.Content(baseUrl + "js/vendor/underscore-min.js")"></script> <!-- Library de funções para JS -->
+
+<!-- No deploy deve ser minificado em um único arquivo PLUGINS.JS -->
+<script src="@Url.Content(baseUrl + "js/plugins/icheck.js")"></script>  <!-- Usado para nos checkboxes e radios personalizados -->
+<script src="@Url.Content(baseUrl + "js/plugins/ekko-lightbox.js")"></script> <!-- Usado para chamadas de modal em lightbox -->
+<script src="@Url.Content(baseUrl + "js/plugins/jasny-bootstrap.min.js")"></script> <!-- Usado input mask -->
+<script src="@Url.Content(baseUrl + "js/plugins/jquery.selectBoxIt.js")"></script> <!-- Usado para selects personalizados -->
+<script src="@Url.Content(baseUrl + "js/plugins/mCustomScrollbar.js")"></script> <!-- Usado para barra personalizada do filtro do menu -->
+<script src="@Url.Content(baseUrl + "js/plugins/ScrollMagic.min.js")"></script>  <!-- Usado para rolagem/anchor -->
+<script src="@Url.Content(baseUrl + "js/plugins/pwstrength-bootstrap-1.1.2.min.js")"></script> <!-- Validação da força de senha -->
+<script src="@Url.Content(baseUrl + "js/plugins/equalizer.js")"></script> <!-- Usado para ajustar tamanho das colunas -->
+<script src="@Url.Content(baseUrl + "js/plugins/owl.carousel.min.js")"></script> <!-- Carrossel alternativo ao Bootstrap - com mais funções -->
+<script src="@Url.Content(baseUrl + "js/plugins/isMobile.min.js")"></script>  <!-- Identificação de dispositivo -->
+<script src="@Url.Content(baseUrl + "js/plugins/bootstrap-select.min.js")"></script> <!-- Chamada para bootstrap-select -->
+<!-- /No deploy deve ser minificado em um único arquivo PLUGINS.JS -->
+
+<script src="@Url.Content(baseUrl + "js/custom-functions.js")"></script><!-- Chama funções globais do site -->
+<script src="@Url.Content(baseUrl + "js/main.js")"></script><!-- Chamadas gerais de JS -->
+
+
+ @RenderSection("scripts", false)
+</body>
+</html>

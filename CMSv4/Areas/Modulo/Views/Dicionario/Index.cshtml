@@ -1,0 +1,37 @@
+﻿@model MLModuloDicionario
+@{
+    var lista = BLDicionario.ListarTermos(false, BLIdioma.CodigoAtual.Value, BLPortal.Atual.Codigo.Value, Model.Grupos, string.Empty, string.Empty) ?? new List<MLDicionarios>();
+    string Alfabeto = "Todos,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z";
+}
+@if (Model != null)
+{
+    if(!String.IsNullOrEmpty(Model.Titulo)) 
+    { 
+        <h3>
+            <i class="fa fa-list"></i> @Model.Titulo
+        </h3>
+    }
+
+    if (Model.IsOrdem.GetValueOrDefault())
+    {
+        foreach (var x in Alfabeto.Split(','))
+        {
+            <a onclick="DicOrdemTermos('@x', @Model.Repositorio)" >@x</a>
+        }
+        <br />
+    }
+
+    <label>
+        <input type="text" id="txtBuscaTermo_@Model.Repositorio" />
+        <a onclick="DicBuscarTermos(@Model.Repositorio);" >@T("Buscar")</a>
+    </label>
+
+    if (lista.Count > 0)
+    { 
+    <table id="DicionarioRep_@Model.Repositorio">
+        @{ Html.RenderPartial("ListagemTermo", lista); }
+     </table>
+    }
+}
+
+@{ BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model })); }

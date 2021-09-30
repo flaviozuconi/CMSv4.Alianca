@@ -1,0 +1,199 @@
+﻿@model MLModuloLogin
+
+@{
+    var logado = CMSv4.BusinessLayer.BLCliente.ObterLogado();
+
+    if (logado == null)
+    {
+        logado = new MLClienteCompleto();
+    }
+
+    var portal = BLPortal.Atual;
+    var codigoBrasil = Convert.ToInt16(System.Configuration.ConfigurationManager.AppSettings["CMS.ModuloLogin.Cadastro.CodigoBrasil"]);
+}
+
+<link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+<link href="~/Content/css/plugins/bootstrap-datepicker/datepicker3.css" rel="stylesheet" />
+<script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+<script src="~/Content/js/plugins/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+<script src="~/Content/js/plugins/validate/jquery.validate.min.js"></script>
+<script src="~/Content/js/jquery.mask.js"></script>
+<script src="~/Content/js/jquery.form.min.js"></script>
+
+<script type="text/javascript">
+    $('#DataNascimento').mask("99/99/9999", { clearIncomplete: false, clearMaskOnLostFocus: false, showMaskOnFocus: true, showMaskOnHover: false, placeholder: "Data de nascimento" });
+    $("#CursoPrevisaoConclusao").mask("99/9999", { clearIncomplete: false, clearMaskOnLostFocus: false, showMaskOnFocus: true, showMaskOnHover: false, placeholder: "Data de conclusão do curso" });
+
+    $(document).ready(function () {
+        @if(logado.CodigoEstado.HasValue && logado.CodigoEstado.Value > 0)
+        {
+            @:CarregarEstados(document.getElementById("CodigoPais"), "@logado.CodigoEstado");
+        }
+    });
+
+    var validator = $('#formCadastro').validate({
+        errorPlacement: function (error, element) { },
+        highlight: function (element) {
+            $(element).closest(".form-group").addClass("has-error");
+        },
+        unhighlight: function (element) {
+            $(element).closest(".form-group").removeClass("has-error");
+        },
+        rules: {
+            Nome: { required: true, maxlength: 200 },
+            InstituicaoEnsino: { required: true, maxlength: 500 },
+            Curso: { required: true, maxlength: 200 },
+            CursoPrevisaoConclusao: { required: true },
+            Email: {
+                required: true, maxlength: 200, email: true, remote: {
+                    url: "/cms/@portal.Diretorio/ModuloLogin/isvalidemail",
+                    type: "post",
+                    loadingPanel: false,
+                    data: { id: "@logado.Codigo" }
+                }
+            },
+            Senha: { @(!logado.Codigo.HasValue ? "required: true, " : "") minlength: 6, maxlength: 20 },
+            ConfirmarSenha: { @(!logado.Codigo.HasValue ? "required: true, " : "") maxlength: 20, equalTo: "#Senha" }
+        },
+        messages: {
+            Nome: "Informe o nome",
+            InstituicaoEnsino: "Informe a Instituição de Ensino",
+            Curso: "Informe o Curso",
+            CursoPrevisaoConclusao: "Informe a Data de Conclusão",
+            Email: {
+                required: "Informe o e-mail",
+                remote: "Já existe um usuário cadastrado com esse login",
+                email: "Email inválido"
+            },
+            Senha: {
+                required: "@T("Informe a senha.")",
+                minlength: "@T("A senha deve ter entre 6 e 20 caracteres")",
+                maxlength: "@T("A senha deve ter entre 6 e 20 caracteres")"
+            },
+            ConfirmarSenha: {
+                required: "@T("Informe a senha.")",
+                minlength: "@T("A senha deve ter entre 6 e 20 caracteres")",
+                maxlength: "@T("A senha deve ter entre 6 e 20 caracteres")",
+                equalTo: "@T("Insira o mesmo valor novamente")"
+            }
+        },
+        errorPlacement: function (error, element) {
+            var placement = $(element).parent();
+            
+            if (placement) {
+                placement.append($(error).addClass('help-block'));//  $(error).addClass('help-block').insert(placement)
+            } else {             
+                error.insertAfter(element);
+            }
+        }
+    });
+
+    $.fn.serializeObject = function () {
+        var o = {};
+        var a = this.serializeArray();
+
+        $.each(a, function () {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    $("#btnSalvar").on("click", function () {
+        if ($("#formCadastro").valid() == true) {
+            //if ($("#CursoPrevisaoConclusao").val() == "__/____") {
+            //    $("#CursoPrevisaoConclusao").val("");
+            //}
+
+            var e = $("#divCadastro");
+            var dataObj = $('#formCadastro').serializeObject();
+
+            $("#formCadastro").ajaxSubmit({
+                type: "POST",
+                url: "/cms/@BLPortal.Atual.Diretorio/ModuloLogin/SalvarPerfil",
+                data: dataObj,
+                beforeSend: function () {
+                    try {
+                        $("#btnSalvar").addClass("disabled");
+                        $("#btnSalvar").val("Salvando...");
+                        channelingLoad(e); //Chama a função que compõe o loading
+                    } catch (e) {}
+                },
+                success: function (data) {
+                    $("#divInfo").prop('class', 'col-md-12 ' + data.classe).html(data.message).show();
+                    $("html, body").animate({ scrollTop: 0 }, 200);
+
+                    if (data.UrlRetorno != null && data.UrlRetorno != "") {
+                        window.location.href = data.UrlRetorno;
+                    }
+                    else {
+                        window.location.href = "/@BLPortal.Atual.Diretorio";
+                    }
+                },
+                error: function (err) {
+                    alert("Não foi possível realizar seu cadastro");
+                },
+                complete: function () {
+                    try {
+                        $("#btnSalvar").removeClass("disabled");
+                        $("#btnSalvar").val("Salvar");
+                        doneLoad(e); //Remove o loading e chama o resultado
+                    } catch (ex) {}
+
+                }
+            });
+        }
+        else {
+            //Focus no primeiro elemento inválido.
+            validator.focusInvalid();
+        }
+    });
+
+    function onChange_Estado(sender) {
+        //Código fixo, somente exibe estados para o Brasil
+        if ($(sender).val() == "@codigoBrasil") {
+            $("#divEstadoSelect").show();
+            $("#divEstadoInput").hide();
+            CarregarEstados(sender);
+        }
+        else {
+            $("#divEstadoSelect").hide();
+            $("#divEstadoInput").show();
+            $("#CodigoEstado").val($("#CodigoEstado option:first").val());
+        }
+    }
+
+    function CarregarEstados(sender, valor) {
+        $.ajax({
+            type: "GET",
+            url: "/cms/@portal.Diretorio/ModuloLogin/ListarEstados",
+            data: { "CodigoPais": $(sender).val() },
+            beforeSend: function () {
+                $('#CodigoEstado').find('option').remove();
+                $("#CodigoEstado").prepend("<option id='loading' value='' selected>Carregando...</option>");
+            },
+            success: function (data) {
+                $('#CodigoEstado').find('option').remove();
+                $("#CodigoEstado").removeAttr("disabled");
+                $("#CodigoEstado").prepend("<option value=''>@T("Selecione")</option>");
+
+                for (i = 0; i < data.length; i++) {
+                    $("#CodigoEstado").append("<option value='" + data[i].Codigo + "'>" + data[i].Uf + "</option>");
+                }
+
+                if (valor != null && valor != "") {
+                    $("#CodigoEstado").val(valor);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    }
+</script>

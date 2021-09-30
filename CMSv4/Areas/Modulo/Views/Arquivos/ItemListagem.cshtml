@@ -1,0 +1,24 @@
+﻿@model List<MLArquivoPublico>
+@{
+    var portal = BLPortal.Atual;
+    
+}
+@foreach (var item in Model)
+{
+    <li class="col-xs-24 col-md-12">
+        <a href="@(string.IsNullOrEmpty(ViewBag.UrlDetalhe) ? item.EnderecoDownload() : Portal.Url(Portal.UrlDiretorio(portal), ViewBag.UrlDetalhe, item.Codigo))" target="_top">
+
+
+            @if (!String.IsNullOrEmpty(item.Imagem))
+            {
+                <figure class="col-xs-2 col-md-1">
+                    <img alt="@item.Titulo" src="@Portal.Url()/thumb/@portal.Diretorio/ImagemArquivos/@item.Codigo/50/50/@item.Imagem/" class="media-object img-circle" />
+                </figure>
+            }
+            <time>@item.Data.Value.ToString(T("dd/MM/yyyy"))</time>
+            <p>@item.Titulo</p>
+            <button class="btn btn-secondary btn-xs"><span class="glyphicon glyphicon-cloud-download"></span>Clique para baixar</button>
+
+        </a>
+    </li>
+}    

@@ -1,0 +1,140 @@
+[
+  {
+    "outputFileName": "Content/css/plugins/pace/pace.min.css",
+    "inputFiles": [
+      "Content/css/plugins/pace/pace.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/pace/pace.min.js",
+    "inputFiles": [
+      "Content/js/plugins/pace/pace.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/plugins.min.css",
+    "inputFiles": [
+      "Content/css/plugins.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/plugins/messenger/messenger-spinner.min.css",
+    "inputFiles": [
+      "Content/css/plugins/messenger/messenger-spinner.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/plugins/messenger/messenger-theme-flat.min.css",
+    "inputFiles": [
+      "Content/css/plugins/messenger/messenger-theme-flat.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/popupoverlay/jquery.popupoverlay.min.js",
+    "inputFiles": [
+      "Content/js/plugins/popupoverlay/jquery.popupoverlay.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/popupoverlay/defaults.min.js",
+    "inputFiles": [
+      "Content/js/plugins/popupoverlay/defaults.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/popupoverlay/logout.min.js",
+    "inputFiles": [
+      "Content/js/plugins/popupoverlay/logout.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/messenger/messenger-theme-flat.min.js",
+    "inputFiles": [
+      "Content/js/plugins/messenger/messenger-theme-flat.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/flex.min.js",
+    "inputFiles": [
+      "Content/js/flex.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/areaconstrucao/escolher-portal.min.css",
+    "inputFiles": [
+      "Content/areaconstrucao/escolher-portal.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/validate/messages_pt_br.min.js",
+    "inputFiles": [
+      "Content/js/plugins/validate/messages_pt_br.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/areaconstrucao/escolher-portal.min.js",
+    "inputFiles": [
+      "Content/areaconstrucao/escolher-portal.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/plugins/dropzone/css/dropzone.min.css",
+    "inputFiles": [
+      "Content/css/plugins/dropzone/css/dropzone.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/plugins/datatables/datatables.min.css",
+    "inputFiles": [
+      "Content/css/plugins/datatables/datatables.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/ckeditor/plugins/fileman/js/main.min.js",
+    "inputFiles": [
+      "Content/js/plugins/ckeditor/plugins/fileman/js/main.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/plugins/ckeditor/plugins/fileman/js/mini-main.min.js",
+    "inputFiles": [
+      "Content/js/plugins/ckeditor/plugins/fileman/js/mini-main.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/VM2Modal.min.js",
+    "inputFiles": [
+      "Content/js/VM2Modal.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/flex-internas.min.js",
+    "inputFiles": [
+      "Content/js/flex-internas.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/js/jq-principal.min.js",
+    "inputFiles": [
+      "Content/js/jq-principal.js"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/VM2Modal.min.css",
+    "inputFiles": [
+      "Content/css/VM2Modal.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/plugins/messenger/messenger.min.css",
+    "inputFiles": [
+      "Content/css/plugins/messenger/messenger.css"
+    ]
+  },
+  {
+    "outputFileName": "Content/css/style.min.css",
+    "inputFiles": [
+      "Content/css/style.css"
+    ]
+  }
+]

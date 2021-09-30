@@ -1,0 +1,73 @@
+﻿@model  CMSv4.Model.MLDicionarioGrupo
+@{
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/DicionarioAdmin/DicionarioGrupo", portal.Diretorio);
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/advertising" />
+                @TAdm("Grupo")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <input type="hidden" value="@Model.CodigoIdioma" name="CodigoIdioma" />
+            <input type="hidden" value="@Model.CodigoPortal" name="CodigoPortal" />
+
+            <div class="form-group col-md-4">
+                <label>@TAdm("Nome")</label>
+                <input type="text" class="form-control" name="Nome" maxlength="200" value="@Model.Nome" autofocus>
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Texto da Coluna Termo")</label>
+                <input type="text" class="form-control" name="Termo" maxlength="100" value="@Model.Termo">
+            </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Texto da Coluna Descrição")</label>
+                <input type="text" class="form-control" name="Descricao" maxlength="100" value="@Model.Descricao" autofocus>
+            </div>
+
+            <div class="form-group col-md-12">
+                <input type="checkbox" name="Ativo" id="Ativo" value="true" @((!Model.Ativo.HasValue || Model.Ativo.Value) ? "checked" : "") />
+                <label for="Ativo">@TAdm("Ativo")</label>
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $('form').validate({
+            rules: {
+                Nome: { required: true, maxlength: 200 },
+                Termo: { required: true, maxlength: 100 },
+                Descricao: { required: true, maxlength: 100 }
+            }
+        });
+
+        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
+    </script>
+}

@@ -1,0 +1,28 @@
+﻿@model bool?
+@{
+    var portal = BLPortal.Atual;
+}
+<form method="get" action="@string.Concat(Portal.UrlDiretorio(portal), BLModuloBusca.ObterUrlResultadoBusca())">
+    <span class="icon icon-search"></span>
+    <input type="submit" class="search-submit">
+    @if (Model.GetValueOrDefault())
+    {
+        <input name="q" type="text" class="form-control" required autocomplete="off" onkeyup="return pesquisarTermo(this);" placeholder="@T("Digite o que você procura...")">
+    }
+    else
+    {
+        <input name="q" type="text" class="form-control" required placeholder="@T("Digite o que você procura...")">
+    }
+</form>
+
+@if (Model.GetValueOrDefault())
+{
+    if (Request.Url.AbsolutePath.IndexOf("visualizar", StringComparison.InvariantCultureIgnoreCase) > -1)
+    {
+        Html.RenderAction("Script", new { model = new MLModuloBusca { IsAutoComplete = true } });
+    }
+    else
+    {
+        BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = new MLModuloBusca { IsAutoComplete = true } }));
+    }
+}

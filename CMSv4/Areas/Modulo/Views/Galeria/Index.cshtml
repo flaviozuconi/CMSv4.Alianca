@@ -1,0 +1,9 @@
+﻿@model MLModuloGaleriaMultimidia
+@try
+{
+    @Html.Action("ListarPublico", new { model = Model })
+}
+catch (Exception ex)
+{
+    ApplicationLog.ErrorLog(ex);
+}
