@@ -235,7 +235,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             NameValueCollection request = (NameValueCollection)TempData["QueryString"];
             TempData["QueryString"] = request;
 
-            var mensagens = CRUD.Listar(new MLFaleConoscoExportar(), request);
+            var mensagens = CRUD.Listar(new MLFaleConoscoExportar { CodigoPortal = BLPortal.Atual.Codigo}, request);
             var csvContent = BLUtilitarios.EPPlus.Exportar(mensagens.OrderByDescending(o=>o.DataCadastro).ToList());
 
             return File(csvContent.ToArray(), "application/vnd.ms-excel;", $"mensagens-{DateTime.Now.ToString()}.xlsx");

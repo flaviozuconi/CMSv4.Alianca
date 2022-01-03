@@ -2,10 +2,10 @@
 @{
     var portal = BLPortal.Atual;
     var modulo = (MLModuloLista)ViewData["modulo"] ?? new MLModuloLista();
-    if (string.IsNullOrEmpty(modulo.UrlLista)) { modulo.UrlLista = "/noticias"; }
+    if (string.IsNullOrEmpty(modulo.UrlLista)) { modulo.UrlLista = "/comunicados"; }
     var quantidade = 4;
     var imgpadrao = "/portal/Principal/arquivos/listas/4633/capa.png";
-    var conteudo = BLConteudo.ObterAssinatura("titulo-view-noticias", BLIdioma.CodigoAtual, portal);
+    var conteudo = BLConteudo.ObterAssinatura("titulo-view-comunicados", BLIdioma.CodigoAtual, portal);
     var paginas = Model.Count / quantidade;
     var configurl = CRUD.Obter(new MLConfiguracao() { Chave = string.Format("ur-home-idioma-{0}-{1}", BLIdioma.Atual.Codigo, portal.Diretorio.ToLower()) });
     var urlHome = "/";
@@ -22,7 +22,7 @@
     <div class="container">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="@Portal.ResolveUrl(urlHome,portal)">@T("Home")</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><span>@T("Notícias")</span></li>
+            <li class="breadcrumb-item active" aria-current="page"><span>@T("Comunicados")</span></li>
         </ol>
     </div>
 </div>
@@ -37,38 +37,18 @@
         {
             <p>@T("Fique por dentro de todas as novidades da Aliança.")</p>
             <span class="icon icon-doc"></span>
-            <p class="listagem-noticia--subtitle">@T("Aqui você vai encontrar artigos, nossas publicações nas redes sociais e onde saímos na imprensa, além de ter acesso a um banco de imagens e vídeos.")</p>
+            <p class="listagem-noticia--subtitle">@T("Aqui você encontra todos as atualizações dos nossos serviços.")</p>
         }
     </div>
 </div>
 <div class="listagem-noticia">
     <div class="container">
-        <div class="listagem-noticia--filtro">
-            <div class="filtro--item">
-                <input type="radio" name="tipo" id="todos" checked>
-                <label for="todos">@T("Todos")</label>
-            </div>
-            <div class="filtro--item">
-                <input type="radio" name="tipo" id="artigos">
-                <label for="artigos">@T("Artigos")</label>
-            </div>
-            <div class="filtro--item">
-                <input type="radio" name="tipo" id="publicacoes">
-                <label for="publicacoes">@T("Publicações")</label>
-            </div>
-            <div class="filtro--item">
-                <input type="radio" name="tipo" id="videos">
-                <label for="videos">@T("Vídeos")</label>
-            </div>
-            <div class="filtro--item">
-                <input type="radio" name="tipo" id="fotos">
-                <label for="fotos">@T("Fotos")</label>
-            </div>
-            @*<div class="filtro--item">
-                <input type="radio" name="tipo" id="comunicados">
-                <label for="comunicados">@T("Comunicados")</label>
-            </div>*@
-        </div>
+        @*<div class="listagem-noticia--filtro">           
+            <div class="filtro--item" checked>
+                    <input type="radio" name="tipo" id="comunicados">
+                    <label for="comunicados">@T("Comunicados")</label>
+                </div>
+        </div>*@
         <div class="listagem-noticia--list">
 
             @foreach (var item in Model)
@@ -77,7 +57,7 @@
                 var imagem = string.IsNullOrEmpty(item.Imagem) ? imgpadrao : string.Format("/portal/{0}/arquivos/listas/{1}/capa{2}", portal.Diretorio, item.Codigo, item.Imagem);
                 var categoria = BLExtentionMethod.toUrlAmigavel(item.Categoria).ToLower();
                 var css = categoria == "videos" ? "item-video" : (categoria == "fotos" ? "item-picture" : "");
-                var href = categoria == "videos" || categoria == "fotos" ? "#modalMedia" : (categoria == "publicacoes" ? item.Extra2 : ( categoria == "comunicados" ? item.Max1 : url) );
+                var href = categoria == "videos" || categoria == "fotos" ? "#modalMedia" : (categoria == "publicacoes" ? item.Extra2 : (categoria == "comunicados" ? item.Max1 : url));
                 var src = categoria == "videos" ? item.Extra2 : (categoria == "fotos" ? item.Max1 : "");
                 var target = categoria == "publicacoes" || categoria == "comunicados" ? "_blank" : "_self";
                 var linkContinue = categoria == "videos" ? T("Assistir") : (categoria == "fotos" ? T("Ver") : T("Continuar lendo"));
@@ -95,7 +75,7 @@
                         </div>
                         <div class="news--txt">
                             <h3 class="news--title">@Html.Raw(item.Titulo)</h3>
-                            @if(categoria == "comunicados")
+                            @if (categoria == "comunicados")
                             {
                                 <p>@item.Data.Value.ToString("dd/MM/yyyy")</p>
                             }

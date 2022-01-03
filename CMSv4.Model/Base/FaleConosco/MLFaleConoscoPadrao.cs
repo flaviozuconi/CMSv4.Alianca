@@ -76,6 +76,9 @@ namespace CMSv4.Model
         [DataField("FAL_N_CODIGO", SqlDbType.Decimal, 18, 0, PrimaryKey = true)]
         public decimal? Codigo { get; set; }
 
+        [DataField("POR_N_CODIGO", SqlDbType.Decimal, 18, 0)]
+        public decimal? CodigoPortal { get; set; }
+
         [CsvField("Nome Completo", 1)]
         [DataField("NOME", SqlDbType.VarChar, 1000)]
         public string Nome { get; set; }
@@ -119,6 +122,10 @@ namespace CMSv4.Model
         [CsvField("Assunto", 10)]
         [DataField("ASSUNTO", SqlDbType.VarChar, 1000)]
         public string Assunto { get; set; }
+
+        [CsvField("Assunto", 11)]
+        [DataField("URLPAGINA", SqlDbType.VarChar, 1000)]
+        public string UrlPagina { get; set; }
     }
 
     public class faleconosco

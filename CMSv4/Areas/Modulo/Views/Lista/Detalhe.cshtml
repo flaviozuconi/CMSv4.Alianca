@@ -9,12 +9,13 @@
     {
         urlHome = configurl.Valor;
     }
+    var redirecionar = false;
 }
 <div class="breadcrumb-wrap">
     <div class="container">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="@Portal.ResolveUrl(urlHome,portal)">Home</a></li>
-            <li class="breadcrumb-item"><a href="@Portal.ResolveUrl(modulo.UrlLista, portal)">@(string.IsNullOrEmpty(modulo.Titulo)? "Notícias" : modulo.Titulo)</a></li>
+            <li class="breadcrumb-item"><a href="@Portal.ResolveUrl(modulo.UrlLista, portal)">@(string.IsNullOrEmpty(modulo.Titulo) ? "Notícias" : modulo.Titulo)</a></li>
             <li class="breadcrumb-item active" aria-current="page"><span> @(Model != null && Model.Codigo.HasValue ? Model.Titulo : "Titulo da Noticia")</span></li>
         </ol>
     </div>
@@ -36,6 +37,18 @@
                         <img src="@imagem" alt="">
                     </figure>
                 }
+
+                @if (!string.IsNullOrEmpty(Model.Extra2) && !Model.Extra2.ToLower().Contains("youtube"))
+                {
+                    <a target="_blank" href="@Model.Extra2">@T("Clique aqui para acessar.")</a>
+                    <br />
+                }
+                else if (!string.IsNullOrEmpty(Model.Max1) && Model.Max1.ToLower().Contains("pdf"))
+                {
+                    <a target="_blank" href="@Model.Extra2">@T("Clique aqui para acessar.")</a>
+                    <br />
+                }
+                
                 @Html.Raw(Model.Conteudo)
             </div>
 
@@ -44,6 +57,9 @@
     <figure class="detalhe-noticia--bg">
         <img src="/portal/principal/img/bg-category.png" alt="">
     </figure>
+
+    
+
 }
 else
 {

@@ -17,9 +17,9 @@
                     var imagem = string.IsNullOrEmpty(item.Imagem) ? imgpadrao : string.Format("/portal/{0}/arquivos/listas/{1}/capa{2}", portal.Diretorio, item.Codigo, item.Imagem);
                     var categoria = BLExtentionMethod.toUrlAmigavel(item.Categoria).ToLower();
                     var css = categoria == "videos" ? "item-video" : (categoria == "fotos" ? "item-picture" : "");
-                    var href = categoria == "videos" || categoria == "fotos" ? "#modalMedia" : (categoria == "publicacoes" ? item.Extra2 : url);
+                    var href = categoria == "videos" || categoria == "fotos" ? "#modalMedia" : (categoria == "publicacoes" ? item.Extra2 : (categoria == "comunicados" ? item.Max1 : url));
                     var src = categoria == "videos" ? item.Extra2 : (categoria == "fotos" ? item.Max1 : "");
-                    var target = categoria == "publicacoes" ? "_blank" : "_self";
+                    var target = categoria == "publicacoes" || categoria == "comunicados" ? "_blank" : "_self";
                     var linkContinue = categoria == "videos" ? T("Assistir") : (categoria == "fotos" ? T("Ver") : T("Continuar lendo"));
                     var complemento = categoria == "videos" || categoria == "fotos" ? "data-toggle=modal" : "";
 
@@ -33,6 +33,10 @@
                         </div>
                         <div class="news--txt">
                             <h3 class="news--title">@Html.Raw(item.Titulo)</h3>
+                            @if (categoria == "comunicados")
+                            {
+                                <p>@item.Data.Value.ToString("dd/MM/yyyy")</p>
+                            }
                             @if (!string.IsNullOrEmpty(item.Chamada))
                             {
                                 <p>@Html.Raw(item.Chamada)</p>
