@@ -174,7 +174,7 @@ namespace Framework.Utilities
         /// <param name="Tamanho">Tamanho máximo de caracteres permitidos</param>
         /// <param name="IncluirReticencia"></param>
         /// <returns>string</returns>
-        /// <user>etani</user>
+   
         public static MvcHtmlString LimiteCaracter(this string texto, int Tamanho, bool IncluirReticencia = true)
         {
             if (!String.IsNullOrEmpty(texto))

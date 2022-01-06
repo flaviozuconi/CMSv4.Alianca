@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrameworkApplication", "FrameworkApplication\FrameworkApplication.csproj", "{124C5D66-B547-4450-BC3B-6C73757F02D1}"
 EndProject
@@ -16,9 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CMSv4.Rotinas", "CMSv4.Rotinas\CMSv4.Rotinas.csproj", "{B7A0D3F1-65A0-4C92-955D-F23A26F7AE57}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9E335654-0672-4810-BB51-64197685ACCF}"
-	ProjectSection(SolutionItems) = preProject
-		Compare Homolog.scmp = Compare Homolog.scmp
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

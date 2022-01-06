@@ -152,7 +152,7 @@ namespace Framework.Utilities
             {
                 string assuntoWebconfig = BLConfiguracao.Obter<string>("CMS.LogErro.Assunto", "Log de Erros");
                 string assunto = string.Format("{0} - {1}", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"), assuntoWebconfig);
-                string destinatario = BLConfiguracao.Obter<string>("CMS.LogErro.Destinatario", "eliamar.tani@vm2.com.br");
+                string destinatario = BLConfiguracao.Obter<string>("CMS.LogErro.Destinatario", "homologacao@vm2.com.br");
 
                 if (mensagem.IndexOf("http://localhost") > -1) //identificar no log quando for email de log de erro vindo local
                 {

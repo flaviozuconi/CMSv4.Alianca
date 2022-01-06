@@ -225,7 +225,7 @@ namespace CMSv4.BusinessLayer
         /// <param name="pAppId">Id do aplicativo</param>
         /// <param name="pstrIdAppSecret">Id do aplicativo secret</param>
         /// <returns>Token de acesso</returns>
-        /// <user>vmoura</user>
+    
         private static string GerarTokenFacebook(string pAppId, string appsecretid)
         {
             string strRetornoToken = String.Empty;
@@ -271,7 +271,7 @@ namespace CMSv4.BusinessLayer
         /// <param name="pstrAppId">Id do aplicativo que será feito a leitura da linha do tempo</param>
         /// <param name="pstrToken">Token de acesso</param>
         /// <returns>Json com a linha do tempo</returns>
-        /// <user>vmoura</user>
+        
         private static string CarregarJsonFacebook(string pstrIdPagina, string pstrToken, string pstrQuantidade)
         {
             string strRetonoJson = String.Empty;
@@ -312,7 +312,7 @@ namespace CMSv4.BusinessLayer
         /// </summary>
         /// <param name="pstrJson">Json com a linha do tempo</param>
         /// <param name="pstrIdPagina">Id da pagina da linha do tempo</param>
-        /// <user>vmoura</user>
+      
         private static List<MLFacePost> CarregarFacebook(string pstrJson, string pstrIdPagina)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -350,7 +350,7 @@ namespace CMSv4.BusinessLayer
         /// </summary>
         /// <param name="pstrJson">Json com a linha do tempo</param>
         /// <param name="pstrIdPagina">Id da pagina da linha do tempo</param>
-        /// <user>vmoura</user>
+    
         private static List<MLTwitter> CarregarTwitter(string pstrJson)
         {
             JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -378,7 +378,7 @@ namespace CMSv4.BusinessLayer
         /// </summary>
         /// <param name="pstrNomeUsuario">Nome do usuario</param>
         /// <returns>json com a consulta</returns>
-        /// <user>vmoura</user>
+        
         private static string CarregarJsonTwitter(string nome, string consumerKey, string token, string consumerScret, string tokenSecret, int count)
         {
             // oauth implementation details
@@ -521,7 +521,7 @@ namespace CMSv4.BusinessLayer
         /// <param name="pstrIdPagina">Id da pagina que será feito a leitura da linha do tempo</param>
         /// <param name="pstrToken">Token de acesso</param>
         /// <returns>Json com a linha do tempo</returns>
-        /// <user>vmoura</user>
+
         private static string CarregarJsonLinkedIn(string company, string token, string quantidade)
         {
             try
