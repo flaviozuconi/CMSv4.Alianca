@@ -57,9 +57,6 @@
     <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="EPPlus, Version=5.8.4.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPPlus.5.8.4\lib\net45\EPPlus.dll</HintPath>
-    </Reference>
     <Reference Include="Facebook, Version=6.0.10.0, Culture=neutral, PublicKeyToken=58cb4f2111d1e6de, processorArchitecture=MSIL">
       <HintPath>..\packages\Facebook.7.0.6\lib\net45\Facebook.dll</HintPath>
       <Private>True</Private>
@@ -200,6 +197,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Areas\CMS\Controllers\PageSpeedController.cs" />
+    <Compile Include="Areas\ModuloAdmin\Controllers\GestaoDeCustosPenalidadesController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\ProgramacaoNavioAdminController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\ProgramacaoPropostaController.cs" />
     <Compile Include="Areas\CMS\Controllers\RoxyFilemanController.cs" />
@@ -1962,6 +1960,8 @@
     <Content Include="Areas\ModuloAdmin\Views\ScheduleAdmin\Index.cshtml" />
     <Content Include="Areas\Modulo\Views\Lista\Taxas.cshtml" />
     <Content Include="Areas\Modulo\Views\Lista\Comunicados.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Item.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Index.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />
@@ -2014,6 +2014,7 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\Shared\Erro500.cshtml" />
     <Content Include="Templates\programacao-navio-template.xlsx" />
+    <Content Include="Templates\gestao-custos-penalidades-template.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\css\plugins\fancytree\" />

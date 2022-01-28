@@ -67,7 +67,7 @@ public abstract class AdminBaseCRUDPortalController<TModelLista, TModelGravar> :
         }
         #endregion
 
-        private void SetCodigoPortal<TipoModel>(TipoModel model)
+        protected void SetCodigoPortal<TipoModel>(TipoModel model)
         {
             var prop = model.GetType().GetProperty("CodigoPortal");
 

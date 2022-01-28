@@ -1,0 +1,143 @@
+﻿@model CMSv4.Model.Base.MLGestaoDeCustosPenalidades
+@{
+    var usuario = BLUsuario.ObterLogado();
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/GestaoDeCustosPenalidades", portal.Diretorio);
+    var urlListar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/listar", portal.Diretorio);
+
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/page_white_code" />
+                @TAdm("Gestão de Custo e Penalidades")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" id="form" enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="col-md-12">
+                @*POD*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("POD")</label>
+                    <input type="text" class="form-control" name="POD" maxlength="50" value="@Model.POD" autofocus>
+                </div>
+
+                @*TarifaAdicional*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Tarifa adicional (R$)")</label>
+                    <input type="number" name="TarifaAdicional" class="form-control" value="@Model.TarifaAdicional" maxlength="50" onkeypress="return event.charCode == 45 || event.charCode >= 48 && event.charCode <= 57"/>
+                </div>
+
+                @*ValorTarifa*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Valor da tarifa por extenso")</label>
+                    <input type="text" name="ValorTarifa" class="form-control" value="@Model.ValorTarifa" maxlength="50" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                @*Penalidade*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Penalidade Aliança (R$)")</label>
+                    <input type="number" name="Penalidade" class="form-control" value="@Model.Penalidade" maxlength="50" onkeypress="return event.charCode == 45 || event.charCode >= 48 && event.charCode <= 57" />
+                </div>
+
+                @*ValorPenalidade*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Valor da penalidade por extenso")</label>
+                    <input type="text" name="ValorPenalidade" class="form-control" value="@Model.ValorPenalidade" maxlength="50" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                @*Usuario*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Usuario")</label>
+                    <input type="text" name="Usuario" id="Usuario" class="form-control" value="@Model.Usuario" maxlength="50" readonly />
+                    <input type="hidden" name="UsuarioLogado" id="UsuarioLogado" class="form-control" value="@usuario.Nome" maxlength="50" readonly />
+                </div>
+
+                @*DataAtualização*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Data da atualização")</label>
+                    <input type="text" name="DataAtualização" id="DataAtualização" class="form-control" @*value="@usuario.DataCadastro"*@ value="@(Model.DataAtualizacao.HasValue ? Model.DataAtualizacao.Value.ToString("dd/MM/yyyy") : "")" maxlength="50" readonly />
+                
+                </div>
+
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section scripts{    
+    <script type="text/javascript">
+        $(document).ready(function () {
+            preencher();
+        });
+
+        $('#form').validate({
+            rules: {
+                POD: { required: true, maxlength: 100 },
+                TarifaAdicional: { required: true, maxlength: 30 },
+                ValorTarifa: { required: true, maxlength: 50 },
+                Penalidade: { required: true, maxlength: 50 },
+                ValorPenalidade: { required: true, maxlength: 50 },
+                DataAtualização: { required: true },
+                Usuario: { required: true, maxlength: 50 }
+            }
+        });
+
+        function preencher() {
+            const usuario = $(Usuario).val();
+            const data = $(DataAtualização).val();         
+           
+            if (!data) {
+                const d = new Date();
+
+                const month = d.getMonth() + 1;
+                const day = d.getDate();
+
+                const output2 = d.getFullYear() + '/' +
+                    (month < 10 ? '0' : '') + month + '/' +
+                    (day < 10 ? '0' : '') + day;
+
+                const output = (day < 10 ? '0' : '') + day + '/' +
+                                (month < 10 ? '0' : '') + month + '/' +
+                                d.getFullYear();
+
+                $(DataAtualização).val(output)
+            }
+
+            if (!usuario) {                  
+                const usuarioLogado = $(UsuarioLogado).val();                        
+                $(Usuario).val(usuarioLogado)
+            }
+
+        };
+   
+
+        //$('.glyphicon-question-sign').popover();
+
+        @*@(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")*@
+    </script>
+}

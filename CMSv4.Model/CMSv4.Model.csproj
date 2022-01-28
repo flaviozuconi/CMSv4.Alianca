@@ -144,6 +144,8 @@
     <Compile Include="Base\GaleriaMultimidia\MLGaleriaMultimidiaArquivo.cs" />
     <Compile Include="Base\GaleriaMultimidia\MLModuloGaleriaMultimidia.cs" />
     <Compile Include="Base\Galeria\MLGaleriaArquivo.cs" />
+    <Compile Include="Base\GestaoDeCustosPenalidades\MLGestaoDeCustosPealidadesHistorico.cs" />
+    <Compile Include="Base\GestaoDeCustosPenalidades\MLGestaoDeCustosPenalidades.cs" />
     <Compile Include="Base\Grupo\MLGrupo.cs" />
     <Compile Include="Base\Grupo\MLGrupoPermissao.cs" />
     <Compile Include="Base\Grupo\MLGrupoViewModel.cs" />
