@@ -1962,6 +1962,7 @@
     <Content Include="Areas\Modulo\Views\Lista\Comunicados.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Item.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Index.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\ProgramacaoNavioAdmin\Item.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />

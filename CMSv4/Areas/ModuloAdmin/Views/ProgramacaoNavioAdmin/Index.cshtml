@@ -18,6 +18,7 @@
             {
                 <button class="btn btn-blue" data-toggle="modal" data-target="#modalHistorico" onclick="AtualizarHistorico()"><i class="fa fa-history"></i> @TAdm("Histórico Importação")</button>
                 <button class="btn btn-green" data-toggle="modal" data-target="#modalImportacao">@TAdm("Importar")</button>
+                <a class="btn btn-green" href="@urlEditar">@TAdm("Adicionar")</a>
             }
             @Helpers.BotaoExcluir(T("Excluir"))
         </div>
@@ -43,6 +44,7 @@
                         <th>@TAdm("Deadline")</th>
                         <th>@TAdm("Data Importação")</th>
                         <th>@TAdm("Usuario")</th>
+                        <th style="width: 50px;">@TAdm("Excluir")</th>
                     </tr>
                 </thead>
             </table>
@@ -128,11 +130,12 @@
                 {
                     "ajax": "@urlListar",
                     "columns": [
-                        @Helpers.Coluna("Origem"),
-                        @Helpers.Coluna("NavioViagem"),
-                        @Helpers.ColunaDataHora("Deadline"),
-                        @Helpers.ColunaDataHora("DataImportacao"),
-                        @Helpers.Coluna("Usuario")
+                        @Helpers.ColunaEditar("Origem", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditar("NavioViagem", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditarData("Deadline", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditarData("DataImportacao", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditar("Usuario", urlEditar, "Codigo"),
+                        @Helpers.ColunaExcluir("Codigo")
                     ]
                 }
             );

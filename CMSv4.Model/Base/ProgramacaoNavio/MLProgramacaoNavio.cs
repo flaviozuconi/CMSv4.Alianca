@@ -1,4 +1,6 @@
 ﻿using Framework.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Data;
 
@@ -11,11 +13,12 @@ namespace CMSv4.Model.Base
         [DataField("PRN_N_CODIGO", SqlDbType.Decimal, 18, 0, PrimaryKey = true, AutoNumber = true)]
         public decimal? Codigo { get; set; }
 
-        [CsvField("Origem",0)]
+        [CsvField("Origem", 0)]
         [DataField("PRN_C_ORIGEM", SqlDbType.VarChar, 150, IgnoreEmpty = false)]
         public string Origem { get; set; }
 
-        [CsvField("Saida - Previsto",1)]
+        [CsvField("Saida - Previsto", 1)]
+        [JsonConverter(typeof(DateTimeFormat))]
         [DataField("PRN_D_SAIDA_PREVISTO", SqlDbType.DateTime)]
         public DateTime? SaidaPrevisto { get; set; }
 
@@ -23,7 +26,7 @@ namespace CMSv4.Model.Base
         [DataField("PRN_D_SAIDA_REALIZADO", SqlDbType.DateTime)]
         public DateTime? SaidaRealizado { get; set; }
 
-        [CsvField("Destino",3)]
+        [CsvField("Destino", 3)]
         [DataField("PRN_C_DESTINO", SqlDbType.VarChar, 150)]
         public string Destino { get; set; }
 
@@ -39,7 +42,7 @@ namespace CMSv4.Model.Base
         [DataField("PRN_C_NAVIO_VIAGEM", SqlDbType.VarChar, 150, IgnoreEmpty = false)]
         public string NavioViagem { get; set; }
 
-        [CsvField("Transit Time",7)]
+        [CsvField("Transit Time", 7)]
         [DataField("PRN_C_TRANSIT_TIME", SqlDbType.VarChar, 20)]
         public string TransitTime { get; set; }
 
@@ -51,7 +54,7 @@ namespace CMSv4.Model.Base
         [DataField("PRN_C_NAVIO_TRANSBORDO_1", SqlDbType.VarChar, 150)]
         public string NavioTransbordo1 { get; set; }
 
-        [CsvField("Porto Transbordo 1",10)]
+        [CsvField("Porto Transbordo 1", 10)]
         [DataField("PRN_C_PORTO_TRANSBORDO_1", SqlDbType.VarChar, 100)]
         public string PortoTransbordo1 { get; set; }
 
@@ -132,6 +135,15 @@ namespace CMSv4.Model.Base
 
         [DataField("PRN_D_DATA_IMPORTACAO", SqlDbType.DateTime)]
         public DateTime? DataImportacao { get; set; }
+
+        public class DateTimeFormat : IsoDateTimeConverter
+        {
+            public DateTimeFormat()
+            {
+                base.DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+            }
+
+        }
     }
 
     /// <summary>

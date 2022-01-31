@@ -16,6 +16,32 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 {
     public class ProgramacaoNavioAdminController : AdminBaseCRUDPortalController<MLProgramacaoNavio, MLProgramacaoNavio>
     {
+        #region Item
+
+        ///// <summary>
+        ///// Visualizar ou Editar o registro conforme permissão do usuário
+        ///// </summary>
+        ///// <param name="id">Código do registro</param>
+        ///// <remarks>
+        ///// GET:
+        /////     /Area/Controller/Item/id
+        ///// </remarks>
+
+        [CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
+        [HttpPost]
+        public override ActionResult Item(MLProgramacaoNavio model)
+        {
+
+            model.DataImportacao = DateTime.Now;
+
+            SetCodigoPortal(model);
+            TempData["Salvo"] = CRUD.Salvar<MLProgramacaoNavio>(model) > 0;
+
+            return RedirectToAction("Index");
+
+        }
+        #endregion
+
         #region Importar
         /// <summary>
         /// Importa os dados oriundos da planilha de programação navio

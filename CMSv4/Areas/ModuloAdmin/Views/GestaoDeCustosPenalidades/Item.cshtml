@@ -3,7 +3,6 @@
     var usuario = BLUsuario.ObterLogado();
     var portal = PortalAtual.Obter;
     var urlLista = string.Format("/cms/{0}/GestaoDeCustosPenalidades", portal.Diretorio);
-    var urlListar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/listar", portal.Diretorio);
 
 }
 
@@ -67,7 +66,7 @@
                 @*DataAtualização*@
                 <div class="form-group col-md-4">
                     <label>@TAdm("Data da atualização")</label>
-                    <input type="text" name="DataAtualização" id="DataAtualização" class="form-control" @*value="@usuario.DataCadastro"*@ value="@(Model.DataAtualizacao.HasValue ? Model.DataAtualizacao.Value.ToString("dd/MM/yyyy") : "")" maxlength="50" readonly />
+                    <input type="text" name="DataAtualização" id="DataAtualização" class="form-control" value="@(Model.DataAtualizacao.HasValue ? Model.DataAtualizacao.Value.ToString("dd/MM/yyyy") : "")" maxlength="50" readonly />
                 
                 </div>
 
@@ -135,9 +134,5 @@
 
         };
    
-
-        //$('.glyphicon-question-sign').popover();
-
-        @*@(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")*@
     </script>
 }

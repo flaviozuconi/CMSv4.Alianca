@@ -1,0 +1,345 @@
+﻿@model CMSv4.Model.Base.MLProgramacaoNavio
+@{
+    var usuario = BLUsuario.ObterLogado();
+    var portal = PortalAtual.Obter;
+    var urlLista = string.Format("/cms/{0}/programacaonavioadmin", portal.Diretorio);
+
+}
+
+<div class="portlet portlet-dark-blue">
+    <div class="portlet-heading clearfix">
+        <div class="portlet-title">
+            <h4>
+                <img src="~/iconpack.axd/16/page_white_code" />
+                @TAdm("Programação Navio")
+            </h4>
+        </div>
+        <div class="portlet-widgets">
+            @if (Model.Codigo.HasValue)
+            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+            <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
+        </div>
+    </div>
+    <div class="portlet-body clearfix">
+        <form method="post" class="form-vertical" role="form" id="form" enctype="multipart/form-data">
+            <input type="hidden" value="@Model.Codigo" name="Codigo" />
+            <div class="col-md-12">
+
+                @*Origem*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Origem")</label>
+                    <input type="text" class="form-control" name="Origem" maxlength="150" value="@Model.Origem" autofocus>
+                </div>
+
+                @*SaidaPrevisto*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Saida - Previsto")</label>
+                    <input type="datetime" name="SaidaPrevisto" id="SaidaPrevisto" class="form-control" value="@(Model.SaidaPrevisto.HasValue ? Model.SaidaPrevisto.GetValueOrDefault().ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*SaidaRealizado*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Saida - Realizado")</label>
+                    <input type="datetime" name="SaidaRealizado" id="SaidaRealizado" class="form-control" value="@(Model.SaidaRealizado.HasValue ? Model.SaidaRealizado.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                @*Destino*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Destino")</label>
+                    <input type="text" name="Destino" class="form-control" value="@Model.Destino" maxlength="150" />
+                </div>
+
+                @*ChegadaPrevisto*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada - Previsto")</label>
+                    <input type="datetime" name="ChegadaPrevisto" id="ChegadaPrevisto" class="form-control" value="@(Model.ChegadaPrevisto.HasValue ? Model.ChegadaPrevisto.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*ChegadaRealizado*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada - Realizado")</label>
+                    <input type="datetime" name="ChegadaRealizado" id="ChegadaRealizado" class="form-control" value="@(Model.ChegadaRealizado.HasValue ? Model.ChegadaRealizado.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*NavioViagem*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Navio/Viagem")</label>
+                    <input type="text" name="NavioViagem" class="form-control" value="@Model.NavioViagem" maxlength="150" />
+                </div>
+
+                @*TransitTime*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Transit Time")</label>
+                    <input type="text" name="TransitTime" class="form-control" value="@Model.TransitTime" maxlength="20" />
+                </div>
+
+                @*Deadline*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Deadline")</label>
+                    <input type="datetime" name="Deadline" id="Deadline" class="form-control" value="@(Model.Deadline.HasValue ? Model.Deadline.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*NavioTransbordo1*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Navio Transbordo 1")</label>
+                    <input type="text" name="NavioTransbordo1" class="form-control" value="@Model.NavioTransbordo1" maxlength="150" />
+                </div>
+
+                @*PortoTransbordo1*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Porto Transbordo 1")</label>
+                    <input type="text" name="PortoTransbordo1" class="form-control" value="@Model.PortoTransbordo1" maxlength="100" />
+                </div>
+
+                @*TransitTimeTransbordo1*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Transit Time Transbordo 1")</label>
+                    <input type="text" name="TransitTimeTransbordo1" class="form-control" value="@Model.TransitTimeTransbordo1" maxlength="20" />
+                </div>
+
+                @*ChegadaTransbordoPrevisto1*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Previsto 1")</label>
+                    <input type="datetime" name="ChegadaTransbordoPrevisto1" id="ChegadaTransbordoPrevisto1" class="form-control" value="@(Model.ChegadaTransbordoPrevisto1.HasValue ? Model.ChegadaTransbordoPrevisto1.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*ChegadaTransbordoRealizado1*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Realizado 1")</label>
+                    <input type="datetime" name="ChegadaTransbordoRealizado1" id="ChegadaTransbordoRealizado1" class="form-control" value="@(Model.ChegadaTransbordoRealizado1.HasValue ? Model.ChegadaTransbordoRealizado1.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*NavioTransbordo2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Navio Transbordo 2")</label>
+                    <input type="text" name="NavioTransbordo2" class="form-control" value="@Model.NavioTransbordo2" maxlength="150" />
+                </div>
+
+                @*PortoTransbordo2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Porto Transbordo 2")</label>
+                    <input type="text" name="PortoTransbordo2" class="form-control" value="@Model.PortoTransbordo2" maxlength="100" />
+                </div>
+
+                @*TransitTimeTransbordo2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Transit Time Transbordo  2")</label>
+                    <input type="text" name="TransitTimeTransbordo2" class="form-control" value="@Model.TransitTimeTransbordo2" maxlength="20" />
+                </div>
+
+                @*ChegadaTransbordoPrevisto2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Previsto 2")</label>
+                    <input type="datetime" name="ChegadaTransbordoPrevisto2" id="ChegadaTransbordoPrevisto2" class="form-control" value="@(Model.ChegadaTransbordoPrevisto2.HasValue ? Model.ChegadaTransbordoPrevisto2.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*ChegadaTransbordoRealizado2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Realizado 2")</label>
+                    <input type="datetime" name="ChegadaTransbordoRealizado2"  id="ChegadaTransbordoRealizado2" class="form-control" value="@(Model.ChegadaTransbordoRealizado2.HasValue ? Model.ChegadaTransbordoRealizado2.Value.ToString("dd/MM/yyyy") : "")" maxlength="150" />
+                </div>
+
+                @*NavioTransbordo3*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Navio Transbordo 3")</label>
+                    <input type="text" name="NavioTransbordo3" class="form-control" value="@Model.NavioTransbordo3" maxlength="100" />
+                </div>
+
+                @*PortoTransbordo3*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Porto Transbordo 3")</label>
+                    <input type="text" name="PortoTransbordo3" class="form-control" value="@Model.PortoTransbordo3" maxlength="20" />
+                </div>
+
+                @*TransitTimeTransbordo3*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Transit Time Transbordo  3")</label>
+                    <input type="text" name="TransitTimeTransbordo3" class="form-control" value="@Model.TransitTimeTransbordo3" maxlength="20" />
+                </div>
+
+                @*ChegadaTransbordoPrevisto2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Previsto 3")</label>
+                    <input type="datetime" name="ChegadaTransbordoPrevisto3" id="ChegadaTransbordoPrevisto3" class="form-control" value="@(Model.ChegadaTransbordoPrevisto3.HasValue ? Model.ChegadaTransbordoPrevisto3.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*ChegadaTransbordoRealizado2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Realizado 3")</label>
+                    <input type="datetime" name="ChegadaTransbordoRealizado3" id="ChegadaTransbordoRealizado3" class="form-control" value="@(Model.ChegadaTransbordoRealizado3.HasValue ? Model.ChegadaTransbordoRealizado3.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*NavioTransbordo4*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Navio Transbordo 4")</label>
+                    <input type="text" name="NavioTransbordo4" class="form-control" value="@Model.NavioTransbordo4" maxlength="150" />
+                </div>
+
+                @*PortoTransbordo2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Porto Transbordo 4")</label>
+                    <input type="text" name="PortoTransbordo4" class="form-control" value="@Model.PortoTransbordo4" maxlength="100" />
+                </div>
+
+                @*TransitTimeTransbordo2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Transit Time Transbordo  4")</label>
+                    <input type="text" name="TransitTimeTransbordo4" class="form-control" value="@Model.TransitTimeTransbordo4" maxlength="20" />
+                </div>
+
+                @*ChegadaTransbordoPrevisto2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Previsto 4")</label>
+                    <input type="datetime" name="ChegadaTransbordoPrevisto4" id="ChegadaTransbordoPrevisto4" class="form-control" value="@(Model.ChegadaTransbordoPrevisto4.HasValue ? Model.ChegadaTransbordoPrevisto4.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+                @*ChegadaTransbordoRealizado2*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Chegada Transbordo - Realizado 4")</label>
+                    <input type="datetime" name="ChegadaTransbordoRealizado4" id="ChegadaTransbordoRealizado4" class="form-control" value="@(Model.ChegadaTransbordoRealizado4.HasValue ? Model.ChegadaTransbordoRealizado4.Value.ToString("dd/MM/yyyy") : "")" />
+                </div>
+
+            </div>
+            <div class="col-md-12">
+                @*Usuario*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Usuario")</label>
+                    <input type="text" name="Usuario" id="Usuario" class="form-control" value="@Model.Usuario" maxlength="100" readonly />
+                    <input type="hidden" name="UsuarioLogado" id="UsuarioLogado" class="form-control" value="@usuario.Nome" maxlength="100" readonly />
+                </div>
+
+                @*DataAtualização*@
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Data da Importacao")</label>
+                    <input type="text" name="DataImportacao" id="DataImportacao" class="form-control" value="@(Model.DataImportacao.HasValue ? Model.DataImportacao.Value.ToString("dd/MM/yyyy") : "")" readonly />
+
+                </div>
+
+            </div>
+
+            <div class="form-group col-md-12 text-right">
+                <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
+                @if (AdminHelper.CheckPermission(Permissao.Modificar))
+                {
+                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
+                }
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
+            }
+        </form>
+    </div>
+</div>
+
+@section head {
+    <link href="~/Content/css/plugins/bootstrap-tokenfield/bootstrap-tokenfield.css" rel="stylesheet" />
+        <link href="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.css" rel="stylesheet" />
+        <link href="~/Content/css/jquery-ui.css" rel="stylesheet" />
+        <link href="~/Content/css/jquery-ui.structure.css" rel="stylesheet" />
+        <link href="~/Content/css/jquery-ui.theme.css" rel="stylesheet" />
+}
+
+@section scripts{
+
+    <script src="~/Content/js/plugins/datetimepicker/jquery.datetimepicker.js"></script>
+    <script src="~/Content/js/plugins/AceEditor/ace.js"></script>
+    <script src="~/Content/js/plugins/bootstrap-tokenfield/bootstrap-tokenfield.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function ($) {
+            preencher();
+       
+            $('#SaidaPrevisto').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#SaidaRealizado').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaPrevisto').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaRealizado').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#Deadline').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoPrevisto1').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoRealizado1').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoPrevisto2').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoRealizado2').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoPrevisto3').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoRealizado3').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoPrevisto4').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+
+            $('#ChegadaTransbordoRealizado4').datetimepicker({
+                timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
+            });
+        });
+
+        $('#form').validate({
+            rules: {
+                Origem: { required: true, maxlength: 150 },
+                NavioViagem: { required: true, maxlength: 150 },
+                Deadline: { required: true }
+            }
+        });
+
+        function preencher() {
+            const usuario = $(Usuario).val();
+            const data = $(DataImportacao).val();
+
+            if (!data) {
+                const d = new Date();
+
+                const month = d.getMonth() + 1;
+                const day = d.getDate();
+
+                const output2 = d.getFullYear() + '/' +
+                    (month < 10 ? '0' : '') + month + '/' +
+                    (day < 10 ? '0' : '') + day;
+
+                const output = (day < 10 ? '0' : '') + day + '/' +
+                                (month < 10 ? '0' : '') + month + '/' +
+                                d.getFullYear();
+
+                $(DataImportacao).val(output)
+            }
+
+            if (!usuario) {
+                const usuarioLogado = $(UsuarioLogado).val();
+                $(Usuario).val(usuarioLogado)
+            }
+
+        };
+
+    </script>
+}
