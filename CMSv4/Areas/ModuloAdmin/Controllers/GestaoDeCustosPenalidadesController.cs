@@ -33,7 +33,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         [HttpPost]       
         public override ActionResult Item(MLGestaoDeCustosPenalidades model)
         {           
-            model.Usuario = BLUsuario.ObterLogado().Nome;
+            model.Usuario = BLUsuario.ObterLogado().Login;
             model.DataAtualizacao = DateTime.Now;
             
             SetCodigoPortal(model);
