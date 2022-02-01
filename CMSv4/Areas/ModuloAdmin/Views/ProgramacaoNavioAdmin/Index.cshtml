@@ -41,6 +41,7 @@
                     <tr>
                         <th>@TAdm("Origem")</th>
                         <th>@TAdm("Navio/Viagem")</th>
+                        <th>@TAdm("Destino")</th>
                         <th>@TAdm("Deadline")</th>
                         <th>@TAdm("Data Importação")</th>
                         <th>@TAdm("Usuario")</th>
@@ -132,6 +133,7 @@
                     "columns": [
                         @Helpers.ColunaEditar("Origem", urlEditar, "Codigo"),
                         @Helpers.ColunaEditar("NavioViagem", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditar("Destino", urlEditar, "Codigo"),
                         @Helpers.ColunaEditarData("Deadline", urlEditar, "Codigo"),
                         @Helpers.ColunaEditarData("DataImportacao", urlEditar, "Codigo"),
                         @Helpers.ColunaEditar("Usuario", urlEditar, "Codigo"),
