@@ -1963,6 +1963,8 @@
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Item.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Index.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\ProgramacaoNavioAdmin\Item.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Importar.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Historico.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />

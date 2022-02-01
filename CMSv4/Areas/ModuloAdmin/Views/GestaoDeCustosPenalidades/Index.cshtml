@@ -1,14 +1,14 @@
 ﻿@{
     var portal = PortalAtual.Obter;
     var urlEditar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/item", portal.Diretorio);
+    var urlImportacao = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Importar", portal.Diretorio);
+    var urlVisualisarHistorico = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Historico", portal.Diretorio);
+
     var urlListar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/listar", portal.Diretorio);
 
-    var urlImportar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/importar", portal.Diretorio);
-    var urlModelo = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadmodelo", portal.Diretorio);
-    var urlHistorico = string.Format("/cms/{0}/GestaoDeCustosPenalidades/historicoimportacao", portal.Diretorio);
-    var urlDownload = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadimportacao/", portal.Diretorio);
+    var salvo = (bool?)TempData["Salvo"] ?? false;
+    var salvoImportacao = (bool?)TempData["SalvoImportacao"] ?? false;
 
-    var salvo = (bool?)TempData["Salvo"] ?? false;    
 }
 
 <div class="portlet portlet-dark-blue">
@@ -17,8 +17,8 @@
         <div class="portlet-widgets">
             @if (AdminHelper.CheckPermission(Permissao.Modificar))
             {
-                <button class="btn btn-blue" data-toggle="modal" data-target="#modalHistorico" onclick="AtualizarHistorico()"><i class="fa fa-history"></i> @TAdm("Histórico Importação")</button>
-                <button class="btn btn-green" data-toggle="modal" data-target="#modalImportacao">@TAdm("Importar")</button>
+                <a class="btn btn-blue" href="@urlVisualisarHistorico"><i class="fa fa-history"></i>@TAdm("Histórico Importação")</a>              
+                <a class="btn btn-green" href="@urlImportacao">@TAdm("Importar")</a>
                 <a class="btn btn-green" href="@urlEditar">@TAdm("Adicionar")</a>
             }
             @Helpers.BotaoExcluir(T("Excluir"))
@@ -33,14 +33,18 @@
             </div>
         }
 
+        @if (salvoImportacao)
+        {
+            <div class="alert alert-warning">
+                @TAdm("Importação em andamento, clique no botão \"Histórico Importação\" para ver quando ela irá finalizar.")
+            </div>
+        }
+
         @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), Request.Url.AbsolutePath + "/excluir")
 
         <div id="divErros" class="alert alert-danger" hidden>
         </div>
 
-        <div class="alert alert-warning" id="divAviso" style="display: none;">
-            @TAdm("Importação em andamento, clique no botão \"Histórico Importação\" para ver quando ela irá finalizar.")
-        </div>
 
         <div class="table-responsive">
             <div id="toolbar"></div>
@@ -54,7 +58,6 @@
                         <th>@TAdm("Valor da penalidade por extenso")</th>
                         <th>@TAdm("Data da atualização")</th>
                         <th>@TAdm("Usuário que importou")</th>
-                        @*<th>@TAdm("Excluir")</th>*@
                     </tr>
                 </thead>
             </table>
@@ -62,78 +65,10 @@
 
     </div>
 </div>
-<iframe id="downloader" hidden></iframe>
-<!-- Modal Importação -->
-<div class="modal fade" id="modalImportacao" tabindex="-1" aria-labelledby="modalImportacao" aria-hidden="true">
-    <div class="modal-dialog">
-        <form class="modal-content" id="form" name="form" method="post" enctype="multipart/form-data">
-            <div class="modal-header">
-                <h5 class="modal-title">@TAdm("Importar gestão de custos e penalidades")</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <a class="btn btn-primary" onclick="DownloadModelo()">@TAdm("Modelo Importação")</a>
-                    <br />
-                    <br />
-                    <label>@TAdm("(Extensões válidas: .xls e .xlsx)")</label>
-                    <input type="file" name="arquivo" class="form-group" />
-                    <br />
-                    <input type="checkbox" id="ex" name="excluir" value="True" />
-                    <label for="ex">@TAdm("Excluir todos os registros antes da importação")</label> <i class="fa fa-question-circle help" data-content="@TAdm("Todos os registros serão excluidos de forma definitiva do sistema e não poderão ser recuperados.")" data-placement="right" data-original-title="" title=""></i>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
-                <input class="btn btn-green" type="submit" value="@TAdm("Importar")" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Modal Histórico -->
-<div class="modal fade" id="modalHistorico" tabindex="-1" aria-labelledby="modalHistorico" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@TAdm("Histórico Importação")</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="table-responsive">
-                    <div id="toolbar"></div>
-                    <table id="listaHistorico" class="table table-striped table-bordered table-hover table-blue">
-                        <thead>
-                            <tr>
-                                <th>@TAdm("Data Importação")</th>
-                                <th>@TAdm("Usuário")</th>
-                                <th>@TAdm("Sucesso")</th>
-                                <th>@TAdm("Finalizado")</th>
-                                <th>@TAdm("Arquivo")</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function () {
-
-            $(".help").popover({
-                trigger: "hover",
-                delay: { show: 200, hide: 0 }
-            });
+        $(document).ready(function () {                      
 
             //DataTables Initialization
             $('#lista').dataTable(
@@ -149,88 +84,9 @@
                         @Helpers.ColunaEditar("Usuario", urlEditar, "Codigo")
                     ]
                 }
-            );
-
-            $("#listaHistorico").dataTable({
-                "ajax": "@urlHistorico",
-                "order": [[0, "desc"]],
-                "columns": [
-                    @Helpers.ColunaDataHora("DataImportacao"),
-                    @Helpers.Coluna("Usuario"),
-                    @Helpers.ColunaBoolean("Sucesso",TAdm("Sim"),TAdm("Não")),
-                    @Helpers.ColunaBoolean("Finalizado",TAdm("Sim"),TAdm("Não")),
-                    @Helpers.ColunaDownloadIcon("Arquivo", urlDownload, "Codigo")
-                ]
-            })
+            );           
+           
         });
 
-        $("#form").validate({
-            rules: {
-                arquivo: {
-                    required: true,
-                    extension: "xls|xlsx"
-                }
-            }
-        })
-
-        function AtualizarHistorico() {
-            $('#listaHistorico').DataTable().clear();
-            $('#listaHistorico').DataTable().ajax.reload();
-        }
-
-        function downloadImportacao(id) {
-            $.ajax({
-                url: "@urlDownload/" + id,
-                method: "GET",
-                success: function (data) {
-                    document.getElementById('downloader').src = '@urlDownload'+id;
-                },
-                error: function () {
-                    $("#arquivoImportacao").addClass('alert alert-warning');
-                    $("#arquivoImportacao").html("Ocorreu um erro ao fazer o download do arquivo: arquivo inexistente");
-
-                    setTimeout(function () {
-                        $('#arquivoImportacao').removeClass('alert alert-warning');
-                        $("#arquivoImportacao").html("");
-                    }, 15000);
-                }
-            })
-        }
-
-        function DownloadModelo() {
-            document.getElementById('downloader').src = "@urlModelo";
-
-            return false;
-        }
-
-        $("#form").submit(function (event) {
-            event.preventDefault();
-
-            var formData = new FormData();
-
-            formData.append("file", $(this).find("input[name=arquivo]")[0].files[0]);
-            formData.append("excluir", $(this).find("input[name=excluir]").is(":checked"));
-
-            console.log(formData);
-            $.ajax({
-                url: "@urlImportar",
-                type: "POST",
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function (data, status, xhr) {
-                    $(".spinner").hide();
-                    $(".modal").modal('hide');
-
-                    if (data.success == false) {
-                        $("#divErros").html(data.msg);
-                        $("#divErros").show();
-                    } else {
-                        $("#divAviso").show();
-                    }
-                }
-            })
-        });
     </script>
 }

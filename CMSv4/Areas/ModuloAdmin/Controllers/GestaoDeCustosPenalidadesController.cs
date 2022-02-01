@@ -32,8 +32,8 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         [CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
         [HttpPost]       
         public override ActionResult Item(MLGestaoDeCustosPenalidades model)
-        {
-            
+        {           
+            model.Usuario = BLUsuario.ObterLogado().Nome;
             model.DataAtualizacao = DateTime.Now;
             
             SetCodigoPortal(model);
@@ -44,6 +44,17 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         }
         #endregion
 
+        #region Importacao
+
+        [Compress]
+        [CheckPermission(global::Permissao.Visualizar)]
+        public virtual ActionResult Importar()
+        {
+            return View("Importar");
+        }
+
+        #endregion
+
         #region Importar
         /// <summary>
         /// Importa os dados oriundos da planilha de Gestao De Custos E Penalidades
@@ -51,7 +62,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         /// <param name="file"></param>
         /// <param name="excluir"></param>
         /// <returns></returns>
-        public ActionResult Importar(HttpPostedFileBase file, bool? excluir)
+        public ActionResult Importacao(HttpPostedFileBase file, bool? excluir)
         {
             Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("pt-BR");
 
@@ -82,7 +93,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 
             importacao.Arquivo = nomeArquivo;
 
-            string erros = ValidaPlanilha(lstModel);
+            string erros = ValidaPlanilha(lstModel);                      
 
             if (!string.IsNullOrEmpty(erros))
             {
@@ -96,9 +107,12 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             Thread thread = new Thread(new ThreadStart(() =>
             {
                 InserirPlanilha(lstModel, importacao, excluir);
+                
             }));
 
             thread.Start();
+
+            TempData["SalvoImportacao"] = erros.Length <= 0;
 
             return Json(new { success = true });
         }
@@ -191,7 +205,9 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 
                 importacao.Sucesso = true;
                 importacao.Finalizado = true;
+
                 new BLCRUD<MLGestaoDeCustosPenalidadesHistorico>().SalvarParcial(importacao);
+                
             }
             catch (Exception ex)
             {
@@ -204,6 +220,16 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 
         #endregion
 
+        #region Historico
+
+        [Compress]
+        [CheckPermission(global::Permissao.Visualizar)]
+        public virtual ActionResult Historico()
+        {
+            return View("Historico");
+        }
+
+        #endregion
 
         #region Historico Importacao
         /// <summary>

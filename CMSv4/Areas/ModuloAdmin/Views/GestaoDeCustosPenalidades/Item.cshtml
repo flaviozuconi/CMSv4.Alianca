@@ -58,16 +58,15 @@
             <div class="col-md-12">
                 @*Usuario*@
                 <div class="form-group col-md-4">
-                    <label>@TAdm("Usuario")</label>
-                    <input type="text" name="Usuario" id="Usuario" class="form-control" value="@Model.Usuario" maxlength="50" readonly />
-                    <input type="hidden" name="UsuarioLogado" id="UsuarioLogado" class="form-control" value="@usuario.Nome" maxlength="50" readonly />
+                    <label>@TAdm("Usuário")</label>
+                    <input type="text" name="Usuario" id="Usuario" class="form-control" value="@usuario.Nome" maxlength="50" readonly />                  
                 </div>
 
                 @*DataAtualização*@
                 <div class="form-group col-md-4">
                     <label>@TAdm("Data da atualização")</label>
-                    <input type="text" name="DataAtualização" id="DataAtualização" class="form-control" value="@(Model.DataAtualizacao.HasValue ? Model.DataAtualizacao.Value.ToString("dd/MM/yyyy") : "")" maxlength="50" readonly />
-                
+                    <br />
+                    <script>document.write(new Date().toLocaleDateString());</script>
                 </div>
 
             </div>
@@ -101,38 +100,10 @@
                 ValorTarifa: { required: true, maxlength: 50 },
                 Penalidade: { required: true, maxlength: 50 },
                 ValorPenalidade: { required: true, maxlength: 50 },
-                DataAtualização: { required: true },
+                DataAtualizacao: { required: true },
                 Usuario: { required: true, maxlength: 50 }
             }
-        });
-
-        function preencher() {
-            const usuario = $(Usuario).val();
-            const data = $(DataAtualização).val();         
-           
-            if (!data) {
-                const d = new Date();
-
-                const month = d.getMonth() + 1;
-                const day = d.getDate();
-
-                const output2 = d.getFullYear() + '/' +
-                    (month < 10 ? '0' : '') + month + '/' +
-                    (day < 10 ? '0' : '') + day;
-
-                const output = (day < 10 ? '0' : '') + day + '/' +
-                                (month < 10 ? '0' : '') + month + '/' +
-                                d.getFullYear();
-
-                $(DataAtualização).val(output)
-            }
-
-            if (!usuario) {                  
-                const usuarioLogado = $(UsuarioLogado).val();                        
-                $(Usuario).val(usuarioLogado)
-            }
-
-        };
+        });              
    
     </script>
 }
