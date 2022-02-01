@@ -47,7 +47,7 @@
                 @*Destino*@
                 <div class="form-group col-md-4">
                     <label>@TAdm("Destino")</label>
-                    <input type="text" name="Destino" class="form-control" value="@Model.Destino" maxlength="150" />
+                    <input type="text" name="Destino" id="Destino" class="form-control" value="@Model.Destino" maxlength="150" />
                 </div>
 
                 @*ChegadaPrevisto*@
@@ -309,6 +309,7 @@
             rules: {
                 Origem: { required: true, maxlength: 150 },
                 NavioViagem: { required: true, maxlength: 150 },
+                Destino: { required: true, maxlength: 150},
                 Deadline: { required: true }
             }
         });
