@@ -15,8 +15,46 @@ using CMSv4.BusinessLayer.Base;
 
 namespace CMSApp.Areas.CMS.Controllers
 {
-    public class ProgramacaoPropostaController : AdminBaseCRUDPortalController<MLProgramacaoPropostaDataTable, MLProgramacaoPropostaDataTable>
+    public class ProgramacaoPropostaController : AdminBaseCRUDPortalController<MLProgramacaoProposta, MLProgramacaoProposta>
     {
+        #region Item
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="id"></param>
+        ///// <returns></returns>
+        //[Compress]
+        //[CheckPermission(global::Permissao.Visualizar)]
+        //public override ActionResult Item(decimal? id)
+        //{
+        //    return View(CRUD.Obter<MLProgramacaoProposta>(id.GetValueOrDefault(0)));
+        //}
+
+        ///// <summary>
+        ///// Visualizar ou Editar o registro conforme permissão do usuário
+        ///// </summary>
+        ///// <param name="id">Código do registro</param>
+        ///// <remarks>
+        ///// GET:
+        /////     /Area/Controller/Item/id
+        ///// </remarks>
+
+        //[CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
+        [HttpPost]
+        public override ActionResult Item(MLProgramacaoProposta model)
+        {
+            model.NomeUsuario = BLUsuario.ObterLogado().Login;
+            model.CodigoUsuario = BLUsuario.ObterLogado().Codigo;
+            model.DataImportacao = DateTime.Now;
+
+            SetCodigoPortal(model);
+            TempData["Salvo"] = CRUD.Salvar<MLProgramacaoProposta>(model) > 0;
+
+            return RedirectToAction("Index");
+
+        }
+        #endregion
+
         #region Listar Propostas
         /// <summary>
         /// Listagem programação de propostas
