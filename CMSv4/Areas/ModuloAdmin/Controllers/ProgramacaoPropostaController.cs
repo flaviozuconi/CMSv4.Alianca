@@ -17,27 +17,7 @@ namespace CMSApp.Areas.CMS.Controllers
 {
     public class ProgramacaoPropostaController : AdminBaseCRUDPortalController<MLProgramacaoProposta, MLProgramacaoProposta>
     {
-        #region Item
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="id"></param>
-        ///// <returns></returns>
-        //[Compress]
-        //[CheckPermission(global::Permissao.Visualizar)]
-        //public override ActionResult Item(decimal? id)
-        //{
-        //    return View(CRUD.Obter<MLProgramacaoProposta>(id.GetValueOrDefault(0)));
-        //}
-
-        ///// <summary>
-        ///// Visualizar ou Editar o registro conforme permissão do usuário
-        ///// </summary>
-        ///// <param name="id">Código do registro</param>
-        ///// <remarks>
-        ///// GET:
-        /////     /Area/Controller/Item/id
-        ///// </remarks>
+        #region Item        
 
         //[CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
         [HttpPost]

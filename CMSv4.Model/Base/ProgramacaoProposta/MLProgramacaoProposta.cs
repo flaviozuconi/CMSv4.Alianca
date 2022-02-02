@@ -12,11 +12,9 @@ namespace CMSv4.Model.Base
        
         [DataField("PRP_N_CODIGO", SqlDbType.Decimal, 18, 0, PrimaryKey = true, AutoNumber = true)]
         public decimal? Codigo { get; set; }
-
    
         [DataField("PRP_USU_N_CODIGO", SqlDbType.Decimal, 18, 0)]
         public decimal? CodigoUsuario { get; set; }
-
  
         [DataField("PRP_D_DATA_IMPORTACAO", SqlDbType.DateTime)]
         public DateTime? DataImportacao { get; set; }

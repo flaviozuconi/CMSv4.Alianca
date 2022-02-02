@@ -6,6 +6,7 @@
     var urlModelo = string.Format("/cms/{0}/ProgramacaoProposta/downloadmodelo", portalAtual.Diretorio);
     var urlHistorico = string.Format("/cms/{0}/ProgramacaoProposta/historicoimportacao", portalAtual.Diretorio);
     var urlDownload = string.Format("/cms/{0}/ProgramacaoProposta/downloadimportacao/", portalAtual.Diretorio);
+    var salvo = (bool?)TempData["Salvo"] ?? false;
 }
 
 <div class="portlet portlet-dark-blue">
@@ -23,6 +24,13 @@
         <div class="clearfix"></div>
     </div>
     <div class="portlet-body">
+        @if (salvo)
+        {
+            <div class="alert alert-success">
+                @TAdm("Registro salvo com sucesso!")
+            </div>
+        }
+
         @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), Request.Url.AbsolutePath + "/excluir")
 
         <div id="divErros" class="alert alert-danger" hidden>
