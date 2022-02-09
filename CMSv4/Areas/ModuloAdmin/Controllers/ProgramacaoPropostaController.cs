@@ -15,8 +15,26 @@ using CMSv4.BusinessLayer.Base;
 
 namespace CMSApp.Areas.CMS.Controllers
 {
-    public class ProgramacaoPropostaController : AdminBaseCRUDPortalController<MLProgramacaoPropostaDataTable, MLProgramacaoPropostaDataTable>
+    public class ProgramacaoPropostaController : AdminBaseCRUDPortalController<MLProgramacaoProposta, MLProgramacaoProposta>
     {
+        #region Item        
+
+        //[CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
+        [HttpPost]
+        public override ActionResult Item(MLProgramacaoProposta model)
+        {
+            model.NomeUsuario = BLUsuario.ObterLogado().Login;
+            model.CodigoUsuario = BLUsuario.ObterLogado().Codigo;
+            model.DataImportacao = DateTime.Now;
+
+            SetCodigoPortal(model);
+            TempData["Salvo"] = CRUD.Salvar<MLProgramacaoProposta>(model) > 0;
+
+            return RedirectToAction("Index");
+
+        }
+        #endregion
+
         #region Listar Propostas
         /// <summary>
         /// Listagem programação de propostas

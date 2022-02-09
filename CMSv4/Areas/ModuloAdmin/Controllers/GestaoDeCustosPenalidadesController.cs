@@ -192,7 +192,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             {
                 if (excluir.HasValue && excluir.Value)
                 {
-                    Database.ExecuteNonQuery(new SqlCommand("DELETE FROM MOD_GCP_GESTAO_CUSTO_PENALIDADE"));
+                    Database.ExecuteNonQuery(new SqlCommand("TRUNCATE TABLE MOD_GCP_GESTAO_CUSTO_PENALIDADE"));
                 }
 
                 foreach (var item in lista)

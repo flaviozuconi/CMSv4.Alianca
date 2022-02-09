@@ -9,15 +9,13 @@ namespace CMSv4.Model.Base
     [Serializable]
     public class MLProgramacaoProposta
     {
-        [Required]
+       
         [DataField("PRP_N_CODIGO", SqlDbType.Decimal, 18, 0, PrimaryKey = true, AutoNumber = true)]
         public decimal? Codigo { get; set; }
-
-        [Required]
+   
         [DataField("PRP_USU_N_CODIGO", SqlDbType.Decimal, 18, 0)]
         public decimal? CodigoUsuario { get; set; }
-
-        [Required]
+ 
         [DataField("PRP_D_DATA_IMPORTACAO", SqlDbType.DateTime)]
         public DateTime? DataImportacao { get; set; }
 
@@ -297,12 +295,10 @@ namespace CMSv4.Model.Base
         [Required]
         [DataField("PRP_N_CODIGO", SqlDbType.Decimal, 18, 0, PrimaryKey = true, AutoNumber = true)]
         public decimal? Codigo { get; set; }
-
-        [Required]
+              
         [DataField("PRP_USU_N_CODIGO", SqlDbType.Decimal, 18, 0)]
         public decimal? CodigoUsuario { get; set; }
-
-        [Required]
+                
         [DataField("PRP_D_DATA_IMPORTACAO", SqlDbType.DateTime)]
         public DateTime? DataImportacao { get; set; }
 

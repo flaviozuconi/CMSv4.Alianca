@@ -6,6 +6,7 @@
     var urlModelo = string.Format("/cms/{0}/ProgramacaoProposta/downloadmodelo", portalAtual.Diretorio);
     var urlHistorico = string.Format("/cms/{0}/ProgramacaoProposta/historicoimportacao", portalAtual.Diretorio);
     var urlDownload = string.Format("/cms/{0}/ProgramacaoProposta/downloadimportacao/", portalAtual.Diretorio);
+    var salvo = (bool?)TempData["Salvo"] ?? false;
 }
 
 <div class="portlet portlet-dark-blue">
@@ -16,12 +17,20 @@
             {
                 <button class="btn btn-blue" data-toggle="modal" data-target="#modalHistorico" onclick="AtualizarHistorico()"><i class="fa fa-history"></i> @TAdm("Histórico Importação")</button>
                 <button class="btn btn-green" data-toggle="modal" data-target="#modalImportacao">@TAdm("Importar")</button>
+                <a class="btn btn-green" href="@urlEditar">@TAdm("Adicionar")</a>
             }
             @Helpers.BotaoExcluir(T("Excluir"))
         </div>
         <div class="clearfix"></div>
     </div>
     <div class="portlet-body">
+        @if (salvo)
+        {
+            <div class="alert alert-success">
+                @TAdm("Registro salvo com sucesso!")
+            </div>
+        }
+
         @Helpers.PainelExcluir(T("Atenção"), T("Você confirma a exclusão dos itens selecionados?"), Request.Url.AbsolutePath + "/excluir")
 
         <div id="divErros" class="alert alert-danger" hidden>
