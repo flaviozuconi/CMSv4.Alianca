@@ -236,6 +236,7 @@
     <Compile Include="Areas\ModuloAdmin\Controllers\MenuAdminController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\NewsLetterAdminController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\ScheduleAdminController.cs" />
+    <Compile Include="Areas\ModuloAdmin\Controllers\TakeOrPayHistoricoAdminController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\TakeOrPayAdminController.cs" />
     <Compile Include="Areas\Modulo\Controllers\AgrupadorController.cs" />
     <Compile Include="Areas\Modulo\Controllers\ArquivoRestritoController.cs" />
@@ -1953,10 +1954,10 @@
     <Content Include="Areas\Modulo\Views\TakeOrPay\TermoPdf.cshtml" />
     <Content Include="Areas\Modulo\Views\Banner\TakeOrPay.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\ProgramacaoNavioAdmin\Index.cshtml" />
-    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Index.cshtml" />
-    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Item.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayHistoricoAdmin\Index.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayHistoricoAdmin\Item.cshtml" />
     <Content Include="Areas\Modulo\Views\Lista\Informativos.cshtml" />
-    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Script.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayHistoricoAdmin\Script.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\ScheduleAdmin\Index.cshtml" />
     <Content Include="Areas\Modulo\Views\Lista\Taxas.cshtml" />
     <Content Include="Areas\Modulo\Views\Lista\Comunicados.cshtml" />
@@ -1965,6 +1966,15 @@
     <Content Include="Areas\ModuloAdmin\Views\ProgramacaoNavioAdmin\Item.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Importar.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Historico.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Index.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Item.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Script.cshtml" />
+    <Content Include="Areas\Modulo\Views\TakeOrPayTermos\TermoPdf.cshtml" />
+    <Content Include="Areas\Modulo\Views\TakeOrPayTermos\TermoPdfHistorico.cshtml" />
+    <Content Include="Areas\Modulo\Views\TakeOrPayTermos\TermoRegular.cshtml" />
+    <Content Include="Areas\Modulo\Views\TakeOrPayTermos\TermoRegularHistorico.cshtml" />
+    <Content Include="Areas\Modulo\Views\TakeOrPayTermos\TermoSpot.cshtml" />
+    <Content Include="Areas\Modulo\Views\TakeOrPayTermos\TermoSpotHistorico.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />

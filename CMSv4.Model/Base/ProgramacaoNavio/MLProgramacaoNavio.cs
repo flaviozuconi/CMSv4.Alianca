@@ -2,10 +2,12 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Collections.Generic;
 using System.Data;
 
 namespace CMSv4.Model.Base
 {
+    #region MLProgramacaoNavio
     [Table("MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS")]
     [Serializable]
     public class MLProgramacaoNavio
@@ -145,13 +147,35 @@ namespace CMSv4.Model.Base
 
         }
     }
+    #endregion
 
+    #region MLProgramacaoNavioProc
     /// <summary>
     /// Model de retorno para listar a deadline embarque certo
     /// </summary>
-    public class MLProgramacaoNavioProc : MLProgramacaoNavio
+    public class MLProgramacaoNavioProc
+    {
+        public List<MLProgramacaoNavioProcOrigem> Origem { get; set; }
+
+        public List<MLProgramacaoNavioProcDestino> Destino { get; set; }
+    }
+
+    public class MLProgramacaoNavioProcOrigem
+    {
+        [DataField("PRN_C_ORIGEM", SqlDbType.VarChar, 150)]
+        public string Origem { get; set; }
+    }
+
+    public class MLProgramacaoNavioProcDestino
+    {
+        [DataField("PRN_C_DESTINO", SqlDbType.VarChar, 150)]
+        public string Destino { get; set; }
+    }
+
+    public class MLProgramacaoNavioProcHistorico : MLProgramacaoNavio
     {
         [DataField("DEADLINE_ATIVA", SqlDbType.Bit)]
         public bool? DeadlineAtiva { get; set; }
     }
+    #endregion
 }

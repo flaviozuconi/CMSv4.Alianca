@@ -58,6 +58,12 @@ namespace CMSv4.Model
         [DataField("TPE_B_TERMO_ACEITO", SqlDbType.Bit)]
         public bool? TermoAceito { get; set; }
     }
+
+    /// <summary>
+    /// MLTakeOrPayEmbarqueCertoHistorico
+    /// </summary>
+    [Table("MOD_TPE_TAKE_OR_PAY_EMBARQUE_CERTO_TABELA_ANTIGA")]
+    public class MLTakeOrPayEmbarqueCertoHistorico : MLTakeOrPayEmbarqueCerto { }
     #endregion
 
     #region MLTakeOrPayEmbarqueCertoXProposta
@@ -84,6 +90,12 @@ namespace CMSv4.Model
         [DataField("TEP_N_NUMERO_PROPSTA", SqlDbType.Decimal, 18, 0)]
         public decimal? NumeroProposta { get; set; }
     }
+
+    /// <summary>
+    /// Model Embaruqe X Proposta
+    /// </summary>
+    [Table("MOD_TEP_TAKE_OR_PAY_EMBARQUE_CERTO_X_PROPOSTA_TABELA_ANTIGA")]
+    public class MLTakeOrPayEmbarqueCertoXPropostaHistorico : MLTakeOrPayEmbarqueCertoXProposta { }
     #endregion
 
     #region MLTakeOrPayEmbarqueCertoXContainers
@@ -91,8 +103,8 @@ namespace CMSv4.Model
     /// <summary>
     /// Model Embarque X Container
     /// </summary>
-    [Table("MOD_TEC_TAKE_OR_PAY_EMBARQUE_CERTO_X_CONTAINERS")]
-    public class MLTakeOrPayEmbarqueCertoXContainers
+    [Table("MOD_TEC_TAKE_OR_PAY_EMBARQUE_CERTO_X_CONTAINERS_TABELA_ANTIGA")]
+    public class MLTakeOrPayEmbarqueCertoXContainersHistorico
     {
         [Required]
         [DataField("TEC_N_CODIGO", SqlDbType.Decimal, 18, PrimaryKey = true, AutoNumber = true)]
@@ -167,6 +179,24 @@ namespace CMSv4.Model
     }
     #endregion
 
+    #region MLTakeOrPayEmbarqueCertoHistoricoCompleto
+
+    /// <summary>
+    /// Model Embarque Completo
+    /// </summary>
+    public class MLTakeOrPayEmbarqueCertoHistoricoCompleto : MLTakeOrPayEmbarqueCertoHistorico
+    {
+        public MLTakeOrPayEmbarqueCertoHistoricoCompleto()
+        {
+            lstProposta = new List<MLTakeOrPayEmbarqueCertoXPropostaHistorico>();
+            lstContainer = new List<MLTakeOrPayEmbarqueCertoXContainersHistorico>();
+        }
+
+        public List<MLTakeOrPayEmbarqueCertoXPropostaHistorico> lstProposta { get; set; }
+        public List<MLTakeOrPayEmbarqueCertoXContainersHistorico> lstContainer { get; set; }
+    }
+    #endregion
+
     #region Portos
 
     /// <summary>
@@ -185,6 +215,63 @@ namespace CMSv4.Model
         public string SSA { get { return "Salvador"; } }
         public string SUA { get { return "Suape"; } }
         public string PEC { get { return "Pecém"; } }
+    }
+    #endregion
+
+    #region MLTakeOrPayEmbarqueCertoXContainers
+
+    /// <summary>
+    /// Model Embarque X Container
+    /// </summary>
+    [Table("MOD_TEC_TAKE_OR_PAY_EMBARQUE_CERTO_X_CONTAINERS")]
+    public class MLTakeOrPayEmbarqueCertoXContainers
+    {
+        [Required]
+        [DataField("TEC_N_CODIGO", SqlDbType.Decimal, 18, PrimaryKey = true, AutoNumber = true)]
+        public decimal? Codigo { get; set; }
+
+        [Required]
+        [DataField("TEC_TPE_N_CODIGO", SqlDbType.Decimal, 18)]
+        public decimal? CodigoEmbarqueCerto { get; set; }
+
+        [DataField("TEC_C_NAVIO_VIAGEM", SqlDbType.VarChar, 150)]
+        public string NavioViagem { get; set; }
+
+        [DataField("TEC_C_NAVIO_VIAGEM_OPCAO_2", SqlDbType.VarChar, 150)]
+        public string NavioViagemOp2 { get; set; }
+
+        [DataField("TEC_C_NAVIO_VIAGEM_OPCAO_3", SqlDbType.VarChar, 150)]
+        public string NavioViagemOp3 { get; set; }
+
+        [DataField("TEC_C_TAMANHO_CONTAINER", SqlDbType.VarChar, 3)]
+        public string TamanhoContainer { get; set; }
+
+        [DataField("TEC_C_TIPO_CONTAINER", SqlDbType.VarChar, 20)]
+        public string TipoContainer { get; set; }
+
+        [DataField("TEC_N_TONELAGEM_MEDIA", SqlDbType.Decimal, 18)]
+        public decimal? TonelagemMedia { get; set; }
+
+        [DataField("TEC_C_PORTO_ORIGEM", SqlDbType.VarChar, 150)]
+        public string PortoOrigem { get; set; }
+
+        [DataField("TEC_C_PORTO_DESTINO", SqlDbType.VarChar, 150)]
+        public string PortoDestino { get; set; }
+
+        [DataField("TEC_N_UNIDADES", SqlDbType.Int)]
+        public int? Unidades { get; set; }
+
+        [DataField("TEC_N_TARIFA_ADICIONAL", SqlDbType.Decimal)]
+        public decimal? TarifaAdicional { get; set; }
+
+        [DataField("TEC_C_VALOR_TARIFA_ADICIONAL", SqlDbType.VarChar, 100)]
+        public string ValorTarifa { get; set; }
+
+        [DataField("TEC_N_PENALIDADE_ALIANCA", SqlDbType.Decimal)]
+        public decimal? Penalidade { get; set; }
+
+        [DataField("TEC_C_VALOR_PENALIDADE_ALIANCA", SqlDbType.VarChar, 100)]
+        public string ValorPenalidade { get; set; }
     }
     #endregion
 }
