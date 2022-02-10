@@ -155,23 +155,9 @@ namespace CMSv4.BusinessLayer
                     command.NewCriteriaParameter("@TPE_B_RESERVAR_ESPACO", SqlDbType.Bit,  model.ReservarEspaco);
                     command.NewCriteriaParameter("@TPE_B_IS_SEMANAL", SqlDbType.Bit, model.IsSemanal);
                     command.NewCriteriaParameter("@TPE_B_TERMO_ACEITO", SqlDbType.Bit, model.TermoAceito);
+                    command.NewCriteriaParameter("@PROPOSTAS", SqlDbType.VarChar, -1, lstNumeroProposta.Trim(','));
 
                     Database.ExecuteNonQuery(command);
-                }
-
-                CRUD.Excluir(new MLTakeOrPayEmbarqueCertoXProposta { CodigoTakeOrPayEmbarqueCerto = model.Codigo });
-
-                foreach (var item in string.IsNullOrEmpty(lstNumeroProposta) ? new List<string>() : lstNumeroProposta.Trim(',').Split(',').ToList())
-                {
-                    if (item != null)
-                    {
-                        CRUD.Salvar(new MLTakeOrPayEmbarqueCertoXProposta
-                        {
-                            DataCadastro = DateTime.Now,
-                            CodigoTakeOrPayEmbarqueCerto = model.Codigo,
-                            NumeroProposta = decimal.Parse(item)
-                        });
-                    }
                 }
 
                 return true;
@@ -211,23 +197,9 @@ namespace CMSv4.BusinessLayer
                     command.NewCriteriaParameter("@TPE_B_RESERVAR_ESPACO", SqlDbType.Bit, model.ReservarEspaco);
                     command.NewCriteriaParameter("@TPE_B_IS_SEMANAL", SqlDbType.Bit, model.IsSemanal);
                     command.NewCriteriaParameter("@TPE_B_TERMO_ACEITO", SqlDbType.Bit, model.TermoAceito);
+                    command.NewCriteriaParameter("@PROPOSTAS", SqlDbType.VarChar, -1, lstNumeroProposta.Trim(','));
 
                     Database.ExecuteNonQuery(command);
-                }
-
-                CRUD.Excluir(new MLTakeOrPayEmbarqueCertoXPropostaHistorico { CodigoTakeOrPayEmbarqueCerto = model.Codigo });
-
-                foreach (var item in string.IsNullOrEmpty(lstNumeroProposta) ? new List<string>() : lstNumeroProposta.Trim(',').Split(',').ToList())
-                {
-                    if (item != null)
-                    {
-                        CRUD.Salvar(new MLTakeOrPayEmbarqueCertoXPropostaHistorico
-                        {
-                            DataCadastro = DateTime.Now,
-                            CodigoTakeOrPayEmbarqueCerto = model.Codigo,
-                            NumeroProposta = decimal.Parse(item)
-                        });
-                    }
                 }
 
                 return true;
