@@ -50,7 +50,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         [CheckPermission(global::Permissao.Visualizar)]
         public virtual ActionResult Importar()
         {
-            return View("Importar");
+            return View("_Importar");
         }
 
         #endregion
@@ -226,7 +226,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         [CheckPermission(global::Permissao.Visualizar)]
         public virtual ActionResult Historico()
         {
-            return View("Historico");
+            return View("_Historico");
         }
 
         #endregion
