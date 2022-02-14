@@ -265,7 +265,36 @@ namespace CMSApp.Areas.Modulo.Controllers
         {
             try
             {
+                var POD = BLTakeOrPay.CarregarValorAdicional(model.PortoDestino);
+
+                model.TarifaAdicional = POD?.TarifaAdicional;
+                model.ValorTarifa = POD?.ValorTarifa;
+                model.Penalidade = POD?.Penalidade;
+                model.ValorPenalidade = POD?.ValorPenalidade;
+
                 return new JsonResult() { Data = new { Sucess = true, Codigo = CRUD.Salvar(model) }};
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+        #endregion
+
+        #region AdicionarContainerHistorico
+        /// <summary>
+        /// Adicionar Container
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult AdicionarContainerHistorico(MLTakeOrPayEmbarqueCertoXContainersHistorico model)
+        {
+            try
+            {
+                return new JsonResult() { Data = new { Sucess = true, Codigo = CRUD.Salvar(model) } };
             }
             catch (Exception ex)
             {
@@ -288,6 +317,28 @@ namespace CMSApp.Areas.Modulo.Controllers
             try
             {
                 return new JsonResult() { Data = new { Sucess = CRUD.Excluir(new MLTakeOrPayEmbarqueCertoXContainers { Codigo = CodigoTabela }) > 0 } };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+        #endregion
+
+        #region ExcluirContainerHistorico
+        /// <summary>
+        /// Excluir Container
+        /// </summary>
+        /// <param name="CodigoTabela"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult ExcluirContainerHistorico(decimal? CodigoTabela)
+        {
+            try
+            {
+                return new JsonResult() { Data = new { Sucess = CRUD.Excluir(new MLTakeOrPayEmbarqueCertoXContainersHistorico { Codigo = CodigoTabela }) > 0 } };
             }
             catch (Exception ex)
             {
@@ -347,6 +398,75 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
+        #region CarregarPortos
+        /// <summary>
+        /// CarregarPortos
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult CarregarPortos()
+        {
+            try
+            {
+                var list = CRUD.Listar(new MLProgramacaoNavio());
+                var portoOrigem = BLTakeOrPay.FormarOption(list.Select(x => x.Origem)?.ToList());
+                var portoDestino = BLTakeOrPay.FormarOption(list.Select(x => x.Destino)?.ToList());
+                
+                return new JsonResult() { Data = new { Sucess = true, PortoOrigem = portoOrigem, PortoDestino = portoDestino } };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult CarregarPortosDestino(string PortoOrigem)
+        {
+            try
+            {
+                var portoDestino = new List<string>();
+
+                if(string.IsNullOrEmpty(PortoOrigem))
+                    portoDestino = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio())?.Select(x => x.Destino).ToList());
+                else
+                    portoDestino = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio { Origem = PortoOrigem })?.Select(x => x.Destino).ToList());
+
+                return new JsonResult() { Data = new { Sucess = true, PortoDestino = portoDestino } };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult CarregarPortosOrigem(string PortoDestino)
+        {
+            try
+            {
+                var portoOrigem = new List<string>();
+
+                if (string.IsNullOrEmpty(PortoDestino))
+                    portoOrigem = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio())?.Select(x => x.Origem).ToList());
+                else
+                    portoOrigem = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio { Destino = PortoDestino })?.Select(x => x.Origem).ToList());
+
+                return new JsonResult() { Data = new { Sucess = true, PortoOrigem = portoOrigem } };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+        #endregion
+
         #region ListarDeadLine
         /// <summary>
         /// Listar Deadline
@@ -361,6 +481,100 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 var lst = BLTakeOrPay.ObterNavios(NavioViagem);
 
+                return new JsonResult() {
+                    Data = new
+                    {
+                        Sucess = true,
+
+                        PortoOrigem = BLTakeOrPay.FormarOption(lst?.Origem?.Select(x => x.Origem).ToList()),
+                        PortoDestino = BLTakeOrPay.FormarOption(lst?.Destino?.Select(x => x.Destino).ToList())
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+
+        /// <summary>
+        /// ListarDeadLineOrigem
+        /// </summary>
+        /// <param name="NavioViagem"></param>
+        /// <param name="PortoDestino"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult ListarDeadLineOrigem(string NavioViagem, string PortoDestino)
+        {
+            try
+            {
+                var lst = BLTakeOrPay.ObterNavios(NavioViagem, null, PortoDestino);
+
+                return new JsonResult()
+                {
+                    Data = new
+                    {
+                        Sucess = true,
+
+                        PortoOrigem = BLTakeOrPay.FormarOption(lst?.Origem?.Select(x => x.Origem).ToList())
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+
+        /// <summary>
+        /// ListarDeadLineDestino
+        /// </summary>
+        /// <param name="NavioViagem"></param>
+        /// <param name="PortoOrigem"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult ListarDeadLineDestino(string NavioViagem, string PortoOrigem)
+        {
+            try
+            {
+                var lst = BLTakeOrPay.ObterNavios(NavioViagem, PortoOrigem, null);
+
+                return new JsonResult()
+                {
+                    Data = new
+                    {
+                        Sucess = true,
+
+                        PortoDestino = BLTakeOrPay.FormarOption(lst?.Destino?.Select(x => x.Destino).ToList())
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+        #endregion 
+
+        #region ListarDeadLineHistorico
+        /// <summary>
+        /// Listar Deadline
+        /// </summary>
+        /// <param name="NavioViagem"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult ListarDeadLineHistorico(string NavioViagem)
+        {
+            try
+            {
+                var lst = BLTakeOrPay.ObterNaviosHistorico(NavioViagem);
+
                 var RIG = lst.Find(x => (new CultureInfo("pt-BR").CompareInfo).IndexOf(x.Origem, new Portos().RIG, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0);
                 var IBB = lst.Find(x => (new CultureInfo("pt-BR").CompareInfo).IndexOf(x.Origem, new Portos().IBB, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0);
                 var IOA = lst.Find(x => (new CultureInfo("pt-BR").CompareInfo).IndexOf(x.Origem, new Portos().IOA, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0);
@@ -371,7 +585,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var SUA = lst.Find(x => (new CultureInfo("pt-BR").CompareInfo).IndexOf(x.Origem, new Portos().SUA, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0);
                 var PEC = lst.Find(x => (new CultureInfo("pt-BR").CompareInfo).IndexOf(x.Origem, new Portos().PEC, CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace) >= 0);
 
-                return new JsonResult() {
+                return new JsonResult()
+                {
                     Data = new
                     {
                         Sucess = true,
@@ -406,6 +621,37 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion 
 
+        #region CarregarValorAdicional
+        /// <summary>
+        /// CarregarValorAdicional
+        /// </summary>
+        /// <param name="PortoDestino"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult CarregarValorAdicional(string PortoDestino)
+        {
+            try
+            {
+                var POD = BLTakeOrPay.CarregarValorAdicional(PortoDestino);
+
+                return new JsonResult()
+                {
+                    Data = new
+                    {
+                        Sucess = true,
+                        Valor = POD?.TarifaAdicional ?? 0
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return new JsonResult() { Data = new { Sucess = false } };
+            }
+        }
+        #endregion 
+
         #region SomarContainerSemana
         /// <summary>
         /// Somar container quando for semanal
@@ -421,13 +667,13 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var listaContainers = CRUD.Listar(new MLTakeOrPayEmbarqueCertoXContainers { CodigoEmbarqueCerto = Codigo });
 
                 // Soma todas as unidades dos diferentes portos
-                var unidades = listaContainers.Sum(x => x.RIG + x.IBB + x.IOA + x.SSZ + x.SPB + x.VIX + x.SSA + x.SUA + x.PEC).GetValueOrDefault(0);
+                var unidades = listaContainers.Sum(x => x.Unidades).GetValueOrDefault(0);
 
                 // Soma a tonelada média de todos os containers
-                var toneladas = listaContainers.Sum(x => x.TonelagemMedia * (x.RIG + x.IBB + x.IOA + x.SSZ + x.SPB + x.VIX + x.SSA + x.SUA + x.PEC)).GetValueOrDefault(0);
+                var toneladas = listaContainers.Sum(x => x.TonelagemMedia * x.Unidades).GetValueOrDefault(0);
 
                 // Realiza o calculo do TEU (se o container for 20' -> número de unidades *1, se for 40' -> número de unidades * 2)
-                var TEU = listaContainers.Sum(x => (x.RIG + x.IBB + x.IOA + x.SSZ + x.SPB + x.VIX + x.SSA + x.SUA + x.PEC) * (x.TamanhoContainer == BLConfiguracao.Pastas.ModuloTakeOrPayContainer20() ? 1 : 2)).GetValueOrDefault(0);
+                var TEU = listaContainers.Sum(x => x.Unidades * (x.TamanhoContainer == BLConfiguracao.Pastas.ModuloTakeOrPayContainer20() ? 1 : 2)).GetValueOrDefault(0);
 
                 return new JsonResult(){
                     Data = new
@@ -464,13 +710,13 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var listaContainers = CRUD.Listar(new MLTakeOrPayEmbarqueCertoXContainers { CodigoEmbarqueCerto = Codigo });
 
                 // Soma todas as unidades dos diferentes portos
-                var unidades = listaContainers.Sum(x => x.RIG + x.IBB + x.IOA + x.SSZ + x.SPB + x.VIX + x.SSA + x.SUA + x.PEC).GetValueOrDefault(0);
+                var unidades = listaContainers.Sum(x => x.Unidades).GetValueOrDefault(0);
 
                 // Soma a tonelada média de todos os containers
-                var toneladas = listaContainers.Sum(x => x.TonelagemMedia * (x.RIG + x.IBB + x.IOA + x.SSZ + x.SPB + x.VIX + x.SSA + x.SUA + x.PEC)).GetValueOrDefault(0);
+                var toneladas = listaContainers.Sum(x => x.TonelagemMedia * x.Unidades).GetValueOrDefault(0);
 
                 // Realiza o calculo do TEU (se o container for 20' -> número de unidades *1, se for 40' -> número de unidades * 2)
-                var TEU = listaContainers.Sum(x => (x.RIG + x.IBB + x.IOA + x.SSZ + x.SPB + x.VIX + x.SSA + x.SUA + x.PEC) * (x.TamanhoContainer == BLConfiguracao.Pastas.ModuloTakeOrPayContainer20() ? 1 : 2)).GetValueOrDefault(0);
+                var TEU = listaContainers.Sum(x => x.Unidades * (x.TamanhoContainer == BLConfiguracao.Pastas.ModuloTakeOrPayContainer20() ? 1 : 2)).GetValueOrDefault(0);
 
                 return new JsonResult()
                 {

@@ -45,129 +45,36 @@
                 </div>
                 <div class="invalid-feedback" id="erroContainer" style="display: none; text-align: center;"><h6>Selecione o tipo do container.</h6></div>
             </div>
-            <div class="container-flow">
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Rio Grande</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="RIG" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-RIG"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-RIG"><span class="icon icon-minus-1"></span></a>
+
+            <form style="max-width: none;">
+                <div class="container-select">
+                    <div class="form-row justify-content-center">
+                        <div class="form-group col-24 col-sm-12 col-md-8 col-lg-6">
+                            <label for="" class="label-control">Origem</label>
+                            <select type="text" class="form-control" style="width: 100%;" id="PortoOrigem"></select>
+                        </div>
+                        <div class="form-group col-24 col-sm-12 col-md-8 col-lg-6 offset-lg-1">
+                            <label for="" class="label-control">Destino</label>
+                            <select type="text" class="form-control" style="width: 100%;" id="PortoDestino"></select>
+                        </div>
+                        <div class="form-group col-24 col-sm-9 col-md-7 col-lg-5 offset-lg-1">
+                            <label for="" class="label-control">Unidades</label>
+                            <div class="input-qtd">
+                                <input class="form-control" type="number" id="Unidades" value="0" min="0">
+                                <a href="#" class="input-qtd--increase"><span class="icon icon-plus-1"></span></a>
+                                <a href="#" class="input-qtd--decrease"><span class="icon icon-minus-1"></span></a>
+                            </div>
+                        </div>
+                        <div class="form-group col-24 justify-content-center">
+                            <p class="text-center">Custo adicional - <strong id="ValorAdicional"></strong></p>
+                        </div>
                     </div>
-
-                    <p class="flow-deadline" id="deadline-RIG"><span>deadline</span></p>
                 </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Imbituba</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="IBB" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-IBB"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-IBB"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-IBB"><span>deadline</span></p>
-                </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Itapoá</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="IOA" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-IOA"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-IOA"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-IOA"><span>deadline</span></p>
-                </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Santos</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="SSZ" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-SSZ"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-SSZ"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-SSZ"><span>deadline</span></p>
-                </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Itaguaí/Sepetiba</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="SPB" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-SPB"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-SPB"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-SPB"><span>deadline</span></p>
-                </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Vitória</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="VIX" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-VIX"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-VIX"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-VIX"><span>deadline</span></p>
-                </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Salvador</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="SSA" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-SSA"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-SSA"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-SSA"><span>deadline</span></p>
-                </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Suape</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="SUA" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-SUA"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-SUA"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-SUA"><span>deadline</span></p>
-                </div>
-                <div class="flow-item">
-                    <p>
-                        Unidades de <br>
-                        <span class="blue">Pecém</span> para <span class="blue">Manaus</span>
-                    </p>
-                    <div class="input-qtd">
-                        <input class="form-control porto" type="number" id="PEC" value="0" min="0">
-                        <a href="#" class="input-qtd--increase adc adc-PEC"><span class="icon icon-plus-1"></span></a>
-                        <a href="#" class="input-qtd--decrease sub sub-PEC"><span class="icon icon-minus-1"></span></a>
-                    </div>
-
-                    <p class="flow-deadline" id="deadline-PEC"><span>deadline</span></p>
-                </div>
-                <div class="invalid-feedback" id="erroContagemContainer" style="display: none; text-align: center;"><h6>Adicione ao menos uma unidade.</h6></div>
-            </div>
-
-            <p class="text-center">Qual a tonelagem média a ser carregada por container?</p>
-            <form action="">
+            </form>
+            <div class="invalid-feedback" id="erroUnidades" style="display: none; text-align: center;"><h6>A unidade deve ser maior que 0.</h6></div>
+            <div class="invalid-feedback" id="erroPortos" style="display: none; text-align: center;"><h6>Selecione os portos de de origem e destino.</h6></div>
+            <form>
+                <p class="text-center">Qual a tonelagem média a ser carregada por container?</p>
                 <div class="form-row justify-content-center">
                     <div class="form-group col-12"><input type="number" class="form-control" id="TonelagemMedia" min="0"></div>
                     <div class="form-group col-12"><label>Toneladas<br> por Container</label></div>

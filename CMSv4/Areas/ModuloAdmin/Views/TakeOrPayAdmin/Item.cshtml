@@ -167,15 +167,9 @@
                                     <th scope="col" style="vertical-align: middle;">@TAdm("Tamanho container")</th>
                                     <th scope="col" style="vertical-align: middle;">@TAdm("Tonelagem média")</th>
 
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("RIG para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("IBB para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("IOA para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("SSZ para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("SPB para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("VIX para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("SSA para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("SUA para MAO")</th>
-                                    <th scope="col" style="vertical-align: middle;">@TAdm("PEC para MAO")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Unidades")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Porto de origem")</th>
+                                    <th scope="col" style="vertical-align: middle;">@TAdm("Porto de Destino")</th>
                                     <th scope="col" style="vertical-align: middle;">@TAdm("Excluir")</th>
                                 </tr>
                             </thead>
@@ -189,15 +183,9 @@
                                         <td class="form-group">@item.TipoContainer</td>
                                         <td class="form-group">@item.TamanhoContainer</td>
                                         <td class="form-group">@item.TonelagemMedia</td>
-                                        <td class="form-group">@item.RIG</td>
-                                        <td class="form-group">@item.IBB</td>
-                                        <td class="form-group">@item.IOA</td>
-                                        <td class="form-group">@item.SSZ</td>
-                                        <td class="form-group">@item.SPB</td>
-                                        <td class="form-group">@item.VIX</td>
-                                        <td class="form-group">@item.SSA</td>
-                                        <td class="form-group">@item.SUA</td>
-                                        <td class="form-group">@item.PEC</td>
+                                        <td class="form-group">@item.Unidades</td>
+                                        <td class="form-group">@item.PortoOrigem</td>
+                                        <td class="form-group">@item.PortoDestino</td>
                                         <td class="form-group col-md-4"><a href="javascript:ExcluirContainer(@item.Codigo)" class="fa fa-trash"></a></td>
                                     </tr>
                                 }
@@ -290,116 +278,33 @@
                     </div>
                 </div>
 
-                <div class="form-group col-md-12">
-                    <div class="form-group col-md-12">
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Rio Grande</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="RIG" value="0" min="0">
+                <form style="max-width: none;">
+                    <div class="container-select">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-md-5">
+                                <label for="" class="label-control">Origem</label>
+                                <select type="text" class="form-control" style="width: 100%;" id="PortoOrigem"></select>
                             </div>
-
-                            <p class="flow-deadline" id="deadline-RIG"><span>deadline</span></p>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Imbituba</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="IBB" value="0" min="0">
+                            <div class="form-group col-md-5">
+                                <label for="" class="label-control">Destino</label>
+                                <select type="text" class="form-control" style="width: 100%;" id="PortoDestino"></select>
                             </div>
-
-                            <p class="flow-deadline" id="deadline-IBB"><span>deadline</span></p>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Itapoá</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="IOA" value="0" min="0">
+                            <div class="form-group col-md-2">
+                                <label for="" class="label-control">Unidades</label>
+                                <div class="input-qtd">
+                                    <input class="form-control" type="number" id="Unidades" value="0" min="0">
+                                    <a href="#" class="input-qtd--increase"><span class="icon icon-plus-1"></span></a>
+                                    <a href="#" class="input-qtd--decrease"><span class="icon icon-minus-1"></span></a>
+                                </div>
                             </div>
-
-                            <p class="flow-deadline" id="deadline-IOA"><span>deadline</span></p>
+                            <div class="form-group col-24 justify-content-center">
+                                <p class="text-center">Custo adicional - <strong id="ValorAdicional"></strong></p>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="form-group col-md-12">
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Santos</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="SSZ" value="0" min="0">
-                            </div>
-
-                            <p class="flow-deadline" id="deadline-SSZ"><span>deadline</span></p>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Itaguaí/Sepetiba</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="SPB" value="0" min="0">
-                            </div>
-
-                            <p class="flow-deadline" id="deadline-SPB"><span>deadline</span></p>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Vitória</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="VIX" value="0" min="0">
-                            </div>
-
-                            <p class="flow-deadline" id="deadline-VIX"><span>deadline</span></p>
-                        </div>
-                    </div>
-
-                    <div class="form-group col-md-12">
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Salvador</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="SSA" value="0" min="0">
-                            </div>
-
-                            <p class="flow-deadline" id="deadline-SSA"><span>deadline</span></p>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Suape</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="SUA" value="0" min="0">
-                            </div>
-
-                            <p class="flow-deadline" id="deadline-SUA"><span>deadline</span></p>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <p>
-                                Unidades de <br>
-                                <strong>Pecém</strong> para <strong>Manaus</strong>
-                            </p>
-                            <div class="input-qtd">
-                                <input class="form-control porto" type="number" id="PEC" value="0" min="0">
-                            </div>
-
-                            <p class="flow-deadline" id="deadline-PEC"><span>deadline</span></p>
-                        </div>
-                    </div>
-                    <div class="invalid-feedback" id="erroContagemContainer" style="display: none; text-align: center;"><h6>Adicione ao menos uma unidade.</h6></div>
-                </div>
+                </form>
+                <div class="invalid-feedback" id="erroUnidades" style="display: none; text-align: center;"><h6>A unidade deve ser maior que 0.</h6></div>
+                <div class="invalid-feedback" id="erroPortos" style="display: none; text-align: center;"><h6>Selecione os portos de de origem e destino.</h6></div>
 
             </div>
             <div class="modal-footer">
@@ -456,24 +361,26 @@
             $("#CNPJ").mask("00.000.000/0000-00");
 
             $.ajax({
-            type: "POST",
-            url: "@Portal.UrlCms(portal)/TakeOrPay/ListarNaviosAutocomplete",
-            success: function (data) {
-                $('#NavioViagem').empty();
-                $('#NavioViagem').append(data.autocomplete);
-                $('#NavioViagem').select2();
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/TakeOrPay/ListarNaviosAutocomplete",
+                success: function (data) {
+                    $('#NavioViagem').empty();
+                    $('#NavioViagem').append(data.autocomplete);
+                    $('#NavioViagem').select2();
 
-                $('#NavioViagemOp2').empty();
-                $('#NavioViagemOp2').append(data.autocomplete);
-                $('#NavioViagemOp2').select2();
+                    $('#NavioViagemOp2').empty();
+                    $('#NavioViagemOp2').append(data.autocomplete);
+                    $('#NavioViagemOp2').select2();
 
-                $('#NavioViagemOp3').empty();
-                $('#NavioViagemOp3').append(data.autocomplete);
-                $('#NavioViagemOp3').select2();
-            },
-            error: function (data) {
-            }
-        });
+                    $('#NavioViagemOp3').empty();
+                    $('#NavioViagemOp3').append(data.autocomplete);
+                    $('#NavioViagemOp3').select2();
+                },
+                error: function (data) {
+                }
+            });
+
+            CarregarPortos();
         });
 
         $("#CEP").focusout(function () {
@@ -565,37 +472,28 @@
                 $("#divNavioViagem").show()
                 $("#divNavioViagemOp2").show()
                 $("#divNavioViagemOp3").show()
-
-                DesabilitarUnidades()
             }
             else if (!$("#IsSemanal1").prop("checked")) {
                 $("#divNavioViagem").show()
                 $("#divNavioViagemOp2").hide()
                 $("#divNavioViagemOp3").hide()
-
-                HabilitarUnidades()
             }
             else {
                 $("#divNavioViagem").hide()
                 $("#divNavioViagemOp2").hide()
                 $("#divNavioViagemOp3").hide()
-
-                HabilitarUnidades()
             }
+
+            CarregarPortos()
         });
 
         $("#btnModelAdicionarContainer").click(function () {
             let erro = 0;
 
-            let RIG = $("#RIG").val();
-            let IBB = $("#IBB").val();
-            let IOA = $("#IOA").val();
-            let SSZ = $("#SSZ").val();
-            let SPB = $("#SPB").val();
-            let VIX = $("#VIX").val();
-            let SSA = $("#SSA").val();
-            let SUA = $("#SUA").val();
-            let PEC = $("#PEC").val();
+            let PortoOrigem = $("#PortoOrigem").val();
+            let PortoDestino = $("#PortoDestino").val();
+            let Unidades = $("#Unidades").val();
+            let CustoAdicional = $('#ValorAdicional').html().replace('R$ ', '');
 
             if (!$("#ReservarEspaco1").prop("checked") && $("#NavioViagem").val() == "" || $("#ReservarEspaco1").prop("checked") && !$("#IsSemanal1").prop("checked") && $("#NavioViagem").val() == "") {
                 $("#erroNavioViagem").show();
@@ -626,13 +524,21 @@
                 $("#erroTamanhoContainer").hide()
             }
 
-            if ((RIG + IBB + IOA + SSZ + SPB + VIX + SSA + SUA + PEC) == 0) {
-                $("#erroContagemContainer").show();
+            if (PortoOrigem == "" || PortoDestino == "") {
+                $("#erroPortos").show();
 
                 erro++;
             }
             else {
-                $("#erroContagemContainer").hide();
+                $("#erroPortos").hide();
+            }
+
+            if (Unidades <= 0) {
+                $("#erroUnidades").show();
+                erro++;
+            }
+            else {
+                $("#erroUnidades").hide();
             }
 
             if ($("#TonelagemMedia").val() <= 0) {
@@ -655,15 +561,9 @@
                     "TipoContainer": $("#TipoContainer").val(),
                     "TamanhoContainer": $("#TamanhoContainer").val(),
                     "TonelagemMedia": $("#TonelagemMedia").val(),
-                    "RIG": RIG,
-                    "IBB": IBB,
-                    "IOA": IOA,
-                    "SSZ": SSZ,
-                    "SPB": SPB,
-                    "VIX": VIX,
-                    "SSA": SSA,
-                    "SUA": SUA,
-                    "PEC": PEC
+                    "PortoOrigem": PortoOrigem,
+                    "PortoDestino": PortoDestino,
+                    "Unidades": Unidades
                 }
 
                 $.ajax({
@@ -672,11 +572,7 @@
                     data: dados,
                     success: function (data) {
                         if (data.Sucess == true) {
-                            $('#listaContainer').append('<tr id="tr-cont-' + data.Codigo + '"><td class="form-group">' + $("#NavioViagem").val() + '</td><td class="form-group">' + $("#NavioViagemOp2").val() + '</td><td class="form-group">' + $("#NavioViagemOp3").val() + '</td><td class="form-group">' + $("#TipoContainer").val() + '</td><td class="form-group">' + $("#TamanhoContainer").val() + '</td><td class="form-group">' + $("#TonelagemMedia").val() + '</td><td class="form-group">' + RIG + '</td><td class="form-group">' + IBB + '</td><td class="form-group">' + IOA + '</td><td class="form-group">' + SSZ + '</td><td class="form-group">' + SPB + '</td><td class="form-group">' + VIX + '</td><td class="form-group">' + SSA + '</td><td class="form-group">' + SUA + '</td><td class="form-group">' + PEC + '</td><td class="form-group col-md-4"><a href="javascript:ExcluirContainer(' + data.Codigo + ')" class="fa fa-trash"></a></td></tr>');
-
-                            if (!$("#ReservarEspaco1").prop("checked")) {
-                                DesabilitarUnidades()
-                            }
+                            $('#listaContainer').append('<tr id="tr-cont-' + data.Codigo + '"><td class="form-group">' + $("#NavioViagem").val() + '</td><td class="form-group">' + $("#NavioViagemOp2").val() + '</td><td class="form-group">' + $("#NavioViagemOp3").val() + '</td><td class="form-group">' + $("#TipoContainer").val() + '</td><td class="form-group">' + $("#TamanhoContainer").val() + '</td><td class="form-group">' + $("#TonelagemMedia").val() + '</td><td class="form-group">' + Unidades + '</td><td class="form-group">' + PortoOrigem + '</td><td class="form-group">' + PortoDestino + '</td><td class="form-group col-md-4"><a href="javascript:ExcluirContainer(' + data.Codigo + ')" class="fa fa-trash"></a></td></tr>');
 
                             LimparCampos();
 
@@ -808,43 +704,6 @@
             $("#tr-prop-" + NumeroProposta).remove()
         }
 
-        function AtualizarDeadline() {
-            $.ajax({
-            type: "POST",
-            url: "@Portal.UrlCms(portal)/TakeOrPay/ListarDeadLine",
-            data: { "NavioViagem": $("#NavioViagem").val() },
-            success: function (data) {
-                if (data.Sucess == true) {
-                    AtualizaUnidade(data.DeadlineRIG, data.DeadlineRIGAtivo, "RIG")
-                    AtualizaUnidade(data.DeadlineIBB, data.DeadlineIBBAtivo, "IBB")
-                    AtualizaUnidade(data.DeadlineIOA, data.DeadlineIOAAtivo, "IOA")
-                    AtualizaUnidade(data.DeadlineSSZ, data.DeadlineSSZAtivo, "SSZ")
-                    AtualizaUnidade(data.DeadlineSPB, data.DeadlineSPBAtivo, "SPB")
-                    AtualizaUnidade(data.DeadlineVIX, data.DeadlineVIXAtivo, "VIX")
-                    AtualizaUnidade(data.DeadlineSSA, data.DeadlineSSAAtivo, "SSA")
-                    AtualizaUnidade(data.DeadlineSUA, data.DeadlineSUAAtivo, "SUA")
-                    AtualizaUnidade(data.DeadlinePEC, data.DeadlinePECAtivo, "PEC")
-                }
-                else {
-                    ErroGenerico();
-                }
-            },
-            error: function (data) {
-                ErroGenerico();
-            }});
-    }
-
-        function AtualizaUnidade(deadLine, deadLineAtivo, porto) {
-            if (deadLineAtivo == null) {
-                DesabilitarUnidade(porto)
-            }
-            else {
-                $("#" + porto).val(0)
-                $("#" + porto).attr("disabled", !deadLineAtivo)
-                $("#deadline-" + porto).html(deadLine + "<span><br/>deadline</span>")
-            }
-        }
-
         function LimparCampos() {
             $('#NavioViagem').val(null);
             $('#NavioViagemOp2').val(null);
@@ -853,53 +712,169 @@
             $('#TipoContainer').val(null);
             $('#TamanhoContainer').val(null);
 
-            $("#RIG").val(0);
-            $("#IBB").val(0);
-            $("#IOA").val(0);
-            $("#SSZ").val(0);
-            $("#SPB").val(0);
-            $("#VIX").val(0);
-            $("#SSA").val(0);
-            $("#SUA").val(0);
-            $("#PEC").val(0);
+            if ($("#PortoOrigem").val() != null)
+                $("#PortoOrigem").val("").trigger('change');
+
+            if ($("#PortoDestino").val() != null)
+                $("#PortoDestino").val("").trigger('change');
+
+            $("#Unidades").val(0)
 
             $("#TonelagemMedia").val("");
         }
 
-        function HabilitarUnidades() {
-            HabilitarUnidade("RIG")
-            HabilitarUnidade("IBB")
-            HabilitarUnidade("IOA")
-            HabilitarUnidade("SSZ")
-            HabilitarUnidade("SPB")
-            HabilitarUnidade("VIX")
-            HabilitarUnidade("SSA")
-            HabilitarUnidade("SUA")
-            HabilitarUnidade("PEC")
+        function AtualizarDeadline() {
+            CarregarPortos();
         }
 
-        function HabilitarUnidade(porto) {
-            $("#" + porto).val(0)
-            $("#" + porto).attr("disabled", false)
-            $("#deadline-" + porto).html("")
+        $("#PortoOrigem").change(function () {
+            CarregarPortoDestino()
+        });
+
+        $("#PortoDestino").change(function () {
+            CarregarPortoOrigem()
+
+            CarregarValorAdicional()
+        });
+
+        function CarregarPortos() {
+            if ($("#ReservarEspaco1").prop("checked")) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/CarregarPortos",
+                    success: function (data) {
+                        $('#PortoOrigem').empty();
+                        $('#PortoOrigem').append(data.PortoOrigem);
+
+                        $('#PortoDestino').empty();
+                        $('#PortoDestino').append(data.PortoDestino);
+                    },
+                    error: function (data) {
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/ListarDeadLine",
+                    data: { "NavioViagem": $("#NavioViagem").val() },
+                    success: function (data) {
+                        if (data.Sucess == true) {
+                            $('#PortoOrigem').empty();
+                            $('#PortoOrigem').append(data.PortoOrigem);
+
+                            $('#PortoDestino').empty();
+                            $('#PortoDestino').append(data.PortoDestino);
+                        }
+                        else {
+                            ErroGenerico();
+                        }
+                    },
+                    error: function (data) {
+                        ErroGenerico();
+                    }
+                });
+            }
         }
 
-        function DesabilitarUnidades() {
-            DesabilitarUnidade("RIG")
-            DesabilitarUnidade("IBB")
-            DesabilitarUnidade("IOA")
-            DesabilitarUnidade("SSZ")
-            DesabilitarUnidade("SPB")
-            DesabilitarUnidade("VIX")
-            DesabilitarUnidade("SSA")
-            DesabilitarUnidade("SUA")
-            DesabilitarUnidade("PEC")
+        function CarregarPortoDestino() {
+            if ($("#ReservarEspaco1").prop("checked")) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/CarregarPortosDestino",
+                    data:
+                    {
+                        "PortoOrigem": $("#PortoOrigem").val()
+                    },
+                    success: function (data) {
+                        let valor = $('#PortoDestino').val()
+
+                        $('#PortoDestino').empty();
+                        $('#PortoDestino').append(data.PortoDestino);
+
+                        $('#PortoDestino').val(valor)
+                    },
+                    error: function (data) {
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/ListarDeadLineDestino",
+                    data:
+                    {
+                        "NavioViagem": $("#NavioViagem").val(),
+                        "PortoOrigem": $("#PortoOrigem").val()
+                    },
+                    success: function (data) {
+                        if (data.Sucess == true) {
+                            let valor = $('#PortoDestino').val()
+
+                            $('#PortoDestino').empty();
+                            $('#PortoDestino').append(data.PortoDestino);
+
+                            $('#PortoDestino').val(valor)
+                        }
+                        else {
+                            ErroGenerico();
+                        }
+                    },
+                    error: function (data) {
+                        ErroGenerico();
+                    }
+                });
+            }
         }
 
-        function DesabilitarUnidade(porto) {
-            $("#" + porto).val(0)
-            $("#" + porto).attr("disabled", true)
-            $("#deadline-" + porto).html("")
+        function CarregarPortoOrigem() {
+            if ($("#ReservarEspaco1").prop("checked")) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/CarregarPortosOrigem",
+                    data:
+                    {
+                        "PortoDestino": $("#PortoDestino").val()
+                    },
+                    success: function (data) {
+                        let valor = $('#PortoOrigem').val()
+
+                        $('#PortoOrigem').empty();
+                        $('#PortoOrigem').append(data.PortoOrigem);
+
+                        $('#PortoOrigem').val(valor)
+                    },
+                    error: function (data) {
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/ListarDeadLineOrigem",
+                    data:
+                    {
+                        "NavioViagem": $("#NavioViagem").val(),
+                        "PortoDestino": $("#PortoDestino").val()
+                    },
+                    success: function (data) {
+                        if (data.Sucess == true) {
+                            let valor = $('#PortoOrigem').val()
+
+                            $('#PortoOrigem').empty();
+                            $('#PortoOrigem').append(data.PortoOrigem);
+
+                            $('#PortoOrigem').val(valor)
+                        }
+                        else {
+                            ErroGenerico();
+                        }
+                    },
+                    error: function (data) {
+                        ErroGenerico();
+                    }
+                });
+            }
         }
 
         function ErroGenerico() {
@@ -932,5 +907,29 @@
                 }
             })
         });
+
+        function CarregarValorAdicional(PortoDestino) {
+        if ($("#PortoDestino").val() != null && $("#PortoDestino").val() != "") {
+            $.ajax({
+                type: "POST",
+                url: "@Portal.UrlCms(portal)/TakeOrPay/CarregarValorAdicional",
+                data:
+                {
+                    "PortoDestino": $("#PortoDestino").val()
+                },
+                success: function (data) {
+                    if (data.Sucess == true) {
+                        $('#ValorAdicional').html('R$ ' + data.Valor)
+                    }
+                    else {
+                        ErroGenerico();
+                    }
+                },
+                error: function (data) {
+                    ErroGenerico();
+                }
+            });
+        }
+    }
     </script>
 }
