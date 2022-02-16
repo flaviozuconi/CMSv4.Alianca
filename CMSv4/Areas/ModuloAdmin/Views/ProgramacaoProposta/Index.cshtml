@@ -50,6 +50,7 @@
                         <th>@TAdm("CNPJ")</th>
                         <th>@TAdm("Data Importação")</th>
                         <th>@TAdm("Usuario")</th>
+                        <th style="width: 50px;">@TAdm("Excluir")</th>
                     </tr>
                 </thead>
             </table>
@@ -134,11 +135,12 @@
                 {
                     "ajax": "@urlListar",
                     "columns": [
-                        @Helpers.Coluna("NumeroProposta"),
-                        @Helpers.Coluna("Cliente"),
-                        @Helpers.Coluna("CNPJ"),
-                        @Helpers.ColunaDataHora("DataImportacao"),
-                        @Helpers.Coluna("NomeUsuario")
+                        @Helpers.ColunaEditar("NumeroProposta", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditar("Cliente", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditar("CNPJ", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditarData("DataImportacao", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditar("NomeUsuario", urlEditar, "Codigo"),
+                        @Helpers.ColunaExcluir("Codigo")
                     ]
                 }
             );
