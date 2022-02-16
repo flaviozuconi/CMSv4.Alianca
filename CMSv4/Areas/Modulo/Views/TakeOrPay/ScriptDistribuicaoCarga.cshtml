@@ -380,9 +380,10 @@
         if ($("#PortoDestino").val() != null)
             $("#PortoDestino").val("").trigger('change');
 
-        $("#Unidades").val(0)
+        $("#Unidades").val(0).trigger('change');
 
         $("#TonelagemMedia").val("");
+        $('#ValorAdicional').html("");
     }
 
     function ExcluirTabelaContainer(CodigoTabela) {
