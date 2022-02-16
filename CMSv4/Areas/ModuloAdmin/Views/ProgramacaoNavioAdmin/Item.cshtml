@@ -14,9 +14,7 @@
                 @TAdm("Programação Navio")
             </h4>
         </div>
-        <div class="portlet-widgets">
-            @if (Model.Codigo.HasValue)
-            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+        <div class="portlet-widgets">          
             <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
         </div>
     </div>
@@ -77,7 +75,7 @@
                 @*Deadline*@
                 <div class="form-group col-md-4">
                     <label>@TAdm("Deadline")</label>
-                    <input type="datetime" name="Deadline" id="Deadline" class="form-control" value="@(Model.Deadline.HasValue ? Model.Deadline.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="datetime" name="Deadline" id="Deadline" class="form-control" value="@(Model.Deadline.HasValue ? Model.Deadline.Value.ToString("dd/MM/yyyy") : "")"/>
                 </div>
 
                 @*NavioTransbordo1*@
@@ -310,9 +308,17 @@
                 Origem: { required: true, maxlength: 150 },
                 NavioViagem: { required: true, maxlength: 150 },
                 Destino: { required: true, maxlength: 150},
-                Deadline: { required: true }
+                Deadline: { required: true, checarDeadline:true }
             }
         });
+
+        $.validator.addMethod("checarDeadline", function (value, element) {
+            debugger
+            let val = $(Deadline).val();
+            let teste = $(Deadline).val().length > 0 && $(Deadline).val() != '__/__/____';
+            return teste;
+            }, 'Preencha este campo'
+        );
 
         function preencher() {
             const usuario = $(Usuario).val();
