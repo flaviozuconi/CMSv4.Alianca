@@ -3,7 +3,7 @@
     var usuario = BLUsuario.ObterLogado();
     var portal = PortalAtual.Obter;
     var urlLista = string.Format("/cms/{0}/GestaoDeCustosPenalidades", portal.Diretorio);
-
+   
 }
 
 <div class="portlet portlet-dark-blue">
@@ -14,9 +14,7 @@
                 @TAdm("Gestão de Custo e Penalidades")
             </h4>
         </div>
-        <div class="portlet-widgets">
-            @if (Model.Codigo.HasValue)
-            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+        <div class="portlet-widgets">     
             <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
         </div>
     </div>
