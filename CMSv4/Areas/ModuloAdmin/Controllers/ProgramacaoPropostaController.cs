@@ -19,7 +19,7 @@ namespace CMSApp.Areas.CMS.Controllers
     {
         #region Item        
 
-        //[CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
+        [CheckPermission(global::Permissao.Modificar)]
         [HttpPost]
         public override ActionResult Item(MLProgramacaoProposta model)
         {
