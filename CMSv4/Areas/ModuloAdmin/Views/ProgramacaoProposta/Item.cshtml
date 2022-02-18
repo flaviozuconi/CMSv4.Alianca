@@ -139,7 +139,7 @@
                 </div>
 
                 <div class="form-group col-md-4">
-                    <label>@TAdm("TipoSeguro")</label>
+                    <label>@TAdm("Tipo Seguro")</label>
                     <input type="text" name="TipoSeguro" id="TipoSeguro" class="form-control" value="@Model.TipoSeguro" maxlength="50" />
                 </div>
             </div>
@@ -152,7 +152,7 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Validade DDR")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="ValidadeDDR" id="ValidadeDDR" class="form-control"  value="@(Model.ValidadeDDR.HasValue ? Model.ValidadeDDR.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="ValidadeDDR" id="ValidadeDDR" class="form-control"  value="@(Model.ValidadeDDR.HasValue ? Model.ValidadeDDR.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
@@ -203,7 +203,7 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("UF Origem")</label>
-                    <input type="text" name="UFOrigem" id="UFOrigem" class="form-control" value="@Model.UFOrigem" maxlength="2" />
+                    <input type="text" name="UFOrigem" id="UFOrigem" class="form-control" value="@Model.UFOrigem" maxlength="2" placeholder="Máximo de 2 caracteres" />
                 </div>
 
                 <div class="form-group col-md-4">
@@ -220,7 +220,7 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("UF Destino")</label>
-                    <input type="text" name="UFDestino" id="UFDestino" class="form-control" value="@Model.UFDestino" maxlength="150" />
+                    <input type="text" name="UFDestino" id="UFDestino" class="form-control" value="@Model.UFDestino" maxlength="2" placeholder="Máximo de 2 caracteres"/>
                 </div>
 
                 <div class="form-group col-md-4">
@@ -322,12 +322,12 @@
 
                 <div class="form-group col-md-4">
                         <label>@TAdm("Fechamento")</label>
-                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="Fechamento" id="Fechamento" class="form-control" value="@(Model.Fechamento.HasValue ? Model.Fechamento.Value.ToString("dd/MM/yyyy") : "")" />
+                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="Fechamento" id="Fechamento" class="form-control" value="@(Model.Fechamento.HasValue ? Model.Fechamento.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
                         <label>@TAdm("Inclusao")</label>
-                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="Inclusao" id="Inclusao" class="form-control" value="@(Model.Inclusao.HasValue ? Model.Inclusao.Value.ToString("dd/MM/yyyy") : "")" />
+                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="Inclusao" id="Inclusao" class="form-control" value="@(Model.Inclusao.HasValue ? Model.Inclusao.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
@@ -344,24 +344,24 @@
 
                 <div class="form-group col-md-6">
                     <label>@TAdm("Validade Cotação")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="ValidadeCotacao" id="ValidadeCotacao" class="form-control" value="@(Model.ValidadeCotacao.HasValue ? Model.ValidadeCotacao.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="ValidadeCotacao" id="ValidadeCotacao" class="form-control" value="@(Model.ValidadeCotacao.HasValue ? Model.ValidadeCotacao.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Cotação Aceita")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="CotacaoAceita" id="CotacaoAceita" class="form-control" value="@(Model.CotacaoAceita.HasValue ? Model.CotacaoAceita.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="CotacaoAceita" id="CotacaoAceita" class="form-control" value="@(Model.CotacaoAceita.HasValue ? Model.CotacaoAceita.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Cotação Negada")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="CotacaoNegada" id="CotacaoNegada" class="form-control" value="@(Model.CotacaoNegada.HasValue ? Model.CotacaoNegada.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="CotacaoNegada" id="CotacaoNegada" class="form-control" value="@(Model.CotacaoNegada.HasValue ? Model.CotacaoNegada.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Cotação Rejeitada")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="CotacaoRejeitada" id="CotacaoRejeitada" class="form-control" value="@(Model.CotacaoRejeitada.HasValue ? Model.CotacaoRejeitada.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="CotacaoRejeitada" id="CotacaoRejeitada" class="form-control" value="@(Model.CotacaoRejeitada.HasValue ? Model.CotacaoRejeitada.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 </div>
@@ -438,14 +438,77 @@
                 });
             });
 
+            $('#form').validate({
+                rules: {
+                    NumeroProposta: { required: true, maxlength: 100 },
+                    ValidadeDDR: {
+                        validDataMin: '#ValidadeDDR',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    Validade: {
+                        validDataMin: '#Validade',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    Fechamento: {
+                        validDataMin: '#Fechamento',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    Inclusao: {
+                        validDataMin: '#Inclusao',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    ValidadeCotacao: {
+                        validDataMin: '#ValidadeCotacao',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    CotacaoAceita: {
+                        validDataMin: '#CotacaoAceita',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    CotacaoNegada: {
+                        validDataMin: '#CotacaoNegada',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    CotacaoRejeitada: {
+                        validDataMin: '#CotacaoRejeitada',
+                        validDataMax: '#ValidadeDDR'
+                    }
+                }
+            });
         });
 
+        $.validator.addMethod("validDataMin", function (value, element, param) { 
+            
+            let minDate = "21-01-1900"
 
-        $('#form').validate({
-            rules: {
-                NumeroProposta: { required: true, maxlength: 100 }
+            let data = value.split("-");
+            let dataFornecida = new Date(data[2], data[1], data[0]);
+            let minData = minDate.split("-");
+            let dataMinima = new Date(minData[2], minData[1], minData[0]);
+
+            if (dataFornecida > dataMinima && data[2].length==4 || value == '') {
+                return true;
             }
-        });
+          
+            return false;
+
+        }, '@T("A data digitada deve ser posterior à 21-01-1900.")');
+
+        $.validator.addMethod("validDataMax", function (value, element, param) {
+            let maxDate = "30-12-9000";
+
+            let data = value.split("-");
+            let dataFornecida = new Date(data[2], data[1], data[0]);
+            let maxData = maxDate.split("-");
+            let dataMaxima = new Date(maxData[2], maxData[1], maxData[0]);
+
+            if (dataFornecida < dataMaxima && data[2].length == 4 || value == '') {
+                return true;
+            }
+            return false;
+
+        }, '@T("A data digitada deve ser inferior à 30-12-9999.")');
+
 
         function validarCNPJ() {
             let cnpj = $(CNPJ).val();

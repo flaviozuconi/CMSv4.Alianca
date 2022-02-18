@@ -31,13 +31,13 @@
 
                 @*SaidaPrevisto*@
                 <div class="form-group col-md-4">
-                    <label>@TAdm("Saida - Previsto")</label>
+                    <label>@TAdm("Saída - Previsto")</label>
                     <input type="datetime" name="SaidaPrevisto" id="SaidaPrevisto" class="form-control" value="@(Model.SaidaPrevisto.HasValue ? Model.SaidaPrevisto.GetValueOrDefault().ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 @*SaidaRealizado*@
                 <div class="form-group col-md-4">
-                    <label>@TAdm("Saida - Realizado")</label>
+                    <label>@TAdm("Saída - Realizado")</label>
                     <input type="datetime" name="SaidaRealizado" id="SaidaRealizado" class="form-control" value="@(Model.SaidaRealizado.HasValue ? Model.SaidaRealizado.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
             </div>

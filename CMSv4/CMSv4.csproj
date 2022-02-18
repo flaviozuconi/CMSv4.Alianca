@@ -1948,10 +1948,7 @@
     <Content Include="Areas\Modulo\Views\TakeOrPay\Etapa4_2.cshtml" />
     <Content Include="Areas\Modulo\Views\TakeOrPay\ConclusaoReserva.cshtml" />
     <Content Include="Areas\Modulo\Views\TakeOrPay\ScriptConclusaoReserva.cshtml" />
-    <Content Include="Areas\Modulo\Views\TakeOrPay\TermoRegular.cshtml" />
-    <Content Include="Areas\Modulo\Views\TakeOrPay\TermoSpot.cshtml" />
     <Content Include="Areas\Modulo\Views\TakeOrPay\Conclusao.cshtml" />
-    <Content Include="Areas\Modulo\Views\TakeOrPay\TermoPdf.cshtml" />
     <Content Include="Areas\Modulo\Views\Banner\TakeOrPay.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\ProgramacaoNavioAdmin\Index.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\TakeOrPayHistoricoAdmin\Index.cshtml" />
@@ -1967,8 +1964,6 @@
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\_Importar.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\_Historico.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\ProgramacaoProposta\Item.cshtml" />
-    <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Importar.cshtml" />
-    <Content Include="Areas\ModuloAdmin\Views\GestaoDeCustosPenalidades\Historico.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Index.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Item.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\TakeOrPayAdmin\Script.cshtml" />
