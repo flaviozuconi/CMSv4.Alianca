@@ -58,6 +58,7 @@
                         <th>@TAdm("Valor da penalidade por extenso")</th>
                         <th>@TAdm("Data da atualização")</th>
                         <th>@TAdm("Usuário que importou")</th>
+                        <th style="width: 50px;">@TAdm("Excluir")</th>
                     </tr>
                 </thead>
             </table>
@@ -68,7 +69,7 @@
 
 @section scripts {
     <script type="text/javascript">
-        $(document).ready(function () {                      
+        $(document).ready(function () {
 
             //DataTables Initialization
             $('#lista').dataTable(
@@ -81,11 +82,12 @@
                         @Helpers.ColunaEditar("Penalidade", urlEditar, "Codigo"),
                         @Helpers.ColunaEditar("ValorPenalidade", urlEditar, "Codigo"),
                         @Helpers.ColunaEditarData("DataAtualizacao", urlEditar, "Codigo"),
-                        @Helpers.ColunaEditar("Usuario", urlEditar, "Codigo")
+                        @Helpers.ColunaEditar("Usuario", urlEditar, "Codigo"),
+                        @Helpers.ColunaExcluir("Codigo")
                     ]
                 }
-            );           
-           
+            );
+
         });
 
     </script>
