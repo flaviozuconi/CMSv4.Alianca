@@ -23,12 +23,14 @@
                 <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
             </div>
         </div>
+        <div class="portlet-body">
+            <div class="alert alert-danger" id="divErros" style="display:none;"></div>
+        </div>
 
         <form class="content" id="form" name="form" method="post" enctype="multipart/form-data">
-
             <div class="portlet-body clearfix">
                 <iframe id="downloader" hidden></iframe>
-                <div class="container">
+                <div class="">
                     <a class="btn btn-primary" onclick="DownloadModelo()">@TAdm("Modelo Importação")</a>
                     <br />
                     <br />
@@ -39,7 +41,7 @@
                     <label for="ex">@TAdm("Excluir todos os registros antes da importação")</label> <i class="fa fa-question-circle help" data-content="@TAdm("Todos os registros serão excluidos de forma definitiva do sistema e não poderão ser recuperados.")" data-placement="right" data-original-title="" title=""></i>
                     <br />
                 </div>
-                <div class="container">
+                <div class="">
                     <input class="btn btn-primary btn-green" type="submit" id="links" name="links" value="@TAdm("Importar")" />
                 </div>
             </div>
