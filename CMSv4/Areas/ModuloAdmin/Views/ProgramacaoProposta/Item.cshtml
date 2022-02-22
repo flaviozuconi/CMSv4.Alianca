@@ -391,19 +391,25 @@
             </div>
             <div class="col-md-12">
 
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label>@TAdm("Empresa")</label>
                     <input type="text" name="Empresa" id="Empresa" class="form-control" value="@Model.Empresa" maxlength="150" />
                 </div>
 
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label>@TAdm("Centro Custo")</label>
                     <input type="text" name="CentroCusto" id="CentroCusto" class="form-control" value="@Model.CentroCusto" maxlength="150" />
                 </div>
 
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label>@TAdm("Usuário")</label>
                     <input type="text" name="Usuario" id="Usuario" class="form-control" value="@usuario.Login" maxlength="50" readonly />
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>@TAdm("Data da Importacao")</label>
+                    <input type="text" name="DataImportacao" id="DataImportacao" class="form-control" value="@(Model.DataImportacao.HasValue ? Model.DataImportacao.Value.ToString("dd/MM/yyyy") : "")" readonly />
+
                 </div>
             </div>
 
@@ -588,6 +594,34 @@
             return true;
 
         }
+
+        function preencher() {
+            const usuario = $(Usuario).val();
+            const data = $(DataImportacao).val();
+
+            if (!data) {
+                const d = new Date();
+
+                const month = d.getMonth() + 1;
+                const day = d.getDate();
+
+                const output2 = d.getFullYear() + '/' +
+                    (month < 10 ? '0' : '') + month + '/' +
+                    (day < 10 ? '0' : '') + day;
+
+                const output = (day < 10 ? '0' : '') + day + '/' +
+                    (month < 10 ? '0' : '') + month + '/' +
+                    d.getFullYear();
+
+                $(DataImportacao).val(output)
+            }
+
+            if (!usuario) {
+                const usuarioLogado = $(UsuarioLogado).val();
+                $(Usuario).val(usuarioLogado)
+            }
+
+        };
 
     </script>
 }
