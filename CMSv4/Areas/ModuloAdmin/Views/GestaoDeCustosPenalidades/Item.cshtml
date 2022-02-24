@@ -94,39 +94,10 @@
                 TarifaAdicional: { required: true, maxlength: 30 },
                 ValorTarifa: { required: true, maxlength: 50 },
                 Penalidade: { required: true, maxlength: 50 },
-                ValorPenalidade: { required: true, maxlength: 50 },
-                DataAtualizacao: { required: true },
+                ValorPenalidade: { required: true, maxlength: 50 }, 
                 Usuario: { required: true, maxlength: 50 }
             }
         });     
 
-        function preencher() {
-            const usuario = $(Usuario).val();
-            const data = $(DataAtualizacao).val();
-
-            if (!data) {
-                const d = new Date();
-
-                const month = d.getMonth() + 1;
-                const day = d.getDate();
-
-                const output2 = d.getFullYear() + '/' +
-                    (month < 10 ? '0' : '') + month + '/' +
-                    (day < 10 ? '0' : '') + day;
-
-                const output = (day < 10 ? '0' : '') + day + '/' +
-                    (month < 10 ? '0' : '') + month + '/' +
-                    d.getFullYear();
-
-                $(DataAtualizacao).val(output)
-            }
-
-            if (!usuario) {
-                const usuarioLogado = $(UsuarioLogado).val();
-                $(Usuario).val(usuarioLogado)
-            }
-
-        };
-   
     </script>
 }
