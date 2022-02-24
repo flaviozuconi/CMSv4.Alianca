@@ -42,18 +42,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             return RedirectToAction("Index");
 
         }
-        #endregion
-
-        #region Importacao
-
-        [Compress]
-        [CheckPermission(global::Permissao.Visualizar)]
-        public virtual ActionResult Importar()
-        {
-            return View("_Importar");
-        }
-
-        #endregion
+        #endregion               
 
         #region Importar
         /// <summary>
@@ -217,18 +206,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             }
         }
 
-        #endregion
-
-        #region Historico
-
-        [Compress]
-        [CheckPermission(global::Permissao.Visualizar)]
-        public virtual ActionResult Historico()
-        {
-            return View("_Historico");
-        }
-
-        #endregion
+        #endregion         
 
         #region Historico Importacao
         /// <summary>

@@ -1,9 +1,11 @@
 ﻿@{
     var portal = PortalAtual.Obter;
     var urlEditar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/item", portal.Diretorio);
-    var urlImportacao = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Importar", portal.Diretorio);
-    var urlVisualisarHistorico = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Historico", portal.Diretorio);
-
+    var urlImportar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Importacao", portal.Diretorio);
+    var urlLista = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Index", portal.Diretorio);
+    var urlModelo = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadmodelo", portal.Diretorio); 
+    var urlHistorico = string.Format("/cms/{0}/GestaoDeCustosPenalidades/historicoimportacao", portal.Diretorio);
+    var urlDownload = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadimportacao/", portal.Diretorio);
     var urlListar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/listar", portal.Diretorio);
 
     var salvo = (bool?)TempData["Salvo"] ?? false;
@@ -17,8 +19,8 @@
         <div class="portlet-widgets">
             @if (AdminHelper.CheckPermission(Permissao.Modificar))
             {
-                <a class="btn btn-blue" href="@urlVisualisarHistorico"><i class="fa fa-history"></i>@TAdm("Histórico Importação")</a>              
-                <a class="btn btn-green" href="@urlImportacao">@TAdm("Importar")</a>
+            <button class="btn btn-blue" data-toggle="modal" data-target="#modalHistorico" onclick="AtualizarHistorico()"><i class="fa fa-history"></i> @TAdm("Histórico Importação")</button>
+                <button class="btn btn-green" data-toggle="modal" data-target="#modalImportacao">@TAdm("Importar")</button>
                 <a class="btn btn-green" href="@urlEditar">@TAdm("Adicionar")</a>
             }
             @Helpers.BotaoExcluir(T("Excluir"))
@@ -67,28 +69,163 @@
     </div>
 </div>
 
+<iframe id="downloader" hidden></iframe>
+<!-- Modal Importação -->
+<div class="modal fade" id="modalImportacao" tabindex="-1" aria-labelledby="modalImportacao" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="form" name="form" method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+                <h5 class="modal-title">@TAdm("Importar gestão de custos e penalidades")</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+
+                    @{ Html.RenderPartial("_Importar"); }
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
+                <input class="btn btn-green" type="submit" value="@TAdm("Importar")" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Histórico -->
+<div class="modal fade" id="modalHistorico" tabindex="-1" aria-labelledby="modalHistorico" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@TAdm("Histórico de Importação")</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                @{ Html.RenderPartial("_Historico"); }
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script type="text/javascript">
         $(document).ready(function () {
+            $(".help").popover({
+                trigger: "hover",
+                delay: { show: 200, hide: 0 }
+            });
 
             //DataTables Initialization
             $('#lista').dataTable(
-                {
-                    "ajax": "@urlListar",
-                    "columns": [
-                        @Helpers.ColunaEditar("POD",urlEditar, "Codigo"),
-                        @Helpers.ColunaEditar("TarifaAdicional", urlEditar, "Codigo"),
-                        @Helpers.ColunaEditar("ValorTarifa", urlEditar, "Codigo"),
-                        @Helpers.ColunaEditar("Penalidade", urlEditar, "Codigo"),
-                        @Helpers.ColunaEditar("ValorPenalidade", urlEditar, "Codigo"),
-                        @Helpers.ColunaEditarData("DataAtualizacao", urlEditar, "Codigo"),
-                        @Helpers.ColunaEditar("Usuario", urlEditar, "Codigo"),
-                        @Helpers.ColunaExcluir("Codigo")
-                    ]
+            {
+                "ajax": "@urlListar",
+                "columns": [
+                    @Helpers.ColunaEditar("POD",urlEditar, "Codigo"),
+                    @Helpers.ColunaEditar("TarifaAdicional", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditar("ValorTarifa", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditar("Penalidade", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditar("ValorPenalidade", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditarData("DataAtualizacao", urlEditar, "Codigo"),
+                    @Helpers.ColunaEditar("Usuario", urlEditar, "Codigo"),
+                    @Helpers.ColunaExcluir("Codigo")
+                ]
+            });
+
+            $("#listaHistorico").dataTable({
+                "ajax": "@urlHistorico",
+                "order": [[0, "desc"]],
+                "columns": [
+                    @Helpers.ColunaDataHora("DataImportacao"),
+                    @Helpers.Coluna("Usuario"),
+                    @Helpers.ColunaBoolean("Sucesso",TAdm("Sim"),TAdm("Não")),
+                    @Helpers.ColunaBoolean("Finalizado",TAdm("Sim"),TAdm("Não")),
+                    @Helpers.ColunaDownloadIcon("Arquivo", urlDownload, "Codigo")
+                ]
+            })
+
+            $('#DownloadModelo').click(function (event) {
+              
+                document.getElementById('downloader').src = "@urlModelo";
+
+                return false;
+            });
+
+            $("#form").validate({
+                rules: {
+                    arquivo: {
+                        required: true,
+                        extension: "xls|xlsx"
+                    }
                 }
-            );
+            });
+
+            $("#form").submit(function (event) {
+               
+                event.preventDefault();
+
+                var formData = new FormData();
+
+                formData.append("file", $(this).find("input[name=arquivo]")[0].files[0]);
+                formData.append("excluir", $(this).find("input[name=excluir]").is(":checked"));
+
+                console.log(formData);
+                $.ajax({
+                    url: "@urlImportar",
+                    type: "POST",
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data, status, xhr) {
+                        $(".spinner").hide();
+                        $(".modal").modal('hide');
+
+                        if (data.success == false) {
+                            $("#divErros").html(data.msg);
+                            $("#divErros").show();
+                        } else {
+                            document.location = "@urlLista";
+                        }
+                    }
+                })
+            });
 
         });
+
+        function downloadImportacao(id) {
+        
+            $.ajax({
+                url: "@urlDownload/" + id,
+                method: "GET",
+                success: function (data) {
+                    document.getElementById('downloader').src = '@urlDownload'+id;
+                },
+                error: function () {
+                    $("#arquivoImportacao").addClass('alert alert-warning');
+                    $("#arquivoImportacao").html("Ocorreu um erro ao fazer o download do arquivo: arquivo inexistente");
+
+                    setTimeout(function () {
+                        $('#arquivoImportacao').removeClass('alert alert-warning');
+                        $("#arquivoImportacao").html("");
+                    }, 15000);
+                }
+            })
+        };
+
+        function AtualizarHistorico() {
+            $('#listaHistorico').DataTable().clear();
+            $('#listaHistorico').DataTable().ajax.reload();
+        }
 
     </script>
 }

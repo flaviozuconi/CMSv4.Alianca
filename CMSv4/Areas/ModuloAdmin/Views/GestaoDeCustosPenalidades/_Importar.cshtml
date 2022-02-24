@@ -1,107 +1,11 @@
-﻿@model CMSv4.Model.Base.MLGestaoDeCustosPenalidades
-@{
-    var usuario = BLUsuario.ObterLogado();
-    var portal = PortalAtual.Obter;
-    var urlIndex = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Index", portal.Diretorio);
-    var urlImportar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Importacao", portal.Diretorio);
-    var urlLista = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Index", portal.Diretorio);
-    var urlModelo = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadmodelo", portal.Diretorio);
-    var salvo = (bool?)TempData["Salvo"] ?? false;
-
-}
-
-    <div class="portlet portlet-dark-blue">
-
-        <div class="portlet-heading clearfix">
-            <div class="portlet-title">
-                <h4>
-                    <img src="~/iconpack.axd/16/page_white_code" />
-                    @TAdm("Importar gestão de custos e penalidades")
-                </h4>
-            </div>
-            <div class="portlet-widgets">
-                <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
-            </div>
-        </div>
-        <div class="portlet-body">
-            <div class="alert alert-danger" id="divErros" style="display:none;"></div>
-        </div>
-
-        <form class="content" id="form" name="form" method="post" enctype="multipart/form-data">
-            <div class="portlet-body clearfix">
-                <iframe id="downloader" hidden></iframe>
-                <div class="">
-                    <a class="btn btn-primary" onclick="DownloadModelo()">@TAdm("Modelo Importação")</a>
-                    <br />
-                    <br />
-                    <label>@TAdm("(Extensões válidas: .xls e .xlsx)")</label>
-                    <input type="file" name="arquivo" class="form-group" />
-                    <br />
-                    <input type="checkbox" id="ex" name="excluir" value="True" />
-                    <label for="ex">@TAdm("Excluir todos os registros antes da importação")</label> <i class="fa fa-question-circle help" data-content="@TAdm("Todos os registros serão excluidos de forma definitiva do sistema e não poderão ser recuperados.")" data-placement="right" data-original-title="" title=""></i>
-                    <br />
-                </div>
-                <div class="">
-                    <input class="btn btn-primary btn-green" type="submit" id="links" name="links" value="@TAdm("Importar")" />
-                </div>
-            </div>
-        </form>
-    </div>
-
-@section scripts{
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            $(".help").popover({
-                trigger: "hover",
-                delay: { show: 200, hide: 0 }
-            });
-        });
-
-        function DownloadModelo() {
-            document.getElementById('downloader').src = "@urlModelo";
-
-            return false;
-        };
-
-        $("#form").validate({
-            rules: {
-                arquivo: {
-                    required: true,
-                    extension: "xls|xlsx"
-                }
-            }
-        });
-
-        $("#form").submit(function (event) {
-            event.preventDefault();
-
-            var formData = new FormData();
-
-            formData.append("file", $(this).find("input[name=arquivo]")[0].files[0]);
-            formData.append("excluir", $(this).find("input[name=excluir]").is(":checked"));
-
-            console.log(formData);
-            $.ajax({
-                url: "@urlImportar",
-                type: "POST",
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function (data, status, xhr) {
-                    $(".spinner").hide();
-                    $(".modal").modal('hide');
-
-                    if (data.success == false) {
-                        $("#divErros").html(data.msg);
-                        $("#divErros").show();
-                    } else {
-                        document.location = "@urlLista";
-                    }
-                }
-            })
-        });
-
-    </script>
-}
+﻿
+<a class="btn btn-primary" id="DownloadModelo" >@TAdm("Modelo Importação")</a>
+<br />
+<br />
+<label>@TAdm("(Extensões válidas: .xls e .xlsx)")</label>
+<input type="file" name="arquivo" class="form-group" />
+<br />
+<input type="checkbox" id="ex" name="excluir" value="True" />
+<label for="ex">@TAdm("Excluir todos os registros antes da importação")</label> <i class="fa fa-question-circle help" data-content="@TAdm("Todos os registros serão excluidos de forma definitiva do sistema e não poderão ser recuperados.")" data-placement="right" data-original-title="" title=""></i>
+<br />
+           
