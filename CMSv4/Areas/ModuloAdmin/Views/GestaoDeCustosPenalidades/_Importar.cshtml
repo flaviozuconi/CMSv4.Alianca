@@ -1,11 +1,32 @@
-﻿
-<a class="btn btn-primary" id="DownloadModelo" >@TAdm("Modelo Importação")</a>
-<br />
-<br />
-<label>@TAdm("(Extensões válidas: .xls e .xlsx)")</label>
-<input type="file" name="arquivo" class="form-group" />
-<br />
-<input type="checkbox" id="ex" name="excluir" value="True" />
-<label for="ex">@TAdm("Excluir todos os registros antes da importação")</label> <i class="fa fa-question-circle help" data-content="@TAdm("Todos os registros serão excluidos de forma definitiva do sistema e não poderão ser recuperados.")" data-placement="right" data-original-title="" title=""></i>
-<br />
+﻿<div class="modal fade" id="modalImportacao" tabindex="-1" aria-labelledby="modalImportacao" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="form" name="form" method="post" enctype="multipart/form-data">
+            <div class="modal-header">
+                <h5 class="modal-title">@TAdm("Importar gestão de custos e penalidades")</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+
+                    <a class="btn btn-primary" id="DownloadModelo">@TAdm("Modelo Importação")</a>
+                    <br />
+                    <br />
+                    <label>@TAdm("(Extensões válidas: .xls e .xlsx)")</label>
+                    <input type="file" name="arquivo" class="form-group" />
+                    <br />
+                    <input type="checkbox" id="ex" name="excluir" value="True" />
+                    <label for="ex">@TAdm("Excluir todos os registros antes da importação")</label> <i class="fa fa-question-circle help" data-content="@TAdm("Todos os registros serão excluidos de forma definitiva do sistema e não poderão ser recuperados.")" data-placement="right" data-original-title="" title=""></i>
+                    <br />
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
+                <input class="btn btn-green" type="submit" value="@TAdm("Importar")" />
+            </div>
+        </form>
+    </div>
+</div>
            

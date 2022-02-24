@@ -3,7 +3,7 @@
     var urlEditar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/item", portal.Diretorio);
     var urlImportar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Importacao", portal.Diretorio);
     var urlLista = string.Format("/cms/{0}/GestaoDeCustosPenalidades/Index", portal.Diretorio);
-    var urlModelo = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadmodelo", portal.Diretorio); 
+    var urlModelo = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadmodelo", portal.Diretorio);
     var urlHistorico = string.Format("/cms/{0}/GestaoDeCustosPenalidades/historicoimportacao", portal.Diretorio);
     var urlDownload = string.Format("/cms/{0}/GestaoDeCustosPenalidades/downloadimportacao/", portal.Diretorio);
     var urlListar = string.Format("/cms/{0}/GestaoDeCustosPenalidades/listar", portal.Diretorio);
@@ -19,7 +19,7 @@
         <div class="portlet-widgets">
             @if (AdminHelper.CheckPermission(Permissao.Modificar))
             {
-            <button class="btn btn-blue" data-toggle="modal" data-target="#modalHistorico" onclick="AtualizarHistorico()"><i class="fa fa-history"></i> @TAdm("Histórico Importação")</button>
+                <button class="btn btn-blue" data-toggle="modal" data-target="#modalHistorico" onclick="AtualizarHistorico()"><i class="fa fa-history"></i> @TAdm("Histórico Importação")</button>
                 <button class="btn btn-green" data-toggle="modal" data-target="#modalImportacao">@TAdm("Importar")</button>
                 <a class="btn btn-green" href="@urlEditar">@TAdm("Adicionar")</a>
             }
@@ -70,52 +70,13 @@
 </div>
 
 <iframe id="downloader" hidden></iframe>
+
 <!-- Modal Importação -->
-<div class="modal fade" id="modalImportacao" tabindex="-1" aria-labelledby="modalImportacao" aria-hidden="true">
-    <div class="modal-dialog">
-        <form class="modal-content" id="form" name="form" method="post" enctype="multipart/form-data">
-            <div class="modal-header">
-                <h5 class="modal-title">@TAdm("Importar gestão de custos e penalidades")</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-
-                    @{ Html.RenderPartial("_Importar"); }
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
-                <input class="btn btn-green" type="submit" value="@TAdm("Importar")" />
-            </div>
-        </form>
-    </div>
-</div>
+@{ Html.RenderPartial("_Importar"); }
 
 <!-- Modal Histórico -->
-<div class="modal fade" id="modalHistorico" tabindex="-1" aria-labelledby="modalHistorico" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@TAdm("Histórico de Importação")</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
+@{ Html.RenderPartial("_Historico"); }
 
-                @{ Html.RenderPartial("_Historico"); }
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@TAdm("Fechar")</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 @section scripts {
     <script type="text/javascript">
@@ -154,7 +115,7 @@
             })
 
             $('#DownloadModelo').click(function (event) {
-              
+
                 document.getElementById('downloader').src = "@urlModelo";
 
                 return false;
@@ -170,7 +131,7 @@
             });
 
             $("#form").submit(function (event) {
-               
+
                 event.preventDefault();
 
                 var formData = new FormData();
@@ -203,7 +164,7 @@
         });
 
         function downloadImportacao(id) {
-        
+
             $.ajax({
                 url: "@urlDownload/" + id,
                 method: "GET",
