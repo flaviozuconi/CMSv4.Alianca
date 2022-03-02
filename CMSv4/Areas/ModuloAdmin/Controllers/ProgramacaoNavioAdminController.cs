@@ -27,8 +27,9 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         /////     /Area/Controller/Item/id
         ///// </remarks>
 
-        [CheckPermission(global::Permissao.Modificar, ValidarModelState = true)]
+        [CheckPermission(global::Permissao.Modificar)]
         [HttpPost]
+        [ValidateInput(false)]
         public override ActionResult Item(MLProgramacaoNavio model)
         {
 

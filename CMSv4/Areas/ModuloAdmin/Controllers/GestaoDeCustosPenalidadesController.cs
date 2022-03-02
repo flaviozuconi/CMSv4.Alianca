@@ -42,18 +42,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             return RedirectToAction("Index");
 
         }
-        #endregion
-
-        #region Importacao
-
-        [Compress]
-        [CheckPermission(global::Permissao.Visualizar)]
-        public virtual ActionResult Importar()
-        {
-            return View("_Importar");
-        }
-
-        #endregion
+        #endregion               
 
         #region Importar
         /// <summary>
@@ -162,21 +151,20 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
                 erros.AppendLine("O campo \"POD\" é obrigatório na(s) linha(s): " + string.Join(",", errPOD) + "<br>");
 
             if (errTarifaAdicional.Count > 0)
-                erros.AppendLine("O campo \"TarifaAdicional\" é obrigatório na(s) linha(s): " + string.Join(",", errTarifaAdicional) + "<br>");
+                erros.AppendLine("O campo \"Tarifa adicional (R$)\" é obrigatório na(s) linha(s): " + string.Join(",", errTarifaAdicional) + "<br>");
 
             if (errValorTarifa.Count > 0)
-                erros.AppendLine("O campo \"ValorTarifa\" é obrigatório na(s) linha(s): " + string.Join(",", errValorTarifa) + "<br>");
+                erros.AppendLine("O campo \"Valor da tarifa por extenso\" é obrigatório na(s) linha(s): " + string.Join(",", errValorTarifa) + "<br>");
 
             if (errPenalidade.Count > 0)
-                erros.AppendLine("O campo \"Penalidade\" é obrigatório na(s) linha(s): " + string.Join(",", errPenalidade) + "<br>");
+                erros.AppendLine("O campo \"Penalidade Aliança (R$)\" é obrigatório na(s) linha(s): " + string.Join(",", errPenalidade) + "<br>");
 
             if (errValorPenalidade.Count > 0)
-                erros.AppendLine("O campo \"ValorPenalidade\" é obrigatório na(s) linha(s): " + string.Join(",", errValorPenalidade) + "<br>");
+                erros.AppendLine("O campo \"Valor da penalidade por extenso\" é obrigatório na(s) linha(s): " + string.Join(",", errValorPenalidade) + "<br>");
 
             return erros.ToString();
         }
         #endregion
-
 
         #region Inserir Planilha
         /// <summary>
@@ -218,18 +206,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             }
         }
 
-        #endregion
-
-        #region Historico
-
-        [Compress]
-        [CheckPermission(global::Permissao.Visualizar)]
-        public virtual ActionResult Historico()
-        {
-            return View("_Historico");
-        }
-
-        #endregion
+        #endregion         
 
         #region Historico Importacao
         /// <summary>
@@ -250,7 +227,6 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         }
         #endregion
 
-
         #region Download Modelo
         /// <summary>
         /// Download modelos
@@ -263,7 +239,6 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             return File("~/Templates/gestao-custos-penalidades-template.xlsx", "application/ms-excel", $"gestao-custos-penalidades-template.xlsx");
         }
         #endregion
-
 
         #region Download Importacao
         /// <summary>
@@ -281,6 +256,5 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
         }
         #endregion
-
     }
 }

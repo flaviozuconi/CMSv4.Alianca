@@ -432,10 +432,10 @@
         });
 
         $("#btnAdicionar").click(function () {
-            let numeroProposta = $("#NumeroProposta").val();
+            let numeroProposta = parseInt($("#NumeroProposta").val(), 10);
             let lstnumeroProposta = $("#lstNumeroProposta").val();
 
-            if (lstnumeroProposta.includes(numeroProposta)) {
+            if (isNaN(numeroProposta) || lstnumeroProposta.includes(numeroProposta)) {
                 PropostaInvalida();
             }
             else {
@@ -718,9 +718,10 @@
             if ($("#PortoDestino").val() != null)
                 $("#PortoDestino").val("").trigger('change');
 
-            $("#Unidades").val(0)
+            $("#Unidades").val(0).trigger('change');
 
             $("#TonelagemMedia").val("");
+            $('#ValorAdicional').html("");
         }
 
         function AtualizarDeadline() {

@@ -3,7 +3,7 @@
     var usuario = BLUsuario.ObterLogado();
     var portal = PortalAtual.Obter;
     var urlLista = string.Format("/cms/{0}/GestaoDeCustosPenalidades", portal.Diretorio);
-
+   
 }
 
 <div class="portlet portlet-dark-blue">
@@ -14,9 +14,7 @@
                 @TAdm("Gestão de Custo e Penalidades")
             </h4>
         </div>
-        <div class="portlet-widgets">
-            @if (Model.Codigo.HasValue)
-            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
+        <div class="portlet-widgets">     
             <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
         </div>
     </div>
@@ -59,8 +57,14 @@
                 @*Usuario*@
                 <div class="form-group col-md-4">
                     <label>@TAdm("Usuário")</label>
-                    <input type="text" name="Usuario" id="Usuario" class="form-control" value="@usuario.Login" maxlength="50" readonly />                  
-                </div>       
+                    <input type="text" name="Usuario" id="Usuario" class="form-control" value="@usuario.Login" maxlength="50" readonly />
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label>@TAdm("Data da Importacao")</label>
+                    <input type="text" name="DataAtualizacao" id="DataAtualizacao" class="form-control" value="@(Model.DataAtualizacao.HasValue ? Model.DataAtualizacao.Value.ToString("dd/MM/yyyy") : "")" readonly />
+
+                </div>
 
             </div>
 
@@ -90,11 +94,10 @@
                 TarifaAdicional: { required: true, maxlength: 30 },
                 ValorTarifa: { required: true, maxlength: 50 },
                 Penalidade: { required: true, maxlength: 50 },
-                ValorPenalidade: { required: true, maxlength: 50 },
-                DataAtualizacao: { required: true },
+                ValorPenalidade: { required: true, maxlength: 50 }, 
                 Usuario: { required: true, maxlength: 50 }
             }
-        });              
-   
+        });     
+
     </script>
 }

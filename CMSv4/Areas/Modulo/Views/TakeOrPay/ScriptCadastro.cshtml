@@ -41,10 +41,10 @@
     }
 
     $("#btnAdicionar").click(function () {
-        let numeroProposta = $("#NumeroProposta").val();
+        let numeroProposta = parseInt($("#NumeroProposta").val(), 10);
         let lstnumeroProposta = $("#lstNumeroProposta").val();
 
-        if (lstnumeroProposta.includes(numeroProposta)) {
+        if (isNaN(numeroProposta) || lstnumeroProposta.includes(numeroProposta)) {
             PropostaInvalida();
         }
         else {

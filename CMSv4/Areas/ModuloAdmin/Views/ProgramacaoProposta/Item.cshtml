@@ -15,8 +15,6 @@
             </h4>
         </div>
         <div class="portlet-widgets">
-            @if (Model.Codigo.HasValue)
-            {@Helpers.ButtonAuditoria(ViewBag.Funcionalidade, Model.Codigo)}
             <a class="btn btn-orange" href="@urlLista">@TAdm("Voltar")</a>
         </div>
     </div>
@@ -120,28 +118,28 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Escolta Origem")</label>
-                    <input type="text" name="EscoltaOrigem" id="EscoltaOrigem" class="form-control" value="@Model.EscoltaOrigem" maxlength="1" />
+                    <input type="text" name="EscoltaOrigem" id="EscoltaOrigem" class="form-control" value="@Model.EscoltaOrigem" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Escolta Destino")</label>
-                    <input type="text" name="EscoltaDestino" id="EscoltaDestino" class="form-control" value="@Model.EscoltaDestino" maxlength="1" />
+                    <input type="text" name="EscoltaDestino" id="EscoltaDestino" class="form-control" value="@Model.EscoltaDestino" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Conferente Origem")</label>
-                    <input type="text" name="ConferenteOrigem" id="ConferenteOrigem" class="form-control" value="@Model.ConferenteOrigem" maxlength="1" />
+                    <input type="text" name="ConferenteOrigem" id="ConferenteOrigem" class="form-control" value="@Model.ConferenteOrigem" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Conferente Destino")</label>
-                    <input type="text" name="ConferenteDestino" id="ConferenteDestino" class="form-control" value="@Model.ConferenteDestino" maxlength="1" />
+                    <input type="text" name="ConferenteDestino" id="ConferenteDestino" class="form-control" value="@Model.ConferenteDestino" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
-                    <label>@TAdm("TipoSeguro")</label>
+                    <label>@TAdm("Tipo Seguro")</label>
                     <input type="text" name="TipoSeguro" id="TipoSeguro" class="form-control" value="@Model.TipoSeguro" maxlength="50" />
                 </div>
             </div>
@@ -154,41 +152,41 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Validade DDR")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="ValidadeDDR" id="ValidadeDDR" class="form-control"  value="@(Model.ValidadeDDR.HasValue ? Model.ValidadeDDR.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="ValidadeDDR" id="ValidadeDDR" class="form-control"  value="@(Model.ValidadeDDR.HasValue ? Model.ValidadeDDR.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Valor Declarado")</label>
-                    <input type="number" name="ValorDeclarado" id="ValorDeclarado" class="form-control" value="@Model.ValorDeclarado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="ValorDeclarado" min="0" id="ValorDeclarado" class="form-control" value="@Model.ValorDeclarado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Valor Médio Mensal")</label>
-                    <input type="number" name="ValorMedioMensal" id="ValorMedioMensal" class="form-control" value="@Model.ValorMedioMensal" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="ValorMedioMensal" min="0" id="ValorMedioMensal" class="form-control" value="@Model.ValorMedioMensal" onkeypress="return event.charCode >= 48 && event.charCode <= 57" min="0"/>
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Shipper Own Container")</label>
-                    <input type="text" name="ShipperOwnContainer" id="ShipperOwnContainer" class="form-control" value="@Model.ShipperOwnContainer" maxlength="1" />
+                    <input type="text" name="ShipperOwnContainer" id="ShipperOwnContainer" class="form-control" value="@Model.ShipperOwnContainer" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Carga Perigosa")</label>
-                    <input type="text" name="CargaPerigosa" id="CargaPerigosa" class="form-control" value="@Model.CargaPerigosa" maxlength="1" />
+                    <input type="text" name="CargaPerigosa" id="CargaPerigosa" class="form-control" value="@Model.CargaPerigosa" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("OOG")</label>
-                    <input type="text" name="OOG" id="OOG" class="form-control" value="@Model.OOG" maxlength="1" />
+                    <input type="text" name="OOG" id="OOG" class="form-control" value="@Model.OOG" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Servicos Especiais")</label>
-                    <input type="text" name="ServicosEspeciais" id="ServicosEspeciais" class="form-control" value="@Model.ServicosEspeciais" maxlength="1" />
+                    <input type="text" name="ServicosEspeciais" id="ServicosEspeciais" class="form-control" value="@Model.ServicosEspeciais" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
@@ -205,7 +203,7 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("UF Origem")</label>
-                    <input type="text" name="UFOrigem" id="UFOrigem" class="form-control" value="@Model.UFOrigem" maxlength="2" />
+                    <input type="text" name="UFOrigem" id="UFOrigem" class="form-control" value="@Model.UFOrigem" maxlength="2" placeholder="Máximo de 2 caracteres" />
                 </div>
 
                 <div class="form-group col-md-4">
@@ -222,7 +220,7 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("UF Destino")</label>
-                    <input type="text" name="UFDestino" id="UFDestino" class="form-control" value="@Model.UFDestino" maxlength="150" />
+                    <input type="text" name="UFDestino" id="UFDestino" class="form-control" value="@Model.UFDestino" maxlength="2" placeholder="Máximo de 2 caracteres"/>
                 </div>
 
                 <div class="form-group col-md-4">
@@ -234,73 +232,73 @@
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Quantidade Entregas")</label>
-                    <input type="number" name="QuantidadeEntregas" id="QuantidadeEntregas" class="form-control" value="@Model.QuantidadeEntregas" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="QuantidadeEntregas" min="0" id="QuantidadeEntregas" class="form-control" value="@Model.QuantidadeEntregas" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Peso Estimado")</label>
-                    <input type="number" name="PesoEstimado" id="PesoEstimado" class="form-control" value="@Model.PesoEstimado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="PesoEstimado" min="0" id="PesoEstimado" class="form-control" value="@Model.PesoEstimado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Frete Acordado")</label>
-                    <input type="number" name="FreteAcordado" id="FreteAcordado" class="form-control" value="@Model.FreteAcordado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="FreteAcordado" min="0" id="FreteAcordado" class="form-control" value="@Model.FreteAcordado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("CM Acordado")</label>
-                    <input type="number" name="CMAcordado" id="CMAcordado" class="form-control" value="@Model.CMAcordado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="CMAcordado" min="0" id="CMAcordado" class="form-control" value="@Model.CMAcordado" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Percentual Ad Valor")</label>
-                    <input type="number" name="PercentualAdValor" id="PercentualAdValor" class="form-control" value="@Model.PercentualAdValor" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="PercentualAdValor" min="0" id="PercentualAdValor" class="form-control" value="@Model.PercentualAdValor" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Trem Balsa Origem")</label>
-                    <input type="text" name="TremBalsaOrigem" id="TremBalsaOrigem" class="form-control" value="@Model.TremBalsaOrigem" maxlength="1" />
+                    <input type="text" name="TremBalsaOrigem" id="TremBalsaOrigem" class="form-control" value="@Model.TremBalsaOrigem" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-4">
-                    <label>@TAdm("TremBalsa Destino")</label>
-                    <input type="text" name="TremBalsaDestino" id="TremBalsaDestino" class="form-control" value="@Model.TremBalsaDestino" maxlength="1" />
+                    <label>@TAdm("Trem Balsa Destino")</label>
+                    <input type="text" name="TremBalsaDestino" id="TremBalsaDestino" class="form-control" value="@Model.TremBalsaDestino" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Recebe ICT")</label>
-                    <input type="text" name="RecebeICT" id="RecebeICT" class="form-control" value="@Model.RecebeICT" maxlength="1" />
+                    <input type="text" name="RecebeICT" id="RecebeICT" class="form-control" value="@Model.RecebeICT" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Entrega ICT")</label>
-                    <input type="text" name="EntregaICT" id="EntregaICT" class="form-control" value="@Model.EntregaICT" maxlength="1" />
+                    <input type="text" name="EntregaICT" id="EntregaICT" class="form-control" value="@Model.EntregaICT" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-3">
                     <label>@TAdm("Sinal Ajuste Origem")</label>
-                    <input type="text" name="SinalAjusteOrigem" id="SinalAjusteOrigem" class="form-control" value="@Model.SinalAjusteOrigem" maxlength="1" />
+                    <input type="text" name="SinalAjusteOrigem" id="SinalAjusteOrigem" class="form-control" value="@Model.SinalAjusteOrigem" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-3">
                     <label>@TAdm("Valor Ajuste Origem")</label>
-                    <input type="number" name="ValorAjusteOrigem" id="ValorAjusteOrigem" class="form-control" value="@Model.ValorAjusteOrigem" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="ValorAjusteOrigem" min="0" id="ValorAjusteOrigem" class="form-control" value="@Model.ValorAjusteOrigem" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
 
                 <div class="form-group col-md-3">
-                    <label>@TAdm("Sinal Ajuste Desitno")</label>
-                    <input type="text" name="SinalAjusteDesitno" id="SinalAjusteDesitno" class="form-control" value="@Model.SinalAjusteDesitno" maxlength="1" />
+                    <label>@TAdm("Sinal Ajuste Destino")</label>
+                    <input type="text" name="SinalAjusteDesitno" id="SinalAjusteDesitno" class="form-control" value="@Model.SinalAjusteDesitno" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-3">
                     <label>@TAdm("Valor Ajuste Destino")</label>
-                    <input type="number" name="ValorAjusteDestino" id="ValorAjusteDestino" class="form-control" value="@Model.ValorAjusteDestino" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
+                    <input type="number" name="ValorAjusteDestino" min="0" id="ValorAjusteDestino" class="form-control" value="@Model.ValorAjusteDestino" onkeypress="return event.charCode >= 48 && event.charCode <= 57" />
                 </div>
             </div>
             <div class="col-md-12">
@@ -324,12 +322,12 @@
 
                 <div class="form-group col-md-4">
                         <label>@TAdm("Fechamento")</label>
-                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="Fechamento" id="Fechamento" class="form-control" value="@(Model.Fechamento.HasValue ? Model.Fechamento.Value.ToString("dd/MM/yyyy") : "")" />
+                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="Fechamento" id="Fechamento" class="form-control" value="@(Model.Fechamento.HasValue ? Model.Fechamento.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
                         <label>@TAdm("Inclusao")</label>
-                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="Inclusao" id="Inclusao" class="form-control" value="@(Model.Inclusao.HasValue ? Model.Inclusao.Value.ToString("dd/MM/yyyy") : "")" />
+                        <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="Inclusao" id="Inclusao" class="form-control" value="@(Model.Inclusao.HasValue ? Model.Inclusao.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
@@ -341,29 +339,29 @@
 
                 <div class="form-group col-md-6">
                     <label>@TAdm("Portal Proposta")</label>
-                    <input type="text" name="PortalProposta" id="PortalProposta" class="form-control" value="@Model.PortalProposta" maxlength="1" />
+                    <input type="text" name="PortalProposta" id="PortalProposta" class="form-control" value="@Model.PortalProposta" maxlength="1" placeholder="Máximo de 1 caractere"/>
                 </div>
 
                 <div class="form-group col-md-6">
                     <label>@TAdm("Validade Cotação")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="ValidadeCotacao" id="ValidadeCotacao" class="form-control" value="@(Model.ValidadeCotacao.HasValue ? Model.ValidadeCotacao.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="ValidadeCotacao" id="ValidadeCotacao" class="form-control" value="@(Model.ValidadeCotacao.HasValue ? Model.ValidadeCotacao.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
             </div>
             <div class="col-md-12">
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Cotação Aceita")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="CotacaoAceita" id="CotacaoAceita" class="form-control" value="@(Model.CotacaoAceita.HasValue ? Model.CotacaoAceita.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="CotacaoAceita" id="CotacaoAceita" class="form-control" value="@(Model.CotacaoAceita.HasValue ? Model.CotacaoAceita.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Cotação Negada")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="CotacaoNegada" id="CotacaoNegada" class="form-control" value="@(Model.CotacaoNegada.HasValue ? Model.CotacaoNegada.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="CotacaoNegada" id="CotacaoNegada" class="form-control" value="@(Model.CotacaoNegada.HasValue ? Model.CotacaoNegada.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 <div class="form-group col-md-4">
                     <label>@TAdm("Cotação Rejeitada")</label>
-                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" name="CotacaoRejeitada" id="CotacaoRejeitada" class="form-control" value="@(Model.CotacaoRejeitada.HasValue ? Model.CotacaoRejeitada.Value.ToString("dd/MM/yyyy") : "")" />
+                    <input type="text" data-format="00-00-0000" placeholder="DD-MM-YYYY" min="21-01-1900" max="30-12-9999" name="CotacaoRejeitada" id="CotacaoRejeitada" class="form-control" value="@(Model.CotacaoRejeitada.HasValue ? Model.CotacaoRejeitada.Value.ToString("dd/MM/yyyy") : "")" />
                 </div>
 
                 </div>
@@ -393,19 +391,25 @@
             </div>
             <div class="col-md-12">
 
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label>@TAdm("Empresa")</label>
                     <input type="text" name="Empresa" id="Empresa" class="form-control" value="@Model.Empresa" maxlength="150" />
                 </div>
 
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label>@TAdm("Centro Custo")</label>
                     <input type="text" name="CentroCusto" id="CentroCusto" class="form-control" value="@Model.CentroCusto" maxlength="150" />
                 </div>
 
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-3">
                     <label>@TAdm("Usuário")</label>
                     <input type="text" name="Usuario" id="Usuario" class="form-control" value="@usuario.Login" maxlength="50" readonly />
+                </div>
+
+                <div class="form-group col-md-3">
+                    <label>@TAdm("Data da Importacao")</label>
+                    <input type="text" name="DataImportacao" id="DataImportacao" class="form-control" value="@(Model.DataImportacao.HasValue ? Model.DataImportacao.Value.ToString("dd/MM/yyyy") : "")" readonly />
+
                 </div>
             </div>
 
@@ -440,14 +444,77 @@
                 });
             });
 
+            $('#form').validate({
+                rules: {
+                    NumeroProposta: { required: true, maxlength: 100 },
+                    ValidadeDDR: {
+                        validDataMin: '#ValidadeDDR',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    Validade: {
+                        validDataMin: '#Validade',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    Fechamento: {
+                        validDataMin: '#Fechamento',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    Inclusao: {
+                        validDataMin: '#Inclusao',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    ValidadeCotacao: {
+                        validDataMin: '#ValidadeCotacao',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    CotacaoAceita: {
+                        validDataMin: '#CotacaoAceita',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    CotacaoNegada: {
+                        validDataMin: '#CotacaoNegada',
+                        validDataMax: '#ValidadeDDR'
+                    },
+                    CotacaoRejeitada: {
+                        validDataMin: '#CotacaoRejeitada',
+                        validDataMax: '#ValidadeDDR'
+                    }
+                }
+            });
         });
 
+        $.validator.addMethod("validDataMin", function (value, element, param) { 
+            
+            let minDate = "21-01-1900"
 
-        $('#form').validate({
-            rules: {
-                NumeroProposta: { required: true, maxlength: 100 }
+            let data = value.split("-");
+            let dataFornecida = new Date(data[2], data[1], data[0]);
+            let minData = minDate.split("-");
+            let dataMinima = new Date(minData[2], minData[1], minData[0]);
+
+            if (dataFornecida > dataMinima && data[2].length==4 || value == '') {
+                return true;
             }
-        });
+          
+            return false;
+
+        }, '@T("A data digitada deve ser posterior à 21-01-1900.")');
+
+        $.validator.addMethod("validDataMax", function (value, element, param) {
+            let maxDate = "30-12-9000";
+
+            let data = value.split("-");
+            let dataFornecida = new Date(data[2], data[1], data[0]);
+            let maxData = maxDate.split("-");
+            let dataMaxima = new Date(maxData[2], maxData[1], maxData[0]);
+
+            if (dataFornecida < dataMaxima && data[2].length == 4 || value == '') {
+                return true;
+            }
+            return false;
+
+        }, '@T("A data digitada deve ser inferior à 30-12-9999.")');
+
 
         function validarCNPJ() {
             let cnpj = $(CNPJ).val();

@@ -156,7 +156,7 @@ namespace CMSv4.Model.Base
         public string MunicipioDestino { get; set; }
 
         [CsvField("UF Destino", 34)]
-        [DataField("PRP_C_UF_DESTINO", SqlDbType.VarChar, 150)]
+        [DataField("PRP_C_UF_DESTINO", SqlDbType.VarChar, 2)]
         public string UFDestino { get; set; }
 
         [CsvField("Tipo Container", 35)]

@@ -100,7 +100,7 @@
     $('#formEtapa2').validate({
         rules: {
             Nome: { required: true, maxlength: 150 },
-            Email: { required: true, maxlength: 100 },
+            Email: { required: true, validEmail: true, maxlength: 100 },
             CNPJ: { required: true, maxlength: 20 },
             CEP: { required: true, maxlength: 9 },
             Endereco: { required: true, maxlength: 50 },
@@ -127,4 +127,10 @@
         maxlength: "Forneça não mais que {0} caracteres.",
         email: "Forneça um endereço de email válido."
     });
+
+    jQuery.validator.addMethod("validEmail", function(value, element) {
+        var regex = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+        return this.optional(element) || regex.test(String(value).toLowerCase());
+    }, "Forneça um endereço de email válido.");
 </script>
