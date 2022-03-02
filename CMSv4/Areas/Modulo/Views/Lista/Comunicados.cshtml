@@ -34,8 +34,7 @@
             @Html.Raw(conteudo.Conteudo)
         }
         else
-        {
-            <p>@T("Fique por dentro de todas as novidades da Aliança.")</p>
+        {           
             <span class="icon icon-doc"></span>
             <p class="listagem-noticia--subtitle">@T("Aqui você encontra todos as atualizações dos nossos serviços.")</p>
         }
@@ -77,7 +76,7 @@
                             <h3 class="news--title">@Html.Raw(item.Titulo)</h3>
                             @if (categoria == "comunicados")
                             {
-                                <p>@item.Data.Value.ToString("dd/MM/yyyy")</p>
+                                <p>@item.Data.Value.ToString("MM/yyyy")</p>
                             }
                             @if (!string.IsNullOrEmpty(item.Chamada))
                             {
