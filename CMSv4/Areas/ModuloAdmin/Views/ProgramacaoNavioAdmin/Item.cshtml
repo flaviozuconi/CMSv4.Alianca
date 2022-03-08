@@ -320,33 +320,5 @@
             }, 'Preencha este campo'
         );
 
-        function preencher() {
-            const usuario = $(Usuario).val();
-            const data = $(DataImportacao).val();
-
-            if (!data) {
-                const d = new Date();
-
-                const month = d.getMonth() + 1;
-                const day = d.getDate();
-
-                const output2 = d.getFullYear() + '/' +
-                    (month < 10 ? '0' : '') + month + '/' +
-                    (day < 10 ? '0' : '') + day;
-
-                const output = (day < 10 ? '0' : '') + day + '/' +
-                                (month < 10 ? '0' : '') + month + '/' +
-                                d.getFullYear();
-
-                $(DataImportacao).val(output)
-            }
-
-            if (!usuario) {
-                const usuarioLogado = $(UsuarioLogado).val();
-                $(Usuario).val(usuarioLogado)
-            }
-
-        };
-
     </script>
 }
