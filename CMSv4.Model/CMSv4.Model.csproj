@@ -148,6 +148,8 @@
     <Compile Include="Base\GestaoDeCustosPenalidades\MLGestaoDeCustosPenalidades.cs" />
     <Compile Include="Base\GestaoInformacoesExportacao\MLGestaoInformacoesExportacao.cs" />
     <Compile Include="Base\GestaoInformacoesExportacao\MLGestaoInformacoesExportacaoHistorico.cs" />
+    <Compile Include="Base\GestaoInformacoesImportacao\MLGestaoInformacoesImportacao.cs" />
+    <Compile Include="Base\GestaoInformacoesImportacao\MLGestaoInformacoesImportacaoHistorico.cs" />
     <Compile Include="Base\Grupo\MLGrupo.cs" />
     <Compile Include="Base\Grupo\MLGrupoPermissao.cs" />
     <Compile Include="Base\Grupo\MLGrupoViewModel.cs" />

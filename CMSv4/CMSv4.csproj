@@ -199,6 +199,7 @@
     <Compile Include="Areas\CMS\Controllers\PageSpeedController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\GestaoDeCustosPenalidadesController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\GestaoInformacoesExportacaoController.cs" />
+    <Compile Include="Areas\ModuloAdmin\Controllers\GestaoInformacoesImportacaoController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\ProgramacaoNavioAdminController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\ProgramacaoPropostaController.cs" />
     <Compile Include="Areas\CMS\Controllers\RoxyFilemanController.cs" />
@@ -1978,6 +1979,10 @@
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesExportacao\Index.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesExportacao\_Importar.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesExportacao\_Historico.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\Index.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\Item.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\_Historico.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\_Importar.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />
@@ -2031,6 +2036,7 @@
     <Content Include="Views\Shared\Erro500.cshtml" />
     <Content Include="Templates\programacao-navio-template.xlsx" />
     <Content Include="Templates\gestao-custos-penalidades-template.xlsx" />
+    <Content Include="Templates\gestao-informacoes-importacao-template.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\css\plugins\fancytree\" />

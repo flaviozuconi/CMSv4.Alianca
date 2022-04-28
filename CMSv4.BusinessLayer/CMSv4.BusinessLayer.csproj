@@ -175,6 +175,7 @@
     <Compile Include="Base\Funcionalidade\BLFuncionalidade.cs" />
     <Compile Include="Base\GaleriaMultimidia\BLGaleriaMultimidia.cs" />
     <Compile Include="Base\Galeria\BLGaleria.cs" />
+    <Compile Include="Base\GestaoInformacoesImportacao\BLGestaoInformacoesImportacao.cs" />
     <Compile Include="Base\Grupo\BLGrupo.cs" />
     <Compile Include="Base\HttpContextFactory.cs" />
     <Compile Include="Base\Layout\BLLayout.cs" />
