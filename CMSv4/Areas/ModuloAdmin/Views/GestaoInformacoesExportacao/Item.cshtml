@@ -76,10 +76,58 @@
 
         $('#form').validate({
             rules: {
-                PropostaComercial: { required: true, maxlength: 200 },
-                NumeroBooking: { required: true, maxlength: 200 }
+                PropostaComercial: {
+                    required: true,
+                    maxlength: 200,
+                    remote: {
+                        url: "/cms/@PortalAtual.Diretorio/GestaoInformacoesExportacao/isvalid",
+                        type: "post",
+                        async: false,
+                        loadingPanel: false,
+                        data: {
+                            id: function () {
+                                return $('input[name=Codigo]').val()
+                            },
+                            proposta: function () {
+                                return $('input[name=PropostaComercial]').val()
+                            },
+                            booking: function () {
+                                return $('input[name=NumeroBooking]').val()
+                            }
+                        }
+                    }
+                },
+                NumeroBooking: {
+                    required: true,
+                    maxlength: 200,
+                    remote: {
+                        url: "/cms/@PortalAtual.Diretorio/GestaoInformacoesExportacao/isvalid",
+                        type: "post",
+                        async: false,
+                        loadingPanel: false,
+                        data: {
+                            id: function () {
+                                return $('input[name=Codigo]').val()
+                            },
+                            proposta: function () {
+                                return $('input[name=PropostaComercial]').val()
+                            },
+                            booking: function () {
+                                return $('input[name=NumeroBooking]').val()
+                            }
+                        }
+                    }
+                }
+            },
+            messages: {
+                PropostaComercial: {
+                    remote: "@TAdm("Essa proposta já existe")"
+                },
+                NumeroBooking: {
+                    remote: "@TAdm("Esse número do booking já existe")"
+                }
             }
-        });     
+        });
 
     </script>
 }

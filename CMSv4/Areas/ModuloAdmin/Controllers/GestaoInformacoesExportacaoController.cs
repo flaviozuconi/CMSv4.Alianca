@@ -33,6 +33,23 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         }
         #endregion
 
+        #region Validacao
+        /// <summary>
+        /// Valida se já existe o registro
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="proposta"></param>
+        /// <param name="booking"></param>
+        /// <returns></returns>
+        [CheckPermission(global::Permissao.Modificar)]
+        public JsonResult IsValid(decimal? id, string proposta, string booking)
+        {
+            var validacao = BLGestaoInformacoesExportacao.IsValid(id, proposta, booking);
+
+            return Json(validacao);
+        }
+        #endregion
+
         #region Importar
         /// <summary>
         /// Importa os dados da planilha de Gestao de Informações e Exportação
@@ -71,7 +88,9 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 
             var erros = BLGestaoInformacoesExportacao.Importacao(file, excluir, importacao);
             TempData["SalvoImportacao"] = erros.Length <= 0;
-            return Json(new { success = true });
+
+            return Json(new { success = erros != null && erros.Length > 0 ? false : true, msg = erros});
+            
         }
         #endregion
 
