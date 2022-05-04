@@ -12,9 +12,44 @@ namespace CMSv4.BusinessLayer.Base.GestaoInformacoesImportacao
 {
     public class BLGestaoInformacoesImportacao : BLCRUD<MLGestaoInformacoesImportacao>
     {
+        #region Validacao
+        /// <summary>
+        /// Valida se já existe o registro
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="proposta"></param>
+        /// <param name="booking"></param>
+        /// <param name="numeroBL"></param>
+        /// <returns></returns>
+        public static bool IsValid(decimal? id, string proposta, string booking, string numeroBL)
+        {
+            if (booking.Replace(" ", "") == "")
+            {
+                booking = null;
+            }
+
+            if (proposta.Replace(" ", "") == "")
+            {
+                proposta = null;
+            }
+            
+            if (numeroBL.Replace(" ", "") == "")
+            {
+                numeroBL = null;
+            }
+
+            var model = CRUD.Obter(new MLGestaoInformacoesImportacao() { Codigo = id, PropostaComercial = proposta, NumeroBooking = booking, NumeroBL = numeroBL });
+
+            if (model != null && model.Codigo.HasValue && model.Codigo.Value > 0 && id != model.Codigo)
+                return false;
+
+            return true;
+        }
+        #endregion
+
         #region Importacao
         /// <summary>
-        /// Importa os dados da planilha de Gestao de Informações e Importação
+        /// Importa os dados da planilha de Gestao de Informações de Importação
         /// </summary>
         /// <param name="file"></param>
         /// <param name="excluir"></param>
@@ -124,12 +159,22 @@ namespace CMSv4.BusinessLayer.Base.GestaoInformacoesImportacao
                     Database.ExecuteNonQuery(new SqlCommand("TRUNCATE TABLE MOD_GII_GESTAO_INFORMACOES_IMPORTACAO"));
                 }
 
+                var listaImport = CRUD.Listar<MLGestaoInformacoesImportacao>();
+
                 foreach (var item in lista)
                 {
                     item.CodigoUsuario = codigoUsuario;
                     item.DataAtualizacao = DateTime.Now;
 
-                    new BLCRUD<MLGestaoInformacoesImportacao>().Salvar(item);
+                    var existe = listaImport.Find(x => x.NumeroBooking == item.NumeroBooking && 
+                    x.PropostaComercial == item.PropostaComercial && x.NumeroBL == item.NumeroBL);
+
+                    if (existe != null && existe.Codigo != null)
+                    {
+                        item.Codigo = existe.Codigo;
+                    }
+
+                    new BLCRUD<MLGestaoInformacoesImportacao>().SalvarParcial(item);
                 }
 
                 importacao.Sucesso = true;

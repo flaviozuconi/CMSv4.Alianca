@@ -26,17 +26,34 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         {
             model.CodigoUsuario = BLUsuario.ObterLogado().Codigo;
             model.DataAtualizacao = DateTime.Now;
-
-            SetCodigoPortal(model);
+            
             TempData["Salvo"] = CRUD.Salvar<MLGestaoInformacoesImportacao>(model) > 0;
 
             return RedirectToAction("Index");
         }
         #endregion
 
+        #region Validacao
+        /// <summary>
+        /// Valida se já existe o registro
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="proposta"></param>
+        /// <param name="booking"></param>
+        /// <param name="numeroBL"></param>
+        /// <returns></returns>
+        [CheckPermission(global::Permissao.Modificar)]
+        public JsonResult IsValid(decimal? id, string proposta, string booking, string numeroBL)
+        {
+            var validacao = BLGestaoInformacoesImportacao.IsValid(id, proposta, booking, numeroBL);
+
+            return Json(validacao);
+        }
+        #endregion
+
         #region Importar
         /// <summary>
-        /// Importa os dados da planilha de Gestao de Informações e Importação
+        /// Importa os dados da planilha de Gestao de Informações de Importação
         /// </summary>
         /// <param name="file"></param>
         /// <param name="excluir"></param>
@@ -65,6 +82,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
                 Directory.CreateDirectory(Path.Combine(Server.MapPath($"~/portal/{PortalAtual.Diretorio}/arquivos"), "importacao/GestaoInformacoesImportacao"));
 
             var nomeArquivo = $"{importacao.Codigo + Path.GetExtension(file.FileName)}";
+
             if (file != null)
                 file.SaveAs(Path.Combine(Server.MapPath($"/portal/{PortalAtual.Diretorio}/arquivos/importacao/GestaoInformacoesImportacao"), nomeArquivo));
 
@@ -72,7 +90,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 
             var erros = BLGestaoInformacoesImportacao.Importacao(file, excluir, importacao);
             TempData["SalvoImportacao"] = erros.Length <= 0; 
-            return Json(new { success = true });
+            return Json(new { success = erros != null && erros.Length > 0 ? false : true, msg = erros });
         }
         #endregion
 
