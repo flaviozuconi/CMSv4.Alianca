@@ -22,15 +22,9 @@ namespace CMSv4.BusinessLayer.Base.GestaoInformacoesExportacao
         /// <returns></returns>
         public static bool IsValid(decimal? id, string proposta, string booking)
         {
-            if (booking.Replace(" ", "") == "")
-            {
-                booking = null;
-            }
+            if (booking.Replace(" ", "") == "") booking = null;
 
-            if (proposta.Replace(" ", "") == "")
-            {
-                proposta = null;
-            }
+            if (proposta.Replace(" ", "") == "") proposta = null;
 
             var model = CRUD.Obter(new MLGestaoInformacoesExportacao() { Codigo = id, PropostaComercial = proposta, NumeroBooking = booking});
 

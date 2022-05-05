@@ -44,9 +44,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         [CheckPermission(global::Permissao.Modificar)]
         public JsonResult IsValid(decimal? id, string proposta, string booking)
         {
-            var validacao = BLGestaoInformacoesExportacao.IsValid(id, proposta, booking);
-
-            return Json(validacao);
+            return Json(BLGestaoInformacoesExportacao.IsValid(id, proposta, booking));
         }
         #endregion
 
