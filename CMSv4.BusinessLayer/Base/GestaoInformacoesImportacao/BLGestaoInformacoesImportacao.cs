@@ -23,12 +23,6 @@ namespace CMSv4.BusinessLayer.Base.GestaoInformacoesImportacao
         /// <returns></returns>
         public static bool IsValid(decimal? id, string proposta, string booking, string numeroBL)
         {
-            if (booking.Replace(" ", "") == "") booking = null;
-
-            if (proposta.Replace(" ", "") == "") proposta = null;
-            
-            if (numeroBL.Replace(" ", "") == "") numeroBL = null;
-
             var model = CRUD.Obter(new MLGestaoInformacoesImportacao() { Codigo = id, PropostaComercial = proposta, NumeroBooking = booking, NumeroBL = numeroBL });
 
             if (model != null && model.Codigo.HasValue && model.Codigo.Value > 0 && id != model.Codigo)
