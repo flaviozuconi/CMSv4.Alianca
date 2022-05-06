@@ -2037,6 +2037,7 @@
     <Content Include="Templates\programacao-navio-template.xlsx" />
     <Content Include="Templates\gestao-custos-penalidades-template.xlsx" />
     <Content Include="Templates\gestao-informacoes-importacao-template.xlsx" />
+    <Content Include="Templates\gestao-informacoes-exportacao-template.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\css\plugins\fancytree\" />
