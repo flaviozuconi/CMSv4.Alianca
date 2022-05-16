@@ -1,0 +1,20 @@
+﻿@model MLModuloAgendamentoIntermodal
+@{
+    Layout = "";
+}
+
+<div class="col-md-6">
+    <label>@T("Url Exportação")</label>
+    <input type="text" class="form-control" name="UrlExportacao" id="UrlExportacao" placeholder="@T("Url Exportação")" value="@Model.UrlExportacao">
+</div>
+<div class="col-md-6">
+    <label>@T("Url Importação")</label>
+    <input type="text" class="form-control" name="UrlImportacao" id="UrlImportacao" placeholder="@T("Url Importação")" value="@Model.UrlImportacao">
+</div>
+<div class="col-md-6">
+    <label>@T("Nome View")</label>
+    <select name="NomeModelo" class="form-control">
+        <option value="1">@T("Importação")</option>
+        <option value="2">@T("Exportação")</option>
+    </select>
+</div>

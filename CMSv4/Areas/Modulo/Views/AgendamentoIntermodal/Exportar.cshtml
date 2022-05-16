@@ -1,0 +1,114 @@
+﻿@model MLModuloAgendamentoIntermodal
+@{
+    var estado = (List<MLEstado>)ViewData["estado"];
+}
+
+<div class="box-agendamento">
+    <div class="box-header">
+        <a href="javascript:history.back()" class="btn btn-link">
+            <span class="icon icon-chevron-left"></span>
+            @T("Voltar")
+        </a>
+        <h2 class="box-title">@T("Exportação")</h2>
+    </div>
+
+    <form class="form">
+        <div class="form-section">
+            <h3 class="form-section__title">@T("Informações de Contato")</h3>
+            <div class="row">
+                <div class="col-24 col-md-12">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Nome Completo")</label>
+                        <input type="text" class="form-control is-invalid" placeholder="@T("Digite o nome do responsavel pela contratação")">
+                    </div>
+                </div>
+                <div class="col-24 col-md-12">
+                    <div class="form-group">
+                        <label for="" class="form-label">E-mail</label>
+                        <input type="text" class="form-control" placeholder="@T("Digite o e-mail do responsável")">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-section">
+            <h3 class="form-section__title">@T("Informações de Exportação")</h3>
+            <div class="row justify-content-center">
+                <div class="col-24 col-md-10 col-lg-9 col-xl-7">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Proposta Comercial")</label>
+                        <input type="text" class="form-control" placeholder="@T("Digite o número da sua Proposta")">
+                    </div>
+                </div>
+                <div class="col-24 col-md-10 col-lg-9 col-xl-7">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Número do Booking")</label>
+                        <input type="text" class="form-control" placeholder="@T("Digite o número do Booking")">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-section">
+            <h3 class="form-section__title">Local de Coleta</h3>
+            <div class="row">
+                <div class="col-24 col-sm-10 col-md-8 col-lg-6">
+                    <div class="form-group">
+                        <label for="" class="form-label">CEP</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="00000-000">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline" type="button">
+                                    <span class="icon icon-search"></span>
+                                    <span class="sr-only">Pesquisar</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-24 col-md-8 col-lg-12">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Endereço")</label>
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-md-8 col-lg-6">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Complemento")</label>
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-md-8 col-lg-6 col-xl-8">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Bairro")</label>
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-md-8 col-lg-12 col-xl-8">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Cidade")</label>
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-md-8 col-lg-6 col-xl-8">
+                    <div class="form-group">
+                        <label for="" class="form-label">@T("Estado")</label>
+                        <select name="" id="" class="form-control">
+                            <option value="">Selecione</option>
+                            @foreach (var item in estado)
+                            {
+                                <option value="@item.Uf">@item.Nome</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-section">
+            <div class="form-group text-center">
+                <a href="#" class="btn btn-red btn-lg btn-icon">
+                    <span class="icon icon-chevron-right"></span>
+                    @T("Agendar Containers")
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
