@@ -1,203 +1,291 @@
-﻿@*@model MLModuloFaleConosco
+﻿@model MLAgendamentoIntermodal
 @{
+    var baseUrl = "/portal/" + BLPortal.Atual.Diretorio + "/";
     var portal = BLPortal.Atual;
-    var formId = string.Format("#fale-conosco-div-{0} form", Model.Repositorio);
+
+    var urlCep1 = "https://viacep.com.br/ws/";
+    var urlCep2 = "/json";
 }
-<script src="~/Content/js/placeholderIE.js"></script>
-<script src="/Content/js/jquery.form.min.js" type="text/javascript"></script>
-<script src="/Content/js/plugins/validate/jquery.validate.min.js" type="text/javascript"></script>
-<script src="/Content/js/plugins/validate/additional-methods.min.js" type="text/javascript"></script>
-<script src="~/Content/js/jquery.scrollTo.min.js"></script>
+
+<script src="@baseUrl/js/jquery.min.js"></script>
+<script src="@baseUrl/js/plugins/jquery.mask/jquery.mask.min.js"></script>
+<script src="@baseUrl/js/plugins/jquery.validate/jquery.validate.js"></script>
+<script src="@baseUrl/js/plugins/jquery.validate/additional-methods.min.js"></script>
+
 <script type="text/javascript">
-    $("input[data-telefone]").blur(function () {
-        var $this = $(this);
-        var val = $this.val().replace(/_/g, "");
-        if (val.length == 14) {
-            var t = val.replace("-", "");
+    $(document).ready(function () {
+        Inicializar();
+       
+        $('#FormAgendamento').validate({
+            rules: {
+                Nome: { required: true, maxlength: 150 },
+                Email: { required: true, validEmail: true, maxlength: 200 },
+                NumeroBooking: { required: true, maxlength: 200 },
+                PropostaComercial: { required: true, maxlength: 200 },
+                CEP: { required: true, maxlength: 9 },
+                Endereco: { required: true, maxlength: 200 },
+                Cidade: { required: true, maxlength: 200 },
+                Estado: { required: true, maxlength: 2 },
+            },
+            errorClass: 'is-invalid',
+            errorPlacement: function (error, element) {
+                switch (element.attr("name")) {
+                    case "CEP":
+                        error.appendTo(element.parents('#divCEP'));
+                        break;
 
-            setTimeout(function () {
-                $this.val(t.substr(0, 9) + "-" + t.substr(9));
-            }, 100);
-        }
-    });
-
-    $("input[data-show]").click(function () {
-        var validate = $(this).data("validate");
-
-        if (validate) { //realiza validacao antes de prosseguir
-            var loop = validate.split(",");
-            for (var i = 0; i < loop.length; i++) {
-                $("select[name=" + loop[i] + "], input[name=" + loop[i] + "]").valid(); //valida todos os inputs, selects presentes em data-validate
-            }
-        }
-
-        //verifica se possui erro no formulario antes de prosseguir
-        if ($(this).parents("form").find(".has-error").length == 0) {
-            $($(this).data("show")).slideDown();
-            $(this).remove();
-
-            if ($(this).data("callback")) { //chama função ao término da validação, se houver
-                $(this).data("callback")();
-            }
-        }
-    });
-
-    $("input[data-toggle=popover], select[data-toggle=popover]").blur(function () { //esconder tooltip qnd um elemento perder o foco
-        $(this).popover("hide");
-    });
-
-    $("@formId").validate({
-        ignore: [],
-        highlight: function (element) {
-            $(element).parent().find(".validate").addClass("hide");
-            //$(element).parent().find(".validate").removeClass("hide");
-            $(element).parent().find(".validate").removeClass("alert-success").addClass("alert-danger");
-            $(element).parent().addClass("has-error").removeClass("has-success");
-        },
-        unhighlight: function (element) {
-            $(element).parent().find(".validate").removeClass("alert-danger").addClass("alert-success");
-            $(element).parent().addClass("has-success").removeClass("has-error");
-            $(element).next('.error').addClass('hide');
-        },
-        errorPlacement: function (error, element) {
-            $(element).parent().find(".validate").addClass("hide");
-            //$(element).parent().find(".validate").html(error.text());
-            $(element).data("error-message", error.text());
-            $(element).next('.error').removeClass('hide');
-        },
-        success: function (success, element) {
-            $(element).parent().find(".validate").html("@T("Campo preenchido corretamente")");
-        }
-    });
-
-    $("@formId [type=submit]").click(function () {
-        var $this = $("@formId");
-        var btn = $(this);
-
-        if ($this.valid()) {
-            btn.attr("disabled", "disabled");
-            btn.val("@T("Enviando...")");
-
-            $(".alert").remove();
-
-            if ($("[name=destinatario]").length > 0 && $("[name=destinatario]").val().indexOf("http") > -1) { //se for um http não pode enviar email, apresentar mensagem
-                $this.prepend("<div class='alert alert-danger'>@T("Não é possível enviar email para a área selecionada.") <a href=\"" + $("[name=destinatario]").val() + "\">@T("Clique Aqui para ser direcionado corretamente").</a></div>");
-            }
-            else {
-                $this.ajaxSubmit({
-                    type: "POST",
-                    url: "@Portal.UrlCms(portal)/FaleConosco/Salvar",
-                    success: function (datareturn) {
-                        var data = $.parseJSON(datareturn);
-
-                        if (data.Sucesso == true) {
-                            if ($('#mensagem').length > 0) {
-                                $("#form").fadeOut(function () { $("#mensagem").fadeIn(); });
-                            }
-                            else if (data.Mensagem) {
-                                $this.prepend("<div class='alert alert-success'>" + data.Mensagem + "</div>");
-                            }
-                            else {
-                                $this.prepend("<div class='alert alert-success'>@T("E-mail enviado com sucesso!")</div>");
-                            }
-
-                        }
-                        else {
-                            if (data.Mensagem) {
-                                $this.prepend("<div class='alert alert-danger'>" + data.Mensagem + "</div>");
-                            }
-                            else {
-                                $this.prepend("<div class='alert alert-danger'>@T("Erro no envio de E-mail.")</div>");
-                            }
-                        }
-
-                        btn.removeAttr("disabled");
-                        btn.val("@T("Enviar")");
-
-                        try {
-                            var offsetTop = $this.offset().top - 100;
-
-                            if (offsetTop < 0) {
-                                offsetTop = 0;
-                            }
-
-                            $.scrollTo(offsetTop, 500);
-
-                            //limpar campos
-                            $this.find("input[type=text], input[type=email], textarea").val("");
-
-                            $this.find("select").each(function () {
-                                $(this).val("");
-
-                                try {
-                                    ReloadSelect_@(Model.Repositorio)($(this));
-                                } catch (e) { }
-
-                                $(this).trigger("change");
-                            });
-                        } catch (e) { }
-                    },
-                    error: function (data) {
-                        if (data && data.msg) {
-                            $this.prepend("<div class='alert alert-danger'>" + data.msg + "</div>");
-                        }
-                        else {
-                            $this.prepend("<div class='alert alert-danger'>@T("Erro no envio de Email.")</div>");
-                        }
-
-                        btn.removeAttr("disabled");
-                        btn.val("@T("Enviar")");
-
-                        try {
-                            var offsetTop = $this.offset().top - 100;
-
-                            if (offsetTop < 0) {
-                                offsetTop = 0;
-                            }
-
-                            $.scrollTo(offsetTop, 500);
-                        } catch (e) { }
-                    }
-                });
-            }
-        }
-        else {
-            try {
-                var elm = $('@formId').find(".has-error").first();
-                if (elm.length) {
-                    $.scrollTo(elm.offset().top - 100, 500);
+                    default:
+                        error.insertAfter(element);
+                        break;
                 }
-            } catch (e) { }
-        }
+            }
+        });
+        jQuery.extend(jQuery.validator.messages, {
+            required: "O campo é obrigatório",
+            maxlength: "Forneça não mais que {0} caracteres.",
+            email: "Forneça um endereço de email válido."
+        });
 
-        ///adicionar manualmente mensagem de erro para input file inválido
-        if ($this.find("input[type=file]").length > 0) {
-            $(".msg-erro-etica").remove();
+        jQuery.validator.addMethod("validEmail", function (value, element) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
-            $this.find("input[type=file]").each(function (e) {
-                if (!$(this).valid()) {
-                    var span = $("<span class='msg-erro-etica' />");
+            return this.optional(element) || regex.test(String(value).toLowerCase());
+        }, "Forneça um endereço de email válido.");
+    });
 
-                    span.css("color", "red");
+    // CLICK NO BOTAO SALVAR EXPORTAÇAO
+    $(".btnSalvarJQ").on("click", function (event) {
 
-                    if (!$(this).val()) {
-                        span.html(" " + "@T("Informar arquivo")");
+        $(this).prop("disabled", true);
+        event.preventDefault();
+
+        if ($("#FormAgendamento").valid() == true) {
+             $.ajax({
+                type: "POST",
+                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacao",
+                 data: {
+                    Nome: $("#Nome").val(),
+                    Email: $("#Email").val(),
+                    PropostaComercial: $("#PropostaComercial").val(),
+                    NumeroBooking: $("#NumeroBooking").val(),
+                    CEP: $("#CEP").val(),
+                    CNPJ: $("#CNPJ").val(),
+                    Endereco: $("#Endereco").val(),
+                    Complemento: $("#Complemento").val(),
+                    Bairro: $("#Bairro").val(),
+                    Cidade: $("#Cidade").val(),
+                    Estado: $("#Estado").val()
+                },
+                success: function (data) {
+                    if (data.success == true) {
+                        $("#Nome").prop("disabled", true);
+                        $("#Email").prop("disabled", true);
+                        $("#PropostaComercial").prop("disabled", true);
+                        $("#NumeroBooking").prop("disabled", true);
+                        $("#CEP").prop("disabled", true);
+                        $("#CNPJ").prop("disabled", true);
+                        $("#Complemento").prop("disabled", true);
+                        $("#Endereco").prop("disabled", true);
+                        $("#Bairro").prop("disabled", true);
+                        $("#Cidade").prop("disabled", true);
+                        $("#Estado").prop("disabled", true);
+                        $("#divSalvar").fadeOut("slider");
+                        $("#CodigoExportar").val(data.codigo);
+
+                        $("#divCarga").fadeIn("slide");
                     }
-                    else {
-                        if ($(this).data("error-message")) {
-                            span.html(" " + $(this).data("error-message"));
-                        }
-                        else {
-                            span.html(" " + "@T("Arquivo inválido")");
-                        }
-                    }
-
-                    $(this).parent().append(span);
+                },
+                error: function (data) {
+                   
                 }
             });
         }
-
-        return false;
     });
-</script>*@
+
+    function Inicializar() {
+        $("#CEP").mask("00000-000");
+        $("#CNPJ").mask("00.000.000/0000-00");
+        $("#divSalvar").show();
+        $("#divCarga").hide();
+        $("#divRegistrosCargas").hide();
+        $(".sucessoJQ").hide();
+        $(".btnAgendarJQ").hide();
+        $(".divExclusao").hide();
+        $(".mensagemExclusao").hide();
+    }
+
+    // VALIDAR  O CAMPO PROPOSTA COMERCIAL
+    $("#PropostaComercial").on("blur", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
+            data: { Proposta: $("#PropostaComercial").val(), Booking: '' },
+            success: function (data) {
+                if (data.success == true) {
+                    $('#existPropostaComercial').remove();
+                    if ($("#NumeroBooking").val().length > 0) {
+                        ValidarPropostaBooking($("#PropostaComercial").val(), $("#NumeroBooking").val());
+                    }
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#PropostaComercial").val('');
+                    $('#existPropostaComercial').remove();
+                    $("#PropostaComercial").parent().append("<span id='existPropostaComercial'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe uma Proposta Comercial válida.</label><span>");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    });
+
+     // VALIDAR  O CAMPO NUMERO BOOKING
+    $("#NumeroBooking").on("blur", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
+            data: { Proposta: '', Booking: $("#NumeroBooking").val() },
+            success: function (data) {
+                if (data.success == true) {
+                    $('#existNumeroBooking').remove();
+                    if ($("#PropostaComercial").val().length > 0) {
+                        ValidarPropostaBooking($("#PropostaComercial").val(), $("#NumeroBooking").val());
+                    }
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#NumeroBooking").val('');
+                    $('#existNumeroBooking').remove();
+                    $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe um Número Booking válido.</label><span>");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    });
+
+    function ValidarPropostaBooking(proposta, booking) {
+         $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
+             data: { Proposta: proposta, Booking: booking },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#mensagem").text('');
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#NumeroBooking").val('');
+                    $("#PropostaComercial").val('');
+                    $("#mensagem").text("O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " é inválido.");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    }
+
+    // BUSCA O CEP
+    $("#btnBuscaCEP").on("click", function () {
+        $.ajax({
+            url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
+            dataType: 'json',
+            success: function (resposta) {
+                $("#Endereco").val(resposta.logradouro);
+                $("#Bairro").val(resposta.bairro);
+                $("#Cidade").val(resposta.localidade);
+                $("#Estado").val(resposta.uf);
+
+                $("#Endereco").prop("disabled", true);
+                $("#Bairro").prop("disabled", true);
+                $("#Cidade").prop("disabled", true);
+                $("#Estado").prop("disabled", true);
+            }
+        });
+    });
+
+    // HABILITAR OS CAMPOS QUANDO O CEP É APAGADO
+    $("#CEP").keyup(function () {
+        if ($(this).val().length == 0) {
+            $("#Endereco").prop("disabled", false);
+            $("#Bairro").prop("disabled", false);
+            $("#Cidade").prop("disabled", false);
+            $("#Estado").prop("disabled", false);
+
+            $("#Endereco").val('');
+            $("#Bairro").val('');
+            $("#Cidade").val('');
+            $("#Estado").val('');
+        }
+    });
+
+    // VALIDAR CNPJ
+    function validarCNPJ() {
+        let cnpj = $(CNPJ).val();
+
+        cnpj = cnpj.replace(/[^\d]+/g, '');
+        if (cnpj == '') return false;
+        if (cnpj.length != 14)
+            return false;
+        // Elimina CNPJs invalidos conhecidos
+        if (cnpj == "00000000000000" ||
+            cnpj == "11111111111111" ||
+            cnpj == "22222222222222" ||
+            cnpj == "33333333333333" ||
+            cnpj == "44444444444444" ||
+            cnpj == "55555555555555" ||
+            cnpj == "66666666666666" ||
+            cnpj == "77777777777777" ||
+            cnpj == "88888888888888" ||
+            cnpj == "99999999999999") {
+                $("#CNPJ").addClass('is-invalid');
+                $('#existCNPJ').remove();
+                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                return false;
+            }
+
+            // Valida DVs
+            tamanho = cnpj.length - 2
+            numeros = cnpj.substring(0, tamanho);
+            digitos = cnpj.substring(tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(0)) {
+                $("#CNPJ").addClass('is-invalid');
+                $('#existCNPJ').remove();
+                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                return false;
+            }
+
+            tamanho = tamanho + 1;
+            numeros = cnpj.substring(0, tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(1)) {
+                $("#CNPJ").addClass('is-invalid');
+                $('#existCNPJ').remove();
+                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                return false;
+            }
+    }
+</script>
+
 

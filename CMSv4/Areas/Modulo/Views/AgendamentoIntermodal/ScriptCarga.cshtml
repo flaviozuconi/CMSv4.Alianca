@@ -64,6 +64,7 @@
                         $("#Comentario").val('');
                         $("#DataColeta").val('');
                         $("#Equipamento").val('');
+                        $(".btnAgendarJQ").fadeIn("slide");
                     }
                     else {
                         $("#mensagem").text('');
@@ -81,19 +82,56 @@
     function exibirListagemCargas(model) {
         $("#divRegistrosCargas").fadeIn("slide");
 
-        var registro = "<tr>" +
+        var registro = "<tr class=" + model.Codigo + "_excluir" + ">" +
                             "<td><span class='icon icon-box'></span></td>" +
                             "<td>Container 01</td>" +
                             "<td>" + model.DataColetaFormatada + "</td>" +
                             "<td>" + model.Peso + " kgs" + "</td>" +
-                            "<td><a href='#' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
+                            "<td><a onClick='excluirCarga(" + model.Codigo + ")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
                         "</tr>";
 
         $(".table tbody").append(registro);
     }
 
-    $(".btnAgendarJQ").on("click", function () {
+    function excluirCarga(codigo) {
+        $('.mensagemExclusao').hide();
+        $(".divExclusao").fadeIn("slide");
+        $("#CodigoExcluir").val(codigo);
+    }
 
+    $(".btnExcluirJQ").on("click", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirCarga",
+            data: { Codigo: $("#CodigoExcluir").val() },
+            success: function (data) {
+                if (data.success == true) {
+                    var codigo = "." + $("#CodigoExcluir").val() + "_excluir";
+                    $(codigo).fadeOut("slide");
+                    $("#CodigoExcluir").val('');
+                    $(".divExclusao").fadeOut("slide");
+                    $('.mensagemExclusao').fadeIn("slide");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    });
+
+    $(".btnNaoExcluirJQ").on("click", function () {
+        $(".divExclusao").fadeOut("slide");
+        $("#CodigoExcluir").val('');
+    });
+
+
+    $(".btnAgendarJQ").on("click", function () {
+        $(".agendamentoJQ").hide();
+        $(".sucessoJQ").fadeIn("slide");
+    });
+
+    $(".reloadJQ").on("click", function () {
+        window.location.reload();
     });
 </script>
 

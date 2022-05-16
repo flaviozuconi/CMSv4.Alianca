@@ -242,6 +242,7 @@
     <Compile Include="Areas\ModuloAdmin\Controllers\TakeOrPayAdminController.cs" />
     <Compile Include="Areas\Modulo\Controllers\AgrupadorController.cs" />
     <Compile Include="Areas\Modulo\Controllers\ArquivoRestritoController.cs" />
+    <Compile Include="Areas\Modulo\Controllers\AgendamentoIntermodalController.cs" />
     <Compile Include="Areas\Modulo\Controllers\ScheduleController.cs" />
     <Compile Include="Areas\Modulo\Controllers\TakeOrPayController.cs" />
     <Compile Include="Areas\Modulo\Controllers\ArquivosController.cs" />
@@ -1983,6 +1984,17 @@
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\Item.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\_Historico.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\_Importar.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Editar.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Erro.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Index.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Script.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Sucesso.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\EscolherTipo.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Exportar.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Importar.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ExportarCarga.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ScriptCarga.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ExportarSucesso.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />

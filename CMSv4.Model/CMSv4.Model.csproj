@@ -73,6 +73,8 @@
   <ItemGroup>
     <Compile Include="Alianca\Site\MLSchedule.cs" />
     <Compile Include="Base\AdminCommon.cs" />
+    <Compile Include="Base\AgendamentoIntermodal\MLAgendamentoIntermodal.cs" />
+    <Compile Include="Base\AgendamentoIntermodal\MLModuloAgendamentoIntermodal.cs" />
     <Compile Include="Base\Agrupador\MLAgrupadorPublico.cs" />
     <Compile Include="Base\Agrupador\MLCategoriaAgrupador.cs" />
     <Compile Include="Base\Agrupador\MLModuloAgrupador.cs" />
