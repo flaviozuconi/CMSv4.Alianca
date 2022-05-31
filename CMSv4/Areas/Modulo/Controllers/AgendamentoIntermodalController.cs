@@ -6,6 +6,9 @@ using Framework.Utilities;
 using VM2.Areas.CMS.Helpers;
 using CMSv4.Model;
 using CMSv4.Model.Base.GestaoInformacoesExportacao;
+using System.Net;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace CMSApp.Areas.Modulo.Controllers
 {
@@ -304,9 +307,12 @@ namespace CMSApp.Areas.Modulo.Controllers
                     var portal = PortalAtual.Obter;
 
                     model.DataRegistro = DateTime.Now;
-                    var codigo = CRUD.Salvar(model, portal.ConnectionString);
 
-                    return Json(new { success = true, codigo = codigo });
+                    var  obj = CRUD.Obter(new MLAgendamentoIntermodal { Nome = model.Nome, Email = model.Email });
+
+                    if(obj == null || !obj.Codigo.HasValue) model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
+
+                    return Json(new { success = true, codigo = (model.Codigo ?? obj.Codigo) });
                 }
                 catch (Exception ex)
                 {
@@ -349,6 +355,31 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 ApplicationLog.ErrorLog(ex);
                 return Json(new { success = false, msg = ex.Message });
+            }
+        }
+
+        #endregion
+
+        #region Integrar
+        /// <summary>
+        /// salvar primeira etapa exportacao
+        /// </summary>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult Integrar(MLAgendamentoTicket model, int id, string nome, string email)
+        {
+            try
+            {
+                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = nome, Codigo = id, Email = email  });
+
+                if(!string.IsNullOrEmpty(cliente)) IntegrarTicket(model, "Agendamento_" + id, nome, email);
+
+                return Json(new { success = true});
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message, codigo = 0 });
             }
         }
 
@@ -458,6 +489,190 @@ namespace CMSApp.Areas.Modulo.Controllers
 
             return Json(new { success = false });
         }
+
+        #endregion
+
+        #region Integração
+
+        #region Cliente
+        /// <summary>
+        /// Integrar Cliente
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private string IntegrarCliente(MLAgendamentoIntermodal model)
+        {
+            string retorno = string.Empty;
+
+            var objModel = new MLAgendamentoPerson
+            {
+                id = "Agendamento_" + model.Codigo,
+                codRefAdditional = string.Empty,
+                isActive = true,
+                personType = 1,
+                profileType = 2,
+                accessProfile = "Clients",
+                businessName = model.Nome,
+                corporateName = model.Nome,
+                cpfCnpj = string.Empty,
+                userName = model.Email
+            };
+
+            try
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+
+                #region Request para inserção de pessoa
+                var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoPerson + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
+                webRequest.ContentType = "application/json; charset=utf-8";
+                webRequest.Method = "POST";
+                
+                string jsonSerialize = JsonConvert.SerializeObject(objModel);
+                var dados = Encoding.UTF8.GetBytes(jsonSerialize);
+
+                using (var stream = webRequest.GetRequestStream())
+                {
+                    stream.Write(dados, 0, dados.Length);
+                    stream.Close();
+                }
+
+                using (var resposta = webRequest.GetResponse())
+                {
+                    var streamDados = resposta.GetResponseStream();
+                    StreamReader reader = new StreamReader(streamDados);
+                    string response = reader.ReadToEnd();
+
+                    return retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    #region Request para recber a pessoa
+                    var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoPerson + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=Agendamento_" + model.Codigo);
+                    webRequest.ContentType = "application/json; charset=utf-8";
+                    webRequest.Method = "GET";
+
+                    using (var resposta = webRequest.GetResponse())
+                    {
+                        var streamDados = resposta.GetResponseStream();
+                        StreamReader reader = new StreamReader(streamDados);
+                        string response = reader.ReadToEnd();
+
+                        return retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
+                    }
+                    #endregion
+                }
+                catch (Exception exNew)
+                {
+                    ApplicationLog.ErrorLog(exNew);
+                }
+            }
+
+            return retorno;
+        }
+        #endregion
+
+        #region IntegrarTicket
+        /// <summary>
+        /// Integrar Tickect
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private string IntegrarTicket(MLAgendamentoTicket model, string cliente, string nome, string email)
+        {
+            string retorno = string.Empty;
+
+            var objModel = new MLAgendamentoTicket
+            {
+                type = 2,
+                subject = "assunto",
+                justification = "Justificativa",
+                createdDate = DateTime.Now,
+                origin = 19,
+                description = "alteração"
+            };
+
+            // incluindo o cliente
+            objModel.clients.Add(new Client
+            {
+                id = cliente,
+                personType = 1,
+                profileType = 2,
+                businessName = nome
+            });
+
+            // incluindo a ação
+            objModel.actions.Add(new CMSv4.Model.Action
+            {
+                type = 2,
+                origin = 19,
+                description = "Descrição da ação",
+                justification = "Justificativa",
+                createdDate = DateTime.Now
+            });
+
+            // incluindo a ação
+            objModel.createdBy = new Createdby
+            {
+                id = cliente,
+                personType = 1,
+                profileType = 2,
+                businessName = nome,
+                email = email
+            };
+
+            //// incluindo a ação
+            //var itens = new List<Item>();
+            //itens.Add(new Item { customFieldItem = "Número do Booking" });
+
+            //objModel.customFieldValues.Add(new Customfieldvalue
+            //{
+            //    customFieldId = 41543,
+            //    customFieldRuleId = 46638,
+            //    line = 2,
+            //    value = nome,
+            //    items = itens
+            //});
+
+            try
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+
+                #region Request para inserção de ticket
+                var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoTicket + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
+                webRequest.ContentType = "application/json; charset=utf-8";
+                webRequest.Method = "POST";
+                
+                string jsonSerialize = JsonConvert.SerializeObject(objModel);
+                var dados = Encoding.UTF8.GetBytes(jsonSerialize);
+
+                using (var stream = webRequest.GetRequestStream())
+                {
+                    stream.Write(dados, 0, dados.Length);
+                    stream.Close();
+                }
+
+                using (var resposta = webRequest.GetResponse())
+                {
+                    var streamDados = resposta.GetResponseStream();
+                    StreamReader reader = new StreamReader(streamDados);
+                    string response = reader.ReadToEnd();
+
+                    return retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
+                }
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+            }
+
+            return retorno;
+        }
+        #endregion
 
         #endregion
 

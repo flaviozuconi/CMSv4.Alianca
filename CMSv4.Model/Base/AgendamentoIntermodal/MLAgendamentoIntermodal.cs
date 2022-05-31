@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Framework.Model;
+using Framework.Utilities;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using Framework.Model;
-using Framework.Utilities;
 
 namespace CMSv4.Model
 {
+    #region MLAgendamentoIntermodal
     /// <summary> 
     /// Model da Entidade Agendamento Intermodal
     /// </summary> 
@@ -64,7 +66,9 @@ namespace CMSv4.Model
         public DateTime? DataRegistro { get; set; }
 
     }
+    #endregion
 
+    #region MLAgendamentoIntermodalCarga
     /// <summary> 
     /// Model da Entidade Agendamento Intermodal
     /// </summary> 
@@ -106,4 +110,132 @@ namespace CMSv4.Model
         }
 
     }
+    #endregion  
+
+    #region Integração
+    // https://atendimento.movidesk.com/kb/article/189/movidesk-person-api
+
+    #region MLAgendamentoPerson
+    /// <summary>
+    /// MLAgendamentoPerson
+    ///  persons
+    /// </summary>
+    public class MLAgendamentoPerson
+    {
+        public string id { get; set; }
+        public string codRefAdditional { get; set; }
+        public bool? isActive { get; set; }
+        public int? personType { get; set; }
+        public int? profileType { get; set; }
+        public string accessProfile { get; set; }
+        public string businessName { get; set; }
+        public string corporateName { get; set; }
+        public string cpfCnpj { get; set; }
+        public string userName { get; set; }
+    }
+    #endregion
+
+    #region  MLAgendamentoTicket
+    /// <summary>
+    /// MLAgendamentoTicket
+    /// </summary>
+    public class MLAgendamentoTicket
+    {
+        public int type { get; set; }
+        public string subject { get; set; }
+        public string justification { get; set; }
+        public DateTime createdDate { get; set; }
+        public int origin { get; set; }
+        public string description { get; set; }
+        public List<Client> clients { get; set; }
+        public List<Action> actions { get; set; }
+        public Createdby createdBy { get; set; }
+        //public List<Customfieldvalue> customFieldValues { get; set; }
+
+        public MLAgendamentoTicket()
+        {
+            clients = new List<Client>();
+            actions = new List<Action>();
+            createdBy = new Createdby();
+            //customFieldValues = new List<Customfieldvalue>();
+        }
+    }
+    #endregion
+
+    #region  Createdby
+    /// <summary>
+    /// Createdby
+    /// </summary>
+    public class Createdby
+    {
+        public string id { get; set; }
+        public int personType { get; set; }
+        public int profileType { get; set; }
+        public string businessName { get; set; }
+        public string email { get; set; }
+        public string phone { get; set; }
+    }
+    #endregion
+
+    #region Client
+    /// <summary>
+    /// Client
+    /// </summary>
+    public class Client
+    {
+        public string id { get; set; }
+        public int personType { get; set; }
+        public int profileType { get; set; }
+        public string businessName { get; set; }
+    }
+    #endregion
+
+    #region  Action
+    /// <summary>
+    /// Action
+    /// </summary>
+    public class Action
+    {
+        public int type { get; set; }
+        public int origin { get; set; }
+        public string description { get; set; }
+        public string justification { get; set; }
+        public DateTime createdDate { get; set; }
+    }
+    #endregion
+
+    #region Customfieldvalue
+    /// <summary>
+    /// Customfieldvalue
+    /// </summary>
+    public class Customfieldvalue
+    {
+        public int customFieldId { get; set; }
+        public int customFieldRuleId { get; set; }
+        public int line { get; set; }
+        public string value { get; set; }
+        public List<Item> items { get; set; }
+
+        public Customfieldvalue()
+        {
+            items = new List<Item>();
+        }
+    }
+    #endregion
+
+    #region  Item
+    /// <summary>
+    /// Item
+    /// </summary>
+    public class Item
+    {
+        public object personId { get; set; }
+        public object clientId { get; set; }
+        public object team { get; set; }
+        public string customFieldItem { get; set; }
+    }
+    #endregion
+
+    #endregion
+
 }

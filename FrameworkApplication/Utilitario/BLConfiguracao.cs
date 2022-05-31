@@ -8,6 +8,8 @@ namespace Framework.Utilities
 {
     public static partial class BLConfiguracao
     {
+        #region Geral 
+
         #region ArquivoXML
 
         /// <summary> 
@@ -193,7 +195,103 @@ namespace Framework.Utilities
 
         #endregion
 
+        #region Locais Replicacao
 
+        /// <summary>
+        ///     Locais Replicacao
+        /// </summary>
+        /// <user>vnarcizo</user>
+        public static string[] LocaisReplicacao
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["VM2.CMS.Replicacao.Locais"] != null)
+                    return ConfigurationManager.AppSettings["VM2.CMS.Replicacao.Locais"].Split(';');
+
+                return null;
+            }
+        }
+
+        #region Email Erro replicação arquivo
+
+        /// <summary>
+        ///     Email para enviar o erro na replicação
+        /// </summary>
+        /// <user>rvissontai</user>
+        public static string EmailErroReplicacao
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["VM2.CMS.Replicacao.EmailErro"] != null)
+                {
+                    return ConfigurationManager.AppSettings["VM2.CMS.Replicacao.EmailErro"];
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+        #region UrlIntegracaoPerson
+        /// <summary>
+        /// UrlIntegracaoPerson
+        /// </summary>
+        public static string UrlIntegracaoPerson
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Person"] != null)
+                    return Convert.ToString(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Person"]);
+                else
+                    return "https://api.movidesk.com/public/v1/persons?";
+            }
+        }
+
+        #endregion
+
+        #region UrlIntegracaoToken
+        /// <summary>
+        /// UrlIntegracaoToken
+        /// </summary>
+        public static string UrlIntegracaoToken
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Token"] != null)
+                    return Convert.ToString(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Token"]);
+                else
+                    return "35f58971-abb0-40b4-8254-c2ebdf3b05a6";
+            }
+        }
+
+        #endregion
+
+        #region UrlIntegracaoTicket
+        /// <summary>
+        /// UrlIntegracaoPerson
+        /// </summary>
+        public static string UrlIntegracaoTicket
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Ticket"] != null)
+                    return Convert.ToString(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Ticket"]);
+                else
+                    return "https://api.movidesk.com/public/v1/tickets?";
+            }
+        }
+
+        #endregion
+
+
+        #endregion
+
+        #region Admin
         public static class Admin
         {
             #region TamanhoPaginaGrid
@@ -226,6 +324,9 @@ namespace Framework.Utilities
 
             #endregion
         }
+        #endregion
+
+        #region Pastas
 
         public static class Pastas
         {
@@ -590,6 +691,10 @@ namespace Framework.Utilities
             #endregion
         }
 
+        #endregion
+
+        #region Instalacao
+
         public static class Instalacao
         {
             public static string Pasta
@@ -675,48 +780,6 @@ namespace Framework.Utilities
             }
 
         }
-                
-        #region Locais Replicacao
-
-        /// <summary>
-        ///     Locais Replicacao
-        /// </summary>
-        /// <user>vnarcizo</user>
-        public static string[] LocaisReplicacao
-        {
-            get
-            {
-                if (ConfigurationManager.AppSettings["VM2.CMS.Replicacao.Locais"] != null)
-                    return ConfigurationManager.AppSettings["VM2.CMS.Replicacao.Locais"].Split(';');
-                
-                return null;
-            }
-        }
-
-       
-
-        #region Email Erro replicação arquivo
-
-        /// <summary>
-        ///     Email para enviar o erro na replicação
-        /// </summary>
-        /// <user>rvissontai</user>
-        public static string EmailErroReplicacao
-        {
-            get
-            {
-                if (ConfigurationManager.AppSettings["VM2.CMS.Replicacao.EmailErro"] != null)
-                {
-                    return ConfigurationManager.AppSettings["VM2.CMS.Replicacao.EmailErro"];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
-        #endregion
 
         #endregion
     }

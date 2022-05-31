@@ -18,24 +18,19 @@
         <div class="form-section">
             <div id="mensagem"></div>
             <input type="hidden" name="CodigoExportar" id="CodigoExportar" value="" />
+            <input type="hidden" name="Container" id="Container" value="1" />
             <h3 class="form-section__title">@T("Informações de Contato")</h3>
             <div class="row">
-                <div class="col-24 col-md-8">
+                <div class="col-24 col-md-12">
                     <div class="form-group">
                         <label for="" class="form-label">@T("Nome Completo")</label>
                         <input type="text" class="form-control" required name="Nome" id="Nome" placeholder="@T("Digite o nome do responsavel pela contratação")">
                     </div>
                 </div>
-                <div class="col-24 col-md-8">
+                <div class="col-24 col-md-12">
                     <div class="form-group">
                         <label for="" class="form-label">E-mail</label>
                         <input type="email" class="form-control" required name="Email" id="Email" placeholder="@T("Digite o e-mail do responsável")">
-                    </div>
-                </div>
-                <div class="col-24 col-md-8">
-                    <div class="form-group">
-                        <label for="" class="form-label">CNPJ</label>
-                        <input type="text" class="form-control" required name="CNPJ" id="CNPJ" onblur="validarCNPJ()" placeholder="@T("Digite o CNPJ")">
                     </div>
                 </div>
             </div>
@@ -60,7 +55,13 @@
         <div class="form-section">
             <h3 class="form-section__title">@T("Local de Coleta")</h3>
             <div class="row">
-                <div class="col-24 col-sm-10 col-md-8 col-lg-6">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
+                    <div class="form-group">
+                        <label for="" class="form-label">CNPJ</label>
+                        <input type="text" class="form-control" required name="CNPJ" id="CNPJ" onblur="validarCNPJ()" placeholder="@T("Digite o CNPJ")">
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
                         <label for="" class="form-label">CEP</label>
                         <div class="input-group">
@@ -74,31 +75,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-24 col-md-8 col-lg-12">
+                <div class="col-24 col-lg-16 col-xl-12">
                     <div class="form-group">
                         <label for="" class="form-label">@T("Endereço")</label>
                         <input type="text" id="Endereco" name="Endereco" placeholder="@T("Digite o Endereço")" required class="form-control">
                     </div>
                 </div>
-                <div class="col-24 col-sm-12 col-md-8 col-lg-6">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
                         <label for="" class="form-label">@T("Complemento")</label>
                         <input type="text" id="Complemento" name="Complemento" placeholder="@T("Digite o Complemento")" class="form-control">
                     </div>
                 </div>
-                <div class="col-24 col-sm-12 col-md-8 col-lg-6 col-xl-8">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
                         <label for="" class="form-label">@T("Bairro")</label>
                         <input type="text" id="Bairro" name="Bairro" placeholder="@T("Digite o Bairro")" required class="form-control">
                     </div>
                 </div>
-                <div class="col-24 col-sm-12 col-md-8 col-lg-12 col-xl-8">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
                         <label for="" class="form-label">@T("Cidade")</label>
                         <input type="text" id="Cidade" name="Cidade" placeholder="@T("Digite a Cidade")" required class="form-control">
                     </div>
                 </div>
-                <div class="col-24 col-sm-12 col-md-8 col-lg-6 col-xl-8">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
                         <label for="" class="form-label">@T("Estado")</label>
                         <select id="Estado" name="Estado" required class="form-control">

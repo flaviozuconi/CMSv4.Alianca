@@ -82,15 +82,24 @@
     function exibirListagemCargas(model) {
         $("#divRegistrosCargas").fadeIn("slide");
 
+        var reefer = "";
+        if (model.Reefer == true) {
+            reefer = " <span class='icon icon-snow'></span>";
+        }
+
         var registro = "<tr class=" + model.Codigo + "_excluir" + ">" +
                             "<td><span class='icon icon-box'></span></td>" +
-                            "<td>Container 01</td>" +
+                            "<td>Container" + $("#Container").val() + "</td>" +
+                            "<td>" + model.Equipamento + reefer + "</td>" +
                             "<td>" + model.DataColetaFormatada + "</td>" +
                             "<td>" + model.Peso + " kgs" + "</td>" +
+                            "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> Comentários</td>" +
                             "<td><a onClick='excluirCarga(" + model.Codigo + ")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
                         "</tr>";
 
         $(".table tbody").append(registro);
+
+        $("#Container").val(parseInt($("#Container").val()) + 1);
     }
 
     function excluirCarga(codigo) {
@@ -98,6 +107,15 @@
         $(".divExclusao").fadeIn("slide");
         $("#CodigoExcluir").val(codigo);
     }
+
+    $(".checkmark").on("click", function () {
+        if ($("#Reefer").is(":checked")) {
+            $("#Reefer").prop('checked', false);
+        }
+        else {
+            $("#Reefer").prop('checked', true);
+        }
+    });
 
     $(".btnExcluirJQ").on("click", function () {
         $.ajax({
@@ -124,10 +142,28 @@
         $("#CodigoExcluir").val('');
     });
 
-
     $(".btnAgendarJQ").on("click", function () {
-        $(".agendamentoJQ").hide();
-        $(".sucessoJQ").fadeIn("slide");
+          $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/Integrar",
+              data: {
+                  id: $("#CodigoExportar").val(),
+                  nome: $("#Nome").val(),
+                  email: $("#Email").val(),
+                  Reefer: $("#Reefer").is(':checked'),
+                  Comentario: $("#Comentario").val(),
+                  CodigoExportacao: $("#CodigoExportar").val()
+              },
+            success: function (data) {
+                if (data.success == true) {
+                    $(".agendamentoJQ").hide();
+                    $(".sucessoJQ").fadeIn("slide");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
     });
 
     $(".reloadJQ").on("click", function () {
