@@ -273,7 +273,7 @@ namespace Framework.Utilities
 
         #region UrlIntegracaoTicket
         /// <summary>
-        /// UrlIntegracaoPerson
+        /// UrlIntegracaoTicket
         /// </summary>
         public static string UrlIntegracaoTicket
         {
@@ -288,6 +288,90 @@ namespace Framework.Utilities
 
         #endregion
 
+        #region UrlIntegracaoTicket
+        /// <summary>
+        /// CodigoPropostaComercial
+        /// </summary>
+        public static int CodigoPropostaComercial
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Proposta.Comercial"] != null)
+                    return Convert.ToInt32(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Proposta.Comercial"]);
+                else
+                    return 104484;
+            }
+        }
+
+        #endregion
+
+        #region CodigoBookingNumber
+        /// <summary>
+        /// CodigoBookingNumber
+        /// </summary>
+        public static int CodigoBookingNumber
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Booking.Number"] != null)
+                    return Convert.ToInt32(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Booking.Number"]);
+                else
+                    return 41543;
+            }
+        }
+
+        #endregion
+
+        #region CodigoNumeroBl
+        /// <summary>
+        /// CodigoNumeroBl
+        /// </summary>
+        public static int CodigoNumeroBl
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Numero.Bl"] != null)
+                    return Convert.ToInt32(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Numero.Bl"]);
+                else
+                    return 71868;
+            }
+        }
+
+        #endregion
+
+        #region LocalColeta
+        /// <summary>
+        /// LocalColeta
+        /// </summary>
+        public static int CodigoLocalColeta
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Local.Coleta"] != null)
+                    return Convert.ToInt32(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Local.Coleta"]);
+                else
+                    return 104486;
+            }
+        }
+
+        #endregion
+
+        #region CustomFieldRule
+        /// <summary>
+        /// CustomFieldRule
+        /// </summary>
+        public static int CodigoCustomFieldRule
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.CustomFieldRule"] != null)
+                    return Convert.ToInt32(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.CustomFieldRule"]);
+                else
+                    return 51710;
+            }
+        }
+
+        #endregion
 
         #endregion
 

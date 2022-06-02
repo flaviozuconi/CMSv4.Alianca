@@ -147,12 +147,19 @@
             type: "POST",
             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/Integrar",
               data: {
-                  id: $("#CodigoExportar").val(),
-                  nome: $("#Nome").val(),
-                  email: $("#Email").val(),
-                  Reefer: $("#Reefer").is(':checked'),
-                  Comentario: $("#Comentario").val(),
-                  CodigoExportacao: $("#CodigoExportar").val()
+                  Codigo: $("#CodigoExportar").val(),
+                  Nome: $("#Nome").val(),
+                  Email: $("#Email").val(),
+                  PropostaComercial: $("#PropostaComercial").val(),
+                  NumeroBooking: $("#NumeroBooking").val(),
+                  CEP: $("#CEP").val(),
+                  CNPJ: $("#CNPJ").val(),
+                  Endereco: $("#Endereco").val(),
+                  Complemento: $("#Complemento").val(),
+                  Bairro: $("#Bairro").val(),
+                  Cidade: $("#Cidade").val(),
+                  Estado: $("#Estado").val(),
+                  Html: $("#divRegistrosCargas").html()
               },
             success: function (data) {
                 if (data.success == true) {

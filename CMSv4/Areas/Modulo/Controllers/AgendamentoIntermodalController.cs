@@ -366,13 +366,14 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         [HttpPost]
         [CheckPermission(global::Permissao.Publico)]
-        public JsonResult Integrar(MLAgendamentoTicket model, int id, string nome, string email)
+        [ValidateInput(false)]
+        public JsonResult Integrar(MLAgendamentoIntermodal model, string html)
         {
             try
             {
-                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = nome, Codigo = id, Email = email  });
+                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = model.Nome, Codigo = model.Codigo, Email = model.Email });
 
-                if(!string.IsNullOrEmpty(cliente)) IntegrarTicket(model, "Agendamento_" + id, nome, email);
+                if(!string.IsNullOrEmpty(cliente)) IntegrarTicket(model, html);
 
                 return Json(new { success = true});
             }
@@ -506,16 +507,16 @@ namespace CMSApp.Areas.Modulo.Controllers
 
             var objModel = new MLAgendamentoPerson
             {
-                id = "Agendamento_" + model.Codigo,
+                id = "461505746", //"Agendamento_" + model.Codigo,
                 codRefAdditional = string.Empty,
                 isActive = true,
                 personType = 1,
                 profileType = 2,
                 accessProfile = "Clients",
-                businessName = model.Nome,
-                corporateName = model.Nome,
+                businessName = "DMRSE-1200", // model.Nome,
+                corporateName = "DMRSE-1200", // model.Nome,
                 cpfCnpj = string.Empty,
-                userName = model.Email
+                userName = "email@gerador.com" //model.Email
             };
 
             try
@@ -550,8 +551,8 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 try
                 {
-                    #region Request para recber a pessoa
-                    var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoPerson + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=Agendamento_" + model.Codigo);
+                    #region Get para recber a pessoa
+                    var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoPerson + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=461505746"); // "&id=Agendamento_" + model.Codigo);
                     webRequest.ContentType = "application/json; charset=utf-8";
                     webRequest.Method = "GET";
 
@@ -581,30 +582,33 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private string IntegrarTicket(MLAgendamentoTicket model, string cliente, string nome, string email)
+        private string IntegrarTicket(MLAgendamentoIntermodal model, string Html)
         {
             string retorno = string.Empty;
 
             var objModel = new MLAgendamentoTicket
             {
                 type = 2,
-                subject = "assunto",
-                justification = "Justificativa",
+                subject = "[DMRSE-1200] Agendamento Intermodal – Tipo de operação – Booking",
+                serviceFull = "278116",
+                category = "Service Request",
+                urgency = "Normal",
+                ownerTeam = "DS-CX-CI@",
                 createdDate = DateTime.Now,
-                origin = 19,
-                description = "alteração"
+                description = Html
             };
 
-            // incluindo o cliente
+            #region cliente
             objModel.clients.Add(new Client
             {
-                id = cliente,
+                id = "461505746",//cliente, "Agendamento_" + modelCliente.Codigo, 
                 personType = 1,
                 profileType = 2,
-                businessName = nome
+                businessName = "DMRSE-1200"//nome
             });
+            #endregion 
 
-            // incluindo a ação
+            #region ação
             objModel.actions.Add(new CMSv4.Model.Action
             {
                 type = 2,
@@ -613,29 +617,54 @@ namespace CMSApp.Areas.Modulo.Controllers
                 justification = "Justificativa",
                 createdDate = DateTime.Now
             });
+            #endregion
 
-            // incluindo a ação
+            #region create
             objModel.createdBy = new Createdby
             {
-                id = cliente,
+                id = "461505746",//cliente,
                 personType = 1,
                 profileType = 2,
-                businessName = nome,
-                email = email
+                businessName = "DMRSE-1200", //nome,
+                email = "email@gerador.com"//email
             };
+            #endregion
 
-            //// incluindo a ação
-            //var itens = new List<Item>();
-            //itens.Add(new Item { customFieldItem = "Número do Booking" });
+            #region campos adicionais
+
+            objModel.customFieldValues.Add(new Customfieldvalue
+            {
+                customFieldId = BLConfiguracao.CodigoPropostaComercial,
+                customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                line = 1,
+                value = "CX.IMD - PROPOSTA COMERCIAL - " + model.PropostaComercial
+            });
+
+            objModel.customFieldValues.Add(new Customfieldvalue
+            {
+                customFieldId = BLConfiguracao.CodigoBookingNumber,
+                customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                line = 1,
+                value = "BOOKING NUMBER - " + model.NumeroBooking
+            });
 
             //objModel.customFieldValues.Add(new Customfieldvalue
             //{
-            //    customFieldId = 41543,
-            //    customFieldRuleId = 46638,
-            //    line = 2,
-            //    value = nome,
-            //    items = itens
+            //    customFieldId = BLConfiguracao.CodigoNumeroBl,
+            //    customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+            //    line = 1,
+            //    value = "BL number - "
             //});
+
+            objModel.customFieldValues.Add(new Customfieldvalue
+            {
+                customFieldId = BLConfiguracao.CodigoLocalColeta,
+                customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                line = 1,
+                value = "Local de coleta - " + Endereco(model)
+            });
+
+            #endregion
 
             try
             {
@@ -672,6 +701,24 @@ namespace CMSApp.Areas.Modulo.Controllers
 
             return retorno;
         }
+
+        #region Endereço
+        /// <summary>
+        /// Endereco
+        /// </summary>
+        /// <param name="modelCliente"></param>
+        /// <returns></returns>
+        private string Endereco(MLAgendamentoIntermodal modelCliente)
+        {
+            var separador = ";";
+
+            return (modelCliente.CNPJ ?? string.Empty) + separador + (modelCliente.CEP ?? string.Empty) + separador +
+                   (modelCliente.Endereco ?? string.Empty) + separador + (modelCliente.Complemento ?? string.Empty) +
+                   (modelCliente.Bairro ?? string.Empty) + separador + (modelCliente.Cidade ?? string.Empty) + separador +
+                   (modelCliente.Estado ?? string.Empty);
+        }
+        #endregion
+
         #endregion
 
         #endregion

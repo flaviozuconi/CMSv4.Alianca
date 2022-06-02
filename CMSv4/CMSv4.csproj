@@ -1985,10 +1985,8 @@
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\_Historico.cshtml" />
     <Content Include="Areas\ModuloAdmin\Views\GestaoInformacoesImportacao\_Importar.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Editar.cshtml" />
-    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Erro.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Index.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Script.cshtml" />
-    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Sucesso.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\EscolherTipo.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Exportar.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\Importar.cshtml" />
