@@ -20,8 +20,8 @@
             rules: {
                 Nome: { required: true, maxlength: 150 },
                 Email: { required: true, validEmail: true, maxlength: 200 },
-                NumeroBooking: { required: true, maxlength: 200 },
-                PropostaComercial: { required: true, maxlength: 200 },
+                //NumeroBooking: { required: true, maxlength: 200 },
+                //PropostaComercial: { required: true, maxlength: 200 },
                 CEP: { required: true, maxlength: 9 },
                 Endereco: { required: true, maxlength: 200 },
                 Cidade: { required: true, maxlength: 200 },
@@ -55,6 +55,9 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarJQ").on("click", function (event) {
+
+        $("#NumeroBooking-error").remove();
+        $("#PropostaComercial-error").remove();
 
         $(this).prop("disabled", true);
         event.preventDefault();
@@ -116,6 +119,7 @@
 
     // VALIDAR  O CAMPO PROPOSTA COMERCIAL
     $("#PropostaComercial").on("blur", function () {
+
         $.ajax({
             type: "POST",
             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
@@ -133,6 +137,7 @@
                     $("#PropostaComercial").val('');
                     $('#existPropostaComercial').remove();
                     $("#PropostaComercial").parent().append("<span id='existPropostaComercial'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe uma Proposta Comercial válida.</label><span>");
+                    $("#PropostaComercial-error").remove();
                 }
             },
             error: function (data) {
@@ -160,6 +165,7 @@
                     $("#NumeroBooking").val('');
                     $('#existNumeroBooking').remove();
                     $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe um Número Booking válido.</label><span>");
+                    $("#NumeroBooking-error").remove();
                 }
             },
             error: function (data) {
@@ -183,6 +189,9 @@
                     $("#NumeroBooking").val('');
                     $("#PropostaComercial").val('');
                     $("#mensagem").text("O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " é inválido.");
+
+                    $("#NumeroBooking-error").remove();
+                    $("#PropostaComercial-error").remove();
                 }
             },
             error: function (data) {
@@ -197,15 +206,27 @@
             url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
             dataType: 'json',
             success: function (resposta) {
-                $("#Endereco").val(resposta.logradouro);
-                $("#Bairro").val(resposta.bairro);
-                $("#Cidade").val(resposta.localidade);
-                $("#Estado").val(resposta.uf);
+                if (resposta.localidade != '' && resposta.bairro != '' && resposta.uf != '') {
+                    $("#Endereco").val(resposta.logradouro);
+                    $("#Bairro").val(resposta.bairro);
+                    $("#Cidade").val(resposta.localidade);
+                    $("#Estado").val(resposta.uf);
 
-                $("#Endereco").prop("disabled", true);
-                $("#Bairro").prop("disabled", true);
-                $("#Cidade").prop("disabled", true);
-                $("#Estado").prop("disabled", true);
+                    $("#Endereco").prop("disabled", true);
+                    $("#Bairro").prop("disabled", true);
+                    $("#Cidade").prop("disabled", true);
+                    $("#Estado").prop("disabled", true);
+
+                    $("#Endereco").removeClass('is-invalid');
+                    $("#Bairro").removeClass('is-invalid');
+                    $("#Cidade").removeClass('is-invalid');
+                    $("#Estado").removeClass('is-invalid');
+
+                    $("#Endereco-error").remove();
+                    $("#Bairro-error").remove();
+                    $("#Cidade-error").remove();
+                    $("#Estado-error").remove();
+                }
             }
         });
     });
