@@ -141,23 +141,25 @@ namespace CMSv4.Model
     /// </summary>
     public class MLAgendamentoTicket
     {
-        public int type { get; set; }
-        public string subject { get; set; }
-        public string justification { get; set; }
+        public int type             { get; set; }
+        public string subject       { get; set; }
+        public string serviceFull   { get; set; }
+        public string category      { get; set; }
+        public string urgency       { get; set; }
+        public string ownerTeam     { get; set; }
+        public string description   { get; set; }
         public DateTime createdDate { get; set; }
-        public int origin { get; set; }
-        public string description { get; set; }
         public List<Client> clients { get; set; }
         public List<Action> actions { get; set; }
-        public Createdby createdBy { get; set; }
-        //public List<Customfieldvalue> customFieldValues { get; set; }
+        public Createdby createdBy  { get; set; }
+        public List<Customfieldvalue> customFieldValues { get; set; }
 
         public MLAgendamentoTicket()
         {
             clients = new List<Client>();
             actions = new List<Action>();
             createdBy = new Createdby();
-            //customFieldValues = new List<Customfieldvalue>();
+            customFieldValues = new List<Customfieldvalue>();
         }
     }
     #endregion
