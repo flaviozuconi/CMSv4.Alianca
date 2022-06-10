@@ -1,0 +1,36 @@
+﻿@model MLAgendamentoIntermodalImportacao
+@{
+}
+
+<form class="form" id="FormCarga">
+    <div class="form-section" id="divCarga">
+        <h3 class="form-section__title">@T("Informações de Carga")</h3>
+        <p class="text-center">@T("Utilize os campos abaixo para registrar os containers. Indique a quantidade de containers por NF-e.")</p>
+        <div class="row justify-content-center">
+            <div class="col-24 col-sm-10 col-md-8 col-lg-8">
+                <div class="form-group">
+                    <button class="btn btn-darkgray btn-icon btn-block">
+                        <span class="icon icon-plus"></span>
+                        @T("Um container com uma NF-e")
+                    </button>
+                </div>
+            </div>
+            <div class="col-24 col-sm-10 col-md-8 col-lg-8">
+                <div class="form-group">
+                    <button class="btn btn-darkgray btn-icon btn-block">
+                        <span class="icon icon-plus"></span>
+                        @T("Um container com várias NF-e")
+                    </button>
+                </div>
+            </div>
+            <div class="col-24 col-sm-10 col-md-8 col-lg-8">
+                <div class="form-group">
+                    <button class="btn btn-darkgray btn-icon btn-block">
+                        <span class="icon icon-plus"></span>
+                        @T("Uma NF-e para vários containers")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

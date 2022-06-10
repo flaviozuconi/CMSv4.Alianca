@@ -1,0 +1,346 @@
+﻿@model MLAgendamentoIntermodalImportacao
+@{
+    var baseUrl = "/portal/" + BLPortal.Atual.Diretorio + "/";
+    var portal = BLPortal.Atual;
+
+    var urlCep1 = "https://viacep.com.br/ws/";
+    var urlCep2 = "/json";
+}
+
+<script src="@baseUrl/js/jquery.min.js"></script>
+<script src="@baseUrl/js/plugins/jquery.mask/jquery.mask.min.js"></script>
+<script src="@baseUrl/js/plugins/jquery.validate/jquery.validate.js"></script>
+<script src="@baseUrl/js/plugins/jquery.validate/additional-methods.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        Inicializar();
+       
+        $('#FormAgendamento').validate({
+            rules: {
+                Nome: { required: true, maxlength: 150 },
+                Email: { required: true, validEmail: true, maxlength: 200 },
+                NumeroBooking: { required: true, maxlength: 200 },
+                PropostaComercial: { required: true, maxlength: 200 },
+                NumeroBL: { required: true, maxlength:200 },
+                CEP: { required: true, maxlength: 9 },
+                Endereco: { required: true, maxlength: 200 },
+                Cidade: { required: true, maxlength: 200 },
+                Estado: { required: true, maxlength: 2 },
+            },
+            errorClass: 'is-invalid',
+            errorPlacement: function (error, element) {
+                switch (element.attr("name")) {
+                    case "CEP":
+                        error.appendTo(element.parents('#divCEP'));
+                        break;
+
+                    default:
+                        error.insertAfter(element);
+                        break;
+                }
+            }
+        });
+        jQuery.extend(jQuery.validator.messages, {
+            required: "O campo é obrigatório",
+            maxlength: "Forneça não mais que {0} caracteres.",
+            email: "Forneça um endereço de email válido."
+        });
+
+        jQuery.validator.addMethod("validEmail", function (value, element) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+            return this.optional(element) || regex.test(String(value).toLowerCase());
+        }, "Forneça um endereço de email válido.");
+    });
+
+    // CLICK NO BOTAO SALVAR EXPORTAÇAO
+    $(".btnSalvarJQ").on("click", function (event) {
+
+        $(this).prop("disabled", true);
+        event.preventDefault();
+
+        if ($("#FormAgendamento").valid() == true) {
+             $.ajax({
+                type: "POST",
+                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
+                 data: {
+                    Nome: $("#nome").val(),
+                    Email: $("#email").val(),
+                    PropostaComercial: $("#propostaComercial").val(),
+                     NumeroBooking: $("#numeroBooking").val(),
+                     NumeroBL: $("#numeroBl").val(),
+                    CEP: $("#cep").val(),
+                    CNPJ: $("#cnpj").val(),
+                    Endereco: $("#endereco").val(),
+                    Complemento: $("#complemento").val(),
+                    Bairro: $("#bairro").val(),
+                    Cidade: $("#cidade").val(),
+                    Estado: $("#estado").val()
+                },
+                success: function (data) {
+                    if (data.success == true) {
+                        $("#nome").prop("disabled", true);
+                        $("#email").prop("disabled", true);
+                        $("#propostaComercial").prop("disabled", true);
+                        $("#numeroBooking").prop("disabled", true);
+                        $("#numeroBl").prop("disabled", true);
+                        $("#cep").prop("disabled", true);
+                        $("#cnpj").prop("disabled", true);
+                        $("#complemento").prop("disabled", true);
+                        $("#endereco").prop("disabled", true);
+                        $("#bairro").prop("disabled", true);
+                        $("#cidade").prop("disabled", true);
+                        $("#estado").prop("disabled", true);
+                        $("#divSalvar").fadeOut("slider");
+                        $("#codigoImportar").val(data.codigo);
+
+                        //$("#divCarga").fadeIn("slide");
+                    }
+                },
+                error: function (data) {
+                   
+                }
+            });
+        }
+    });
+
+    function Inicializar() {
+        $("#cep").mask("00000-000");
+        $("#cnpj").mask("00.000.000/0000-00");
+        //$("#divSalvar").show();
+        //$("#divCarga").hide();
+        //$("#divRegistrosCargas").hide();
+        //$(".sucessoJQ").hide();
+        //$(".btnAgendarJQ").hide();
+        //$(".divExclusao").hide();
+        //$(".mensagemExclusao").hide();
+    }
+
+    // VALIDAR  O CAMPO PROPOSTA COMERCIAL
+    $("#propostaComercial").on("blur", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposImportacao",
+            data: { proposta: $("#propostaComercial").val(), booking: '', numeroBl: '' },
+            success: function (data) {
+                if (data.success == true) {
+                    $('#existPropostaComercial').remove();
+                    if ($("#numeroBooking").val().length > 0) {
+                        ValidarPropostaBooking($("#propostaComercial").val(), $("#numeroBooking").val());
+                    }
+                    if ($("#numeroBl").val().length > 0) {
+                        ValidarPropostaNumeroBl($("#propostaComercial").val(), $("#numeroBl").val());
+                    }
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#PropostaComercial").val('');
+                    $('#existPropostaComercial').remove();
+                    $("#PropostaComercial").parent().append("<span id='existPropostaComercial'><label id='PropostaComercial-error' class='is-invalid' for='propostaComercial'>" + data.msg +"</label><span>");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    });
+
+    // VALIDAR  O CAMPO NUMERO BOOKING
+    $("#NumeroBooking").on("blur", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
+            data: { Proposta: $("#PropostaComercial").val(), Booking: $("#numeroBooking").val(), numeroBl: '' },
+            success: function (data) {
+                if (data.success == true) {
+                    $('#existNumeroBooking').remove();
+                    
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#NumeroBooking").val('');
+                    $('#existNumeroBooking').remove();
+                    $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>" + data.msg +"</label><span>");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    });
+
+    // VALIDAR  O CAMPO NUMERO BL
+    $("#numeroBl").on("blur", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
+            data: { Proposta: $("#PropostaComercial").val(), Booking: '', numeroBl: $("#numeroBl").val() },
+            success: function (data) {
+                if (data.success == true) {
+                    $('#existNumeroBl').remove();
+                    
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#NumeroBl").val('');
+                    $('#existNumeroBl').remove();
+                    $("#NumeroBl").parent().append("<span id='existNumeroBl'><label id='NumeroBl-error' class='is-invalid' for='numeroBl'>" + data.msg +"</label><span>");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    });
+
+    function ValidarPropostaBooking(proposta, booking) {
+         $.ajax({
+            type: "POST",
+             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposImportacao",
+             data: { Proposta: proposta, Booking: booking, NumeroBl: '' },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#mensagem").text('');
+                    $('#existNumeroBooking').remove();
+
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#NumeroBooking").val('');
+                    
+                    $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " são inválidos.</label><span>");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    }
+
+    function ValidarPropostaNumeroBl(proposta, numeroBl) {
+         $.ajax({
+            type: "POST",
+             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposImportacao",
+             data: { Proposta: proposta, Booking: '', NumeroBl: numeroBl },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#mensagem").text('');
+                    $('#existNumeroBl').remove();
+                    return false;
+                }
+                else {
+                    $("#mensagem").text('');
+                    $("#numeroBl").val('');
+                    
+                    $("#numeroBl").parent().append("<span id='existNumeroBl'><label id='NumeroBl-error' class='is-invalid' for='NumeroBl'>O campo Proposta Comercial: " + proposta + " e  Número BL: " + numeroBl + " são inválidos.</label><span>");
+                }
+            },
+            error: function (data) {
+                   
+            }
+        });
+    }
+
+    // BUSCA O CEP
+    $("#btnBuscaCEP").on("click", function () {
+        $.ajax({
+            url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
+            dataType: 'json',
+            success: function (resposta) {
+                $("#Endereco").val(resposta.logradouro);
+                $("#Bairro").val(resposta.bairro);
+                $("#Cidade").val(resposta.localidade);
+                $("#Estado").val(resposta.uf);
+
+                $("#Endereco").prop("disabled", true);
+                $("#Bairro").prop("disabled", true);
+                $("#Cidade").prop("disabled", true);
+                $("#Estado").prop("disabled", true);
+            }
+        });
+    });
+
+    // HABILITAR OS CAMPOS QUANDO O CEP É APAGADO
+    $("#CEP").keyup(function () {
+        if ($(this).val().length == 0) {
+            $("#Endereco").prop("disabled", false);
+            $("#Bairro").prop("disabled", false);
+            $("#Cidade").prop("disabled", false);
+            $("#Estado").prop("disabled", false);
+
+            $("#Endereco").val('');
+            $("#Bairro").val('');
+            $("#Cidade").val('');
+            $("#Estado").val('');
+        }
+    });
+
+    // VALIDAR CNPJ
+    function validarCNPJ() {
+        let cnpj = $(CNPJ).val();
+
+        cnpj = cnpj.replace(/[^\d]+/g, '');
+        if (cnpj == '') return false;
+        if (cnpj.length != 14)
+            return false;
+        // Elimina CNPJs invalidos conhecidos
+        if (cnpj == "00000000000000" ||
+            cnpj == "11111111111111" ||
+            cnpj == "22222222222222" ||
+            cnpj == "33333333333333" ||
+            cnpj == "44444444444444" ||
+            cnpj == "55555555555555" ||
+            cnpj == "66666666666666" ||
+            cnpj == "77777777777777" ||
+            cnpj == "88888888888888" ||
+            cnpj == "99999999999999") {
+                $("#CNPJ").addClass('is-invalid');
+                $('#existCNPJ').remove();
+                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                return false;
+            }
+
+            // Valida DVs
+            tamanho = cnpj.length - 2
+            numeros = cnpj.substring(0, tamanho);
+            digitos = cnpj.substring(tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(0)) {
+                $("#CNPJ").addClass('is-invalid');
+                $('#existCNPJ').remove();
+                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                return false;
+            }
+
+            tamanho = tamanho + 1;
+            numeros = cnpj.substring(0, tamanho);
+            soma = 0;
+            pos = tamanho - 7;
+            for (i = tamanho; i >= 1; i--) {
+                soma += numeros.charAt(tamanho - i) * pos--;
+                if (pos < 2)
+                    pos = 9;
+            }
+            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+            if (resultado != digitos.charAt(1)) {
+                $("#CNPJ").addClass('is-invalid');
+                $('#existCNPJ').remove();
+                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                return false;
+            }
+    }
+</script>
+
+

@@ -1,0 +1,174 @@
+﻿@model MLAgendamentoIntermodal
+@{
+    var portal = BLPortal.Atual;
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#FormCarga').validate({
+            rules: {
+                DataColeta: { required: true },
+                Peso: { required: true },
+                Equipamento: { required: true },
+            },
+            errorClass: 'is-invalid',
+            errorPlacement: function (error, element) {
+                switch (element.attr("name")) {
+                    case "CEP":
+                        error.appendTo(element.parents('#divCEP'));
+                        break;
+
+                    default:
+                        error.insertAfter(element);
+                        break;
+                }
+            }
+        });
+
+        jQuery.extend(jQuery.validator.messages, {
+            required: "O campo é obrigatório",
+            maxlength: "Forneça não mais que {0} caracteres.",
+            email: "Forneça um endereço de email válido."
+        });
+
+        jQuery.validator.addMethod("validEmail", function (value, element) {
+            var regex = /^([a-zA-Z0-9_.+-])+\@@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+
+            return this.optional(element) || regex.test(String(value).toLowerCase());
+        }, "Forneça um endereço de email válido.");
+    });
+
+    // CLICK NO BOTAO SALVAR EXPORTAÇAO
+    $(".btnSalvarCargaJQ").on("click", function (event) {
+        $(this).prop("disabled", true);
+        event.preventDefault();
+
+        if ($("#FormCarga").valid() == true) {
+             $.ajax({
+                type: "POST",
+                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacaoCarga",
+                 data: {
+                    DataColeta: $("#DataColeta").val(),
+                    Peso: $("#Peso").val(),
+                    Equipamento: $("#Equipamento").val(),
+                    Reefer: $("#Reefer").is(':checked'),
+                    Comentario: $("#Comentario").val(),
+                    CodigoExportacao: $("#CodigoExportar").val()
+                },
+                success: function (data) {
+                    if (data.success == true) {
+                        exibirListagemCargas(data.model);
+
+                        $("#Peso").val('');
+                        $("#Comentario").val('');
+                        $("#DataColeta").val('');
+                        $("#Equipamento").val('');
+                        $(".btnAgendarJQ").fadeIn("slide");
+                    }
+                    else {
+                        $("#mensagem").text('');
+                        $("#mensagem").text(data.msg);
+                        $('html, body').animate({ scrollTop: 0 }, 800);
+                    }
+                },
+                error: function (data) {
+                   
+                }
+            });
+        }
+    });
+
+    function exibirListagemCargas(model) {
+        $("#divRegistrosCargas").fadeIn("slide");
+
+        var reefer = "";
+        if (model.Reefer == true) {
+            reefer = " <span class='icon icon-snow'></span>";
+        }
+
+        var registro = "<tr class=" + model.Codigo + "_excluir" + ">" +
+                            "<td><span class='icon icon-box'></span></td>" +
+                            "<td>Container" + $("#Container").val() + "</td>" +
+                            "<td>" + model.Equipamento + reefer + "</td>" +
+                            "<td>" + model.DataColetaFormatada + "</td>" +
+                            "<td>" + model.Peso + " kgs" + "</td>" +
+                            "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> Comentários</td>" +
+                            "<td><a onClick='excluirCarga(" + model.Codigo + ")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
+                        "</tr>";
+
+        $(".table tbody").append(registro);
+
+        $("#Container").val(parseInt($("#Container").val()) + 1);
+    }
+
+    function excluirCarga(codigo) {
+        $('.mensagemExclusao').hide();
+        $(".divExclusao").fadeIn("slide");
+        $("#CodigoExcluir").val(codigo);
+    }
+
+    $(".checkmark").on("click", function () {
+        if ($("#Reefer").is(":checked")) {
+            $("#Reefer").prop('checked', false);
+        }
+        else {
+            $("#Reefer").prop('checked', true);
+        }
+    });
+
+    $(".btnExcluirJQ").on("click", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirCarga",
+            data: { Codigo: $("#CodigoExcluir").val() },
+            success: function (data) {
+                if (data.success == true) {
+                    var codigo = "." + $("#CodigoExcluir").val() + "_excluir";
+                    $(codigo).fadeOut("slide");
+                    $("#CodigoExcluir").val('');
+                    $(".divExclusao").fadeOut("slide");
+                    $('.mensagemExclusao').fadeIn("slide");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    });
+
+    $(".btnNaoExcluirJQ").on("click", function () {
+        $(".divExclusao").fadeOut("slide");
+        $("#CodigoExcluir").val('');
+    });
+
+    $(".btnAgendarJQ").on("click", function () {
+          $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/Integrar",
+              data: {
+                  id: $("#CodigoExportar").val(),
+                  nome: $("#Nome").val(),
+                  email: $("#Email").val(),
+                  Reefer: $("#Reefer").is(':checked'),
+                  Comentario: $("#Comentario").val(),
+                  CodigoExportacao: $("#CodigoExportar").val()
+              },
+            success: function (data) {
+                if (data.success == true) {
+                    $(".agendamentoJQ").hide();
+                    $(".sucessoJQ").fadeIn("slide");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    });
+
+    $(".reloadJQ").on("click", function () {
+        window.location.reload();
+    });
+</script>
+
+
