@@ -7,15 +7,15 @@
     var urlCep2 = "/json";
 }
 
-<script src="@baseUrl/js/jquery.min.js"></script>
 <script src="@baseUrl/js/plugins/jquery.mask/jquery.mask.min.js"></script>
+<script src="/Content/js/jquery.maskMoney.min.js"></script>
 <script src="@baseUrl/js/plugins/jquery.validate/jquery.validate.js"></script>
 <script src="@baseUrl/js/plugins/jquery.validate/additional-methods.min.js"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
         Inicializar();
-       
+
         $('#FormAgendamento').validate({
             rules: {
                 Nome: { required: true, maxlength: 150 },
@@ -54,7 +54,7 @@
         }, "Forneça um endereço de email válido.");
     });
 
-    // CLICK NO BOTAO SALVAR EXPORTAÇAO
+    //CLICK NO BOTAO SALVAR IMPORTAÇÃO
     $(".btnSalvarJQ").on("click", function (event) {
 
         $(this).prop("disabled", true);
@@ -65,19 +65,20 @@
                 type: "POST",
                  url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
                  data: {
-                    Nome: $("#nome").val(),
-                    Email: $("#email").val(),
-                    PropostaComercial: $("#propostaComercial").val(),
+                     Nome: $("#nome").val(),
+                     Email: $("#email").val(),
+                     PropostaComercial: $("#propostaComercial").val(),
                      NumeroBooking: $("#numeroBooking").val(),
                      NumeroBL: $("#numeroBl").val(),
-                    CEP: $("#cep").val(),
-                    CNPJ: $("#cnpj").val(),
-                    Endereco: $("#endereco").val(),
-                    Complemento: $("#complemento").val(),
-                    Bairro: $("#bairro").val(),
-                    Cidade: $("#cidade").val(),
-                    Estado: $("#estado").val()
-                },
+                     CEP: $("#cep").val(),
+                     CNPJ: $("#cnpj").val(),
+                     Endereco: $("#endereco").val(),
+                     Complemento: $("#complemento").val(),
+                     Bairro: $("#bairro").val(),
+                     Cidade: $("#cidade").val(),
+                     Estado: $("#estado").val(),
+                     strTipo: 'normal'
+                 },
                 success: function (data) {
                     if (data.success == true) {
                         $("#nome").prop("disabled", true);
@@ -95,26 +96,103 @@
                         $("#divSalvar").fadeOut("slider");
                         $("#codigoImportar").val(data.codigo);
 
-                        //$("#divCarga").fadeIn("slide");
+                        $("#divCarga").fadeIn("slide");
+
+                        $("#hdfTipoFormulario").val('normal');
+                    }
+                    else {
+                        $("#propostaComercial").addClass('is-invalid');
+                        $("#numeroBooking").addClass('is-invalid');
+                        $("#numeroBl").addClass('is-invalid');
+
+                        $("#mensagem").text(data.msg);
+                        window.scrollTo(0, 0);
                     }
                 },
                 error: function (data) {
-                   
+                    
                 }
             });
         }
     });
 
+
+    //CLICK NO BOTAO SALVAR IMPORTAÇÃO COM DTA
+    $(".btnSalvarDtaJQ").on("click", function (event) {
+
+        $(this).prop("disabled", true);
+        event.preventDefault();
+
+        if ($("#FormAgendamento").valid() == true) {
+             $.ajax({
+                type: "POST",
+                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
+                 data: {
+                     Nome: $("#nome").val(),
+                     Email: $("#email").val(),
+                     PropostaComercial: $("#propostaComercial").val(),
+                     NumeroBooking: $("#numeroBooking").val(),
+                     NumeroBL: $("#numeroBl").val(),
+                     CEP: $("#cep").val(),
+                     CNPJ: $("#cnpj").val(),
+                     Endereco: $("#endereco").val(),
+                     Complemento: $("#complemento").val(),
+                     Bairro: $("#bairro").val(),
+                     Cidade: $("#cidade").val(),
+                     Estado: $("#estado").val(),
+                     strTipo: 'dta'
+                 },
+                success: function (data) {
+                    if (data.success == true) {
+                        $("#nome").prop("disabled", true);
+                        $("#email").prop("disabled", true);
+                        $("#propostaComercial").prop("disabled", true);
+                        $("#numeroBooking").prop("disabled", true);
+                        $("#numeroBl").prop("disabled", true);
+                        $("#cep").prop("disabled", true);
+                        $("#cnpj").prop("disabled", true);
+                        $("#complemento").prop("disabled", true);
+                        $("#endereco").prop("disabled", true);
+                        $("#bairro").prop("disabled", true);
+                        $("#cidade").prop("disabled", true);
+                        $("#estado").prop("disabled", true);
+                        $("#divSalvar").fadeOut("slider");
+                        $("#codigoImportar").val(data.codigo);
+
+                        $("#divCarga").fadeIn("slide");
+
+                        $("#hdfTipoFormulario").val('dta');
+                    }
+                    else {
+                        $("#propostaComercial").addClass('is-invalid');
+                        $("#numeroBooking").addClass('is-invalid');
+                        $("#numeroBl").addClass('is-invalid');
+
+                        $("#mensagem").text(data.msg);
+                        window.scrollTo(0, 0);
+                    }
+                },
+                error: function (data) {
+                    
+                }
+            });
+        }
+    });
+
+
+
     function Inicializar() {
         $("#cep").mask("00000-000");
         $("#cnpj").mask("00.000.000/0000-00");
-        //$("#divSalvar").show();
-        //$("#divCarga").hide();
-        //$("#divRegistrosCargas").hide();
+        $("#divSalvar").show();
+        $("#divCarga").hide();
+
+        $("#valorNfe").maskMoney();
+        $("#valorNfeVariosContainer").maskMoney();
+        $("#divRegistrosCargas").hide();
         //$(".sucessoJQ").hide();
         //$(".btnAgendarJQ").hide();
-        //$(".divExclusao").hide();
-        //$(".mensagemExclusao").hide();
+        
     }
 
     // VALIDAR  O CAMPO PROPOSTA COMERCIAL
@@ -126,6 +204,7 @@
             success: function (data) {
                 if (data.success == true) {
                     $('#existPropostaComercial').remove();
+                    $("#propostaComercial").removeClass('is-invalid');
                     if ($("#numeroBooking").val().length > 0) {
                         ValidarPropostaBooking($("#propostaComercial").val(), $("#numeroBooking").val());
                     }
@@ -136,38 +215,41 @@
                 }
                 else {
                     $("#mensagem").text('');
-                    $("#PropostaComercial").val('');
+                    $("#propostaComercial").val('');
+                    $("#propostaComercial").addClass('is-invalid');
                     $('#existPropostaComercial').remove();
-                    $("#PropostaComercial").parent().append("<span id='existPropostaComercial'><label id='PropostaComercial-error' class='is-invalid' for='propostaComercial'>" + data.msg +"</label><span>");
+                    $("#propostaComercial").parent().append("<span id='existPropostaComercial'><label id='PropostaComercial-error' class='is-invalid' for='propostaComercial'>" + data.msg +"</label><span>");
                 }
             },
             error: function (data) {
-                   
+
             }
         });
     });
 
     // VALIDAR  O CAMPO NUMERO BOOKING
-    $("#NumeroBooking").on("blur", function () {
+    $("#numeroBooking").on("blur", function () {
         $.ajax({
             type: "POST",
-            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
-            data: { Proposta: $("#PropostaComercial").val(), Booking: $("#numeroBooking").val(), numeroBl: '' },
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposImportacao",
+            data: { Proposta: $("#propostaComercial").val(), Booking: $("#numeroBooking").val(), numeroBl: '' },
             success: function (data) {
                 if (data.success == true) {
                     $('#existNumeroBooking').remove();
-                    
+                    $("#numeroBooking").removeClass('is-invalid');
+
                     return false;
                 }
                 else {
                     $("#mensagem").text('');
-                    $("#NumeroBooking").val('');
+                    $("#numeroBooking").val('');
+                    $("#numeroBooking").addClass('is-invalid');
                     $('#existNumeroBooking').remove();
-                    $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>" + data.msg +"</label><span>");
+                    $("#numeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='numeroBooking'>" + data.msg +"</label><span>");
                 }
             },
             error: function (data) {
-                   
+
             }
         });
     });
@@ -176,23 +258,25 @@
     $("#numeroBl").on("blur", function () {
         $.ajax({
             type: "POST",
-            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
-            data: { Proposta: $("#PropostaComercial").val(), Booking: '', numeroBl: $("#numeroBl").val() },
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposImportacao",
+            data: { Proposta: $("#propostaComercial").val(), Booking: '', numeroBl: $("#numeroBl").val() },
             success: function (data) {
                 if (data.success == true) {
                     $('#existNumeroBl').remove();
-                    
+                    $("#numeroBl").removeClass('is-invalid');
+
                     return false;
                 }
                 else {
                     $("#mensagem").text('');
-                    $("#NumeroBl").val('');
+                    $("#numeroBl").val('');
+                    $("#numeroBl").addClass('is-invalid');
                     $('#existNumeroBl').remove();
-                    $("#NumeroBl").parent().append("<span id='existNumeroBl'><label id='NumeroBl-error' class='is-invalid' for='numeroBl'>" + data.msg +"</label><span>");
+                    $("#numeroBl").parent().append("<span id='existNumeroBl'><label id='NumeroBl-error' class='is-invalid' for='numeroBl'>" + data.msg +"</label><span>");
                 }
             },
             error: function (data) {
-                   
+
             }
         });
     });
@@ -211,13 +295,13 @@
                 }
                 else {
                     $("#mensagem").text('');
-                    $("#NumeroBooking").val('');
-                    
-                    $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " são inválidos.</label><span>");
+                    $("#numeroBooking").val('');
+
+                    $("#numeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='numeroBooking'>O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " são inválidos.</label><span>");
                 }
             },
             error: function (data) {
-                   
+
             }
         });
     }
@@ -236,53 +320,62 @@
                 else {
                     $("#mensagem").text('');
                     $("#numeroBl").val('');
-                    
-                    $("#numeroBl").parent().append("<span id='existNumeroBl'><label id='NumeroBl-error' class='is-invalid' for='NumeroBl'>O campo Proposta Comercial: " + proposta + " e  Número BL: " + numeroBl + " são inválidos.</label><span>");
+
+                    $("#numeroBl").parent().append("<span id='existNumeroBl'><label id='NumeroBl-error' class='is-invalid' for='numeroBl'>O campo Proposta Comercial: " + proposta + " e  Número BL: " + numeroBl + " são inválidos.</label><span>");
                 }
             },
             error: function (data) {
-                   
+
             }
         });
     }
 
     // BUSCA O CEP
     $("#btnBuscaCEP").on("click", function () {
-        $.ajax({
-            url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
-            dataType: 'json',
-            success: function (resposta) {
-                $("#Endereco").val(resposta.logradouro);
-                $("#Bairro").val(resposta.bairro);
-                $("#Cidade").val(resposta.localidade);
-                $("#Estado").val(resposta.uf);
-
-                $("#Endereco").prop("disabled", true);
-                $("#Bairro").prop("disabled", true);
-                $("#Cidade").prop("disabled", true);
-                $("#Estado").prop("disabled", true);
-            }
-        });
+        preencherEndereco();
     });
 
     // HABILITAR OS CAMPOS QUANDO O CEP É APAGADO
-    $("#CEP").keyup(function () {
+    $("#cep").keyup(function () {
         if ($(this).val().length == 0) {
-            $("#Endereco").prop("disabled", false);
-            $("#Bairro").prop("disabled", false);
-            $("#Cidade").prop("disabled", false);
-            $("#Estado").prop("disabled", false);
+            $("#endereco").prop("disabled", false);
+            $("#bairro").prop("disabled", false);
+            $("#cidade").prop("disabled", false);
+            $("#estado").prop("disabled", false);
 
-            $("#Endereco").val('');
-            $("#Bairro").val('');
-            $("#Cidade").val('');
-            $("#Estado").val('');
+            $("#endereco").val('');
+            $("#bairro").val('');
+            $("#cidade").val('');
+            $("#estado").val('');
         }
     });
 
+    $("#cep").on("blur", function () {
+        preencherEndereco();
+    });
+
+    function preencherEndereco() {
+        $.ajax({
+            url: '@urlCep1' + $("#cep").val().replace('-', '') + '@urlCep2',
+            dataType: 'json',
+            success: function (resposta) {
+                $("#endereco").val(resposta.logradouro);
+                $("#bairro").val(resposta.bairro);
+                $("#cidade").val(resposta.localidade);
+                $("#estado").val(resposta.uf);
+
+                $("#endereco").prop("disabled", true);
+                $("#bairro").prop("disabled", true);
+                $("#cidade").prop("disabled", true);
+                $("#estado").prop("disabled", true);
+            }
+        });
+    }
+
+
     // VALIDAR CNPJ
     function validarCNPJ() {
-        let cnpj = $(CNPJ).val();
+        let cnpj = $('#cnpj').val();
 
         cnpj = cnpj.replace(/[^\d]+/g, '');
         if (cnpj == '') return false;
@@ -299,9 +392,9 @@
             cnpj == "77777777777777" ||
             cnpj == "88888888888888" ||
             cnpj == "99999999999999") {
-                $("#CNPJ").addClass('is-invalid');
+                $("#cnpj").addClass('is-invalid');
                 $('#existCNPJ').remove();
-                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
                 return false;
             }
 
@@ -318,9 +411,9 @@
             }
             resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
             if (resultado != digitos.charAt(0)) {
-                $("#CNPJ").addClass('is-invalid');
+                $("#cnpj").addClass('is-invalid');
                 $('#existCNPJ').remove();
-                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
                 return false;
             }
 
@@ -335,9 +428,9 @@
             }
             resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
             if (resultado != digitos.charAt(1)) {
-                $("#CNPJ").addClass('is-invalid');
+                $("#cnpj").addClass('is-invalid');
                 $('#existCNPJ').remove();
-                $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+                $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
                 return false;
             }
     }

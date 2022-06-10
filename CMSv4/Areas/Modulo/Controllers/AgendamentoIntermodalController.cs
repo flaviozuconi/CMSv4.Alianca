@@ -9,6 +9,8 @@ using CMSv4.Model.Base.GestaoInformacoesExportacao;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
+using CMSv4.Model.Base.GestaoInformacoesImportacao;
+using System.Web;
 
 namespace CMSApp.Areas.Modulo.Controllers
 {
@@ -241,17 +243,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-        #region Importar
-
-        /// <summary>
-        ///Importar
-        /// </summary>
-        [CheckPermission(global::Permissao.Publico)]
-        public ActionResult Importar(MLModuloAgendamentoIntermodal model)
-        {
-            return PartialView(model);
-        }
-        #endregion
+        
 
         // EXPORTAR
 
@@ -676,5 +668,369 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
+
+        //IMPORTAR
+
+        #region Importar
+        /// <summary>
+        ///Importar
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult Importar(MLAgendamentoIntermodalImportacao model)
+        {
+            ViewData["estado"] = CRUD.Listar<MLEstado>();
+
+            return PartialView(model);
+        }
+        #endregion
+
+        #region Salvar Importação
+        /// <summary>
+        /// salvar primeira etapa importação
+        /// </summary>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult SalvarImportacao(MLAgendamentoIntermodalImportacao model, string strTipo)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    string strMensagemErro = "";
+
+                    var portal = PortalAtual.Obter;
+
+                    model.DataRegistro = DateTime.Now;
+
+                    var obj = CRUD.Obter(new MLGestaoInformacoesImportacao { PropostaComercial = model.PropostaComercial, NumeroBooking = model.NumeroBooking, NumeroBL = model.NumeroBL });
+                    if(obj == null || string.IsNullOrEmpty(obj.PropostaComercial))
+                        strMensagemErro = "Proposta comercial " + model.PropostaComercial + ", o Número Booking "+ model.NumeroBooking + " e o Número BL "+ model.NumeroBL + " não estão relacionados.";
+
+                    if (string.IsNullOrEmpty(strMensagemErro))
+                    {
+                        model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
+
+                        return Json(new { success = true, codigo = model.Codigo });
+                    }
+                    else
+                        return Json(new { success = false, msg = strMensagemErro, codigo = 0 });
+                }
+                catch (Exception ex)
+                {
+                    ApplicationLog.ErrorLog(ex);
+                    return Json(new { success = false, msg = ex.Message, codigo = 0 });
+                }
+            }
+
+            return Json(new { success = false });
+        }
+
+        #endregion
+
+        #region ValidarCamposImportacao
+        /// <summary>
+        /// Validar campos importação
+        /// </summary>
+        /// <param name="proposta"></param>
+        /// <param name="booking"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult ValidarCamposImportacao(string proposta, string booking, string numeroBl)
+        {
+            List<MLGestaoInformacoesImportacao> lstModel = null;
+
+            try
+            {
+                if (!string.IsNullOrEmpty(proposta))
+                    lstModel = CRUD.Listar(new MLGestaoInformacoesImportacao { PropostaComercial = proposta });
+
+                if (lstModel != null && lstModel.Count > 0)
+                {
+                    if(string.IsNullOrEmpty(booking) && string.IsNullOrEmpty(numeroBl))
+                        return Json(new { success = true });
+
+                    if (!string.IsNullOrEmpty(booking))
+                    {
+                        var aux = lstModel.Find(x => x.NumeroBooking == booking);
+
+                        if (aux != null && !string.IsNullOrEmpty(aux.NumeroBooking))
+                            return Json(new { success = true });
+                        else
+                            return Json(new { success = false, msg = "Informe um Número Booking válido." });
+                    }
+
+                    if (!string.IsNullOrEmpty(numeroBl))
+                    {
+                        var aux = lstModel.Find(x => x.NumeroBL == numeroBl);
+
+                        if (aux != null && !string.IsNullOrEmpty(aux.NumeroBL))
+                            return Json(new { success = true });
+                        else
+                            return Json(new { success = false, msg = "Informe um Número BL válido." });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+
+            return Json(new { success = false, msg = "Informe uma Proposta Comercial válida." });
+        }
+
+        #endregion
+
+        #region ScriptImportar
+        /// <summary>
+        /// Adicionar Script
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ScriptImportar(MLAgendamentoIntermodalImportacao model)
+        {
+            return PartialView(model);
+        }
+        #endregion
+
+        #region ScriptImportarCarga
+        /// <summary>
+        /// Adicionar Script
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ScriptImportarCarga(MLAgendamentoIntermodalImportacao model)
+        {
+            return PartialView(model);
+        }
+        #endregion
+
+        #region Importar Carga
+        /// <summary>
+        ///Escolher Tipo
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ImportarCarga(MLAgendamentoIntermodalImportacao model)
+        {
+            return PartialView(model);
+        }
+        #endregion
+
+        #region Salvar Importação Carga
+        /// <summary>
+        /// salvar carga da exportacao
+        /// </summary>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult SalvarImportacaoCarga(MLAgendamentoIntermodalImportacaoCarga model/*, HttpPostedFileBase fileNfe*/)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+
+                var lista = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao });
+
+                if (lista?.Count <= 50)
+                {
+                    //Impedir duplicidade
+                    var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container, NumeroNfe = model.NumeroNfe });
+
+                    if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
+                    {
+                        if (!string.IsNullOrEmpty(model.ValorNfeFormatado))
+                            model.ValorNfe = Convert.ToDecimal(model.ValorNfeFormatado.Replace("R$ ", "").Replace(".", ""));
+                        model.DataRegistro = DateTime.Now;
+                        model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
+
+                        model.Sequencia = Convert.ToInt32(model.Sequencia).ToString("00");
+                        model.ProximaSequencia = (Convert.ToInt32(model.Sequencia) + 1).ToString("00");
+
+                        if (string.IsNullOrEmpty(model.Comentario))
+                            model.Comentario = "";
+                    }
+
+                    return Json(new { success = true, model = model });
+                }
+                else
+                    model.Codigo = 0;
+
+                return Json(new { success = false, msg = @T("Limite de 50 container atingido.") });
+
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region Excluir Importar Carga
+        /// <summary>
+        /// excluir importar carga
+        /// </summary>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult ExcluirImportarCarga(string Codigos)
+        {
+            try
+            {
+                Codigos = Codigos.TrimEnd(',');
+
+                foreach (var codigo in Codigos.Split(','))
+                {
+                    if (!string.IsNullOrEmpty(codigo))
+                        CRUD.Excluir(new MLAgendamentoIntermodalImportacaoCarga { Codigo = Convert.ToDecimal(codigo) });
+                }
+
+                return Json(new { success = true });
+
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+
+        #endregion
+
+
+        #region Salvar Importação Carga VariasNf
+        /// <summary>
+        /// salvar carga da exportacao
+        /// </summary>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult SalvarImportacaoCargaVariasNf(MLAgendamentoIntermodalImportacaoCargaVariasNf model)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+
+                var lista = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao });
+
+                if (lista?.Count + model.LstNfs.Count <= 50)
+                {
+                    foreach(var item in model.LstNfs)
+                    {
+                        if (!item.IsLinhaExcluida)
+                        {
+                            //Impedir duplicidade
+                            var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container, NumeroNfe = item.NumeroNfe });
+
+                            if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
+                            {
+                                item.CodigoImportacao = model.CodigoImportacao;
+                                item.DataEntrega = model.DataEntrega;
+                                item.Container = model.Container;
+                                item.Comentario = "";
+                                if (!string.IsNullOrEmpty(model.Comentario))
+                                    item.Comentario = model.Comentario;
+
+                                if (!string.IsNullOrEmpty(item.ValorNfeFormatado))
+                                    item.ValorNfe = Convert.ToDecimal(item.ValorNfeFormatado.Replace("R$ ", "").Replace(".", ""));
+                                item.DataRegistro = DateTime.Now;
+
+                                item.Codigo = CRUD.Salvar(item, portal.ConnectionString);
+                            }
+                        }
+                    }
+
+                    model.Sequencia = Convert.ToInt32(model.Sequencia).ToString("00");
+                    model.ProximaSequencia = (Convert.ToInt32(model.Sequencia) + 1).ToString("00");
+
+                    model.LstNfs.RemoveAll(x => x.IsLinhaExcluida);
+
+                    return Json(new { success = true, model = model });
+                }
+                else
+                    model.CodigoImportacao = 0;
+
+                return Json(new { success = false, msg = @T("Limite de 50 container atingido.") });
+
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+
+        #region Salvar Importação Carga VariosContainer
+        /// <summary>
+        /// salvar carga da exportacao
+        /// </summary>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult SalvarImportacaoCargaVariosContainer(MLAgendamentoIntermodalImportacaoCargaVariosContainer model)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+
+                var lista = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao });
+
+                if (lista?.Count + model.LstContainer.Count <= 50)
+                {
+                    foreach (var item in model.LstContainer)
+                    {
+                        if (!item.IsLinhaExcluida)
+                        {
+                            //Impedir duplicidade
+                            var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = item.Container, NumeroNfe = model.NumeroNfe });
+
+                            if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
+                            {
+                                item.CodigoImportacao = model.CodigoImportacao;
+                                item.NumeroNfe = model.NumeroNfe;
+                                item.ValorNfeFormatado = model.ValorNfe;
+                                item.Extensao = model.Extensao;
+
+                                if (!string.IsNullOrEmpty(model.ValorNfe))
+                                    item.ValorNfe = Convert.ToDecimal(model.ValorNfe.Replace("R$ ", "").Replace(".", ""));
+                                item.DataRegistro = DateTime.Now;
+
+                                item.Codigo = CRUD.Salvar(item, portal.ConnectionString);
+
+                                if (string.IsNullOrEmpty(item.Comentario))
+                                    item.Comentario = "";
+                            }
+
+                            item.ProximaSequencia = (Convert.ToInt32(item.Sequencia) + 1).ToString("00");
+                        }
+                    }
+
+                    model.LstContainer.RemoveAll(x => x.IsLinhaExcluida);
+
+                    return Json(new { success = true, model = model });
+                }
+                else
+                    model.CodigoImportacao = 0;
+
+                return Json(new { success = false, msg = @T("Limite de 50 container atingido.") });
+
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+
+        #region UploadNfe
+        [CheckPermission(global::Permissao.Modificar)]
+        [HttpPost]
+        [JsonHandleError]
+        public ActionResult UploadNfe(Guid guid)
+        {
+            //return Json(new { Sucesso = new BLListaConteudoImagem().UploadGaleria(guid, Request.Files, PortalAtual.Obter) });
+            return Json(new { Sucesso = true });
+        }
+
+        #endregion
     }
 }

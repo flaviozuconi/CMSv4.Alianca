@@ -1,3 +1,176 @@
-﻿@model MLModuloAgendamentoIntermodal
+﻿@model MLAgendamentoIntermodalImportacao
+@{
+    var estado = (List<MLEstado>)ViewData["estado"];
 
-Importar
+    var baseUrl = "/portal/" + BLPortal.Atual.Diretorio;
+}
+
+<div class="box-agendamento agendamentoJQ">
+    <div class="box-header">
+        <a href="javascript:history.back()" class="btn btn-link">
+            <span class="icon icon-chevron-left"></span>
+            @T("Voltar")
+        </a>
+        <h2 class="box-title">@T("Importação")</h2>
+    </div>
+
+    <form class="form" id="FormAgendamento">
+        <div class="form-section">
+            <div id="mensagem"></div>
+            <input type="hidden" name="Codigo" id="codigoImportar" value="" />
+            <h3 class="form-section__title">@T("Informações de Contato")</h3>
+            <div class="row">
+                <div class="col-24 col-md-12">
+                    <div class="form-group">
+                        <label for="nome" class="form-label">@T("Nome Completo")</label>
+                        <input type="text" class="form-control" required name="Nome" id="nome" placeholder="@T("Digite o nome do responsavel pela contratação")" value="Rafael Teste">
+                    </div>
+                </div>
+                <div class="col-24 col-md-12">
+                    <div class="form-group">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" required name="Email" id="email" placeholder="@T("Digite o e-mail do responsável")" value="rafael.castanho@vm2.com.br">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-section">
+            <h3 class="form-section__title">@T("Informações de Importação")</h3>
+            <div class="row justify-content-center">
+                <div class="col-24 col-md-10 col-lg-8">
+                    <div class="form-group">
+                        <label for="propostaComercial" class="form-label">@T("Proposta Comercial")</label>
+                        <input type="text" class="form-control" required name="PropostaComercial" id="propostaComercial" placeholder="@T("Digite o número da sua Proposta")" value="teste">
+                    </div>
+                </div>
+                <div class="col-24 col-md-10 col-lg-8">
+                    <div class="form-group">
+                        <label for="numeroBooking" class="form-label">@T("Número do Booking")</label>
+                        <input type="text" class="form-control" required name="NumeroBooking" id="numeroBooking" placeholder="@T("Digite o número do Booking")" value="5698">
+                    </div>
+                </div>
+                <div class="col-24 col-md-10 col-lg-8">
+                    <div class="form-group">
+                        <label for="numeroBl" class="form-label">@T("Número do BL")</label>
+                        <input type="text" class="form-control" required name="NumeroBL" id="numeroBl" placeholder="@T("Digite o número do BL")" value="515a">
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
+                    <div class="form-group">
+                        <label for="" class="form-label">
+                            <span class="icon icon-paperclip"></span>
+                            @T("Declaração de Importação")
+                        </label>
+                        <div class="dropzone">
+                            @T("Arraste ou clique aqui para realizar upload de arquivos")
+                        </div>
+                    </div>
+                </div>
+                <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
+                    <div class="form-group">
+                        <label for="" class="form-label">
+                            <span class="icon icon-paperclip"></span>
+                            GARE <small>@T("(Guia de Arrecadação de Receitas Estaduais)")</small>
+                        </label>
+                        <div class="dropzone">
+                            @T("Arraste ou clique aqui para realizar upload de arquivos")
+                        </div>
+                    </div>
+                </div>
+                <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
+                    <div class="form-group">
+                        <label for="" class="form-label">
+                            <span class="icon icon-paperclip"></span>
+                            BL
+                        </label>
+                        <div class="dropzone">
+                            @T("Arraste ou clique aqui para realizar upload de arquivos")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-section">
+            <h3 class="form-section__title">@T("Local de Coleta")</h3>
+            <div class="row">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
+                    <div class="form-group">
+                        <label for="cnpj" class="form-label">CNPJ</label>
+                        <input type="text" class="form-control" required name="CNPJ" id="cnpj" onblur="validarCNPJ()" placeholder="@T("Digite o CNPJ")" value="63.486.002/0001-52" />
+                    </div>
+                </div>
+                <div class="col-24 col-sm-10 col-md-8 col-lg-6">
+                    <div class="form-group">
+                        <label for="cep" class="form-label">@T("CEP")</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" required id="cep" name="CEP" placeholder="00000-000" value="18047-800" />
+                            <div class="input-group-append">
+                                <button class="btn btn-outline" id="btnBuscaCEP" type="button">
+                                    <span class="icon icon-search"></span>
+                                    <span class="sr-only">@T("Pesquisar")</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-24 col-md-8 col-lg-12">
+                    <div class="form-group">
+                        <label for="endereco" class="form-label">@T("Endereço")</label>
+                        <input type="text" class="form-control" required id="endereco" name="Endereco" />
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-md-8 col-lg-6">
+                    <div class="form-group">
+                        <label for="complemento" class="form-label">@T("Complemento")</label>
+                        <input type="text" class="form-control" id="complemento" name="Complemento" />
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
+                    <div class="form-group">
+                        <label for="bairro" class="form-label">@T("Bairro")</label>
+                        <input type="text" class="form-control" id="bairro" name="Bairro" />
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
+                    <div class="form-group">
+                        <label for="cidade" class="form-label">@T("Cidade")</label>
+                        <input type="text" class="form-control" required id="cidade" name="Cidade" />
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
+                    <div class="form-group">
+                        <label for="estado" class="form-label">Estado</label>
+                        <select id="estado" name="Estado" required class="form-control">
+                            <option value="">@T("Selecione")</option>
+                            @foreach (var item in estado)
+                            {
+                                <option value="@item.Uf">@item.Nome</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-section" id="divSalvar">
+            <div class="form-group text-center">
+                <a href="javascript:void(0)" class="btn btn-red btn-lg btn-icon btnSalvarJQ">
+                    <span class="icon icon-chevron-right"></span>
+                    @T("Agendar Containers")
+                </a>
+                <a href="javascript:void(0)" class="btn btn-red btn-lg btn-icon btnSalvarDtaJQ">
+                    <span class="icon icon-chevron-right"></span>
+                    @T("Agendar Containers com DTA")
+                </a>
+            </div>
+        </div>
+    </form>
+
+    @Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
+</div>
+
+@{
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportar", new { model = Model }));
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCarga", new { model = Model }));
+}
