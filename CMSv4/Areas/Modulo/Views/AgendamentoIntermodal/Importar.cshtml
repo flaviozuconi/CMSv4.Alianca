@@ -19,7 +19,7 @@
         <h2 class="box-title">@T("Importação")</h2>
     </div>
 
-    <form class="form" id="FormAgendamento">
+    <form class="form" id="FormAgendamento" enctype="multipart/form-data">
         <div class="form-section">
             <div id="mensagem"></div>
             <input type="hidden" name="Codigo" id="codigoImportar" value="" />
@@ -71,9 +71,10 @@
                             <span class="icon icon-paperclip"></span>
                             @T("Declaração de Importação")
                         </label>
-                        <input type="file" name="file" />
-                        <div class="dropzone">
-                            @T("Arraste ou clique aqui para realizar upload de arquivos")
+                        <div id="arquivoDeclaracaoImportacao" class="dropzone">
+                            <div class="fallback">
+                                <input type="file" name="file" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -83,8 +84,10 @@
                             <span class="icon icon-paperclip"></span>
                             GARE <small>@T("(Guia de Arrecadação de Receitas Estaduais)")</small>
                         </label>
-                        <div class="dropzone">
-                            @T("Arraste ou clique aqui para realizar upload de arquivos")
+                        <div id="arquivoGuiaArrecadacao" class="dropzone">
+                            <div class="fallback">
+                                <input type="file" name="file" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,8 +97,10 @@
                             <span class="icon icon-paperclip"></span>
                             BL
                         </label>
-                        <div class="dropzone">
-                            @T("Arraste ou clique aqui para realizar upload de arquivos")
+                        <div id="arquivoBl" class="dropzone">
+                            <div class="fallback">
+                                <input type="file" name="file" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -178,12 +183,9 @@
         </div>
     </form>
 
-    <form id="arquivoUpload" action="@urlUpload" method="post" class="dropzone" enctype="multipart/form-data">
-        <span class="glyphicon glyphicon-camera" style="font-size: 24px;"></span>
-        <div class="fallback">
-            <input type="file" name="file" />
-        </div>
-    </form>
+
+
+
     <link href="~/Content/css/plugins/dropzone/css/dropzone.css" rel="stylesheet" />
     <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
 
@@ -199,22 +201,71 @@
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCarga", new { model = Model }));
 
     <script type="text/javascript">
-        
+
         /*  FORM UPLOAD */
-        Dropzone.options.arquivoUpload = {
-            maxFilesize: 50,
+        Dropzone.options.arquivoDeclaracaoImportacao = {
+            maxFilesize: 1,
             url: "@urlUpload",
-                dictDefaultMessage: "Upload",
-                processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
-                complete: function (file) {
-                    //if (parent.sizeContent) parent.sizeContent()
-                    //$(file.previewElement).remove();
-                    //console.log(file);
-                },
-                success: function (file, response) {
-                   // message_box('Success', file.name+' Adicionada com Sucesso!');
-                    //window.location.reload();
-                }
-            };
+            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
+            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
+            complete: function (file) {
+                //if (parent.sizeContent) parent.sizeContent()
+                //$(file.previewElement).remove();
+                //console.log(file);
+            },
+            success: function (file, response) {
+                // message_box('Success', file.name+' Adicionada com Sucesso!');
+                //window.location.reload();
+            }
+        };
+
+        Dropzone.options.arquivoGuiaArrecadacao = {
+            maxFilesize: 1,
+            url: "@urlUpload",
+            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
+            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
+            complete: function (file) {
+                //if (parent.sizeContent) parent.sizeContent()
+                //$(file.previewElement).remove();
+                //console.log(file);
+            },
+            success: function (file, response) {
+                // message_box('Success', file.name+' Adicionada com Sucesso!');
+                //window.location.reload();
+            }
+        };
+
+        Dropzone.options.arquivoBl = {
+            maxFilesize: 1,
+            url: "@urlUpload",
+            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
+            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
+            complete: function (file) {
+                //if (parent.sizeContent) parent.sizeContent()
+                //$(file.previewElement).remove();
+                //console.log(file);
+            },
+            success: function (file, response) {
+                // message_box('Success', file.name+' Adicionada com Sucesso!');
+                //window.location.reload();
+            }
+        };
+
+
+        Dropzone.options.arquivoNfContainerNf = {
+            maxFilesize: 1,
+            url: "@urlUpload",
+            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
+            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
+            complete: function (file) {
+                //if (parent.sizeContent) parent.sizeContent()
+                //$(file.previewElement).remove();
+                //console.log(file);
+            },
+            success: function (file, response) {
+                // message_box('Success', file.name+' Adicionada com Sucesso!');
+                //window.location.reload();
+            }
+        };
     </script>
 }
