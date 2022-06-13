@@ -9,6 +9,7 @@ using CMSv4.Model.Base.GestaoInformacoesExportacao;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
+using System.Web;
 
 namespace CMSApp.Areas.Modulo.Controllers
 {
@@ -723,5 +724,55 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
+
+
+        #region Arquivos
+
+        /// <summary>
+        ///Arquivos
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult Arquivos(MLModuloAgendamentoIntermodal model)
+        {
+            try
+            {
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region UploadArquivos
+
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult uploadArquivos(HttpPostedFileBase file)
+        {
+            try
+            {
+ 
+                if (file != null && file.ContentLength > 0)
+                {
+                   
+
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+
+        #endregion
     }
 }
