@@ -970,7 +970,6 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
-
         #region Salvar Importação Carga VariasNf
         /// <summary>
         /// salvar carga da exportacao
@@ -1032,7 +1031,6 @@ namespace CMSApp.Areas.Modulo.Controllers
             }
         }
         #endregion
-
 
         #region Salvar Importação Carga VariosContainer
         /// <summary>
@@ -1096,7 +1094,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-
         #region IntegrarImportar
         /// <summary>
         /// salvar primeira etapa exportacao
@@ -1128,7 +1125,17 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
+        #region UploadNfe
+        [CheckPermission(global::Permissao.Modificar)]
+        [HttpPost]
+        [JsonHandleError]
+        public ActionResult UploadNfe(Guid guid)
+        {
+            //return Json(new { Sucesso = new BLListaConteudoImagem().UploadGaleria(guid, Request.Files, PortalAtual.Obter) });
+            return Json(new { Sucesso = true });
+        }
 
+        #endregion
 
         #region Arquivos
 
@@ -1149,25 +1156,6 @@ namespace CMSApp.Areas.Modulo.Controllers
             }
         }
         #endregion
-
-
-
-
-
-
-        #region UploadNfe
-        [CheckPermission(global::Permissao.Modificar)]
-        [HttpPost]
-        [JsonHandleError]
-        public ActionResult UploadNfe(Guid guid)
-        {
-            //return Json(new { Sucesso = new BLListaConteudoImagem().UploadGaleria(guid, Request.Files, PortalAtual.Obter) });
-            return Json(new { Sucesso = true });
-        }
-
-        #endregion
-
-
 
         #region UploadArquivos
 
