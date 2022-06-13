@@ -363,9 +363,10 @@ namespace CMSApp.Areas.Modulo.Controllers
         {
             try
             {
-                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = model.Nome, Codigo = model.Codigo, Email = model.Email });
+                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = model.Nome, Codigo = model.Codigo, Email = model.Email }, "AgendamentoExportar_");
+                var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
 
-                if(!string.IsNullOrEmpty(cliente)) IntegrarTicket(model, html);
+                if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html);
 
                 return Json(new { success = true});
             }
@@ -493,13 +494,13 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private string IntegrarCliente(MLAgendamentoIntermodal model)
+        private string IntegrarCliente(MLAgendamentoIntermodal model, string prefixo)
         {
             string retorno = string.Empty;
 
             var objModel = new MLAgendamentoPerson
             {
-                id = "461505746", //"Agendamento_" + model.Codigo,
+                id = "461505746", //prefixo + model.Codigo,
                 codRefAdditional = string.Empty,
                 isActive = true,
                 personType = 1,
@@ -574,7 +575,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private string IntegrarTicket(MLAgendamentoIntermodal model, string Html)
+        private string IntegrarTicket(string idCliente, MLAgendamentoIntermodal model, string Html)
         {
             string retorno = string.Empty;
 
@@ -593,13 +594,13 @@ namespace CMSApp.Areas.Modulo.Controllers
             #region cliente
             objModel.clients.Add(new Client
             {
-                id = "461505746",//cliente, "Agendamento_" + modelCliente.Codigo, 
+                id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
                 personType = 1,
                 profileType = 2,
-                businessName = "DMRSE-1200"//nome
+                businessName = "DMRSE-1200"//model.Nome
             });
             #endregion 
-
+            
             #region ação
             objModel.actions.Add(new CMSv4.Model.Action
             {
@@ -610,15 +611,15 @@ namespace CMSApp.Areas.Modulo.Controllers
                 createdDate = DateTime.Now
             });
             #endregion
-
+            
             #region create
             objModel.createdBy = new Createdby
             {
-                id = "461505746",//cliente,
+                id = "461505746",//idCliente,
                 personType = 1,
                 profileType = 2,
-                businessName = "DMRSE-1200", //nome,
-                email = "email@gerador.com"//email
+                businessName = "DMRSE-1200", //model.Nome,
+                email = "email@gerador.com"//model.Email
             };
             #endregion
 
@@ -640,13 +641,16 @@ namespace CMSApp.Areas.Modulo.Controllers
                 value = "BOOKING NUMBER - " + model.NumeroBooking
             });
 
-            //objModel.customFieldValues.Add(new Customfieldvalue
-            //{
-            //    customFieldId = BLConfiguracao.CodigoNumeroBl,
-            //    customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
-            //    line = 1,
-            //    value = "BL number - "
-            //});
+            if (!string.IsNullOrEmpty(model.NumeroBL))
+            {
+                objModel.customFieldValues.Add(new Customfieldvalue
+                {
+                    customFieldId = BLConfiguracao.CodigoNumeroBl,
+                    customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                    line = 1,
+                    value = "BL number - " + model.NumeroBL
+                });
+            }
 
             objModel.customFieldValues.Add(new Customfieldvalue
             {
@@ -1104,7 +1108,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         [HttpPost]
         [CheckPermission(global::Permissao.Publico)]
         [ValidateInput(false)]
-        public JsonResult IntegrarImportar(decimal codigo)
+        public JsonResult IntegrarImportar(decimal codigo, string Html)
         {
             try
             {
@@ -1112,10 +1116,12 @@ namespace CMSApp.Areas.Modulo.Controllers
                 MLAgendamentoIntermodalImportacao objModelImportacao = CRUD.Obter<MLAgendamentoIntermodalImportacao>(codigo, portal.ConnectionString);
                 List<MLAgendamentoIntermodalImportacaoCarga> lstImportacaoCarga = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
 
-                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = objModelImportacao.Nome, Codigo = objModelImportacao.Codigo, Email = objModelImportacao.Email });
+                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = objModelImportacao.Nome, Codigo = objModelImportacao.Codigo, Email = objModelImportacao.Email }, "AgendamentoImportar_");
+                var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
 
+                MLAgendamentoIntermodal model = new MLAgendamentoIntermodal { Nome = objModelImportacao.Nome, Email = objModelImportacao.Email, NumeroBL= objModelImportacao.NumeroBL, NumeroBooking = objModelImportacao.NumeroBooking, PropostaComercial = objModelImportacao.PropostaComercial, CNPJ = objModelImportacao.CNPJ, CEP= objModelImportacao.CEP, Endereco = objModelImportacao.Endereco, Complemento = objModelImportacao.Complemento, Bairro = objModelImportacao.Bairro, Cidade = objModelImportacao.Cidade, Estado = objModelImportacao.Estado, Codigo = objModelImportacao.Codigo };
 
-                //if (!string.IsNullOrEmpty(cliente)) IntegrarTicket(model, html);
+                if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html);
 
                 return Json(new { success = true });
             }
@@ -1128,7 +1134,16 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
-
+        #region Importar Sucesso
+        /// <summary>
+        /// Exportar Sucesso
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ImportarSucesso(MLAgendamentoIntermodalImportacao model)
+        {
+            return PartialView(new MLAgendamentoIntermodalImportacao());
+        }
+        #endregion
 
 
 

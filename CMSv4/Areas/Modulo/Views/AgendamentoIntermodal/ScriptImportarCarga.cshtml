@@ -441,31 +441,7 @@
         $("#CodigoExcluir").val('');
     });
 
-    $(".btnAgendarJQ").on("click", function () {
-          $.ajax({
-            type: "POST",
-            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/Integrar",
-              data: {
-                  id: $("#CodigoExportar").val(),
-                  nome: $("#Nome").val(),
-                  email: $("#Email").val(),
-                  Reefer: $("#Reefer").is(':checked'),
-                  Comentario: $("#comentario").val(),
-                  CodigoExportacao: $("#CodigoExportar").val()
-              },
-            success: function (data) {
-                if (data.success == true) {
-                    $(".agendamentoJQ").hide();
-                    $(".sucessoJQ").fadeIn("slide");
-                }
-            },
-            error: function (data) {
-
-            }
-        });
-    });
-
-
+    
 
     function AddLinhaNf() {
         var maxAtivo = 0;
@@ -870,12 +846,13 @@
     }
 
 
-    $(".btnAgendarJQ").on("click", function () {
+    $(".btnAgendarImportarJQ").on("click", function () {
           $.ajax({
             type: "POST",
               url: "/cms/@portal.Diretorio/AgendamentoIntermodal/IntegrarImportar",
               data: {
-                  codigo: $("#codigoImportar").val()
+                  codigo: $("#codigoImportar").val(),
+                  Html: $("#divRegistrosImportarCargas").html()
               },
             success: function (data) {
                 if (data.success == true) {
@@ -889,8 +866,9 @@
         });
     });
 
-
-    
+    $(".reloadJQ").on("click", function () {
+        window.location.reload();
+    });
 
 
 </script>

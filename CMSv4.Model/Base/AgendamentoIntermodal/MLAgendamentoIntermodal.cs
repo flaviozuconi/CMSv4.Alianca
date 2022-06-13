@@ -65,6 +65,8 @@ namespace CMSv4.Model
         [DataField("AIN_D_REGISTRO", SqlDbType.DateTime)]
         public DateTime? DataRegistro { get; set; }
 
+
+        public string NumeroBL { get; set; }
     }
     #endregion
 

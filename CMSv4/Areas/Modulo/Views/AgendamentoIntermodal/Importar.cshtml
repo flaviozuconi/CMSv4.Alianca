@@ -170,6 +170,8 @@
     @Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
 </div>
 
+@Html.Action("ExportarSucesso", "AgendamentoIntermodal", new { model = Model })
+
 @{
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportar", new { model = Model }));
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCarga", new { model = Model }));
