@@ -974,7 +974,6 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
-
         #region Salvar Importação Carga VariasNf
         /// <summary>
         /// salvar carga da exportacao
@@ -1036,7 +1035,6 @@ namespace CMSApp.Areas.Modulo.Controllers
             }
         }
         #endregion
-
 
         #region Salvar Importação Carga VariosContainer
         /// <summary>
@@ -1100,7 +1098,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-
         #region IntegrarImportar
         /// <summary>
         /// salvar primeira etapa exportacao
@@ -1160,7 +1157,53 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
+        #region Arquivos
 
+        /// <summary>
+        ///Arquivos
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult Arquivos(MLModuloAgendamentoIntermodal model)
+        {
+            try
+            {
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
 
+        #region UploadArquivos
+
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult uploadArquivos(HttpPostedFileBase file)
+        {
+            try
+            {
+ 
+                if (file != null && file.ContentLength > 0)
+                {
+                   
+
+                }
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+
+        #endregion
     }
 }
