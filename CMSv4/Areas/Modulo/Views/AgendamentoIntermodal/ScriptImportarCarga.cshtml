@@ -1,0 +1,898 @@
+﻿@model MLAgendamentoIntermodal
+@{
+    var portal = BLPortal.Atual;
+
+    var urlUploadNfe = "/cms/" + portal + "/agendamentointermodal/UploadNfe";
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        InicializarCarga();
+
+        $('#FormCarga').validate({
+            rules: {
+                DataEntrega: { required: true },
+                NumeroNfe: { required: IsNormal() },
+                ValorNfeFormatado: { required: true },
+                Container: { required: true }
+            },
+            errorClass: 'is-invalid'
+        });
+
+        $('#FormCargaVariasNf').validate({
+            rules: {
+                DataEntrega: { required: true },
+                Container: { required: true }
+            },
+            errorClass: 'is-invalid'
+        });
+        $('#FormCargaNfVariosContainer').validate({
+            rules: {
+                NumeroNfe: { required: IsNormal() },
+                ValorNfe: { required: true }
+            },
+            errorClass: 'is-invalid'
+        });
+        $('.required').each(function () {
+            $(this).rules('add', {
+                required: true
+            });
+        });
+
+
+        Dropzone.options.arquivoUpload = {
+            url: '@urlUploadNfe',
+            dictDefaultMessage: '@TAdm("Arraste ou clique aqui para realizar upload de arquivos")',
+            dictCancelUpload: '@TAdm("Cancelar upload")',
+            dictCancelUploadConfirmation: '@TAdm("Cancelar upload")',
+            dictMaxFilesExceeded: '@TAdm("Atingiu a quantidade de uploads permitidos")',
+            dictFileTooBig: '@TAdm("Arquivo excedeu o tamanho permitido")',
+            dictFallbackMessage: '@TAdm("Seu browser não suporta Drag and Drop")',
+            maxFilesize: 1000, //MB
+            maxFiles: 10,
+            sendingmultiple: function (file, xhr, formData) {
+                //$(".alert-success").remove();
+                formData.append("DiretorioSalvar", $("#DiretorioAtual").val());
+            }
+        };
+
+
+    });
+
+    function IsNormal() {
+        
+        if ($("#hdfTipoFormulario").val() == 'dta') {
+            return false;
+        }
+
+        return true;
+    }
+
+    $("#comentario").on("keyup", function (event) {
+        $(".jqComentario").text($("#comentario").val().length + " de 300");
+    });
+
+    $("#comentarioVariasNf").on("keyup", function (event) {
+        $(".jqComentarioVariasNf").text($("#comentarioVariasNf").val().length + " de 300");
+    });
+
+    $("#btnContainerNf").on("click", function (event) {
+        InicializarCarga();
+
+        $("#btnContainerNf").addClass("active");
+        $("#btnContainerVariasNf").addClass("inactive");
+        $("#btnNfVariosConteiner").addClass("inactive");
+
+        $("#divContainerNf").fadeIn("slider");
+
+        if ($("#hdfTipoFormulario").val() == 'dta') {
+            $("#divNfContainerNf").hide();
+            $("#divAnexoContainerNf").hide();
+        }
+    });
+
+    $("#btnContainerVariasNf").on("click", function (event) {
+        InicializarCarga();
+
+        $("#btnContainerNf").addClass("inactive");
+        $("#btnContainerVariasNf").addClass("active");
+        $("#btnNfVariosConteiner").addClass("inactive");
+
+        $("#divContainerVariasNf").fadeIn("slider");
+
+        var teste = "1";
+        $(".listVariasNfJQ").empty();
+        if ($("#hdfTipoFormulario").val() == 'dta') {
+            $(".listVariasNfJQ").append('<div class="row item variasNfJQ nfJQ_1">' +
+                '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
+                '<div class="form-group">' +
+                '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
+                '<input type="text" class="form-control" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-1 p-0">' +
+                '<a href="javascript:ExcluirLinhaNf(' + teste + ')" class="icon icon-delete btnDeleteNfJQ_1"></a>' +
+                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + teste + '" value="False" />' +
+                '</div>' +
+                '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
+                '<div class="form-group">' +
+                '<a href="javascript:AddLinhaNf()" class="btn btn-darkgray btn-icon btn-block btnAdicionarNfJQ_1"><span class="icon icon-plus"></span>Adicionar</a>' +
+                '</div>' +
+                '</div>' +
+                '</div>');
+        }
+        else {
+            $(".listVariasNfJQ").append('<div class="row item variasNfJQ nfJQ_1">' +
+                '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
+                '<div class="form-group">' +
+                '<label for="numeroNfeVariasNf_1" class="form-label">Número da NF-e</label>' +
+                '<input type="text" class="form-control required" placeholder="9999999" id="numeroNfeVariasNf_1" name="LstNfs[0].NumeroNfe" maxlength="7" />' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
+                '<div class="form-group">' +
+                '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
+                '<div class="form-group">' +
+                '<label for="" class="form-label"><span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
+                '<div class="dropzone">Arraste ou clique aqui para realizar upload de arquivos</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-1 p-0">' +
+                '<a href = "javascript:ExcluirLinhaNf(' + teste + ')" class= "icon icon-delete btnDeleteNfJQ_1"></a>' +
+                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + teste + '" value="False" />' +
+                '</div>' +
+                '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
+                '<div class="form-group">' +
+                '<a href="javascript:AddLinhaNf()" class="btn btn-darkgray btn-icon btn-block btnAdicionarNfJQ_1"><span class="icon icon-plus"></span>Adicionar</a>' +
+                '</div>' +
+                '</div>' +
+                '</div>');
+        }
+        $(".btnDeleteNfJQ_1").hide();
+        $("#valorNfeVariasNf_1").maskMoney();
+
+    });
+
+
+    $("#btnNfVariosConteiner").on("click", function (event) {
+        InicializarCarga();
+
+        $("#hdfSeqContainerVariosContainer").val($("#hdfSeqContainer").val());
+
+        $("#btnContainerNf").addClass("inactive");
+        $("#btnContainerVariasNf").addClass("inactive");
+        $("#btnNfVariosConteiner").addClass("active");
+
+        $("#divNfVariosContainer").fadeIn("slider");
+
+        var teste = "1";
+        $(".listVariosContainerJQ").empty();
+        $(".listVariosContainerJQ").append('<div class="row item variosContainerJQ containerJQ_1">' +
+            '<div class="col-24 d-flex align-items-center">' +
+            '<div class="form-group">' +
+            '<label for="" class="form-label"><big class="icon icon-box mr-2"></big>Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
+            '<input type="hidden" value="' + $('#hdfSeqContainerVariosContainer').val() + '" name="LstContainer[0].Sequencia" />' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-24 col-sm-12 col-lg-9 col-xl-6">' +
+            '<div class="form-group">' +
+            '<label for="dataEntregaVariosContainer_1" class="form-label">Data e hora da Entrega</label>' +
+            '<input type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-dd")T00:00" class="form-control required" id="dataEntregaVariosContainer_1" name="LstContainer[0].DataEntrega" placeholder="">' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-24 col-sm-12 col-lg-9 col-xl-5">' +
+            '<div class="form-group">' +
+            '<label for="containerVariosContainer_1" class="form-label">Nº do Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
+            '<input type="text" class="form-control required" placeholder="99.999.999" id="containerVariosContainer_1" name="LstContainer[0].Container">' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-22 col-sm-16 col-md-17 col-lg-18 col-xl-8">' +
+            '<div class= "form-group">' +
+            '<label for="comentarioVariosContainer_1" class="form-label">Comentários / Referência interna</label>' +
+            '<textarea class="form-control" rows="4" id="comentarioVariosContainer_1" name="LstContainer[0].Comentario" maxlength="300"></textarea>' +
+            '<span class="form-counter jqComentarioVariosContainer_1">0 de 300</span>' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-1 p-0">' +
+            '<a href="javascript:ExcluirLinhaContainer(' + teste + ')" class="icon icon-delete btnDeleteContainerJQ_1" title="Excluir Linha"></a>' +
+            '<input type="hidden" name="LstContainer[0].IsLinhaExcluida" id="hdfLinhaExcluidaContainer_1" value="false" />' +
+            '</div>' +
+            '<div class= "col-24 col-sm-7 col-md-6 col-lg-5 col-xl-4 d-flex align-items-end">' +
+            '<div class="form-group">' +
+            '<a href="javascript:AddLinhaContainer()" class="btn btn-darkgray btn-icon btn-block mb-4 btnAdicionarContainerJQ_1"><span class="icon icon-plus"></span>Adicionar</a>' +
+            '</div>' +
+            '</div>' +
+            '</div>');
+        $(".btnDeleteContainerJQ_1").hide();
+
+        $("#comentarioVariosContainer_1").on("keyup", function (event) {
+            $(".jqComentarioVariosContainer_1").text($("#comentarioVariosContainer_1").val().length + " de 300");
+        });
+
+        if ($("#hdfTipoFormulario").val() == 'dta') {
+            $("#divNfVariosContainerNf").hide();
+            $("#divNfVariosContainerAnexo").hide();
+        }
+    });
+
+    function InicializarCarga() {
+        $("#btnContainerNf").removeClass("inactive");
+        $("#btnContainerVariasNf").removeClass("inactive");
+        $("#btnNfVariosConteiner").removeClass("inactive");
+
+        $("#btnContainerNf").removeClass("active");
+        $("#btnContainerVariasNf").removeClass("active");
+        $("#btnNfVariosConteiner").removeClass("active");
+
+        $("#divContainerNf").fadeOut("slider");
+        $("#divContainerVariasNf").fadeOut("slider");
+        $("#divNfVariosContainer").fadeOut("slider");
+        $("#divRegistrosCargas").fadeOut("slider");
+
+        $(".divExclusao").hide();
+        $(".mensagemExclusao").hide();
+    }
+
+
+    // CLICK NO BOTAO SALVAR EXPORTAÇAO
+    $(".btnSalvarCargaJQ").on("click", function (event) {
+        $(".btnSalvarCargaJQ").prop("disabled", true);
+        event.preventDefault();
+
+        if ($("#FormCarga").valid() == true) {
+             $.ajax({
+                type: "POST",
+                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCarga",
+                 data: {
+                     DataEntrega: $("#dataEntrega").val(),
+                     NumeroNfe: $("#numeroNfe").val(),
+                     ValorNfeFormatado: $("#valorNfe").val(),
+                     Container: $("#container").val(),
+                     //Extensao: $("#comentario").val(),
+                     Comentario: $("#comentario").val(),
+                     CodigoImportacao: $("#codigoImportar").val(),
+                     Sequencia: $("#hdfSeqContainer").val()
+                },
+                success: function (data) {
+                    if (data.success == true) {
+                        exibirListagemCargas(data.model);
+
+                        $("#dataEntrega").val('');
+                        $("#numeroNfe").val('');
+                        $("#valorNfe").val('');
+                        $("#container").val('');
+                        //$("#extensao").val('');
+                        $("#comentario").val('');
+
+                        $("#btnContainerNf").removeClass("active");
+                        $("#btnContainerNf").removeClass("inactive");
+                        $("#btnContainerVariasNf").removeClass("inactive");
+                        $("#btnNfVariosConteiner").removeClass("inactive");
+
+                        $("#divContainerNf").fadeOut("slider");
+
+                        //$(".btnAgendarJQ").fadeIn("slide");
+                    }
+                    else {
+                        $("#mensagem").text('');
+                        $("#mensagem").text(data.msg);
+                        $('html, body').animate({ scrollTop: 0 }, 800);
+                    }
+
+                    $(".btnSalvarCargaJQ").prop("disabled", false);
+                },
+                error: function (data) {
+                    $(".btnSalvarCargaJQ").prop("disabled", false);
+                }
+            });
+        }
+    });
+
+    function exibirListagemCargas(model) {
+        $("#divRegistrosCargas").fadeIn("slide");
+
+        if (model.Codigo > 0) {
+
+            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'>" +
+                "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
+                "<td>" + model.Container + "</td>" +
+                "<td>" + model.DataEntregaFormatada + "</td>" +
+                "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
+                "<td>" + model.ValorNfeFormatado + "</td>";
+
+            if ($("#hdfTipoFormulario").val() != 'dta') {
+                registro += "<td><div class='d-flex align-items-center justify-content-between'>NF-e " + model.NumeroNfe + " <span class='icon icon-paperclip ml-1'></span></div></td>";
+            }
+
+            registro += "<td><a onClick='excluirCarga(\"" + $("#hdfSeqContainer").val() + "\", \"" + model.Codigo + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
+                "</tr>";
+
+            $(".table tbody").append(registro);
+
+            $('#hdfSeqContainer').val(model.ProximaSequencia);
+
+            $('#lblContainer').html("");
+            $('#lblContainer').html("Nº do Container " + model.ProximaSequencia)
+
+            $('#lblContainerVariasNf').html("");
+            $('#lblContainerVariasNf').html("Nº do Container " + model.ProximaSequencia);
+        }
+    }
+
+    function exibirListagemCargasVariasNf(model) {
+        $("#divRegistrosCargas").fadeIn("slide");
+
+        if (model.LstNfs.length > 0) {
+            var codigos = "";
+
+            for (var aux = 0; aux < model.LstNfs.length; aux++) {
+                if (model.LstNfs[aux].IsLinhaExcluida == false) {
+                    codigos += model.LstNfs[aux].Codigo + ",";
+                }
+            }
+
+            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'>" +
+                "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
+                "<td>" + model.Container + "</td>" +
+                "<td>" + model.DataEntregaFormatada + "</td>" +
+                "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
+                "<td>";
+            for (var aux = 0; aux < model.LstNfs.length; aux++)
+            {
+                registro += model.LstNfs[aux].ValorNfeFormatado;
+                if (aux < (model.LstNfs.length - 1)) {
+                    registro += "<br>";
+                }
+            }
+            registro += "</td>";
+            if ($("#hdfTipoFormulario").val() != 'dta') {
+                registro += "<td>";
+                for (var aux = 0; aux < model.LstNfs.length; aux++) {
+                    registro += "NF-e " + model.LstNfs[aux].NumeroNfe + "<span class='icon icon-paperclip ml-2'></span>";
+                    if (aux < (model.LstNfs.length - 1)) {
+                        registro += "<br>";
+                    }
+                }
+                registro += "</td>";
+            }
+            registro += "<td><a onClick='excluirCarga(\"" + $("#hdfSeqContainer").val() + "\" ,\"" + codigos + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
+
+            $(".table tbody").append(registro);
+
+            $('#hdfSeqContainer').val(model.ProximaSequencia);
+
+            $('#lblContainer').html("");
+            $('#lblContainer').html("Nº do Container " + model.ProximaSequencia)
+
+            $('#lblContainerVariasNf').html("");
+            $('#lblContainerVariasNf').html("Nº do Container " + model.ProximaSequencia);
+        }
+    }
+
+    function reorganizarSeqContainer() {
+        var seq = 1;
+        var aux = "0" + seq.toString();
+
+        $(".sequenciaJQ").each(function (index, element) {
+
+            aux = seq.toString();
+            if (seq < 10) {
+                aux = "0" + seq.toString();
+            }
+
+            console.log(element.id);
+            $("#" + element.id).html('Container ' + aux);
+
+            seq += 1;
+        });
+
+        if (seq < 10) {
+            aux = "0" + seq.toString();
+        }
+
+        $("#hdfSeqContainer").val(aux);
+
+        $('#lblContainer').html("");
+        $('#lblContainer').html("Nº do Container " + aux)
+
+        $('#lblContainerVariasNf').html("");
+        $('#lblContainerVariasNf').html("Nº do Container " + aux);
+    }
+
+    function excluirCarga(linha, codigo) {
+        $('.mensagemExclusao').hide();
+        $(".divExclusao").fadeIn("slide");
+        $("#LinhaExcluir").val(linha);
+        $("#CodigoExcluir").val(codigo);
+    }
+
+    $(".btnExcluirJQ").on("click", function () {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirImportarCarga",
+            data: { Codigos: $("#CodigoExcluir").val() },
+            success: function (data) {
+                if (data.success == true) {
+                    var linha = "." + $("#LinhaExcluir").val() + "_excluir";
+                    //$(linha).fadeOut("slide");
+                    $(linha).remove();
+                    $("#LinhaExcluir").val('');
+                    $("#CodigoExcluir").val('');
+                    $(".divExclusao").fadeOut("slide");
+                    $('.mensagemExclusao').fadeIn("slide");
+
+                    reorganizarSeqContainer();
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    });
+
+    $(".btnNaoExcluirJQ").on("click", function () {
+        $(".divExclusao").fadeOut("slide");
+        $("#CodigoExcluir").val('');
+    });
+
+    $(".btnAgendarJQ").on("click", function () {
+          $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/Integrar",
+              data: {
+                  id: $("#CodigoExportar").val(),
+                  nome: $("#Nome").val(),
+                  email: $("#Email").val(),
+                  Reefer: $("#Reefer").is(':checked'),
+                  Comentario: $("#comentario").val(),
+                  CodigoExportacao: $("#CodigoExportar").val()
+              },
+            success: function (data) {
+                if (data.success == true) {
+                    $(".agendamentoJQ").hide();
+                    $(".sucessoJQ").fadeIn("slide");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    });
+
+
+
+    function AddLinhaNf() {
+        var maxAtivo = 0;
+        var minAtivo = 0;
+
+        var maxTotal = 0;
+        var minTotal = 0;
+
+        $("div .variasNfJQ").each(function (index, element) {
+            var item = parseInt(element.className.split('_')[1]);
+
+            if ($("#hdfLinhaExcluida_" + item).val() == 'False') {
+                if (minAtivo > item || minAtivo == 0) {
+                    minAtivo = item;
+                }
+
+                if (maxAtivo <= item) {
+                    maxAtivo = item;
+                }
+            }
+
+            if (minTotal > item || minTotal == 0) {
+                minTotal = item;
+            }
+
+            if (maxTotal <= item) {
+                maxTotal = item;
+            }
+        });
+
+        $(".btnDeleteNfJQ_" + maxAtivo.toString()).show();
+        $(".btnAdicionarNfJQ_" + maxAtivo.toString()).hide();
+
+        maxTotal = maxTotal + 1;
+        if ($("#hdfTipoFormulario").val() == 'dta') {
+            $(".listVariasNfJQ").append('<div class="row item variasNfJQ nfJQ_' + maxTotal.toString() + '">' +
+                '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
+                '<div class="form-group">' +
+                '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-1 p-0">' +
+                '<a href="javascript:ExcluirLinhaNf(' + maxTotal.toString() + ')" class="icon icon-delete btnDeleteNfJQ_' + maxTotal.toString() + '"></a>' +
+                '<input type="hidden" name="LstNfs[' + (maxTotal - 1).toString() + '].IsLinhaExcluida" id="hdfLinhaExcluida_' + maxTotal.toString() + '" value="False" />' +
+                '</div>' +
+                '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
+                '<div class="form-group">' +
+                '<a href = "javascript:AddLinhaNf()" class= "btn btn-darkgray btn-icon btn-block btnAdicionarNfJQ_' + maxTotal.toString() + '"><span class="icon icon-plus"></span>Adicionar</a>' +
+                '</div>' +
+                '</div>' +
+                '</div>');
+        }
+        else {
+            $(".listVariasNfJQ").append('<div class="row item variasNfJQ nfJQ_' + maxTotal.toString() + '">' +
+                '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
+                '<div class="form-group">' +
+                '<label for="numeroNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Número da NF-e</label>' +
+                '<input type="text" class="form-control required" placeholder="9999999" id="numeroNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].NumeroNfe" maxlength="7" />' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
+                '<div class="form-group">' +
+                '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
+                '<div class="form-group">' +
+                '<label for="" class="form-label">' +
+                '<span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
+                '<div class="dropzone">Arraste ou clique aqui para realizar upload de arquivos</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-1 p-0">' +
+                '<a href="javascript:ExcluirLinhaNf(' + maxTotal.toString() + ')" class="icon icon-delete btnDeleteNfJQ_' + maxTotal.toString() + '"></a>' +
+                '<input type="hidden" name="LstNfs[' + (maxTotal - 1).toString() + '].IsLinhaExcluida" id="hdfLinhaExcluida_' + maxTotal.toString() + '" value="False" />' +
+                '</div>' +
+                '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
+                '<div class="form-group">' +
+                '<a href = "javascript:AddLinhaNf()" class= "btn btn-darkgray btn-icon btn-block btnAdicionarNfJQ_' + maxTotal.toString() + '"><span class="icon icon-plus"></span>Adicionar</a>' +
+                '</div>' +
+                '</div>' +
+                '</div>');
+        }
+        $("#valorNfeVariasNf_" + maxTotal.toString()).maskMoney();
+
+        //$(".btnDeleteNfJQ_" + (max).toString()).hide();
+    }
+
+    function ExcluirLinhaNf(div) {
+        $(".nfJQ_" + div).hide();
+        $("#hdfLinhaExcluida_" + div).val('True');
+
+        var max = 0;
+        var min = 0;
+        $("div .variasNfJQ").each(function (index, element) {
+            var item = parseInt(element.className.split('_')[1]);
+
+            if ($("#hdfLinhaExcluida_" + item).val() == 'False') {
+                if (min > item || min == 0) {
+                    min = item;
+                }
+
+                if (max <= item) {
+                    max = item;
+                }
+            }
+        });
+
+        if (max == min) {
+            $(".btnDeleteNfJQ_" + max.toString()).hide();
+        }
+
+        $(".btnAdicionarNfJQ_" + max.toString()).show();
+    }
+
+    $(".btnSalvarCargaVariasNfJQ").on("click", function (event) {
+        $(".btnSalvarCargaVariasNfJQ").prop("disabled", true);
+        event.preventDefault();
+
+        $("#codigoImportarVariasNf").val($("#codigoImportar").val());
+        $("#hdfSeqContainerVariasNf").val($("#hdfSeqContainer").val());
+
+        var lst = $("#FormCargaVariasNf").serialize();
+
+
+        if ($("#FormCargaVariasNf").valid() == true) {
+
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCargaVariasNf",
+                data: lst,
+                success: function (data) {
+                    if (data.success == true) {
+                        exibirListagemCargasVariasNf(data.model);
+
+
+                        $("#dataEntregaVariasNf").val('');
+                        $("#containerVariasNf").val('');
+                        $("#comentarioVariasNf").val('');
+
+
+                        $("#btnContainerNf").removeClass("inactive");
+                        $("#btnContainerVariasNf").removeClass("active");
+                        $("#btnNfVariosConteiner").removeClass("inactive");
+
+                        $("#divContainerVariasNf").fadeOut("slider");
+
+                        //$(".btnAgendarJQ").fadeIn("slide");
+                    }
+                    else {
+                        $("#mensagem").text('');
+                        $("#mensagem").text(data.msg);
+                        $('html, body').animate({ scrollTop: 0 }, 800);
+                    }
+
+                    $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
+                },
+                error: function (data) {
+                    $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
+                }
+            });
+        }
+    });
+
+
+
+    function AddLinhaContainer() {
+        var maxAtivo = 0;
+        var minAtivo = 0;
+
+        var maxTotal = 0;
+        var minTotal = 0;
+
+        $("div .variosContainerJQ").each(function (index, element) {
+            var item = parseInt(element.className.split('_')[1]);
+            if ($("#hdfLinhaExcluidaContainer_" + item).val() == 'false') {
+                if (minAtivo > item || minAtivo == 0) {
+                    minAtivo = item;
+                }
+
+                if (maxAtivo <= item) {
+                    maxAtivo = item;
+                }
+            }
+
+            if (minTotal > item || minTotal == 0) {
+                minTotal = item;
+            }
+
+            if (maxTotal <= item) {
+                maxTotal = item;
+            }
+        });
+
+        $(".btnDeleteContainerJQ_" + maxAtivo.toString()).show();
+        $(".btnAdicionarContainerJQ_" + maxAtivo.toString()).hide();
+
+        var seq = (parseInt($('#hdfSeqContainerVariosContainer').val()) + 1).toString();
+        if (seq.length < 2) {
+            seq = "0" + seq;
+        }
+
+        $('#hdfSeqContainerVariosContainer').val(seq);
+
+        maxAtivo = maxAtivo + 1;
+        maxTotal = maxTotal + 1;
+        $(".listVariosContainerJQ").append('<div class="row item variosContainerJQ containerJQ_' + maxTotal.toString() + '">' +
+            '<div class="col-24 d-flex align-items-center">' +
+            '<div class="form-group">' +
+            '<label for="" class="form-label"><big class="icon icon-box mr-2"></big>Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
+            '<input type="hidden" value="' + $('#hdfSeqContainerVariosContainer').val() + '" name="LstContainer[' + (maxTotal - 1).toString() + '].Sequencia" />' +
+            '</div>' +
+            '</div>' +
+            '<div class= "col-24 col-sm-12 col-lg-9 col-xl-6">' +
+            '<div class="form-group">' +
+            '<label for="dataEntregaVariosContainer_' + maxTotal.toString() + '" class="form-label">Data e hora da Entrega</label>' +
+            '<input type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-dd")T00:00" class="form-control required" id="dataEntregaVariosContainer_' + maxTotal.toString() + '" name="LstContainer[' + (maxTotal - 1).toString() + '].DataEntrega" placeholder="">' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-24 col-sm-12 col-lg-9 col-xl-5">' +
+            '<div class="form-group">' +
+            '<label for="containerVariosContainer_' + maxTotal.toString() + '" class="form-label">Nº do Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
+            '<input type="text" class="form-control required" placeholder="99.999.999" id="containerVariosContainer_' + maxTotal.toString() + '" name="LstContainer[' + (maxTotal - 1).toString() + '].Container">' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-22 col-sm-16 col-md-17 col-lg-18 col-xl-8">' +
+            '<div class="form-group">' +
+            '<label for="comentarioVariosContainer_' + maxTotal.toString() + '" class="form-label">Comentários / Referência interna</label>' +
+            '<textarea class="form-control" rows="4" id="comentarioVariosContainer_' + maxTotal.toString() + '" name="LstContainer[' + (maxTotal - 1).toString() + '].Comentario" maxlength="300"></textarea>' +
+            '<span class="form-counter jqComentarioVariosContainer_' + maxTotal.toString() + '">0 de 300</span>' +
+            '</div>' +
+            '</div>' +
+            '<div class="col-1 p-0">' +
+            '<a href="javascript:ExcluirLinhaContainer(' + maxTotal.toString() + ')" class="icon icon-delete btnDeleteContainerJQ_' + maxTotal.toString() + '" title="Excluir Linha"></a>' +
+            '<input type="hidden" name="LstContainer[' + (maxTotal - 1).toString() + '].IsLinhaExcluida" id="hdfLinhaExcluidaContainer_' + maxTotal.toString() + '" value="false" />' +
+            '</div>'+
+            '<div class= "col-24 col-sm-7 col-md-6 col-lg-5 col-xl-4 d-flex align-items-end">' +
+            '<div class="form-group">' +
+            '<a href="javascript:AddLinhaContainer()" class="btn btn-darkgray btn-icon btn-block mb-4 btnAdicionarContainerJQ_' + maxTotal.toString() + '"><span class="icon icon-plus"></span>Adicionar</a>' +
+            '</div>' +
+            '</div>' +
+            '</div>');
+
+
+        $("#comentarioVariosContainer_" + maxTotal.toString()).on("keyup", function (event) {
+            $(".jqComentarioVariosContainer_" + maxTotal.toString()).text($("#comentarioVariosContainer_" + maxTotal.toString()).val().length + " de 300");
+        });
+
+        //$(".btnDeleteContainerJQ_" + (max).toString()).hide();
+    }
+
+    function ExcluirLinhaContainer(div) {
+        $(".containerJQ_" + div).hide();
+        $("#hdfLinhaExcluidaContainer_" + div).val('true');
+
+        var maxAtivo = 0;
+        var minAtivo = 0;
+
+        $("div .variosContainerJQ").each(function (index, element) {
+            var item = parseInt(element.className.split('_')[1]);
+
+            if ($("#hdfLinhaExcluidaContainer_" + item).val() == 'false') {
+                if (minAtivo > item || minAtivo == 0) {
+                    minAtivo = item;
+                }
+
+                if (maxAtivo <= item) {
+                    maxAtivo = item;
+                }
+            }
+        });
+
+
+        if (maxAtivo == minAtivo) {
+            $(".btnDeleteContainerJQ_" + maxAtivo.toString()).hide();
+        }
+
+        $(".btnAdicionarContainerJQ_" + maxAtivo.toString()).show();
+    }
+
+
+    $(".btnSalvarCargaVariosContainerJQ").on("click", function (event) {
+        $(".btnSalvarCargaVariosContainerJQ").prop("disabled", true);
+        event.preventDefault();
+
+        $("#codigoImportarVariosContainer").val($("#codigoImportar").val());
+        $("#hdfSeqContainer").val($("#hdfSeqContainerVariosContainer").val());
+
+        var lst = $("#FormCargaNfVariosContainer").serialize();
+
+        if ($("#FormCargaNfVariosContainer").valid() == true) {
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCargaVariosContainer",
+                data: lst,
+                success: function (data) {
+                    if (data.success == true) {
+
+                        exibirListagemCargasVariosContainer(data.model);
+
+
+                        $("#numeroNfeVariosContainer").val('');
+                        $("#valorNfeVariosContainer").val('');
+
+
+                        $("#btnContainerNf").removeClass("inactive");
+                        $("#btnContainerVariasNf").removeClass("inactive");
+                        $("#btnNfVariosConteiner").removeClass("active");
+
+                        $("#divNfVariosContainer").fadeOut("slider");
+
+                        //$(".btnAgendarJQ").fadeIn("slide");
+                    }
+                    else {
+                        $("#mensagem").text('');
+                        $("#mensagem").text(data.msg);
+                        $('html, body').animate({ scrollTop: 0 }, 800);
+                    }
+
+                    $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
+                },
+                error: function (data) {
+                    $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
+                }
+            });
+        }
+    });
+
+    function exibirListagemCargasVariosContainer(model) {
+        $("#divRegistrosCargas").fadeIn("slide");
+
+        if (model.LstContainer.length > 0) {
+            var codigos = "";
+            var nomeLinha = "";
+
+            for (var aux = 0; aux < model.LstContainer.length; aux++) {
+                if (model.LstContainer[aux].IsLinhaExcluida == false) {
+                    codigos += model.LstContainer[aux].Codigo + ",";
+                    nomeLinha += model.LstContainer[aux].Sequencia + "-";
+                }
+            }
+
+
+            var registro = "<tr class='" + nomeLinha + "_excluir'>" +
+                "<td><span class='icon icon-box'></span></td>" +
+                "<td>";
+            for (var aux = 0; aux < model.LstContainer.length; aux++) {
+                registro += '<span class="sequenciaJQ" id="sequenciaJQ_' + aux.toString() + '">Container ' + model.LstContainer[aux].Sequencia + '</span>';
+                if (aux < (model.LstContainer.length - 1)) {
+                    registro += "<br>";
+                }
+            }
+            registro += "</td>" +
+                "<td>";
+            for (var aux = 0; aux < model.LstContainer.length; aux++) {
+                registro += model.LstContainer[aux].Container;
+                if (aux < (model.LstContainer.length - 1)) {
+                    registro += "<br>";
+                }
+            }
+            registro += "</td>" +
+                "<td>";
+            for (var aux = 0; aux < model.LstContainer.length; aux++) {
+                registro += model.LstContainer[aux].DataEntregaFormatada;
+                if (aux < (model.LstContainer.length - 1)) {
+                    registro += "<br>";
+                }
+            }
+            registro += "</td>" +
+                "<td>";
+            for (var aux = 0; aux < model.LstContainer.length; aux++) {
+                registro += "<span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.LstContainer[aux].Comentario + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>Comentários</span>";
+                if (aux < (model.LstContainer.length - 1)) {
+                    registro += "<br>";
+                }
+            }
+            registro += "</td>" +
+                "<td>" + model.ValorNfe + "</td>";
+            if ($("#hdfTipoFormulario").val() != 'dta') {
+                registro += "<td><div class='d-flex align-items-center justify-content-between'>NF-e " + model.NumeroNfe + " <span class='icon icon-paperclip ml-2'></span></div></td>";
+            }
+            registro += "<td><a onClick='excluirCarga(\"" + nomeLinha + "\" ,\"" + codigos + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
+
+
+
+            $(".table tbody").append(registro);
+
+            $('#hdfSeqContainer').val(model.LstContainer[model.LstContainer.length - 1].ProximaSequencia);
+
+            $('#lblContainer').html("");
+            $('#lblContainer').html("Nº do Container " + model.LstContainer[model.LstContainer.length - 1].ProximaSequencia);
+
+            $('#lblContainerVariasNf').html("");
+            $('#lblContainerVariasNf').html("Nº do Container " + model.LstContainer[model.LstContainer.length - 1].ProximaSequencia);
+        }
+    }
+
+
+    $(".btnAgendarJQ").on("click", function () {
+          $.ajax({
+            type: "POST",
+              url: "/cms/@portal.Diretorio/AgendamentoIntermodal/IntegrarImportar",
+              data: {
+                  codigo: $("#codigoImportar").val()
+              },
+            success: function (data) {
+                if (data.success == true) {
+                    $(".agendamentoJQ").hide();
+                    $(".sucessoJQ").fadeIn("slide");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    });
+
+
+    
+
+
+</script>
+
+
