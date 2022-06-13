@@ -1,5 +1,7 @@
 ﻿@model MLAgendamentoIntermodalImportacao
 @{
+    var portal = BLPortal.Atual;
+    var urlUpload = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadArquivos";
 }
 
 
@@ -36,7 +38,7 @@
     <input type="hidden" id="hdfSeqContainer" value="01" />
     <input type="hidden" id="hdfTipoFormulario" value="" />
 
-    <form class="form" id="FormCarga" enctype="multipart/form-data">
+    <form id="FormCarga" class="form" enctype="multipart/form-data">
         <div class="row justify-content-center" id="divContainerNf">
             <div class="col-24 col-sm-12 col-xl-6">
                 <div class="form-group">
@@ -69,7 +71,7 @@
                         Anexar NF-e
                     </label>
                     <div class="dropzone" id="arquivoUpload">
-                        <input type="file" name="file" id="testeDrop" />
+                        Arraste ou clique aqui para realizar upload de arquivos
                     </div>
                 </div>
             </div>

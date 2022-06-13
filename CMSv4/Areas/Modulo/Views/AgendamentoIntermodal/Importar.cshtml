@@ -1,8 +1,13 @@
 ﻿@model MLAgendamentoIntermodalImportacao
 @{
+    /**/
+
     var estado = (List<MLEstado>)ViewData["estado"];
 
     var baseUrl = "/portal/" + BLPortal.Atual.Diretorio;
+
+    var portal = BLPortal.Atual;
+    var urlUpload = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadArquivos";
 }
 
 <div class="box-agendamento agendamentoJQ">
@@ -34,6 +39,7 @@
                 </div>
             </div>
         </div>
+
         <div class="form-section">
             <h3 class="form-section__title">@T("Informações de Importação")</h3>
             <div class="row justify-content-center">
@@ -56,6 +62,8 @@
                     </div>
                 </div>
             </div>
+
+
             <div class="row justify-content-center">
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
@@ -63,6 +71,7 @@
                             <span class="icon icon-paperclip"></span>
                             @T("Declaração de Importação")
                         </label>
+                        <input type="file" name="file" />
                         <div class="dropzone">
                             @T("Arraste ou clique aqui para realizar upload de arquivos")
                         </div>
@@ -92,6 +101,8 @@
                 </div>
             </div>
         </div>
+
+
         <div class="form-section">
             <h3 class="form-section__title">@T("Local de Coleta")</h3>
             <div class="row">
@@ -167,7 +178,18 @@
         </div>
     </form>
 
+    <form id="arquivoUpload" action="@urlUpload" method="post" class="dropzone" enctype="multipart/form-data">
+        <span class="glyphicon glyphicon-camera" style="font-size: 24px;"></span>
+        <div class="fallback">
+            <input type="file" name="file" />
+        </div>
+    </form>
+    <link href="~/Content/css/plugins/dropzone/css/dropzone.css" rel="stylesheet" />
+    <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
+
     @Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
+
+
 </div>
 
 @Html.Action("ExportarSucesso", "AgendamentoIntermodal", new { model = Model })
@@ -175,8 +197,24 @@
 @{
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportar", new { model = Model }));
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCarga", new { model = Model }));
-}
 
-@section head {
-    <link href="~/Content/css/plugins/dropzone/css/dropzone.min.css" rel="stylesheet" />
+    <script type="text/javascript">
+        
+        /*  FORM UPLOAD */
+        Dropzone.options.arquivoUpload = {
+            maxFilesize: 50,
+            url: "@urlUpload",
+                dictDefaultMessage: "Upload",
+                processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
+                complete: function (file) {
+                    //if (parent.sizeContent) parent.sizeContent()
+                    //$(file.previewElement).remove();
+                    //console.log(file);
+                },
+                success: function (file, response) {
+                   // message_box('Success', file.name+' Adicionada com Sucesso!');
+                    //window.location.reload();
+                }
+            };
+    </script>
 }
