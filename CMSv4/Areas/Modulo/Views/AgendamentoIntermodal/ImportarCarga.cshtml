@@ -36,7 +36,7 @@
     <input type="hidden" id="hdfSeqContainer" value="01" />
     <input type="hidden" id="hdfTipoFormulario" value="" />
 
-    <form class="form" id="FormCarga">
+    <form class="form" id="FormCarga" enctype="multipart/form-data">
         <div class="row justify-content-center" id="divContainerNf">
             <div class="col-24 col-sm-12 col-xl-6">
                 <div class="form-group">
@@ -69,7 +69,7 @@
                         Anexar NF-e
                     </label>
                     <div class="dropzone" id="arquivoUpload">
-                        <input type="file" name="file" />
+                        <input type="file" name="file" id="testeDrop" />
                     </div>
                 </div>
             </div>

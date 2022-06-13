@@ -883,6 +883,35 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                     if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
                     {
+
+                        foreach (string fileName in Request.Files)
+                        {
+                            HttpPostedFileBase file = Request.Files[fileName];
+                            //Save file content goes here
+                            string fName = file.FileName;
+                            if (file != null && file.ContentLength > 0)
+                            {
+
+                                var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\WallImages", Server.MapPath(@"\")));
+
+                                string pathString = System.IO.Path.Combine(originalDirectory.ToString(), "imagepath");
+
+                                var fileName1 = Path.GetFileName(file.FileName);
+
+                                bool isExists = System.IO.Directory.Exists(pathString);
+
+                                if (!isExists)
+                                    System.IO.Directory.CreateDirectory(pathString);
+
+                                var path = string.Format("{0}\\{1}", pathString, file.FileName);
+                                file.SaveAs(path);
+                            }
+
+                        }
+
+
+
+
                         if (!string.IsNullOrEmpty(model.ValorNfeFormatado))
                             model.ValorNfe = Convert.ToDecimal(model.ValorNfeFormatado.Replace("R$ ", "").Replace(".", ""));
                         model.DataRegistro = DateTime.Now;
@@ -1068,6 +1097,42 @@ namespace CMSApp.Areas.Modulo.Controllers
         #endregion
 
 
+        #region IntegrarImportar
+        /// <summary>
+        /// salvar primeira etapa exportacao
+        /// </summary>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        [ValidateInput(false)]
+        public JsonResult IntegrarImportar(decimal codigo)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+                MLAgendamentoIntermodalImportacao objModelImportacao = CRUD.Obter<MLAgendamentoIntermodalImportacao>(codigo, portal.ConnectionString);
+                List<MLAgendamentoIntermodalImportacaoCarga> lstImportacaoCarga = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
+
+                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = objModelImportacao.Nome, Codigo = objModelImportacao.Codigo, Email = objModelImportacao.Email });
+
+
+                //if (!string.IsNullOrEmpty(cliente)) IntegrarTicket(model, html);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message, codigo = 0 });
+            }
+        }
+
+        #endregion
+
+
+
+
+
+
         #region UploadNfe
         [CheckPermission(global::Permissao.Modificar)]
         [HttpPost]
@@ -1079,5 +1144,8 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
 
         #endregion
+
+
+
     }
 }

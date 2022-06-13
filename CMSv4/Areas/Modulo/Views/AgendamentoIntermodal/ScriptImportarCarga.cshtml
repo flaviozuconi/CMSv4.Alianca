@@ -21,7 +21,6 @@
             errorClass: 'is-invalid'
         });
 
-
         $('#FormCargaVariasNf').validate({
             rules: {
                 DataEntrega: { required: true },
@@ -43,6 +42,21 @@
         });
 
 
+        Dropzone.options.arquivoUpload = {
+            url: '@urlUploadNfe',
+            dictDefaultMessage: '@TAdm("Arraste ou clique aqui para realizar upload de arquivos")',
+            dictCancelUpload: '@TAdm("Cancelar upload")',
+            dictCancelUploadConfirmation: '@TAdm("Cancelar upload")',
+            dictMaxFilesExceeded: '@TAdm("Atingiu a quantidade de uploads permitidos")',
+            dictFileTooBig: '@TAdm("Arquivo excedeu o tamanho permitido")',
+            dictFallbackMessage: '@TAdm("Seu browser não suporta Drag and Drop")',
+            maxFilesize: 1000, //MB
+            maxFiles: 10,
+            sendingmultiple: function (file, xhr, formData) {
+                //$(".alert-success").remove();
+                formData.append("DiretorioSalvar", $("#DiretorioAtual").val());
+            }
+        };
 
 
     });
@@ -854,6 +868,30 @@
             $('#lblContainerVariasNf').html("Nº do Container " + model.LstContainer[model.LstContainer.length - 1].ProximaSequencia);
         }
     }
+
+
+    $(".btnAgendarJQ").on("click", function () {
+          $.ajax({
+            type: "POST",
+              url: "/cms/@portal.Diretorio/AgendamentoIntermodal/IntegrarImportar",
+              data: {
+                  codigo: $("#codigoImportar").val()
+              },
+            success: function (data) {
+                if (data.success == true) {
+                    $(".agendamentoJQ").hide();
+                    $(".sucessoJQ").fadeIn("slide");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    });
+
+
+    
+
 
 </script>
 
