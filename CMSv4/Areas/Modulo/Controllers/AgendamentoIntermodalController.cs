@@ -11,6 +11,7 @@ using System.Text;
 using Newtonsoft.Json;
 using CMSv4.Model.Base.GestaoInformacoesImportacao;
 using System.Web;
+using System.Security.Cryptography;
 
 namespace CMSApp.Areas.Modulo.Controllers
 {
@@ -243,8 +244,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-        
-
         // EXPORTAR
 
         #region Exportar
@@ -363,12 +362,25 @@ namespace CMSApp.Areas.Modulo.Controllers
         {
             try
             {
-                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = model.Nome, Codigo = model.Codigo, Email = model.Email }, "AgendamentoExportar_");
-                var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
+                var cliente = IntegrarCliente(new MLAgendamentoIntermodal
+                    {
+                        Nome = model.Nome,
+                        Codigo = model.Codigo,
+                        Email = model.Email
+                    }, 
+                    "AgendamentoExportar_"
+                );
 
-                if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html);
+                if (!string.IsNullOrEmpty(cliente))
+                {
+                    var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
 
-                return Json(new { success = true});
+                    if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html);
+
+                    return Json(new { success = true });
+                }
+
+                return Json(new { success = false });
             }
             catch (Exception ex)
             {
@@ -623,6 +635,19 @@ namespace CMSApp.Areas.Modulo.Controllers
             };
             #endregion
 
+            #region attachments
+            foreach (var item in model?.lstCarga)
+            {
+                objModel.attachments.Add(new Attachments
+                {
+                    fileName = "nome.jpg",
+                    path = GetHash("C:/Users/Laion Custodio/Pictures/Screenshots/2.jpg"),
+                    createdBy = objModel.createdBy,
+                    createdDate = DateTime.Now
+                });
+            }
+            #endregion 
+
             #region campos adicionais
 
             objModel.customFieldValues.Add(new Customfieldvalue
@@ -718,7 +743,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         #endregion
 
         #endregion
-
 
         //IMPORTAR
 
@@ -1110,17 +1134,49 @@ namespace CMSApp.Areas.Modulo.Controllers
             try
             {
                 var portal = PortalAtual.Obter;
-                MLAgendamentoIntermodalImportacao objModelImportacao = CRUD.Obter<MLAgendamentoIntermodalImportacao>(codigo, portal.ConnectionString);
-                List<MLAgendamentoIntermodalImportacaoCarga> lstImportacaoCarga = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
+                var objModelImportacao = CRUD.Obter<MLAgendamentoIntermodalImportacao>(codigo, portal.ConnectionString);
 
-                var cliente = IntegrarCliente(new MLAgendamentoIntermodal { Nome = objModelImportacao.Nome, Codigo = objModelImportacao.Codigo, Email = objModelImportacao.Email }, "AgendamentoImportar_");
-                var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
+                if (objModelImportacao != null && objModelImportacao.Codigo.HasValue)
+                {
+                    var cliente = IntegrarCliente(new MLAgendamentoIntermodal
+                        {
+                            Nome = objModelImportacao.Nome,
+                            Codigo = objModelImportacao.Codigo,
+                            Email = objModelImportacao.Email
+                        },
+                        "AgendamentoImportar_"
+                    );
 
-                MLAgendamentoIntermodal model = new MLAgendamentoIntermodal { Nome = objModelImportacao.Nome, Email = objModelImportacao.Email, NumeroBL= objModelImportacao.NumeroBL, NumeroBooking = objModelImportacao.NumeroBooking, PropostaComercial = objModelImportacao.PropostaComercial, CNPJ = objModelImportacao.CNPJ, CEP= objModelImportacao.CEP, Endereco = objModelImportacao.Endereco, Complemento = objModelImportacao.Complemento, Bairro = objModelImportacao.Bairro, Cidade = objModelImportacao.Cidade, Estado = objModelImportacao.Estado, Codigo = objModelImportacao.Codigo };
+                    if (!string.IsNullOrEmpty(cliente))
+                    {
+                        var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
 
-                if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html);
+                        var model = new MLAgendamentoIntermodal
+                        {
+                            Nome = objModelImportacao.Nome,
+                            Email = objModelImportacao.Email,
+                            NumeroBL = objModelImportacao.NumeroBL,
+                            NumeroBooking = objModelImportacao.NumeroBooking,
+                            PropostaComercial = objModelImportacao.PropostaComercial,
+                            CNPJ = objModelImportacao.CNPJ,
+                            CEP = objModelImportacao.CEP,
+                            Endereco = objModelImportacao.Endereco,
+                            Complemento = objModelImportacao.Complemento,
+                            Bairro = objModelImportacao.Bairro,
+                            Cidade = objModelImportacao.Cidade,
+                            Estado = objModelImportacao.Estado,
+                            Codigo = objModelImportacao.Codigo
+                        };
 
-                return Json(new { success = true });
+                        model.lstCarga = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
+
+                        if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html);
+
+                        return Json(new { success = true });
+                    }
+                }
+
+                return Json(new { success = false });
             }
             catch (Exception ex)
             {
@@ -1142,9 +1198,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-
-
-
         #region UploadNfe
         [CheckPermission(global::Permissao.Modificar)]
         [HttpPost]
@@ -1157,28 +1210,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
-        #region Arquivos
-
-        /// <summary>
-        ///Arquivos
-        /// </summary>
-        [CheckPermission(global::Permissao.Publico)]
-        public ActionResult Arquivos(MLModuloAgendamentoIntermodal model)
-        {
-            try
-            {
-                return PartialView(model);
-            }
-            catch (Exception ex)
-            {
-                ApplicationLog.ErrorLog(ex);
-                return Json(new { success = false, msg = ex.Message });
-            }
-        }
-        #endregion
-
         #region UploadArquivos
-
         /// <summary>
         /// Upload
         /// </summary>        
@@ -1205,5 +1237,30 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
 
         #endregion
+
+        #region GetHash
+        /// <summary>
+        /// GetHash
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        public string GetHash(string file)
+        {
+            using (SHA1Managed sha1 = new SHA1Managed())
+            {
+                var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(file));
+                var sb = new StringBuilder(hash.Length * 2);
+
+                foreach (byte b in hash)
+                {
+                    // can be "x2" if you want lowercase
+                    sb.Append(b.ToString("X2"));
+                }
+
+                return sb.ToString();
+            }
+        }
+        #endregion
+
     }
 }
