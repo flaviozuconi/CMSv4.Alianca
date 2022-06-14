@@ -65,8 +65,14 @@ namespace CMSv4.Model
         [DataField("AIN_D_REGISTRO", SqlDbType.DateTime)]
         public DateTime? DataRegistro { get; set; }
 
-
         public string NumeroBL { get; set; }
+
+        public List<MLAgendamentoIntermodalImportacaoCarga> lstCarga { get; set; }
+
+        public MLAgendamentoIntermodal()
+        {
+            lstCarga = new List<MLAgendamentoIntermodalImportacaoCarga>();
+        }
     }
     #endregion
 
@@ -116,6 +122,7 @@ namespace CMSv4.Model
 
     #region Integração
     // https://atendimento.movidesk.com/kb/article/189/movidesk-person-api
+    // https://atendimento.movidesk.com/kb/article/256/movidesk-ticket-api#h86skud04v861ectu4vnakcjuo28zts
 
     #region MLAgendamentoPerson
     /// <summary>
@@ -143,22 +150,24 @@ namespace CMSv4.Model
     /// </summary>
     public class MLAgendamentoTicket
     {
-        public int type             { get; set; }
-        public string subject       { get; set; }
-        public string serviceFull   { get; set; }
-        public string category      { get; set; }
-        public string urgency       { get; set; }
-        public string ownerTeam     { get; set; }
-        public string description   { get; set; }
+        public int type { get; set; }
+        public string subject { get; set; }
+        public string serviceFull { get; set; }
+        public string category { get; set; }
+        public string urgency { get; set; }
+        public string ownerTeam { get; set; }
+        public string description { get; set; }
         public DateTime createdDate { get; set; }
         public List<Client> clients { get; set; }
         public List<Action> actions { get; set; }
-        public Createdby createdBy  { get; set; }
+        public List<Attachments> attachments { get; set; }
+        public Createdby createdBy { get; set; }
         public List<Customfieldvalue> customFieldValues { get; set; }
 
         public MLAgendamentoTicket()
         {
             clients = new List<Client>();
+            attachments = new List<Attachments>();
             actions = new List<Action>();
             createdBy = new Createdby();
             customFieldValues = new List<Customfieldvalue>();
@@ -240,6 +249,18 @@ namespace CMSv4.Model
     }
     #endregion
 
+    #region Attachments
+    /// <summary>
+    /// Attachments
+    /// </summary>
+    public class Attachments
+    {
+        public string fileName { get; set; }
+        public string path { get; set; }
+        public Createdby createdBy { get; set; }
+        public DateTime createdDate { get; set; }
+    }
     #endregion
 
+    #endregion
 }
