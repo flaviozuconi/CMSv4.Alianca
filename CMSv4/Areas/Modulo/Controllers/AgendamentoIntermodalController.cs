@@ -872,7 +872,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         [HttpPost]
         [CheckPermission(global::Permissao.Publico)]
-        public JsonResult SalvarImportacaoCarga(MLAgendamentoIntermodalImportacaoCarga model, HttpPostedFileBase fileNfContainerNf)
+        public JsonResult SalvarImportacaoCarga(MLAgendamentoIntermodalImportacaoCarga model)
         {
             try
             {

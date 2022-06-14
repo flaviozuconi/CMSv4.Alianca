@@ -227,7 +227,7 @@
     $(".btnSalvarCargaJQ").on("click", function (event) {
         $(".btnSalvarCargaJQ").prop("disabled", true);
         event.preventDefault();
-
+        
         if ($("#FormCarga").valid() == true) {
              $.ajax({
                 type: "POST",
@@ -237,7 +237,6 @@
                      NumeroNfe: $("#numeroNfe").val(),
                      ValorNfeFormatado: $("#valorNfe").val(),
                      Container: $("#container").val(),
-                     //Extensao: $("#comentario").val(),
                      Comentario: $("#comentario").val(),
                      CodigoImportacao: $("#codigoImportar").val(),
                      Sequencia: $("#hdfSeqContainer").val()
