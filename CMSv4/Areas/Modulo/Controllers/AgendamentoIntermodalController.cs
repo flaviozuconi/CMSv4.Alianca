@@ -1157,28 +1157,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
-        #region Arquivos
-
-        /// <summary>
-        ///Arquivos
-        /// </summary>
-        [CheckPermission(global::Permissao.Publico)]
-        public ActionResult Arquivos(MLModuloAgendamentoIntermodal model)
-        {
-            try
-            {
-                return PartialView(model);
-            }
-            catch (Exception ex)
-            {
-                ApplicationLog.ErrorLog(ex);
-                return Json(new { success = false, msg = ex.Message });
-            }
-        }
-        #endregion
-
         #region UploadArquivos
-
         /// <summary>
         /// Upload
         /// </summary>        

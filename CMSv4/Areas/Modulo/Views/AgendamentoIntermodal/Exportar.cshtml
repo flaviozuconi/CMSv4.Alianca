@@ -1,10 +1,7 @@
 ﻿@model MLAgendamentoIntermodal
 @{
     var estado = (List<MLEstado>)ViewData["estado"];
-
     var baseUrl = "/portal/" + BLPortal.Atual.Diretorio;
-    var portal = BLPortal.Atual;
-    var urlUpload = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadArquivos";
 }
 
 <div class="box-agendamento agendamentoJQ">
@@ -125,16 +122,6 @@
         </div>
     </form>
 
-
-    <form id="arquivoUpload" action="@urlUpload" method="post" class="dropzone" enctype="multipart/form-data">
-        <span class="glyphicon glyphicon-camera" style="font-size: 24px;"></span>
-        <div class="fallback">
-            <input type="file" name="file" />
-        </div>
-    </form>
-    <link href="~/Content/css/plugins/dropzone/css/dropzone.css" rel="stylesheet" />
-    <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
-
     @Html.Action("ExportarCarga", "AgendamentoIntermodal", new { model = Model })
 </div>
 
@@ -143,25 +130,4 @@
 @{
     BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptCarga", new { model = Model }));
-
-
-    <script type="text/javascript">
-
-        /*  FORM UPLOAD */
-        Dropzone.options.arquivoUpload = {
-            maxFilesize: 50,
-            url: "@urlUpload",
-                dictDefaultMessage: "Upload",
-                processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
-                complete: function (file) {
-                    //if (parent.sizeContent) parent.sizeContent()
-                    //$(file.previewElement).remove();
-                    //console.log(file);
-                },
-                success: function (file, response) {
-                   // message_box('Success', file.name+' Adicionada com Sucesso!');
-                    //window.location.reload();
-                }
-            };
-    </script>
 }
