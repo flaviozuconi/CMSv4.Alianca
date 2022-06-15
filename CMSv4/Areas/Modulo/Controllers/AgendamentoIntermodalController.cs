@@ -580,8 +580,8 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 objModel.attachments.Add(new Attachments
                 {
-                    fileName = "nome.jpg",
-                    path = GetHash("C:/Users/Laion Custodio/Pictures/Screenshots/2.jpg"),
+                    fileName = item.Arquivo,
+                    path = GetHash(item.caminhoCompleto),
                     createdBy = objModel.createdBy,
                     createdDate = DateTime.Now
                 });
@@ -777,7 +777,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         [HttpPost]
         [CheckPermission(global::Permissao.Publico)]
-        public JsonResult SalvarImportacao(MLAgendamentoIntermodalImportacao model, string strTipo)
+        public JsonResult SalvarImportacao(MLAgendamentoIntermodalImportacao model, string guid)
         {
             if (ModelState.IsValid)
             {
@@ -796,6 +796,87 @@ namespace CMSApp.Areas.Modulo.Controllers
                     if (string.IsNullOrEmpty(strMensagemErro))
                     {
                         model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
+
+                        if (!string.IsNullOrEmpty(guid))
+                        {
+                            var diretorioDeclaracaoImportacaoTemp = (BLConfiguracao.Pastas.ModuloImportacaoDeclaracaoTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                            var pastaDeclaracaoImportacaoTemp = HttpContextFactory.Current.Server.MapPath(diretorioDeclaracaoImportacaoTemp);
+
+                            if (Directory.Exists(pastaDeclaracaoImportacaoTemp))
+                            {
+                                var diretorioDeclaracaoImportacao = (BLConfiguracao.Pastas.ModuloImportacaoDeclaracao(portal.Diretorio, model.Codigo.Value.ToString()) + "/").Replace("//", "/");
+                                var pastaDeclaracaoImportacao = HttpContextFactory.Current.Server.MapPath(diretorioDeclaracaoImportacao);
+                                if (!Directory.Exists(pastaDeclaracaoImportacao)) Directory.CreateDirectory(pastaDeclaracaoImportacao);
+
+                                DirectoryInfo Dir = new DirectoryInfo(pastaDeclaracaoImportacaoTemp);
+                                // Busca automaticamente todos os arquivos em todos os subdiretórios
+                                FileInfo[] Files = Dir.GetFiles("*", SearchOption.AllDirectories);
+                                foreach (FileInfo file in Files)
+                                {
+                                    string destino = pastaDeclaracaoImportacao + file.Name;
+                                    file.CopyTo(destino, true);
+
+                                    var objMLAgendamentoIntermodalArquivoDeclaracaoImportacao = new MLAgendamentoIntermodalArquivoDeclaracaoImportacao { CodigoImportacao = model.Codigo, Arquivo = file.Name };
+                                    CRUD.Salvar(objMLAgendamentoIntermodalArquivoDeclaracaoImportacao);
+
+                                    file.Delete();
+                                }
+                                Directory.Delete(pastaDeclaracaoImportacaoTemp);
+                            }
+
+
+
+                            var diretorioGuiaArrecadacaoTemp = (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacaoTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                            var pastaGuiaArrecadacaoTemp = HttpContextFactory.Current.Server.MapPath(diretorioGuiaArrecadacaoTemp);
+
+                            if (Directory.Exists(pastaGuiaArrecadacaoTemp))
+                            {
+                                var diretorioGuiaArrecadacao = (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacao(portal.Diretorio, model.Codigo.Value.ToString()) + "/").Replace("//", "/");
+                                var pastaGuiaArrecadacao = HttpContextFactory.Current.Server.MapPath(diretorioGuiaArrecadacao);
+                                if (!Directory.Exists(pastaGuiaArrecadacao)) Directory.CreateDirectory(pastaGuiaArrecadacao);
+
+                                DirectoryInfo Dir = new DirectoryInfo(pastaGuiaArrecadacaoTemp);
+                                // Busca automaticamente todos os arquivos em todos os subdiretórios
+                                FileInfo[] Files = Dir.GetFiles("*", SearchOption.AllDirectories);
+                                foreach (FileInfo file in Files)
+                                {
+                                    string destino = pastaGuiaArrecadacao + file.Name;
+                                    file.CopyTo(destino, true);
+
+                                    var objMLAgendamentoIntermodalArquivoGare = new MLAgendamentoIntermodalArquivoGare { CodigoImportacao = model.Codigo, Arquivo = file.Name };
+                                    CRUD.Salvar(objMLAgendamentoIntermodalArquivoGare);
+
+                                    file.Delete();
+                                }
+                                Directory.Delete(pastaGuiaArrecadacaoTemp);
+                            }
+
+
+                            var diretorioBlTemp = (BLConfiguracao.Pastas.ModuloImportacaoBlTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                            var pastaBlTemp = HttpContextFactory.Current.Server.MapPath(diretorioBlTemp);
+
+                            if (Directory.Exists(pastaBlTemp))
+                            {
+                                var diretorioBl = (BLConfiguracao.Pastas.ModuloImportacaoBl(portal.Diretorio, model.Codigo.Value.ToString()) + "/").Replace("//", "/");
+                                var pastaBl = HttpContextFactory.Current.Server.MapPath(diretorioBl);
+                                if (!Directory.Exists(pastaBl)) Directory.CreateDirectory(pastaBl);
+
+                                DirectoryInfo Dir = new DirectoryInfo(pastaBlTemp);
+                                // Busca automaticamente todos os arquivos em todos os subdiretórios
+                                FileInfo[] Files = Dir.GetFiles("*", SearchOption.AllDirectories);
+                                foreach (FileInfo file in Files)
+                                {
+                                    string destino = pastaBl + file.Name;
+                                    file.CopyTo(destino, true);
+
+                                    var objMLAgendamentoIntermodalArquivoBl = new MLAgendamentoIntermodalArquivoBl { CodigoImportacao = model.Codigo, Arquivo = file.Name };
+                                    CRUD.Salvar(objMLAgendamentoIntermodalArquivoBl);
+
+                                    file.Delete();
+                                }
+                                Directory.Delete(pastaBlTemp);
+                            }
+                        }
 
                         return Json(new { success = true, codigo = model.Codigo });
                     }
@@ -908,7 +989,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         [HttpPost]
         [CheckPermission(global::Permissao.Publico)]
-        public JsonResult SalvarImportacaoCarga(MLAgendamentoIntermodalImportacaoCarga model)
+        public JsonResult SalvarImportacaoCarga(MLAgendamentoIntermodalImportacaoCarga model, string guid)
         {
             try
             {
@@ -923,39 +1004,39 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                     if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
                     {
-
-                        foreach (string fileName in Request.Files)
-                        {
-                            HttpPostedFileBase file = Request.Files[fileName];
-                            //Save file content goes here
-                            string fName = file.FileName;
-                            if (file != null && file.ContentLength > 0)
-                            {
-
-                                var originalDirectory = new DirectoryInfo(string.Format("{0}Images\\WallImages", Server.MapPath(@"\")));
-
-                                string pathString = System.IO.Path.Combine(originalDirectory.ToString(), "imagepath");
-
-                                var fileName1 = Path.GetFileName(file.FileName);
-
-                                bool isExists = System.IO.Directory.Exists(pathString);
-
-                                if (!isExists)
-                                    System.IO.Directory.CreateDirectory(pathString);
-
-                                var path = string.Format("{0}\\{1}", pathString, file.FileName);
-                                file.SaveAs(path);
-                            }
-
-                        }
-
-
-
-
                         if (!string.IsNullOrEmpty(model.ValorNfeFormatado))
                             model.ValorNfe = Convert.ToDecimal(model.ValorNfeFormatado.Replace("R$ ", "").Replace(".", ""));
                         model.DataRegistro = DateTime.Now;
+
+                        if (!string.IsNullOrEmpty(guid))
+                        {
+                            var diretorioNfTemp = (BLConfiguracao.Pastas.ModuloImportacaoNfTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                            var pastaNfTemp = HttpContextFactory.Current.Server.MapPath(diretorioNfTemp);
+
+                            if (Directory.Exists(pastaNfTemp))
+                            {
+                                var diretorioNf = (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, model.CodigoImportacao.Value.ToString()) + "/").Replace("//", "/");
+                                var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
+                                if (!Directory.Exists(pastaNf)) Directory.CreateDirectory(pastaNf);
+
+                                DirectoryInfo Dir = new DirectoryInfo(pastaNfTemp);
+                                // Busca automaticamente todos os arquivos em todos os subdiretórios
+                                FileInfo[] Files = Dir.GetFiles("*", SearchOption.AllDirectories);
+                                foreach (FileInfo file in Files)
+                                {
+                                    string destino = pastaNf + file.Name;
+                                    file.CopyTo(destino, true);
+
+                                    model.Arquivo = file.Name;
+
+                                    file.Delete();
+                                }
+                                Directory.Delete(pastaNfTemp.TrimEnd('\\'));
+                            }
+                        }
+
                         model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
+
 
                         model.Sequencia = Convert.ToInt32(model.Sequencia).ToString("00");
                         model.ProximaSequencia = (Convert.ToInt32(model.Sequencia) + 1).ToString("00");
@@ -1026,8 +1107,10 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                 if (lista?.Count + model.LstNfs.Count <= 50)
                 {
+                    int seq = 0;
                     foreach(var item in model.LstNfs)
                     {
+                        seq++;
                         if (!item.IsLinhaExcluida)
                         {
                             //Impedir duplicidade
@@ -1045,6 +1128,34 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 if (!string.IsNullOrEmpty(item.ValorNfeFormatado))
                                     item.ValorNfe = Convert.ToDecimal(item.ValorNfeFormatado.Replace("R$ ", "").Replace(".", ""));
                                 item.DataRegistro = DateTime.Now;
+
+                                
+                                if (!string.IsNullOrEmpty(model.guid))
+                                {
+                                    var diretorioNfTemp = (BLConfiguracao.Pastas.ModuloImportacaoNfTemp(portal.Diretorio) + "/" + model.guid + "/" + seq + "/").Replace("//", "/");
+                                    var pastaNfTemp = HttpContextFactory.Current.Server.MapPath(diretorioNfTemp);
+
+                                    if (Directory.Exists(pastaNfTemp))
+                                    {
+                                        var diretorioNf = (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, model.CodigoImportacao.Value.ToString()) + "/").Replace("//", "/");
+                                        var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
+                                        if (!Directory.Exists(pastaNf)) Directory.CreateDirectory(pastaNf);
+
+                                        DirectoryInfo Dir = new DirectoryInfo(pastaNfTemp);
+                                        // Busca automaticamente todos os arquivos em todos os subdiretórios
+                                        FileInfo[] Files = Dir.GetFiles("*", SearchOption.AllDirectories);
+                                        foreach (FileInfo file in Files)
+                                        {
+                                            string destino = pastaNf + file.Name;
+                                            file.CopyTo(destino, true);
+
+                                            item.Arquivo = file.Name;
+
+                                            file.Delete();
+                                        }
+                                        Directory.Delete(pastaNfTemp.TrimEnd('\\'));
+                                    }
+                                }
 
                                 item.Codigo = CRUD.Salvar(item, portal.ConnectionString);
                             }
@@ -1083,6 +1194,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             try
             {
                 var portal = PortalAtual.Obter;
+                string strArquivo = null;
 
                 var lista = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao });
 
@@ -1100,12 +1212,40 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 item.CodigoImportacao = model.CodigoImportacao;
                                 item.NumeroNfe = model.NumeroNfe;
                                 item.ValorNfeFormatado = model.ValorNfe;
-                                item.Extensao = model.Extensao;
 
                                 if (!string.IsNullOrEmpty(model.ValorNfe))
                                     item.ValorNfe = Convert.ToDecimal(model.ValorNfe.Replace("R$ ", "").Replace(".", ""));
                                 item.DataRegistro = DateTime.Now;
 
+
+                                if (!string.IsNullOrEmpty(model.guid))
+                                {
+                                    var diretorioNfTemp = (BLConfiguracao.Pastas.ModuloImportacaoNfTemp(portal.Diretorio) + "/" + model.guid + "/").Replace("//", "/");
+                                    var pastaNfTemp = HttpContextFactory.Current.Server.MapPath(diretorioNfTemp);
+
+                                    if (Directory.Exists(pastaNfTemp))
+                                    {
+                                        var diretorioNf = (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, model.CodigoImportacao.Value.ToString()) + "/").Replace("//", "/");
+                                        var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
+                                        if (!Directory.Exists(pastaNf)) Directory.CreateDirectory(pastaNf);
+
+                                        DirectoryInfo Dir = new DirectoryInfo(pastaNfTemp);
+                                        // Busca automaticamente todos os arquivos em todos os subdiretórios
+                                        FileInfo[] Files = Dir.GetFiles("*", SearchOption.AllDirectories);
+                                        foreach (FileInfo file in Files)
+                                        {
+                                            string destino = pastaNf + file.Name;
+                                            file.CopyTo(destino, true);
+
+                                            strArquivo = file.Name;
+
+                                            file.Delete();
+                                        }
+                                        Directory.Delete(pastaNfTemp);
+                                    }
+                                }
+
+                                item.Arquivo = strArquivo;
                                 item.Codigo = CRUD.Salvar(item, portal.ConnectionString);
 
                                 if (string.IsNullOrEmpty(item.Comentario))
@@ -1180,7 +1320,48 @@ namespace CMSApp.Areas.Modulo.Controllers
                             Codigo = objModelImportacao.Codigo
                         };
 
-                        model.lstCarga = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
+                        model.lstCarga = new List<MLAgendamentoIntermodalImportacaoCarga>();
+
+
+                        var lstNf = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var diretorioNf = (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
+                        foreach(var nf in lstNf)
+                        {
+                            if (!string.IsNullOrEmpty(nf.Arquivo))
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = nf.Arquivo, caminhoCompleto = pastaNf + nf.Arquivo });
+                        }
+
+
+                        var lstDeclaracaoImportacao = CRUD.Listar(new MLAgendamentoIntermodalArquivoDeclaracaoImportacao { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var diretorioDeclaracao = (BLConfiguracao.Pastas.ModuloImportacaoDeclaracao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        var pastaDeclaracao = HttpContextFactory.Current.Server.MapPath(diretorioDeclaracao);
+                        foreach (var item in lstDeclaracaoImportacao)
+                        {
+                            if (!string.IsNullOrEmpty(item.Arquivo))
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = pastaDeclaracao + item.Arquivo });
+                        }
+
+
+                        var lstGuia = CRUD.Listar(new MLAgendamentoIntermodalArquivoGare { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var diretorioGuia = (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        var pastaGuia = HttpContextFactory.Current.Server.MapPath(diretorioGuia);
+                        foreach (var item in lstGuia)
+                        {
+                            if (!string.IsNullOrEmpty(item.Arquivo))
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = pastaGuia + item.Arquivo });
+                        }
+
+
+                        var lstBl = CRUD.Listar(new MLAgendamentoIntermodalArquivoBl { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var diretorioBl = (BLConfiguracao.Pastas.ModuloImportacaoBl(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        var pastaBl = HttpContextFactory.Current.Server.MapPath(diretorioBl);
+                        foreach (var item in lstBl)
+                        {
+                            if (!string.IsNullOrEmpty(item.Arquivo))
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = pastaBl + item.Arquivo });
+                        }
+
 
                         if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html);
 
@@ -1210,36 +1391,38 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-        #region UploadNfe
-        [CheckPermission(global::Permissao.Modificar)]
-        [HttpPost]
-        [JsonHandleError]
-        public ActionResult UploadNfe(Guid guid)
-        {
-            //return Json(new { Sucesso = new BLListaConteudoImagem().UploadGaleria(guid, Request.Files, PortalAtual.Obter) });
-            return Json(new { Sucesso = true });
-        }
 
-        #endregion
 
-        #region UploadArquivos
+        #region uploadDeclaracaoImportacao
         /// <summary>
         /// Upload
         /// </summary>        
         [CheckPermission(global::Permissao.Publico)]
         [HttpPost]
-        public ActionResult uploadArquivos(HttpPostedFileBase file)
+        public ActionResult uploadDeclaracaoImportacao(string guid)
         {
             try
             {
- 
-                if (file != null && file.ContentLength > 0)
+                if(Request.Files.Count > 0)
                 {
-                   
+                    if (string.IsNullOrEmpty(guid))
+                        guid = Guid.NewGuid().ToString();
 
+                    var portal = PortalAtual.Obter;
+
+                    var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoDeclaracaoTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                    var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+                    if (!Directory.Exists(pasta)) Directory.CreateDirectory(pasta);
+
+                    foreach (string fileName in Request.Files)
+                    {
+                        HttpPostedFileBase file = Request.Files[fileName];
+
+                        file.SaveAs(Path.Combine(pasta, file.FileName));
+                    }
                 }
 
-                return Json(new { success = true });
+                return Json(new { success = true, Guid = guid });
             }
             catch (Exception ex)
             {
@@ -1247,8 +1430,133 @@ namespace CMSApp.Areas.Modulo.Controllers
                 return Json(new { success = false, msg = ex.Message });
             }
         }
-
         #endregion
+
+        #region uploadGuiaArrecadacao
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult uploadGuiaArrecadacao(string guid)
+        {
+            try
+            {
+                if (Request.Files.Count > 0)
+                {
+                    if (string.IsNullOrEmpty(guid))
+                        guid = Guid.NewGuid().ToString();
+
+                    var portal = PortalAtual.Obter;
+
+                    var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacaoTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                    var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+                    if (!Directory.Exists(pasta)) Directory.CreateDirectory(pasta);
+
+                    foreach (string fileName in Request.Files)
+                    {
+                        HttpPostedFileBase file = Request.Files[fileName];
+
+                        file.SaveAs(Path.Combine(pasta, file.FileName));
+                    }
+                }
+
+                return Json(new { success = true, Guid = guid });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region uploadBL
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult uploadBL(string guid)
+        {
+            try
+            {
+                if (Request.Files.Count > 0)
+                {
+                    if (string.IsNullOrEmpty(guid))
+                        guid = Guid.NewGuid().ToString();
+
+                    var portal = PortalAtual.Obter;
+
+                    var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoBlTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                    var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+                    if (!Directory.Exists(pasta)) Directory.CreateDirectory(pasta);
+
+                    foreach (string fileName in Request.Files)
+                    {
+                        HttpPostedFileBase file = Request.Files[fileName];
+
+                        file.SaveAs(Path.Combine(pasta, file.FileName));
+                    }
+                }
+
+                return Json(new { success = true, Guid = guid });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+
+        #region uploadContainerNf
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult uploadContainerNf(string guid, int? seq)
+        {
+            try
+            {
+                string nome = "";
+                if (Request.Files.Count > 0)
+                {
+                    if (string.IsNullOrEmpty(guid))
+                        guid = Guid.NewGuid().ToString();
+
+                    var portal = PortalAtual.Obter;
+
+                    string complemento = "";
+                    if (seq.HasValue && seq.Value > 0)
+                        complemento = seq.ToString() + "/";
+
+                    var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoNfTemp(portal.Diretorio) + "/" + guid + "/" + complemento).Replace("//", "/");
+                    var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+                    if (!Directory.Exists(pasta)) Directory.CreateDirectory(pasta);
+
+                    foreach (string fileName in Request.Files)
+                    {
+                        HttpPostedFileBase file = Request.Files[fileName];
+
+                        file.SaveAs(Path.Combine(pasta, file.FileName));
+
+                        nome = file.FileName;
+                    }
+                }
+
+                return Json(new { success = true, Guid = guid, nomeArquivo = nome });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
 
         #region GetHash
         /// <summary>

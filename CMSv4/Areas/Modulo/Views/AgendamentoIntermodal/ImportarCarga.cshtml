@@ -70,9 +70,10 @@
                         <span class="icon icon-paperclip"></span>
                         Anexar NF-e
                     </label>
+                    <div id="divArquivosNfContainerNf"></div>
                     <div id="arquivoNfContainerNf" class="dropzone">
                         <div class="fallback">
-                            <input type="file" name="fileNfContainerNf" id="fileTeste" />
+                            <input type="file" name="fileNfContainerNf" id="fileNfContainerNf" />
                         </div>
                     </div>
                 </div>
@@ -97,6 +98,7 @@
 
     <form id="FormCargaVariasNf" class="form">
         <input type="hidden" name="CodigoImportacao" id="codigoImportarVariasNf" value="" />
+        <input type="hidden" name="guid" id="guidVariasNf" value="" />
         <div id="divContainerVariasNf">
             <div class="row mt-5">
                 <div class="col-24 col-sm-12 col-xl-6">
@@ -138,6 +140,7 @@
     <form class="form" id="FormCargaNfVariosContainer">
         <input type="hidden" id="codigoImportarVariosContainer" name="CodigoImportacao" value="" />
         <input type="hidden" id="hdfSeqContainerVariosContainer" value="01" />
+        <input type="hidden" id="guidVariosContainer" name="guid" value="" />
         <div id="divNfVariosContainer">
             <div class="form-section">
                 <div class="row justify-content-center">
@@ -159,8 +162,11 @@
                                 <span class="icon icon-paperclip"></span>
                                 Anexar NF-e
                             </label>
-                            <div class="dropzone">
-                                Arraste ou clique aqui para realizar upload de arquivos
+                            <div id="divArquivosNfVariosContainerNf"></div>
+                            <div id="arquivoNfVariosContainerNf" class="dropzone">
+                                <div class="fallback">
+                                    <input type="file" name="fileNfVariosContainer" id="fileNfVariosContainer" />
+                                </div>
                             </div>
                         </div>
                     </div>

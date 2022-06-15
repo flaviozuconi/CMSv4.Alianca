@@ -7,7 +7,10 @@
     var baseUrl = "/portal/" + BLPortal.Atual.Diretorio;
 
     var portal = BLPortal.Atual;
-    var urlUpload = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadArquivos";
+    var urlUploadDeclaracaoImportacao = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadDeclaracaoImportacao";
+    var urlUploadGuiaArrecadacao = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadGuiaArrecadacao";
+    var urlUploadBL = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadBL";
+    var urlNfContainer = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadContainerNf";
 }
 
 <div class="box-agendamento agendamentoJQ">
@@ -20,6 +23,7 @@
     </div>
 
     <form class="form" id="FormAgendamento" enctype="multipart/form-data">
+        <input type="hidden" id="hdfGuid" value="" />
         <div class="form-section">
             <div id="mensagem"></div>
             <input type="hidden" name="Codigo" id="codigoImportar" value="" />
@@ -73,7 +77,7 @@
                         </label>
                         <div id="arquivoDeclaracaoImportacao" class="dropzone">
                             <div class="fallback">
-                                <input type="file" name="file" />
+                                <input type="file" name="fileDeclaracaoImportacao" id="fileDeclaracaoImportacao" />
                             </div>
                         </div>
                     </div>
@@ -86,7 +90,7 @@
                         </label>
                         <div id="arquivoGuiaArrecadacao" class="dropzone">
                             <div class="fallback">
-                                <input type="file" name="file" />
+                                <input type="file" name="fileGuiaArrecadacao" id="fileGuiaArrecadacao" />
                             </div>
                         </div>
                     </div>
@@ -99,7 +103,7 @@
                         </label>
                         <div id="arquivoBl" class="dropzone">
                             <div class="fallback">
-                                <input type="file" name="file" />
+                                <input type="file" name="fileBl" id="fileBl" />
                             </div>
                         </div>
                     </div>
@@ -203,69 +207,241 @@
     <script type="text/javascript">
 
         /*  FORM UPLOAD */
+        
         Dropzone.options.arquivoDeclaracaoImportacao = {
-            maxFilesize: 1,
-            url: "@urlUpload",
-            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
-            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
-            complete: function (file) {
-                //if (parent.sizeContent) parent.sizeContent()
-                //$(file.previewElement).remove();
-                //console.log(file);
+            url: "@urlUploadDeclaracaoImportacao",
+            dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
+            dictCancelUpload: "@TAdm("Cancelar upload")",
+            dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+            dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+            dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+            dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+            maxFiles: 50,
+            parallelUploads: 1,
+            paramName: "file",
+            sending: function (file, xhr, formData) {
+                formData.append('guid', $("#hdfGuid").val());
             },
-            success: function (file, response) {
-                // message_box('Success', file.name+' Adicionada com Sucesso!');
-                //window.location.reload();
+            accept: function (file, done) {
+                ///Definir aqui quais extensões
+                ///de arquivos a restringir
+                done();
+            },
+            complete: function (file) {
+                objResponse = JSON.parse(file.xhr.response);
+
+                if (!objResponse.success) {
+                    alert(objResponse.msg);
+                    this.removeFile(file);
+                }
+                else {
+                    $("#hdfGuid").val(objResponse.Guid);
+
+                    //$("#fileDeclaracaoImportacao").removeClass("has-error");
+                }
             }
         };
+
+
 
         Dropzone.options.arquivoGuiaArrecadacao = {
-            maxFilesize: 1,
-            url: "@urlUpload",
-            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
-            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
-            complete: function (file) {
-                //if (parent.sizeContent) parent.sizeContent()
-                //$(file.previewElement).remove();
-                //console.log(file);
+            url: "@urlUploadGuiaArrecadacao",
+            dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
+            dictCancelUpload: "@TAdm("Cancelar upload")",
+            dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+            dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+            dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+            dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+            maxFiles: 50,
+            parallelUploads: 1,
+            paramName: "file",
+            sending: function (file, xhr, formData) {
+                formData.append('guid', $("#hdfGuid").val());
             },
-            success: function (file, response) {
-                // message_box('Success', file.name+' Adicionada com Sucesso!');
-                //window.location.reload();
+            accept: function (file, done) {
+                ///Definir aqui quais extensões
+                ///de arquivos a restringir
+                done();
+            },
+            complete: function (file) {
+                objResponse = JSON.parse(file.xhr.response);
+
+                if (!objResponse.success) {
+                    alert(objResponse.msg);
+                    this.removeFile(file);
+                }
+                else {
+                    $("#hdfGuid").val(objResponse.Guid);
+
+                    //$("#fileGuiaArrecadacao").removeClass("has-error");
+                }
             }
         };
 
+
         Dropzone.options.arquivoBl = {
-            maxFilesize: 1,
-            url: "@urlUpload",
-            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
-            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
-            complete: function (file) {
-                //if (parent.sizeContent) parent.sizeContent()
-                //$(file.previewElement).remove();
-                //console.log(file);
+            url: "@urlUploadBL",
+            dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
+            dictCancelUpload: "@TAdm("Cancelar upload")",
+            dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+            dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+            dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+            dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+            maxFiles: 50,
+            parallelUploads: 1,
+            paramName: "file",
+            sending: function (file, xhr, formData) {
+                formData.append('guid', $("#hdfGuid").val());
             },
-            success: function (file, response) {
-                // message_box('Success', file.name+' Adicionada com Sucesso!');
-                //window.location.reload();
+            accept: function (file, done) {
+                ///Definir aqui quais extensões
+                ///de arquivos a restringir
+                done();
+            },
+            complete: function (file) {
+                objResponse = JSON.parse(file.xhr.response);
+
+                if (!objResponse.success) {
+                    alert(objResponse.msg);
+                    this.removeFile(file);
+                }
+                else {
+                    $("#hdfGuid").val(objResponse.Guid);
+
+                    //$("#fileBl").removeClass("has-error");
+                }
             }
         };
 
 
         Dropzone.options.arquivoNfContainerNf = {
-            maxFilesize: 1,
-            url: "@urlUpload",
-            dictDefaultMessage: "Arraste ou clique aqui para realizar upload de arquivos",
-            processing: function (file) { if (parent.sizeContent) parent.sizeContent(); },
-            complete: function (file) {
-                //if (parent.sizeContent) parent.sizeContent()
-                //$(file.previewElement).remove();
-                //console.log(file);
+            url: "@urlNfContainer",
+            dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
+            dictCancelUpload: "@TAdm("Cancelar upload")",
+            dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+            dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+            dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+            dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+            maxFiles: 1,
+            parallelUploads: 1,
+            paramName: "file",
+            sending: function (file, xhr, formData) {
+                formData.append('guid', $("#hdfGuid").val());
             },
-            success: function (file, response) {
-                // message_box('Success', file.name+' Adicionada com Sucesso!');
-                //window.location.reload();
+            accept: function (file, done) {
+                ///Definir aqui quais extensões
+                ///de arquivos a restringir
+                done();
+            },
+            complete: function (file) {
+                objResponse = JSON.parse(file.xhr.response);
+
+                if (!objResponse.success) {
+                    alert(objResponse.msg);
+                    this.removeFile(file);
+                }
+                else {
+                    $("#hdfGuid").val(objResponse.Guid);
+
+                    this.removeFile(file);
+
+                    $("#divArquivosNfContainerNf").fadeIn("slider");
+                    $("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
+                    $("#arquivoNfContainerNf").fadeOut("slider");
+
+                    //$("#fileNfContainerNf").removeClass("has-error");
+                }
             }
         };
+
+
+        Dropzone.options.arquivoNfVariosContainerNf = {
+            url: "@urlNfContainer",
+            dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
+            dictCancelUpload: "@TAdm("Cancelar upload")",
+            dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+            dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+            dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+            dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+            maxFiles: 1,
+            parallelUploads: 1,
+            paramName: "file",
+            sending: function (file, xhr, formData) {
+                formData.append('guid', $("#hdfGuid").val());
+            },
+            accept: function (file, done) {
+                ///Definir aqui quais extensões
+                ///de arquivos a restringir
+                done();
+            },
+            complete: function (file) {
+                objResponse = JSON.parse(file.xhr.response);
+
+                if (!objResponse.success) {
+                    alert(objResponse.msg);
+                    this.removeFile(file);
+                }
+                else {
+                    $("#hdfGuid").val(objResponse.Guid);
+                    $("#guidVariosContainer").val(objResponse.Guid);
+
+                    this.removeFile(file);
+
+                    $("#divArquivosNfVariosContainerNf").fadeIn("slider");
+                    $("#divArquivosNfVariosContainerNf").append(objResponse.nomeArquivo);
+                    $("#arquivoNfVariosContainerNf").fadeOut("slider");
+
+                    //$("#fileNfVariosContainer").removeClass("has-error");
+                }
+            }
+        };
+
+        function InicializarDropzone(seq) {
+
+            var myDropzone = new Dropzone("div#arquivoVariosNf_" + seq, {
+                url: "@urlNfContainer",
+                dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
+                dictCancelUpload: "@TAdm("Cancelar upload")",
+                dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
+                dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
+                dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
+                dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
+                maxFiles: 1,
+                parallelUploads: 1,
+                paramName: "file",
+                sending: function (file, xhr, formData) {
+                    formData.append('guid', $("#hdfGuid").val());
+                    formData.append('seq', seq);
+                },
+                accept: function (file, done) {
+                    ///Definir aqui quais extensões
+                    ///de arquivos a restringir
+                    done();
+                },
+                complete: function (file) {
+                    objResponse = JSON.parse(file.xhr.response);
+
+                    if (!objResponse.success) {
+                        alert(objResponse.msg);
+                        this.removeFile(file);
+                    }
+                    else {
+                        $("#hdfGuid").val(objResponse.Guid);
+                        $("#guidVariasNf").val(objResponse.Guid);
+
+                        this.removeFile(file);
+
+                        $("#divArquivosVariasNf_" + seq).fadeIn("slider");
+                        $("#divArquivosVariasNf_" + seq).append(objResponse.nomeArquivo);
+                        $("#arquivoVariosNf_" + seq).fadeOut("slider");
+
+                        //$("#fileNfVariosContainer").removeClass("has-error");
+                    }
+                }
+            });
+        }
+
+
+
     </script>
 }
