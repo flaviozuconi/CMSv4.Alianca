@@ -67,24 +67,24 @@
         event.preventDefault();
 
         if ($("#FormAgendamento").valid() == true) {
-             $.ajax({
+            $.ajax({
                 type: "POST",
-                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
-                 data: {
-                     Nome: $("#nome").val(),
-                     Email: $("#email").val(),
-                     PropostaComercial: $("#propostaComercial").val(),
-                     NumeroBooking: $("#numeroBooking").val(),
-                     NumeroBL: $("#numeroBl").val(),
-                     CEP: $("#cep").val(),
-                     CNPJ: $("#cnpj").val(),
-                     Endereco: $("#endereco").val(),
-                     Complemento: $("#complemento").val(),
-                     Bairro: $("#bairro").val(),
-                     Cidade: $("#cidade").val(),
-                     Estado: $("#estado").val(),
-                     strTipo: 'normal'
-                 },
+                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
+                data: {
+                    Nome: $("#nome").val(),
+                    Email: $("#email").val(),
+                    PropostaComercial: $("#propostaComercial").val(),
+                    NumeroBooking: $("#numeroBooking").val(),
+                    NumeroBL: $("#numeroBl").val(),
+                    CEP: $("#cep").val(),
+                    CNPJ: $("#cnpj").val(),
+                    Endereco: $("#endereco").val(),
+                    Complemento: $("#complemento").val(),
+                    Bairro: $("#bairro").val(),
+                    Cidade: $("#cidade").val(),
+                    Estado: $("#estado").val(),
+                    guid: $("#hdfGuid").val()
+                },
                 success: function (data) {
                     if (data.success == true) {
                         $("#nome").prop("disabled", true);
@@ -146,7 +146,7 @@
                      Bairro: $("#bairro").val(),
                      Cidade: $("#cidade").val(),
                      Estado: $("#estado").val(),
-                     strTipo: 'dta'
+                     guid: $("#hdfGuid").val()
                  },
                 success: function (data) {
                     if (data.success == true) {
@@ -398,47 +398,47 @@
             cnpj == "77777777777777" ||
             cnpj == "88888888888888" ||
             cnpj == "99999999999999") {
-                $("#cnpj").addClass('is-invalid');
-                $('#existCNPJ').remove();
-                $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
-                return false;
-            }
+            $("#cnpj").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            return false;
+        }
 
-            // Valida DVs
-            tamanho = cnpj.length - 2
-            numeros = cnpj.substring(0, tamanho);
-            digitos = cnpj.substring(tamanho);
-            soma = 0;
-            pos = tamanho - 7;
-            for (i = tamanho; i >= 1; i--) {
-                soma += numeros.charAt(tamanho - i) * pos--;
-                if (pos < 2)
-                    pos = 9;
-            }
-            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-            if (resultado != digitos.charAt(0)) {
-                $("#cnpj").addClass('is-invalid');
-                $('#existCNPJ').remove();
-                $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
-                return false;
-            }
+        // Valida DVs
+        tamanho = cnpj.length - 2
+        numeros = cnpj.substring(0, tamanho);
+        digitos = cnpj.substring(tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(0)) {
+            $("#cnpj").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            return false;
+        }
 
-            tamanho = tamanho + 1;
-            numeros = cnpj.substring(0, tamanho);
-            soma = 0;
-            pos = tamanho - 7;
-            for (i = tamanho; i >= 1; i--) {
-                soma += numeros.charAt(tamanho - i) * pos--;
-                if (pos < 2)
-                    pos = 9;
-            }
-            resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-            if (resultado != digitos.charAt(1)) {
-                $("#cnpj").addClass('is-invalid');
-                $('#existCNPJ').remove();
-                $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
-                return false;
-            }
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0, tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (i = tamanho; i >= 1; i--) {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(1)) {
+            $("#cnpj").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            return false;
+        }
     }
 </script>
 

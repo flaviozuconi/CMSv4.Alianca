@@ -773,6 +773,89 @@ namespace Framework.Utilities
             }
 
             #endregion
+
+            #region ModuloImportacaoDeclaracaoTemp
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoDeclaracaoTemp(string pastaBasePortal)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoDeclaracao.PastaBase.Temp", "/portal/{0}/arquivos/importacao/temp/declaracaoimportacao"), pastaBasePortal);
+            }
+            #endregion
+
+            #region ModuloImportacaoDeclaracao
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoDeclaracao(string pastaBasePortal, string codigoImportacao)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoDeclaracao.PastaBase", "/portal/{0}/arquivos/importacao/{1}/declaracaoimportacao"), pastaBasePortal, codigoImportacao);
+            }
+            #endregion
+
+
+            #region ModuloImportacaoGuiaArrecadacaoTemp
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoGuiaArrecadacaoTemp(string pastaBasePortal)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoGuiaArrecadacao.PastaBase.Temp", "/portal/{0}/arquivos/importacao/temp/guiaarrecadacao"), pastaBasePortal);
+            }
+            #endregion
+
+            #region ModuloImportacaoGuiaArrecadacao
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoGuiaArrecadacao(string pastaBasePortal, string codigoImportacao)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoGuiaArrecadacao.PastaBase", "/portal/{0}/arquivos/importacao/{1}/guiaarrecadacao"), pastaBasePortal, codigoImportacao);
+            }
+            #endregion
+
+
+            #region ModuloImportacaoBlTemp
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoBlTemp(string pastaBasePortal)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoBl.PastaBase.Temp", "/portal/{0}/arquivos/importacao/temp/bl"), pastaBasePortal);
+            }
+            #endregion
+
+            #region ModuloImportacaoBl
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoBl(string pastaBasePortal, string codigoImportacao)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoBl.PastaBase.Temp", "/portal/{0}/arquivos/importacao/{1}/bl"), pastaBasePortal, codigoImportacao);
+            }
+            #endregion
+
+
+            #region ModuloImportacaoNfTemp
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoNfTemp(string pastaBasePortal)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoNF.PastaBase.Temp", "/portal/{0}/arquivos/importacao/temp/NF"), pastaBasePortal);
+            }
+            #endregion
+
+            #region ModuloImportacaoNf
+            /// <summary>
+            /// Modulo Importação do Portal
+            /// </summary>
+            public static string ModuloImportacaoNf(string pastaBasePortal, string codigoImportacao)
+            {
+                return string.Format(Obter<string>("CMS.ModuloImportacaoNF.PastaBase.Temp", "/portal/{0}/arquivos/importacao/{1}/NF"), pastaBasePortal, codigoImportacao);
+            }
+            #endregion
         }
 
         #endregion

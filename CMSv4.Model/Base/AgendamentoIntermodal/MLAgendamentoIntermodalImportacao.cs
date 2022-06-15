@@ -97,8 +97,8 @@ namespace CMSv4.Model
         [DataField("AIIC_C_CONTAINER", SqlDbType.VarChar, 50)]
         public string Container { get; set; }
 
-        [DataField("AIIC_C_EXTENSAO_ANEXO", SqlDbType.VarChar, 5)]
-        public string Extensao { get; set; }
+        [DataField("AIIC_C_ARQUIVO_ANEXO", SqlDbType.VarChar, 500)]
+        public string Arquivo { get; set; }
 
         [DataField("AIIC_C_COMENTARIO", SqlDbType.VarChar, 300)]
         public string Comentario { get; set; }
@@ -121,6 +121,9 @@ namespace CMSv4.Model
         public string ProximaSequencia { get; set; }
 
         public bool IsLinhaExcluida { get; set; }
+
+
+        public string caminhoCompleto { get; set; }
     }
     #endregion
 
@@ -157,6 +160,8 @@ namespace CMSv4.Model
                 return "";
             }
         }
+
+        public string guid { get; set; }
     }
     #endregion
 
@@ -180,6 +185,8 @@ namespace CMSv4.Model
         public string Extensao { get; set; }
 
         public List<MLAgendamentoIntermodalImportacaoCarga> LstContainer { get; set; }
+
+        public string guid { get; set; }
     }
     #endregion
 }

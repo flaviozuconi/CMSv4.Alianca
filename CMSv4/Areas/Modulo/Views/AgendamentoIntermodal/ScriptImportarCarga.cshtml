@@ -5,6 +5,7 @@
     var urlUploadNfe = "/cms/" + portal + "/agendamentointermodal/UploadNfe";
 }
 
+
 <script type="text/javascript">
 
     $(document).ready(function () {
@@ -45,7 +46,7 @@
     });
 
     function IsNormal() {
-        
+
         if ($("#hdfTipoFormulario").val() == 'dta') {
             return false;
         }
@@ -70,6 +71,10 @@
 
         $("#divContainerNf").fadeIn("slider");
 
+        $("#arquivoNfContainerNf").fadeIn("slider");
+        $("#divArquivosNfContainerNf").fadeOut("slider");
+        $("#divArquivosNfContainerNf").empty();
+
         if ($("#hdfTipoFormulario").val() == 'dta') {
             $("#divNfContainerNf").hide();
             $("#divAnexoContainerNf").hide();
@@ -84,6 +89,8 @@
         $("#btnNfVariosConteiner").addClass("inactive");
 
         $("#divContainerVariasNf").fadeIn("slider");
+
+        $("#guidVariasNf").val($("#hdfGuid").val());
 
         var teste = "1";
         $(".listVariasNfJQ").empty();
@@ -123,7 +130,12 @@
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
                 '<div class="form-group">' +
                 '<label for="" class="form-label"><span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
-                '<div class="dropzone">Arraste ou clique aqui para realizar upload de arquivos</div>' +
+                '<div id="divArquivosVariasNf_1"></div>' +
+                '<div class="dropzone" id="arquivoVariosNf_1">' +
+                '<div class="fallback">'+
+                '<input type="file" name="fileVariasNf_1" id="fileVariasNf_1" />' +
+                '</div>' +
+                '</div>' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -136,23 +148,30 @@
                 '</div>' +
                 '</div>' +
                 '</div>');
+
+            InicializarDropzone('1');
         }
         $(".btnDeleteNfJQ_1").hide();
         $("#valorNfeVariasNf_1").maskMoney();
-
     });
+
 
 
     $("#btnNfVariosConteiner").on("click", function (event) {
         InicializarCarga();
 
         $("#hdfSeqContainerVariosContainer").val($("#hdfSeqContainer").val());
+        $("#guidVariosContainer").val($("#hdfGuid").val());
 
         $("#btnContainerNf").addClass("inactive");
         $("#btnContainerVariasNf").addClass("inactive");
         $("#btnNfVariosConteiner").addClass("active");
 
         $("#divNfVariosContainer").fadeIn("slider");
+
+        $("#arquivoNfVariosContainerNf").fadeIn("slider");
+        $("#divArquivosNfVariosContainerNf").fadeOut("slider");
+        $("#divArquivosNfVariosContainerNf").empty();
 
         var teste = "1";
         $(".listVariosContainerJQ").empty();
@@ -227,7 +246,7 @@
     $(".btnSalvarCargaJQ").on("click", function (event) {
         $(".btnSalvarCargaJQ").prop("disabled", true);
         event.preventDefault();
-        
+
         if ($("#FormCarga").valid() == true) {
              $.ajax({
                 type: "POST",
@@ -239,7 +258,8 @@
                      Container: $("#container").val(),
                      Comentario: $("#comentario").val(),
                      CodigoImportacao: $("#codigoImportar").val(),
-                     Sequencia: $("#hdfSeqContainer").val()
+                     Sequencia: $("#hdfSeqContainer").val(),
+                     guid: $("#hdfGuid").val()
                 },
                 success: function (data) {
                     if (data.success == true) {
@@ -251,6 +271,7 @@
                         $("#container").val('');
                         //$("#extensao").val('');
                         $("#comentario").val('');
+
 
                         $("#btnContainerNf").removeClass("active");
                         $("#btnContainerNf").removeClass("inactive");
@@ -423,7 +444,7 @@
         $("#CodigoExcluir").val('');
     });
 
-    
+
 
     function AddLinhaNf() {
         var maxAtivo = 0;
@@ -495,7 +516,12 @@
                 '<div class="form-group">' +
                 '<label for="" class="form-label">' +
                 '<span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
-                '<div class="dropzone">Arraste ou clique aqui para realizar upload de arquivos</div>' +
+                '<div id="divArquivosVariasNf_' + maxTotal.toString() + '"></div>' +
+                '<div class="dropzone" id="arquivoVariosNf_' + maxTotal.toString() + '">' +
+                '<div class="fallback">' +
+                '<input type="file" name="fileVariasNf_' + maxTotal.toString() + '" id="fileVariasNf_' + maxTotal.toString() + '" />' +
+                '</div>' +
+                '</div>' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -508,11 +534,13 @@
                 '</div>' +
                 '</div>' +
                 '</div>');
+            InicializarDropzone(maxTotal.toString());
         }
         $("#valorNfeVariasNf_" + maxTotal.toString()).maskMoney();
 
         //$(".btnDeleteNfJQ_" + (max).toString()).hide();
     }
+
 
     function ExcluirLinhaNf(div) {
         $(".nfJQ_" + div).hide();
@@ -715,8 +743,12 @@
 
         $("#codigoImportarVariosContainer").val($("#codigoImportar").val());
         $("#hdfSeqContainer").val($("#hdfSeqContainerVariosContainer").val());
+        $("#guidVariosContainer").val($("#hdfGuid").val());
+
 
         var lst = $("#FormCargaNfVariosContainer").serialize();
+
+
 
         if ($("#FormCargaNfVariosContainer").valid() == true) {
 
@@ -730,10 +762,8 @@
 
                         exibirListagemCargasVariosContainer(data.model);
 
-
                         $("#numeroNfeVariosContainer").val('');
                         $("#valorNfeVariosContainer").val('');
-
 
                         $("#btnContainerNf").removeClass("inactive");
                         $("#btnContainerVariasNf").removeClass("inactive");
