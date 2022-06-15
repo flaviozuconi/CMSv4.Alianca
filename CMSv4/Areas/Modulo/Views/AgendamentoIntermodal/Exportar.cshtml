@@ -16,6 +16,7 @@
     <form class="form" id="FormAgendamento">
         <div class="form-section">
             <div id="mensagem"></div>
+            
             <input type="hidden" name="CodigoExportar" id="CodigoExportar" value="" />
             <input type="hidden" name="Container" id="Container" value="1" />
             <h3 class="form-section__title">@T("Informações de Contato")</h3>
@@ -125,9 +126,10 @@
     @Html.Action("ExportarCarga", "AgendamentoIntermodal", new { model = Model })
 </div>
 
+@Html.Action("ExportarModal", "AgendamentoIntermodal", new { model = Model })
 @Html.Action("ExportarSucesso", "AgendamentoIntermodal", new { model = Model })
 
 @{
-    BLConteudo.AdicionarJavaScript(Html.Action("Script", new { model = Model }));
-    BLConteudo.AdicionarJavaScript(Html.Action("ScriptCarga", new { model = Model }));
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptExportar", new { model = Model }));
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptExportarCarga", new { model = Model }));
 }

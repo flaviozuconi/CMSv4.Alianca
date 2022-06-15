@@ -170,66 +170,6 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
-        #region Script
-
-        /// <summary>
-        /// Adicionar Script
-        /// </summary>
-        [CheckPermission(global::Permissao.Publico)]
-        public ActionResult Script(MLModuloAgendamentoIntermodal model)
-        {
-            try
-            {
-                return PartialView(model);
-            }
-            catch (Exception ex)
-            {
-                ApplicationLog.ErrorLog(ex);
-                return Json(new { success = false, msg = ex.Message });
-            }
-        }
-        #endregion
-
-        #region Script Carga
-
-        /// <summary>
-        /// Adicionar Script
-        /// </summary>
-        [CheckPermission(global::Permissao.Publico)]
-        public ActionResult ScriptCarga(MLModuloAgendamentoIntermodal model)
-        {
-            try
-            {
-                return PartialView(model);
-            }
-            catch (Exception ex)
-            {
-                ApplicationLog.ErrorLog(ex);
-                return Json(new { success = false, msg = ex.Message });
-            }
-        }
-        #endregion
-
-        #region Script Sucesso
-
-        /// <summary>
-        /// Adicionar Script
-        /// </summary>
-        [CheckPermission(global::Permissao.Publico)]
-        public ActionResult ScriptSucesso(MLModuloAgendamentoIntermodal model)
-        {
-            try
-            {
-                return PartialView(model);
-            }
-            catch (Exception ex)
-            {
-                ApplicationLog.ErrorLog(ex);
-                return Json(new { success = false, msg = ex.Message });
-            }
-        }
-        #endregion
-
         // AREA PUBLICA
 
         #region EscolherTipo
@@ -742,6 +682,78 @@ namespace CMSApp.Areas.Modulo.Controllers
 
         #endregion
 
+        #endregion
+
+        #region ScriptExportar
+
+        /// <summary>
+        /// Adicionar Script
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ScriptExportar(MLModuloAgendamentoIntermodal model)
+        {
+            try
+            {
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region Script Carga
+
+        /// <summary>
+        /// Adicionar Script
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ScriptExportarCarga(MLModuloAgendamentoIntermodal model)
+        {
+            try
+            {
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region Script Sucesso
+
+        /// <summary>
+        /// Adicionar Script
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ScriptSucesso(MLModuloAgendamentoIntermodal model)
+        {
+            try
+            {
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region ExportarModal
+
+        /// <summary>
+        /// ExportarModal
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ExportarModal(MLModuloAgendamentoIntermodal model)
+        {
+            return PartialView(new MLAgendamentoIntermodal());
+        }
         #endregion
 
         //IMPORTAR
