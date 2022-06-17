@@ -1391,8 +1391,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-
-
         #region uploadDeclaracaoImportacao
         /// <summary>
         /// Upload
@@ -1510,7 +1508,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-
         #region uploadContainerNf
         /// <summary>
         /// Upload
@@ -1556,7 +1553,6 @@ namespace CMSApp.Areas.Modulo.Controllers
             }
         }
         #endregion
-
 
         #region GetHash
         /// <summary>
