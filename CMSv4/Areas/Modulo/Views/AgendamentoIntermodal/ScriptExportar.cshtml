@@ -56,17 +56,26 @@
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarJQ").on("click", function (event) {
 
+        if ($("#NumeroBooking").val().length > 0) 
+
         $("#NumeroBooking-error").remove();
         $("#PropostaComercial-error").remove();
 
         $(this).prop("disabled", true);
         event.preventDefault();
 
-        if ($("#FormAgendamento").valid() == true) {
-             $.ajax({
+        if ($("#CEP").val().length == 0) {
+            $(".invalidCepJQ").show();
+        }
+        else {
+            $(".invalidCepJQ").hide();
+        }
+        
+        if ($("#FormAgendamento").valid() == true && $("#NumeroBooking").val().length > 0 && $("#PropostaComercial").val().length > 0) {
+            $.ajax({
                 type: "POST",
-                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacao",
-                 data: {
+                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacao",
+                data: {
                     Nome: $("#Nome").val(),
                     Email: $("#Email").val(),
                     PropostaComercial: $("#PropostaComercial").val(),
@@ -99,7 +108,7 @@
                     }
                 },
                 error: function (data) {
-                   
+
                 }
             });
         }
@@ -115,6 +124,7 @@
         $(".btnAgendarJQ").hide();
         $(".divExclusao").hide();
         $(".mensagemExclusao").hide();
+        $(".invalidCepJQ").hide();
     }
 
     // VALIDAR  O CAMPO PROPOSTA COMERCIAL
@@ -206,7 +216,7 @@
             url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
             dataType: 'json',
             success: function (resposta) {
-                if (resposta.localidade != '' && resposta.bairro != '' && resposta.uf != '') {
+                if (resposta.bairro.length > 0 && resposta.localidade.length > 0 && resposta.uf.length > 0 && resposta.bairro.length > 0) {
                     $("#Endereco").val(resposta.logradouro);
                     $("#Bairro").val(resposta.bairro);
                     $("#Cidade").val(resposta.localidade);
@@ -216,6 +226,27 @@
                     $("#Bairro").prop("disabled", true);
                     $("#Cidade").prop("disabled", true);
                     $("#Estado").prop("disabled", true);
+
+                    $("#Endereco").removeClass('is-invalid');
+                    $("#Bairro").removeClass('is-invalid');
+                    $("#Cidade").removeClass('is-invalid');
+                    $("#Estado").removeClass('is-invalid');
+
+                    $("#Endereco-error").remove();
+                    $("#Bairro-error").remove();
+                    $("#Cidade-error").remove();
+                    $("#Estado-error").remove();
+                }
+                else {
+                    $("#Endereco").val('');
+                    $("#Bairro").val('');
+                    $("#Cidade").val('');
+                    $("#Estado").val('');
+
+                    $("#Endereco").prop("disabled", false);
+                    $("#Bairro").prop("disabled", false);
+                    $("#Cidade").prop("disabled", false);
+                    $("#Estado").prop("disabled", false);
 
                     $("#Endereco").removeClass('is-invalid');
                     $("#Bairro").removeClass('is-invalid');
