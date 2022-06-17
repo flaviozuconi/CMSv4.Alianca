@@ -1028,6 +1028,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                     file.CopyTo(destino, true);
 
                                     model.Arquivo = file.Name;
+                                    model.caminhoCompleto = destino;
 
                                     file.Delete();
                                 }
@@ -1043,6 +1044,12 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                         if (string.IsNullOrEmpty(model.Comentario))
                             model.Comentario = "";
+
+                        if (string.IsNullOrEmpty(model.caminhoCompleto))
+                        {
+                            model.Arquivo = "";
+                            model.caminhoCompleto = "";
+                        }
                     }
 
                     return Json(new { success = true, model = model });
@@ -1150,6 +1157,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                             file.CopyTo(destino, true);
 
                                             item.Arquivo = file.Name;
+                                            item.caminhoCompleto = destino;
 
                                             file.Delete();
                                         }
@@ -1158,6 +1166,12 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 }
 
                                 item.Codigo = CRUD.Salvar(item, portal.ConnectionString);
+
+                                if (string.IsNullOrEmpty(item.caminhoCompleto))
+                                {
+                                    item.Arquivo = "";
+                                    item.caminhoCompleto = "";
+                                }
                             }
                         }
                     }
@@ -1195,6 +1209,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 var portal = PortalAtual.Obter;
                 string strArquivo = null;
+                string destino = "";
 
                 var lista = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao });
 
@@ -1217,7 +1232,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                     item.ValorNfe = Convert.ToDecimal(model.ValorNfe.Replace("R$ ", "").Replace(".", ""));
                                 item.DataRegistro = DateTime.Now;
 
-
+                                
                                 if (!string.IsNullOrEmpty(model.guid))
                                 {
                                     var diretorioNfTemp = (BLConfiguracao.Pastas.ModuloImportacaoNfTemp(portal.Diretorio) + "/" + model.guid + "/").Replace("//", "/");
@@ -1234,7 +1249,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                         FileInfo[] Files = Dir.GetFiles("*", SearchOption.AllDirectories);
                                         foreach (FileInfo file in Files)
                                         {
-                                            string destino = pastaNf + file.Name;
+                                            destino = pastaNf + file.Name;
                                             file.CopyTo(destino, true);
 
                                             strArquivo = file.Name;
@@ -1248,12 +1263,25 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 item.Arquivo = strArquivo;
                                 item.Codigo = CRUD.Salvar(item, portal.ConnectionString);
 
+                                item.caminhoCompleto = destino;
+
                                 if (string.IsNullOrEmpty(item.Comentario))
                                     item.Comentario = "";
                             }
 
                             item.ProximaSequencia = (Convert.ToInt32(item.Sequencia) + 1).ToString("00");
                         }
+                    }
+
+                    if (string.IsNullOrEmpty(strArquivo))
+                    {
+                        model.Arquivo = "";
+                        model.caminhoCompleto = "";
+                    }
+                    else
+                    {
+                        model.Arquivo = strArquivo;
+                        model.caminhoCompleto = destino;
                     }
 
                     model.LstContainer.RemoveAll(x => x.IsLinhaExcluida);
@@ -1578,5 +1606,45 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
+
+        #region DownloadFile
+        /// <summary>
+        /// Metodo para fazer o download de NF
+        /// </summary>
+        /// <param name="codigoPedido"></param>
+        /// <param name="extensao"></param>
+        /// <param name="isNFePeople"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult DownloadFile(decimal codigo, string arquivo)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+                var diretorioNf = (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
+
+                var filepath = pastaNf + arquivo;
+
+                byte[] filedata = System.IO.File.ReadAllBytes(filepath);
+                string contentType = MimeMapping.GetMimeMapping(filepath);
+
+                
+                var cd = new System.Net.Mime.ContentDisposition
+                {
+                    FileName = arquivo,
+                    Inline = false,
+                };
+
+                return File(filedata, contentType, arquivo);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return View();
+            }
+        }
+        #endregion
     }
 }

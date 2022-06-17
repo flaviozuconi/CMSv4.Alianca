@@ -5,6 +5,7 @@
     var urlUploadNfe = "/cms/" + portal + "/agendamentointermodal/UploadNfe";
 }
 
+<script src="/Content/js/plugins/jquery.fileDownload/jquery.fileDownload.min.js"></script>
 
 <script type="text/javascript">
 
@@ -310,7 +311,11 @@
                 "<td>" + model.ValorNfeFormatado + "</td>";
 
             if ($("#hdfTipoFormulario").val() != 'dta') {
-                registro += "<td><div class='d-flex align-items-center justify-content-between'>NF-e " + model.NumeroNfe + " <span class='icon icon-paperclip ml-1'></span></div></td>";
+                registro += "<td><div class='d-flex align-items-center justify-content-between'>NF-e " + model.NumeroNfe;
+                if (model.Arquivo != '') {
+                    registro += "<a href='javascript:download(\"" + model.CodigoImportacao + "\", \"" + model.Arquivo + "\")' style='color: black;'><span class='icon icon-paperclip ml-1'></span></a>";
+                }
+                registro += "</div></td>";
             }
 
             registro += "<td><a onClick='excluirCarga(\"" + $("#hdfSeqContainer").val() + "\", \"" + model.Codigo + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
@@ -357,7 +362,10 @@
             if ($("#hdfTipoFormulario").val() != 'dta') {
                 registro += "<td>";
                 for (var aux = 0; aux < model.LstNfs.length; aux++) {
-                    registro += "NF-e " + model.LstNfs[aux].NumeroNfe + "<span class='icon icon-paperclip ml-2'></span>";
+                    registro += "NF-e " + model.LstNfs[aux].NumeroNfe;
+                    if (model.LstNfs[aux].Arquivo != '') {
+                        registro += "<a href='javascript:download(\"" + model.CodigoImportacao + "\", \"" + model.LstNfs[aux].Arquivo + "\")' style='color: black;'><span class='icon icon-paperclip ml-1'></span></a>";
+                    }
                     if (aux < (model.LstNfs.length - 1)) {
                         registro += "<br>";
                     }
@@ -839,7 +847,11 @@
             registro += "</td>" +
                 "<td>" + model.ValorNfe + "</td>";
             if ($("#hdfTipoFormulario").val() != 'dta') {
-                registro += "<td><div class='d-flex align-items-center justify-content-between'>NF-e " + model.NumeroNfe + " <span class='icon icon-paperclip ml-2'></span></div></td>";
+                registro += "<td><div class='d-flex align-items-center justify-content-between'>NF-e " + model.NumeroNfe;
+                if (model.Arquivo != '') {
+                    registro += "<a href='javascript:download(\"" + model.CodigoImportacao + "\", \"" + model.Arquivo + "\")' style='color: black;'><span class='icon icon-paperclip ml-2'></span></a>";
+                }
+                registro += "</div></td>";
             }
             registro += "<td><a onClick='excluirCarga(\"" + nomeLinha + "\" ,\"" + codigos + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
 
@@ -882,6 +894,26 @@
         window.location.reload();
     });
 
+    function download(code, file) {
+
+        $.fileDownload("/cms/@portal.Diretorio/AgendamentoIntermodal/DownloadFile?codigo=" + code + "&arquivo=" + file)
+            .fail(function () { alert("Não foi possível gerar o arquivo."); });
+
+        @*$.ajax({
+            type: "GET",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/DownloadFile",
+            data: {
+                codigo: $("#hdfDownloadCodigo").val(),
+                arquivo: $("#hdfDownloadArquivo").val()
+            },
+            success: function (data) {
+
+            },
+            error: function (data) {
+
+            }
+        });*@
+    }
 
 </script>
 
