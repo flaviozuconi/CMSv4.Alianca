@@ -1737,6 +1737,8 @@
     <Content Include="Content\js\plugins\jquery-knob\jquery.knob.min.js" />
     <Content Include="Content\js\plugins\jquery.ba-throttle-debounce.js" />
     <Content Include="Content\js\plugins\jquery.ba-throttle-debounce.min.js" />
+    <Content Include="Content\js\plugins\jquery.fileDownload\jquery.fileDownload.js" />
+    <Content Include="Content\js\plugins\jquery.fileDownload\jquery.fileDownload.min.js" />
     <Content Include="Content\js\plugins\jquery.mCustomScrollbar.concat.min.js" />
     <Content Include="Content\js\plugins\jquery.selectBoxIt.js" />
     <Content Include="Content\js\plugins\jsoneditor\img\jsoneditor-icons.png" />
