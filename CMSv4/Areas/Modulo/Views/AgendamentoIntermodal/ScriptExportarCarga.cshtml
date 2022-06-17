@@ -67,8 +67,8 @@
                         $(".btnAgendarJQ").fadeIn("slide");
                     }
                     else {
-                        $("#mensagem").text('');
-                        $("#mensagem").text(data.msg);
+                        $("#mensagem").html('');
+                        $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                         $('html, body').animate({ scrollTop: 0 }, 800);
                     }
                 },
@@ -78,7 +78,7 @@
             });
         }
     });
-
+    
     function exibirListagemCargas(model) {
         $("#divRegistrosCargas").fadeIn("slide");
 
@@ -93,8 +93,8 @@
                             "<td>" + model.Equipamento + reefer + "</td>" +
                             "<td>" + model.DataColetaFormatada + "</td>" +
                             "<td>" + model.Peso + " kgs" + "</td>" +
-                            "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> Comentários</td>" +
-                            "<td><a onClick='excluirCarga(" + model.Codigo + ")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
+                            "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + (model.Comentario == null ? '' : model.Comentario) + "'></span> Comentários</td>" +
+                            "<td><a href='#modalConfirmacao' data-toggle='modal'  onClick='excluirCarga(" + model.Codigo + ")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
                         "</tr>";
 
         $(".table tbody").append(registro);
@@ -129,6 +129,7 @@
                     $("#CodigoExcluir").val('');
                     $(".divExclusao").fadeOut("slide");
                     $('.mensagemExclusao').fadeIn("slide");
+                    $('#modalConfirmacao').modal('hide');
                 }
             },
             error: function (data) {

@@ -133,7 +133,7 @@
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#PropostaComercial").val('');
                     $('#existPropostaComercial').remove();
                     $("#PropostaComercial").parent().append("<span id='existPropostaComercial'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe uma Proposta Comercial válida.</label><span>");
@@ -161,7 +161,7 @@
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#NumeroBooking").val('');
                     $('#existNumeroBooking').remove();
                     $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe um Número Booking válido.</label><span>");
@@ -181,14 +181,14 @@
              data: { Proposta: proposta, Booking: booking },
             success: function (data) {
                 if (data.success == true) {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#NumeroBooking").val('');
                     $("#PropostaComercial").val('');
-                    $("#mensagem").text("O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " é inválido.");
+                    $("#mensagem").html('<div class="alert alert-danger" role="alert">' + "O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " é inválido." + '</div>');
 
                     $("#NumeroBooking-error").remove();
                     $("#PropostaComercial-error").remove();
