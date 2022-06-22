@@ -124,17 +124,18 @@
                         <input type="text" class="form-control" required name="CNPJ" id="cnpj" onblur="validarCNPJ()" placeholder="@T("Digite o CNPJ")" value="" />
                     </div>
                 </div>
-                <div class="col-24 col-sm-10 col-md-8 col-lg-6">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
-                        <label for="cep" class="form-label">@T("CEP")</label>
+                        <label for="" class="form-label">CEP</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" required id="cep" name="CEP" placeholder="00000-000" value="" />
+                            <input type="text" id="cep" name="CEP" required class="form-control" placeholder="00000-000">
                             <div class="input-group-append">
                                 <button class="btn btn-outline" id="btnBuscaCEP" type="button">
                                     <span class="icon icon-search"></span>
                                     <span class="sr-only">@T("Pesquisar")</span>
                                 </button>
                             </div>
+                            <label id="CEP-error" class="is-invalid invalidCepJQ" for="cep">O campo é obrigatório</label>
                         </div>
                     </div>
                 </div>

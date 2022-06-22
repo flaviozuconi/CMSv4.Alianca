@@ -147,7 +147,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
+                '<input type="text" class="form-control" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -172,7 +172,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
@@ -287,7 +287,6 @@
         $("#divNfVariosContainer").fadeOut("slider");
         $("#divRegistrosCargas").fadeOut("slider");
 
-        $(".divExclusao").hide();
         $(".mensagemExclusao").hide();
     }
 
@@ -295,13 +294,15 @@
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
         if ($("#divArquivosNfContainerNf").text() != '') {
-            $("#mensagem").text("");
+            $("#mensagem").html("");
 
             if ($('#FormCarga input').hasClass('is-invalid') == false) {
                 $(".btnSalvarCargaJQ").prop("disabled", true);
                 event.preventDefault();
 
                 if ($("#FormCarga").valid() == true) {
+                    $("#divContainerNf").addClass("loading");
+
                     $.ajax({
                         type: "POST",
                         url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCarga",
@@ -337,23 +338,28 @@
                                 //$(".btnAgendarJQ").fadeIn("slide");
                             }
                             else {
-                                $("#mensagem").text('');
-                                $("#mensagem").text(data.msg);
+                                $("#mensagem").html('');
+                                $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                                 $('html, body').animate({ scrollTop: 0 }, 800);
                             }
 
                             $(".btnSalvarCargaJQ").prop("disabled", false);
+
+                            $("#divContainerNf").removeClass("loading");
                         },
                         error: function (data) {
                             $(".btnSalvarCargaJQ").prop("disabled", false);
+
+                            $("#divContainerNf").removeClass("loading");
                         }
                     });
                 }
             }
         }
         else {
-            $("#mensagem").text("O anexo da NF-e é obrigatório.");
-            window.scrollTo(0, 0);
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">O anexo da NF-e é obrigatório.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
         }
     });
     $(".btnCancelarCargaJQ").on("click", function (event) {
@@ -388,7 +394,7 @@
                 registro += "</div></td>";
             }
 
-            registro += "<td><a onClick='excluirCarga(\"" + $("#hdfSeqContainer").val() + "\", \"" + model.Codigo + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
+            registro += "<td><a href='#modalConfirmacao' data-toggle='modal' onClick='excluirCarga(\"" + $("#hdfSeqContainer").val() + "\", \"" + model.Codigo + "\")' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
                 "</tr>";
 
             $(".table tbody").append(registro);
@@ -442,7 +448,7 @@
                 }
                 registro += "</td>";
             }
-            registro += "<td><a onClick='excluirCarga(\"" + $("#hdfSeqContainer").val() + "\" ,\"" + codigos + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
+            registro += "<td><a href='#modalConfirmacao' data-toggle='modal' onClick='excluirCarga(\"" + $("#hdfSeqContainer").val() + "\" ,\"" + codigos + "\")' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
 
             $(".table tbody").append(registro);
 
@@ -487,8 +493,6 @@
     }
 
     function excluirCarga(linha, codigo) {
-        $('.mensagemExclusao').hide();
-        $(".divExclusao").fadeIn("slide");
         $("#LinhaExcluir").val(linha);
         $("#CodigoExcluir").val(codigo);
     }
@@ -505,10 +509,14 @@
                     $(linha).remove();
                     $("#LinhaExcluir").val('');
                     $("#CodigoExcluir").val('');
-                    $(".divExclusao").fadeOut("slide");
                     $('.mensagemExclusao').fadeIn("slide");
 
+                    if ($('.table tbody').text() == '') {
+                        $("#divRegistrosCargas").fadeOut("slide");
+                    }
+
                     reorganizarSeqContainer();
+
                 }
             },
             error: function (data) {
@@ -562,7 +570,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -587,7 +595,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
@@ -657,13 +665,9 @@
         });
 
         if (isAnexados == true) {
-            $("#mensagem").text("");
-
-            alert("0");
+            $("#mensagem").html("");
 
             if ($('#FormCargaVariasNf input').hasClass('is-invalid') == false) {
-
-                alert("1");
 
                 $(".btnSalvarCargaVariasNfJQ").prop("disabled", true);
                 event.preventDefault();
@@ -675,7 +679,7 @@
 
 
                 if ($("#FormCargaVariasNf").valid() == true) {
-
+                    $("#divContainerVariasNf").addClass("loading");
 
                     $.ajax({
                         type: "POST",
@@ -701,23 +705,28 @@
                                 //$(".btnAgendarJQ").fadeIn("slide");
                             }
                             else {
-                                $("#mensagem").text('');
-                                $("#mensagem").text(data.msg);
+                                $("#mensagem").html('');
+                                $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                                 $('html, body').animate({ scrollTop: 0 }, 800);
                             }
 
                             $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
+
+                            $("#divContainerVariasNf").removeClass("loading");
                         },
                         error: function (data) {
                             $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
+
+                            $("#divContainerVariasNf").removeClass("loading");
                         }
                     });
                 }
             }
         }
         else {
-            $("#mensagem").text("Os anexos das NF-e são obrigatórios.");
-            window.scrollTo(0, 0);
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">Os anexos das NF-e são obrigatórios.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
         }
     });
     $(".btnCancelarCargaVariasNfJQ").on("click", function (event) {
@@ -852,7 +861,7 @@
 
     $(".btnSalvarCargaVariosContainerJQ").on("click", function (event) {
         if ($("#divArquivosNfVariosContainerNf").text() != '') {
-            $("#mensagem").text("");
+            $("#mensagem").html("");
 
             if ($('#FormCargaNfVariosContainer input').hasClass('is-invalid') == false) {
                 $(".btnSalvarCargaVariosContainerJQ").prop("disabled", true);
@@ -868,6 +877,8 @@
 
 
                 if ($("#FormCargaNfVariosContainer").valid() == true) {
+
+                    $("#divNfVariosContainer").addClass("loading");
 
                     $.ajax({
                         type: "POST",
@@ -891,23 +902,28 @@
                                 //$(".btnAgendarJQ").fadeIn("slide");
                             }
                             else {
-                                $("#mensagem").text('');
-                                $("#mensagem").text(data.msg);
+                                $("#mensagem").html('');
+                                $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                                 $('html, body').animate({ scrollTop: 0 }, 800);
                             }
 
                             $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
+
+                            $("#divNfVariosContainer").removeClass("loading");
                         },
                         error: function (data) {
                             $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
+
+                            $("#divNfVariosContainer").removeClass("loading");
                         }
                     });
                 }
             }
         }
         else {
-            $("#mensagem").text("O anexo da NF-e é obrigatório.");
-            window.scrollTo(0, 0);
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">O anexo da NF-e é obrigatório.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
         }
     });
     $(".btnCancelarCargaVariosContainerJQ").on("click", function (event) {
@@ -979,7 +995,7 @@
                 }
                 registro += "</div></td>";
             }
-            registro += "<td><a onClick='excluirCarga(\"" + nomeLinha + "\" ,\"" + codigos + "\")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
+            registro += "<td><a href='#modalConfirmacao' data-toggle='modal' onClick='excluirCarga(\"" + nomeLinha + "\" ,\"" + codigos + "\")' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
 
 
 

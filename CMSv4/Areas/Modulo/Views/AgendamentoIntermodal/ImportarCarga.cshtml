@@ -58,7 +58,7 @@
             <div class="col-24 col-sm-12 col-xl-6">
                 <div class="form-group">
                     <label for="valorNfe" class="form-label">Valor da NF-e</label>
-                    <input type="text" class="form-control" id="valorNfe" name="ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />
+                    <input type="text" class="form-control" id="valorNfe" name="ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />
                 </div>
             </div>
             <div class="col-24 col-sm-12 col-xl-6">
@@ -90,7 +90,7 @@
             </div>
             <div class="col-24 col-md-12 col-lg-9 col-xl-6 d-flex align-items-end">
                 <div class="form-group">
-                    <a href="javascript:void(0)" class="btn btn-red btn-icon btn-block mb-4 btnCancelarCargaJQ">
+                    <a href="javascript:void(0)" class="btn btn-red btn-icon btn-block mb-4 btnCancelarCargaJQ" style="margin:0px!important;">
                         <span class="icon icon-chevron-left"></span>
                         Voltar
                     </a>
@@ -164,7 +164,7 @@
                     <div class="col-24 col-sm-12 col-md-8 col-lg-7 col-xl-6">
                         <div class="form-group">
                             <label for="valorNfeVariosContainer" class="form-label">Valor da NF-e</label>
-                            <input type="text" class="form-control" id="valorNfeVariosContainer" name="ValorNfe" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />
+                            <input type="text" class="form-control" id="valorNfeVariosContainer" name="ValorNfe" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />
                         </div>
                     </div>
                     <div class="col-24 col-md-8 col-lg-10 col-xl-8" id="divNfVariosContainerAnexo">
@@ -205,16 +205,9 @@
         <div class="form-section" id="divRegistrosCargas">
             <h3 class="form-section__title">Containers Registrados</h3>
 
-            <div class="divExclusao">
-                <input type="hidden" name="LinhaExcluir" id="LinhaExcluir" value="" />
-                <input type="hidden" name="CodigoExcluir" id="CodigoExcluir" value="" />
-                <p>Deseja realmente excluir?</p>
-                <a href="javascript:void(0)" class="btnExcluirJQ">@T("Sim")</a>
-                <a href="javascript:void(0)" class="btnNaoExcluirJQ">@T("Não")</a>
-            </div>
-            <div class="mensagemExclusao">
-                <p>Registro excluído com sucesso.</p>
-            </div>
+            <input type="hidden" name="LinhaExcluir" id="LinhaExcluir" value="" />
+            <input type="hidden" name="CodigoExcluir" id="CodigoExcluir" value="" />
+            
 
             <div class="table-responsive" id="divRegistrosImportarCargas">
                 <table class="table">
@@ -230,4 +223,25 @@
             </div>
         </div>
     </form>
+</div>
+
+<div class="modal modal-confirmacao fade divExclusao" id="modalConfirmacao" tabindex="-1" aria-labelledby="modalConfirmacao" aria-hidden="true">
+    <input type="hidden" name="CodigoExcluir" id="CodigoExcluir" value="" />
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmacao"><strong>@T("Excluir")</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @T("Deseja realmente excluir o container?")
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel btnNaoExcluirJQ" data-dismiss="modal">@T("Cancelar")</button>
+                <button type="button" class="btn btn-delete btnExcluirJQ" data-dismiss="modal">@T("Excluir")</button>
+            </div>
+        </div>
+    </div>
 </div>
