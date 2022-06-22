@@ -44,7 +44,9 @@
         $(this).prop("disabled", true);
         event.preventDefault();
 
+
         if ($("#FormCarga").valid() == true) {
+
              $.ajax({
                 type: "POST",
                  url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacaoCarga",
@@ -77,6 +79,10 @@
                    
                 }
             });
+        }
+
+        if ($("#DataColeta").val() <= new Date().toISOString().slice(0, 16)) {
+            $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
         }
     });
     
@@ -127,10 +133,15 @@
                 if (data.success == true) {
                     var codigo = "." + $("#CodigoExcluir").val() + "_excluir";
                     $(codigo).fadeOut("slide");
+                    $(codigo).remove();
                     $("#CodigoExcluir").val('');
                     $(".divExclusao").fadeOut("slide");
                     $('.mensagemExclusao').fadeIn("slide");
                     $('#modalConfirmacao').modal('hide');
+
+                    if ($("#divRegistrosCargas tr").length == 0) {
+                        $(".btnAgendarJQ").hide();
+                    }
                 }
             },
             error: function (data) {
@@ -173,6 +184,12 @@
 
             }
         });
+    });
+
+    $("#DataColeta").on("blur", function () {
+        if ($(this).val() <= new Date().toISOString().slice(0, 16)) {
+            $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
+        }
     });
 
     $(".reloadJQ").on("click", function () {
