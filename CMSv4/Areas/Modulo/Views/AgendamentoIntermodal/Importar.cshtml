@@ -220,7 +220,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 50,
+            maxFiles: 1,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -256,7 +256,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 50,
+            maxFiles: 1,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -291,7 +291,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 50,
+            maxFiles: 1,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -349,9 +349,12 @@
 
                     this.removeFile(file);
 
-                    $("#divArquivosNfContainerNf").fadeIn("slider");
-                    $("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
-                    $("#arquivoNfContainerNf").fadeOut("slider");
+                    $("#hdfArquivosNfContainerNf").val("1");
+
+                    //$("#divArquivosNfContainerNf").fadeIn("slider");
+                    //$("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
+                    //$("#arquivoNfContainerNf").fadeOut("slider");
+
 
                     //$("#hdfFileBl").removeClass("has-error");
                 }
@@ -391,10 +394,13 @@
 
                     this.removeFile(file);
 
-                    $("#divArquivosNfVariosContainerNf").fadeIn("slider");
-                    $("#divArquivosNfVariosContainerNf").append(objResponse.nomeArquivo);
-                    $("#arquivoNfVariosContainerNf").fadeOut("slider");
+                    $("#hdfArquivosNfVariosContainerNf").val("1");
 
+                    //$("#divArquivosNfVariosContainerNf").fadeIn("slider");
+                    //$("#divArquivosNfVariosContainerNf").append(objResponse.nomeArquivo);
+                    //$("#arquivoNfVariosContainerNf").fadeOut("slider");
+
+                    
                     //$("#fileNfVariosContainer").removeClass("has-error");
                 }
             }
@@ -435,9 +441,11 @@
 
                         this.removeFile(file);
 
-                        $("#divArquivosVariasNf_" + seq).fadeIn("slider");
-                        $("#divArquivosVariasNf_" + seq).append(objResponse.nomeArquivo);
-                        $("#arquivoVariosNf_" + seq).fadeOut("slider");
+                        //$("#divArquivosVariasNf_" + seq).fadeIn("slider");
+                        //$("#divArquivosVariasNf_" + seq).append(objResponse.nomeArquivo);
+                        //$("#arquivoVariosNf_" + seq).fadeOut("slider");
+
+                        $("#hdfArquivosVariasNf_" + seq).val("1");
 
                         //$("#fileNfVariosContainer").removeClass("has-error");
                     }

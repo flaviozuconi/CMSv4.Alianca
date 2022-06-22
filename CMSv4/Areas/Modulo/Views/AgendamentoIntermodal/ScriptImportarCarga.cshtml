@@ -119,9 +119,10 @@
 
         $("#divContainerNf").fadeIn("slider");
 
-        $("#arquivoNfContainerNf").fadeIn("slider");
-        $("#divArquivosNfContainerNf").fadeOut("slider");
-        $("#divArquivosNfContainerNf").empty();
+        //$("#arquivoNfContainerNf").fadeIn("slider");
+        //$("#divArquivosNfContainerNf").fadeOut("slider");
+        //$("#divArquivosNfContainerNf").empty();
+        $("#hdfArquivosNfContainerNf").val('');
 
         if ($("#hdfTipoFormulario").val() == 'dta') {
             $("#divNfContainerNf").hide();
@@ -177,8 +178,8 @@
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
                 '<div class="form-group">' +
+                '<input type="hidden" id="hdfArquivosVariasNf_1" class="divArquivosVariasNfJQ" />' +
                 '<label for="" class="form-label"><span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
-                '<div id="divArquivosVariasNf_1" class="divArquivosVariasNfJQ"></div>' +
                 '<div class="dropzone" id="arquivoVariosNf_1">' +
                 '<div class="fallback">'+
                 '<input type="file" name="fileVariasNf_1" id="fileVariasNf_1" />' +
@@ -217,9 +218,10 @@
 
         $("#divNfVariosContainer").fadeIn("slider");
 
-        $("#arquivoNfVariosContainerNf").fadeIn("slider");
-        $("#divArquivosNfVariosContainerNf").fadeOut("slider");
-        $("#divArquivosNfVariosContainerNf").empty();
+        //$("#arquivoNfVariosContainerNf").fadeIn("slider");
+        //$("#divArquivosNfVariosContainerNf").fadeOut("slider");
+        //$("#divArquivosNfVariosContainerNf").empty();
+        $("#hdfArquivosNfVariosContainerNf").val('');
 
         var teste = "1";
         $(".listVariosContainerJQ").empty();
@@ -293,7 +295,7 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
-        if ($("#divArquivosNfContainerNf").text() != '') {
+        if ($("#hdfArquivosNfContainerNf").val() == '1') {
             $("#mensagem").html("");
 
             if ($('#FormCarga input').hasClass('is-invalid') == false) {
@@ -600,9 +602,9 @@
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
                 '<div class="form-group">' +
+                '<input type="hidden" id="hdfArquivosVariasNf_' + maxTotal.toString() + '" class="divArquivosVariasNfJQ" />' +
                 '<label for="" class="form-label">' +
                 '<span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
-                '<div id="divArquivosVariasNf_' + maxTotal.toString() + '" class="divArquivosVariasNfJQ"></div>' +
                 '<div class="dropzone" id="arquivoVariosNf_' + maxTotal.toString() + '">' +
                 '<div class="fallback">' +
                 '<input type="file" name="fileVariasNf_' + maxTotal.toString() + '" id="fileVariasNf_' + maxTotal.toString() + '" />' +
@@ -860,7 +862,7 @@
 
 
     $(".btnSalvarCargaVariosContainerJQ").on("click", function (event) {
-        if ($("#divArquivosNfVariosContainerNf").text() != '') {
+        if ($("#hdfArquivosNfVariosContainerNf").val() == '1') {
             $("#mensagem").html("");
 
             if ($('#FormCargaNfVariosContainer input').hasClass('is-invalid') == false) {
