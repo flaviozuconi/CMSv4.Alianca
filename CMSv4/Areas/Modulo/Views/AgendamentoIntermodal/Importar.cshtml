@@ -197,7 +197,7 @@
     <link href="~/Content/css/plugins/dropzone/css/dropzone.css" rel="stylesheet" />
     <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
 
-@Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
+    @Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
 
 
 </div>
@@ -349,12 +349,9 @@
 
                     this.removeFile(file);
 
-                    $("#hdfArquivosNfContainerNf").val("1");
-
-                    //$("#divArquivosNfContainerNf").fadeIn("slider");
-                    //$("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
-                    //$("#arquivoNfContainerNf").fadeOut("slider");
-
+                    $("#divArquivosNfContainerNf").fadeIn("slider");
+                    $("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
+                    $("#arquivoNfContainerNf").fadeOut("slider");
 
                     //$("#hdfFileBl").removeClass("has-error");
                 }
@@ -394,13 +391,10 @@
 
                     this.removeFile(file);
 
-                    $("#hdfArquivosNfVariosContainerNf").val("1");
+                    $("#divArquivosNfVariosContainerNf").fadeIn("slider");
+                    $("#divArquivosNfVariosContainerNf").append(objResponse.nomeArquivo);
+                    $("#arquivoNfVariosContainerNf").fadeOut("slider");
 
-                    //$("#divArquivosNfVariosContainerNf").fadeIn("slider");
-                    //$("#divArquivosNfVariosContainerNf").append(objResponse.nomeArquivo);
-                    //$("#arquivoNfVariosContainerNf").fadeOut("slider");
-
-                    
                     //$("#fileNfVariosContainer").removeClass("has-error");
                 }
             }
@@ -441,11 +435,9 @@
 
                         this.removeFile(file);
 
-                        //$("#divArquivosVariasNf_" + seq).fadeIn("slider");
-                        //$("#divArquivosVariasNf_" + seq).append(objResponse.nomeArquivo);
-                        //$("#arquivoVariosNf_" + seq).fadeOut("slider");
-
-                        $("#hdfArquivosVariasNf_" + seq).val("1");
+                        $("#divArquivosVariasNf_" + seq).fadeIn("slider");
+                        $("#divArquivosVariasNf_" + seq).append(objResponse.nomeArquivo);
+                        $("#arquivoVariosNf_" + seq).fadeOut("slider");
 
                         //$("#fileNfVariosContainer").removeClass("has-error");
                     }
