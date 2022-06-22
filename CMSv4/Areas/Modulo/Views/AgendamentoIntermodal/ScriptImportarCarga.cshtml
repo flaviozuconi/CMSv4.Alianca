@@ -47,26 +47,22 @@
 
     $("#dataEntrega").on("blur", function () {
         $('#invalidaDataEntrega').remove();
-        $("#dataEntrega").removeClass('is-invalid');
+        $(this).removeClass('is-invalid');
 
-        var dataInformadaStr = $("#dataEntrega").val();
-        var dataInformada = new Date(dataInformadaStr);
-        
-        $("#dataEntrega").addClass('is-invalid');
-        $("#dataEntrega").parent().append("<span id='invalidaDataEntrega'><label class='is-invalid' for='dataEntrega'>Por favor entre com um valor maior que " + getDateNow() + "</label><span>");
+        var dataInformada = new Date($(this).val());
+        var dataAtual = new Date(getDateNow());
+
+        if (dataInformada < dataAtual) {
+            $(this).addClass('is-invalid');
+            $(this).parent().append("<span id='invalidaDataEntrega'><label class='is-invalid' for='dataEntrega'>Por favor entre com um valor igual ou maior que a data e hora atual</label><span>");
+        }
     });
-
-    function getDate() {
-        let today = new Date();
-        
-        return today;
-    }
 
     function getDateNow() {
         let today = new Date();
-        let date =  today.getDate().toString().padStart(2, '0') + '/' + (today.getMonth() + 1).toString().padStart(2, '0') + '/' + today.getFullYear();
+        let date = today.getFullYear() + '-' + (today.getMonth() + 1).toString().padStart(2, '0') + '-' +  today.getDate().toString().padStart(2, '0') ;
         let time = today.getHours().toString().padStart(2, '0') + ':' + today.getMinutes().toString().padStart(2, '0');
-        return date + ' ' + time;
+        return date + 'T' + time;
     }
 
     function IsNormal() {
