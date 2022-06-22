@@ -193,7 +193,7 @@
     <link href="~/Content/css/plugins/dropzone/css/dropzone.css" rel="stylesheet" />
     <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
 
-    @Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
+@Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
 
 
 </div>
@@ -207,7 +207,7 @@
     <script type="text/javascript">
 
         /*  FORM UPLOAD */
-        
+
         Dropzone.options.arquivoDeclaracaoImportacao = {
             url: "@urlUploadDeclaracaoImportacao",
             dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
