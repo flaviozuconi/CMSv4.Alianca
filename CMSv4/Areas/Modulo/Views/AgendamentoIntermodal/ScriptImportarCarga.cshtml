@@ -58,6 +58,34 @@
         }
     });
 
+    $("#dataEntregaVariasNf").on("blur", function () {
+        $('#invalidaDataEntregaVariasNf').remove();
+        $(this).removeClass('is-invalid');
+
+        var dataInformada = new Date($(this).val());
+        var dataAtual = new Date(getDateNow());
+
+        if (dataInformada < dataAtual) {
+            $(this).addClass('is-invalid');
+            $(this).parent().append("<span id='invalidaDataEntregaVariasNf'><label class='is-invalid' for='dataEntregaVariasNf'>Por favor entre com um valor igual ou maior que a data e hora atual</label><span>");
+        }
+    });
+
+    function IniciaValidacaoHorario(campo) {
+        $("#"+ campo).on("blur", function () {
+            $('#invalida' + campo).remove();
+            $(this).removeClass('is-invalid');
+
+            var dataInformada = new Date($(this).val());
+            var dataAtual = new Date(getDateNow());
+
+            if (dataInformada < dataAtual) {
+                $(this).addClass('is-invalid');
+                $(this).parent().append("<span id='invalida" + campo + "'><label class='is-invalid' for='" + campo + "'>Por favor entre com um valor igual ou maior que a data e hora atual</label><span>");
+            }
+        });
+    }
+
     function getDateNow() {
         let today = new Date();
         let date = today.getFullYear() + '-' + (today.getMonth() + 1).toString().padStart(2, '0') + '-' +  today.getDate().toString().padStart(2, '0') ;
@@ -119,7 +147,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '<input type="text" class="form-control" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -144,13 +172,13 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
                 '<div class="form-group">' +
                 '<label for="" class="form-label"><span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
-                '<div id="divArquivosVariasNf_1"></div>' +
+                '<div id="divArquivosVariasNf_1" class="divArquivosVariasNfJQ"></div>' +
                 '<div class="dropzone" id="arquivoVariosNf_1">' +
                 '<div class="fallback">'+
                 '<input type="file" name="fileVariasNf_1" id="fileVariasNf_1" />' +
@@ -211,7 +239,7 @@
             '<div class="col-24 col-sm-12 col-lg-9 col-xl-5">' +
             '<div class="form-group">' +
             '<label for="containerVariosContainer_1" class="form-label">Nº do Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
-            '<input type="text" class="form-control required" placeholder="99.999.999" id="containerVariosContainer_1" name="LstContainer[0].Container">' +
+            '<input type="text" class="form-control required" placeholder="99.999.999" id="containerVariosContainer_1" name="LstContainer[0].Container" maxlength="10">' +
             '</div>' +
             '</div>' +
             '<div class="col-22 col-sm-16 col-md-17 col-lg-18 col-xl-8">' +
@@ -236,6 +264,8 @@
         $("#comentarioVariosContainer_1").on("keyup", function (event) {
             $(".jqComentarioVariosContainer_1").text($("#comentarioVariosContainer_1").val().length + " de 300");
         });
+
+        IniciaValidacaoHorario("dataEntregaVariosContainer_1");
 
         if ($("#hdfTipoFormulario").val() == 'dta') {
             $("#divNfVariosContainerNf").hide();
@@ -264,56 +294,77 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
-        $(".btnSalvarCargaJQ").prop("disabled", true);
-        event.preventDefault();
+        if ($("#divArquivosNfContainerNf").text() != '') {
+            $("#mensagem").text("");
 
-        if ($("#FormCarga").valid() == true) {
-             $.ajax({
-                type: "POST",
-                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCarga",
-                 data: {
-                     DataEntrega: $("#dataEntrega").val(),
-                     NumeroNfe: $("#numeroNfe").val(),
-                     ValorNfeFormatado: $("#valorNfe").val(),
-                     Container: $("#container").val(),
-                     Comentario: $("#comentario").val(),
-                     CodigoImportacao: $("#codigoImportar").val(),
-                     Sequencia: $("#hdfSeqContainer").val(),
-                     guid: $("#hdfGuid").val()
-                },
-                success: function (data) {
-                    if (data.success == true) {
-                        exibirListagemCargas(data.model);
+            if ($('#FormCarga input').hasClass('is-invalid') == false) {
+                $(".btnSalvarCargaJQ").prop("disabled", true);
+                event.preventDefault();
 
-                        $("#dataEntrega").val('');
-                        $("#numeroNfe").val('');
-                        $("#valorNfe").val('');
-                        $("#container").val('');
-                        //$("#extensao").val('');
-                        $("#comentario").val('');
+                if ($("#FormCarga").valid() == true) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCarga",
+                        data: {
+                            DataEntrega: $("#dataEntrega").val(),
+                            NumeroNfe: $("#numeroNfe").val(),
+                            ValorNfeFormatado: $("#valorNfe").val(),
+                            Container: $("#container").val(),
+                            Comentario: $("#comentario").val(),
+                            CodigoImportacao: $("#codigoImportar").val(),
+                            Sequencia: $("#hdfSeqContainer").val(),
+                            guid: $("#hdfGuid").val()
+                        },
+                        success: function (data) {
+                            if (data.success == true) {
+                                exibirListagemCargas(data.model);
+
+                                $("#dataEntrega").val('');
+                                $("#numeroNfe").val('');
+                                $("#valorNfe").val('');
+                                $("#container").val('');
+                                //$("#extensao").val('');
+                                $("#comentario").val('');
 
 
-                        $("#btnContainerNf").removeClass("active");
-                        $("#btnContainerNf").removeClass("inactive");
-                        $("#btnContainerVariasNf").removeClass("inactive");
-                        $("#btnNfVariosConteiner").removeClass("inactive");
+                                $("#btnContainerNf").removeClass("active");
+                                $("#btnContainerNf").removeClass("inactive");
+                                $("#btnContainerVariasNf").removeClass("inactive");
+                                $("#btnNfVariosConteiner").removeClass("inactive");
 
-                        $("#divContainerNf").fadeOut("slider");
+                                $("#divContainerNf").fadeOut("slider");
 
-                        //$(".btnAgendarJQ").fadeIn("slide");
-                    }
-                    else {
-                        $("#mensagem").text('');
-                        $("#mensagem").text(data.msg);
-                        $('html, body').animate({ scrollTop: 0 }, 800);
-                    }
+                                //$(".btnAgendarJQ").fadeIn("slide");
+                            }
+                            else {
+                                $("#mensagem").text('');
+                                $("#mensagem").text(data.msg);
+                                $('html, body').animate({ scrollTop: 0 }, 800);
+                            }
 
-                    $(".btnSalvarCargaJQ").prop("disabled", false);
-                },
-                error: function (data) {
-                    $(".btnSalvarCargaJQ").prop("disabled", false);
+                            $(".btnSalvarCargaJQ").prop("disabled", false);
+                        },
+                        error: function (data) {
+                            $(".btnSalvarCargaJQ").prop("disabled", false);
+                        }
+                    });
                 }
-            });
+            }
+        }
+        else {
+            $("#mensagem").text("O anexo da NF-e é obrigatório.");
+            window.scrollTo(0, 0);
+        }
+    });
+    $(".btnCancelarCargaJQ").on("click", function (event) {
+        $("#btnContainerNf").removeClass("active");
+        $("#btnContainerNf").removeClass("inactive");
+        $("#btnContainerVariasNf").removeClass("inactive");
+        $("#btnNfVariosConteiner").removeClass("inactive");
+        $("#divContainerNf").fadeOut("slider");
+
+        if ($('.table tbody').text() != '') {
+            $("#divRegistrosCargas").fadeIn("slide");
         }
     });
 
@@ -511,7 +562,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -536,14 +587,14 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
                 '<div class="form-group">' +
                 '<label for="" class="form-label">' +
                 '<span class="icon icon-paperclip"></span>Anexar NF-e</label>' +
-                '<div id="divArquivosVariasNf_' + maxTotal.toString() + '"></div>' +
+                '<div id="divArquivosVariasNf_' + maxTotal.toString() + '" class="divArquivosVariasNfJQ"></div>' +
                 '<div class="dropzone" id="arquivoVariosNf_' + maxTotal.toString() + '">' +
                 '<div class="fallback">' +
                 '<input type="file" name="fileVariasNf_' + maxTotal.toString() + '" id="fileVariasNf_' + maxTotal.toString() + '" />' +
@@ -597,56 +648,89 @@
     }
 
     $(".btnSalvarCargaVariasNfJQ").on("click", function (event) {
-        $(".btnSalvarCargaVariasNfJQ").prop("disabled", true);
-        event.preventDefault();
+        var isAnexados = true;
 
-        $("#codigoImportarVariasNf").val($("#codigoImportar").val());
-        $("#hdfSeqContainerVariasNf").val($("#hdfSeqContainer").val());
+        $(".divArquivosVariasNfJQ").each(function (index) {
+            if ($(this).text() == '') {
+                isAnexados = false;
+            }
+        });
 
-        var lst = $("#FormCargaVariasNf").serialize();
+        if (isAnexados == true) {
+            $("#mensagem").text("");
+
+            alert("0");
+
+            if ($('#FormCargaVariasNf input').hasClass('is-invalid') == false) {
+
+                alert("1");
+
+                $(".btnSalvarCargaVariasNfJQ").prop("disabled", true);
+                event.preventDefault();
+
+                $("#codigoImportarVariasNf").val($("#codigoImportar").val());
+                $("#hdfSeqContainerVariasNf").val($("#hdfSeqContainer").val());
+
+                var lst = $("#FormCargaVariasNf").serialize();
 
 
-        if ($("#FormCargaVariasNf").valid() == true) {
+                if ($("#FormCargaVariasNf").valid() == true) {
 
 
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCargaVariasNf",
-                data: lst,
-                success: function (data) {
-                    if (data.success == true) {
-                        exibirListagemCargasVariasNf(data.model);
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCargaVariasNf",
+                        data: lst,
+                        success: function (data) {
+                            if (data.success == true) {
+                                exibirListagemCargasVariasNf(data.model);
 
 
-                        $("#dataEntregaVariasNf").val('');
-                        $("#containerVariasNf").val('');
-                        $("#comentarioVariasNf").val('');
+                                $("#dataEntregaVariasNf").val('');
+                                $("#containerVariasNf").val('');
+                                $("#comentarioVariasNf").val('');
 
 
-                        $("#btnContainerNf").removeClass("inactive");
-                        $("#btnContainerVariasNf").removeClass("active");
-                        $("#btnNfVariosConteiner").removeClass("inactive");
+                                $("#btnContainerNf").removeClass("inactive");
+                                $("#btnContainerVariasNf").removeClass("active");
+                                $("#btnNfVariosConteiner").removeClass("inactive");
 
-                        $("#divContainerVariasNf").fadeOut("slider");
+                                $("#divContainerVariasNf").fadeOut("slider");
 
-                        //$(".btnAgendarJQ").fadeIn("slide");
-                    }
-                    else {
-                        $("#mensagem").text('');
-                        $("#mensagem").text(data.msg);
-                        $('html, body').animate({ scrollTop: 0 }, 800);
-                    }
+                                //$(".btnAgendarJQ").fadeIn("slide");
+                            }
+                            else {
+                                $("#mensagem").text('');
+                                $("#mensagem").text(data.msg);
+                                $('html, body').animate({ scrollTop: 0 }, 800);
+                            }
 
-                    $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
-                },
-                error: function (data) {
-                    $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
+                            $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
+                        },
+                        error: function (data) {
+                            $(".btnSalvarCargaVariasNfJQ").prop("disabled", false);
+                        }
+                    });
                 }
-            });
+            }
+        }
+        else {
+            $("#mensagem").text("Os anexos das NF-e são obrigatórios.");
+            window.scrollTo(0, 0);
         }
     });
+    $(".btnCancelarCargaVariasNfJQ").on("click", function (event) {
+        $("#btnContainerNf").removeClass("inactive");
+        $("#btnContainerVariasNf").removeClass("active");
+        $("#btnNfVariosConteiner").removeClass("inactive");
 
+        $("#divContainerVariasNf").fadeOut("slider");
+
+        if ($('.table tbody').text() != '') {
+            $("#divRegistrosCargas").fadeIn("slide");
+        }
+    });
 
 
     function AddLinhaContainer() {
@@ -705,7 +789,7 @@
             '<div class="col-24 col-sm-12 col-lg-9 col-xl-5">' +
             '<div class="form-group">' +
             '<label for="containerVariosContainer_' + maxTotal.toString() + '" class="form-label">Nº do Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
-            '<input type="text" class="form-control required" placeholder="99.999.999" id="containerVariosContainer_' + maxTotal.toString() + '" name="LstContainer[' + (maxTotal - 1).toString() + '].Container">' +
+            '<input type="text" class="form-control required" placeholder="99.999.999" id="containerVariosContainer_' + maxTotal.toString() + '" name="LstContainer[' + (maxTotal - 1).toString() + '].Container" maxlength="10">' +
             '</div>' +
             '</div>' +
             '<div class="col-22 col-sm-16 col-md-17 col-lg-18 col-xl-8">' +
@@ -730,6 +814,8 @@
         $("#comentarioVariosContainer_" + maxTotal.toString()).on("keyup", function (event) {
             $(".jqComentarioVariosContainer_" + maxTotal.toString()).text($("#comentarioVariosContainer_" + maxTotal.toString()).val().length + " de 300");
         });
+
+        IniciaValidacaoHorario("dataEntregaVariosContainer_" + maxTotal.toString());
 
         //$(".btnDeleteContainerJQ_" + (max).toString()).hide();
     }
@@ -765,53 +851,74 @@
 
 
     $(".btnSalvarCargaVariosContainerJQ").on("click", function (event) {
-        $(".btnSalvarCargaVariosContainerJQ").prop("disabled", true);
-        event.preventDefault();
+        if ($("#divArquivosNfVariosContainerNf").text() != '') {
+            $("#mensagem").text("");
 
-        $("#codigoImportarVariosContainer").val($("#codigoImportar").val());
-        $("#hdfSeqContainer").val($("#hdfSeqContainerVariosContainer").val());
-        $("#guidVariosContainer").val($("#hdfGuid").val());
+            if ($('#FormCargaNfVariosContainer input').hasClass('is-invalid') == false) {
+                $(".btnSalvarCargaVariosContainerJQ").prop("disabled", true);
+                event.preventDefault();
+
+                $("#codigoImportarVariosContainer").val($("#codigoImportar").val());
+                $("#hdfSeqContainer").val($("#hdfSeqContainerVariosContainer").val());
+                $("#guidVariosContainer").val($("#hdfGuid").val());
 
 
-        var lst = $("#FormCargaNfVariosContainer").serialize();
+                var lst = $("#FormCargaNfVariosContainer").serialize();
 
 
 
-        if ($("#FormCargaNfVariosContainer").valid() == true) {
+                if ($("#FormCargaNfVariosContainer").valid() == true) {
 
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCargaVariosContainer",
-                data: lst,
-                success: function (data) {
-                    if (data.success == true) {
+                    $.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCargaVariosContainer",
+                        data: lst,
+                        success: function (data) {
+                            if (data.success == true) {
 
-                        exibirListagemCargasVariosContainer(data.model);
+                                exibirListagemCargasVariosContainer(data.model);
 
-                        $("#numeroNfeVariosContainer").val('');
-                        $("#valorNfeVariosContainer").val('');
+                                $("#numeroNfeVariosContainer").val('');
+                                $("#valorNfeVariosContainer").val('');
 
-                        $("#btnContainerNf").removeClass("inactive");
-                        $("#btnContainerVariasNf").removeClass("inactive");
-                        $("#btnNfVariosConteiner").removeClass("active");
+                                $("#btnContainerNf").removeClass("inactive");
+                                $("#btnContainerVariasNf").removeClass("inactive");
+                                $("#btnNfVariosConteiner").removeClass("active");
 
-                        $("#divNfVariosContainer").fadeOut("slider");
+                                $("#divNfVariosContainer").fadeOut("slider");
 
-                        //$(".btnAgendarJQ").fadeIn("slide");
-                    }
-                    else {
-                        $("#mensagem").text('');
-                        $("#mensagem").text(data.msg);
-                        $('html, body').animate({ scrollTop: 0 }, 800);
-                    }
+                                //$(".btnAgendarJQ").fadeIn("slide");
+                            }
+                            else {
+                                $("#mensagem").text('');
+                                $("#mensagem").text(data.msg);
+                                $('html, body').animate({ scrollTop: 0 }, 800);
+                            }
 
-                    $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
-                },
-                error: function (data) {
-                    $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
+                            $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
+                        },
+                        error: function (data) {
+                            $(".btnSalvarCargaVariosContainerJQ").prop("disabled", false);
+                        }
+                    });
                 }
-            });
+            }
+        }
+        else {
+            $("#mensagem").text("O anexo da NF-e é obrigatório.");
+            window.scrollTo(0, 0);
+        }
+    });
+    $(".btnCancelarCargaVariosContainerJQ").on("click", function (event) {
+        $("#btnContainerNf").removeClass("inactive");
+        $("#btnContainerVariasNf").removeClass("inactive");
+        $("#btnNfVariosConteiner").removeClass("active");
+
+        $("#divNfVariosContainer").fadeOut("slider");
+
+        if ($('.table tbody').text() != '') {
+            $("#divRegistrosCargas").fadeIn("slide");
         }
     });
 

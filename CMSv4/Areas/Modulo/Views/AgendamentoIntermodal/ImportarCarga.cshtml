@@ -46,7 +46,7 @@
             <div class="col-24 col-sm-12 col-xl-6">
                 <div class="form-group">
                     <label for="dataEntrega" class="form-label">Data e hora da Entrega</label>
-                    <input type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-ddT00:00")" id="dataEntrega" name="DataEntrega" class="form-control" placeholder="@T("Informe a data de entrega")">
+                    <input type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-dd")T00:00" id="dataEntrega" name="DataEntrega" class="form-control">
                 </div>
             </div>
             <div class="col-24 col-sm-12 col-xl-6" id="divNfContainerNf">
@@ -58,7 +58,7 @@
             <div class="col-24 col-sm-12 col-xl-6">
                 <div class="form-group">
                     <label for="valorNfe" class="form-label">Valor da NF-e</label>
-                    <input type="text" class="form-control" id="valorNfe" name="ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />
+                    <input type="text" class="form-control" id="valorNfe" name="ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />
                 </div>
             </div>
             <div class="col-24 col-sm-12 col-xl-6">
@@ -90,6 +90,10 @@
             </div>
             <div class="col-24 col-md-12 col-lg-9 col-xl-6 d-flex align-items-end">
                 <div class="form-group">
+                    <a href="javascript:void(0)" class="btn btn-red btn-icon btn-block mb-4 btnCancelarCargaJQ">
+                        <span class="icon icon-chevron-left"></span>
+                        Voltar
+                    </a>
                     <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-block mb-4 btnSalvarCargaJQ">
                         <span class="icon icon-plus"></span>
                         Registrar Containers
@@ -131,6 +135,10 @@
             </div>
 
             <div class="text-center mt-5">
+                <a href="javascript:void(0)" class="btn btn-red btn-icon btn-lg btnCancelarCargaVariasNfJQ" style="width: 279px;">
+                    <span class="icon icon-chevron-left"></span>
+                    Voltar
+                </a>
                 <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-lg btnSalvarCargaVariasNfJQ">
                     <span class="icon icon-plus"></span>
                     Registrar Containers
@@ -150,13 +158,13 @@
                     <div class="col-24 col-sm-12 col-md-8 col-lg-7 col-xl-6" id="divNfVariosContainerNf">
                         <div class="form-group">
                             <label for="numeroNfeVariosContainer" class="form-label">Número da NF-e</label>
-                            <input type="text" class="form-control" placeholder="9999999" name="NumeroNfe" id="numeroNfeVariosContainer">
+                            <input type="text" class="form-control" placeholder="9999999" name="NumeroNfe" id="numeroNfeVariosContainer" maxlength="7">
                         </div>
                     </div>
                     <div class="col-24 col-sm-12 col-md-8 col-lg-7 col-xl-6">
                         <div class="form-group">
                             <label for="valorNfeVariosContainer" class="form-label">Valor da NF-e</label>
-                            <input type="text" class="form-control" id="valorNfeVariosContainer" name="ValorNfe" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" />
+                            <input type="text" class="form-control" id="valorNfeVariosContainer" name="ValorNfe" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="11" />
                         </div>
                     </div>
                     <div class="col-24 col-md-8 col-lg-10 col-xl-8" id="divNfVariosContainerAnexo">
@@ -179,6 +187,10 @@
                 </div>
             </div>
             <div class="text-center mt-5">
+                <a href="javascript:void(0)" class="btn btn-red btn-icon btn-lg btnCancelarCargaVariosContainerJQ" style="width: 279px;">
+                    <span class="icon icon-chevron-left"></span>
+                    Voltar
+                </a>
                 <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-lg btnSalvarCargaVariosContainerJQ">
                     <span class="icon icon-plus"></span>
                     Registrar Containers

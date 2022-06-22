@@ -41,48 +41,50 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
-        $(this).prop("disabled", true);
-        event.preventDefault();
+        if ($('#FormCarga input').hasClass('is-invalid') == false) {
+            $(this).prop("disabled", true);
+            event.preventDefault();
 
 
-        if ($("#FormCarga").valid() == true) {
+            if ($("#FormCarga").valid() == true) {
 
-             $.ajax({
-                type: "POST",
-                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacaoCarga",
-                 data: {
-                    DataColeta: $("#DataColeta").val(),
-                    Peso: $("#Peso").val(),
-                    Equipamento: $("#Equipamento").val(),
-                    Reefer: $("#Reefer").is(':checked'),
-                    Comentario: $("#Comentario").val(),
-                    CodigoExportacao: $("#CodigoExportar").val()
-                },
-                success: function (data) {
-                    if (data.success == true) {
-                        exibirListagemCargas(data.model);
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacaoCarga",
+                    data: {
+                        DataColeta: $("#DataColeta").val(),
+                        Peso: $("#Peso").val(),
+                        Equipamento: $("#Equipamento").val(),
+                        Reefer: $("#Reefer").is(':checked'),
+                        Comentario: $("#Comentario").val(),
+                        CodigoExportacao: $("#CodigoExportar").val()
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            exibirListagemCargas(data.model);
 
-                        $("#Peso").val('');
-                        $("#Comentario").val('');
-                        $("#DataColeta").val('');
-                        $("#Equipamento").val('');
-                        $("#Reefer").prop('checked', false);
-                        $(".btnAgendarJQ").fadeIn("slide");
+                            $("#Peso").val('');
+                            $("#Comentario").val('');
+                            $("#DataColeta").val('');
+                            $("#Equipamento").val('');
+                            $("#Reefer").prop('checked', false);
+                            $(".btnAgendarJQ").fadeIn("slide");
+                        }
+                        else {
+                            $("#mensagem").html('');
+                            $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
+                            $('html, body').animate({ scrollTop: 0 }, 800);
+                        }
+                    },
+                    error: function (data) {
+
                     }
-                    else {
-                        $("#mensagem").html('');
-                        $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
-                        $('html, body').animate({ scrollTop: 0 }, 800);
-                    }
-                },
-                error: function (data) {
-                   
-                }
-            });
-        }
+                });
+            }
 
-        if ($("#DataColeta").val() <= new Date().toISOString().slice(0, 16)) {
-            $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
+            if ($("#DataColeta").val() <= new Date().toISOString().slice(0, 16)) {
+                $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
+            }
         }
     });
     
@@ -187,10 +189,24 @@
     });
 
     $("#DataColeta").on("blur", function () {
-        if ($(this).val() <= new Date().toISOString().slice(0, 16)) {
-            $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
+        $('#invalidaDataColeta').remove();
+        $(this).removeClass('is-invalid');
+
+        var dataInformada = new Date($(this).val());
+        var dataAtual = new Date(getDateNow());
+
+        if (dataInformada < dataAtual) {
+            $(this).addClass('is-invalid');
+            $(this).parent().append("<span id='invalidaDataColeta'><label class='is-invalid' for='DataColeta'>Por favor entre com um valor igual ou maior que a data e hora atual</label><span>");
         }
     });
+
+    function getDateNow() {
+        let today = new Date();
+        let date = today.getFullYear() + '-' + (today.getMonth() + 1).toString().padStart(2, '0') + '-' + today.getDate().toString().padStart(2, '0');
+        let time = today.getHours().toString().padStart(2, '0') + ':' + today.getMinutes().toString().padStart(2, '0');
+        return date + 'T' + time;
+    }
 
     $(".reloadJQ").on("click", function () {
         window.location.reload();

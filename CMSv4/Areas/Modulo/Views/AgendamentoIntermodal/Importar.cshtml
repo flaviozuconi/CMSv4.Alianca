@@ -71,6 +71,7 @@
             <div class="row justify-content-center">
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
+                        <input type="hidden" id="hdfFileDeclaracaoImportacao" />
                         <label for="" class="form-label">
                             <span class="icon icon-paperclip"></span>
                             @T("Declaração de Importação")
@@ -84,6 +85,7 @@
                 </div>
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
+                        <input type="hidden" id="hdfFileGuiaArrecadacao" />
                         <label for="" class="form-label">
                             <span class="icon icon-paperclip"></span>
                             GARE <small>@T("(Guia de Arrecadação de Receitas Estaduais)")</small>
@@ -97,6 +99,7 @@
                 </div>
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
+                        <input type="hidden" id="hdfFileBl" />
                         <label for="" class="form-label">
                             <span class="icon icon-paperclip"></span>
                             BL
@@ -237,7 +240,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    //$("#fileDeclaracaoImportacao").removeClass("has-error");
+                    $("#hdfFileDeclaracaoImportacao").val("1");
                 }
             }
         };
@@ -273,7 +276,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    //$("#fileGuiaArrecadacao").removeClass("has-error");
+                    $("#hdfFileGuiaArrecadacao").val("1");
                 }
             }
         };
@@ -308,7 +311,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    //$("#fileBl").removeClass("has-error");
+                    $("#hdfFileBl").val("1");
                 }
             }
         };
@@ -349,7 +352,7 @@
                     $("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
                     $("#arquivoNfContainerNf").fadeOut("slider");
 
-                    //$("#fileNfContainerNf").removeClass("has-error");
+                    //$("#hdfFileBl").removeClass("has-error");
                 }
             }
         };

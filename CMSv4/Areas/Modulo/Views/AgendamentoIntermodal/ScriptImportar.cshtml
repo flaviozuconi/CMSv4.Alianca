@@ -29,7 +29,7 @@
                 CEP: { required: true, maxlength: 9 },
                 Endereco: { required: true, maxlength: 200 },
                 Cidade: { required: true, maxlength: 200 },
-                Estado: { required: true, maxlength: 2 },
+                Estado: { required: true, maxlength: 2 }
             },
             errorClass: 'is-invalid',
             errorPlacement: function (error, element) {
@@ -37,7 +37,6 @@
                     case "CEP":
                         error.appendTo(element.parents('#divCEP'));
                         break;
-
                     default:
                         error.insertAfter(element);
                         break;
@@ -60,62 +59,71 @@
     //CLICK NO BOTAO SALVAR IMPORTAÇÃO
     $(".btnSalvarJQ").on("click", function (event) {
 
-        $(this).prop("disabled", true);
-        event.preventDefault();
+        if ($("#hdfFileDeclaracaoImportacao").val() == "1" && $("#hdfFileGuiaArrecadacao").val() == "1" && $("#hdfFileBl").val() == "1") {
 
-        if ($("#FormAgendamento").valid() == true) {
-            $.ajax({
-                type: "POST",
-                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
-                data: {
-                    Nome: $("#nome").val(),
-                    Email: $("#email").val(),
-                    PropostaComercial: $("#propostaComercial").val(),
-                    NumeroBooking: $("#numeroBooking").val(),
-                    NumeroBL: $("#numeroBl").val(),
-                    CEP: $("#cep").val(),
-                    CNPJ: $("#cnpj").val(),
-                    Endereco: $("#endereco").val(),
-                    Complemento: $("#complemento").val(),
-                    Bairro: $("#bairro").val(),
-                    Cidade: $("#cidade").val(),
-                    Estado: $("#estado").val(),
-                    guid: $("#hdfGuid").val()
-                },
-                success: function (data) {
-                    if (data.success == true) {
-                        $("#nome").prop("disabled", true);
-                        $("#email").prop("disabled", true);
-                        $("#propostaComercial").prop("disabled", true);
-                        $("#numeroBooking").prop("disabled", true);
-                        $("#numeroBl").prop("disabled", true);
-                        $("#cep").prop("disabled", true);
-                        $("#cnpj").prop("disabled", true);
-                        $("#complemento").prop("disabled", true);
-                        $("#endereco").prop("disabled", true);
-                        $("#bairro").prop("disabled", true);
-                        $("#cidade").prop("disabled", true);
-                        $("#estado").prop("disabled", true);
-                        $("#divSalvar").fadeOut("slider");
-                        $("#codigoImportar").val(data.codigo);
+            $(this).prop("disabled", true);
+            event.preventDefault();
 
-                        $("#divCarga").fadeIn("slide");
+            if ($("#FormAgendamento").valid() == true) {
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
+                    data: {
+                        Nome: $("#nome").val(),
+                        Email: $("#email").val(),
+                        PropostaComercial: $("#propostaComercial").val(),
+                        NumeroBooking: $("#numeroBooking").val(),
+                        NumeroBL: $("#numeroBl").val(),
+                        CEP: $("#cep").val(),
+                        CNPJ: $("#cnpj").val(),
+                        Endereco: $("#endereco").val(),
+                        Complemento: $("#complemento").val(),
+                        Bairro: $("#bairro").val(),
+                        Cidade: $("#cidade").val(),
+                        Estado: $("#estado").val(),
+                        guid: $("#hdfGuid").val()
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            $("#nome").prop("disabled", true);
+                            $("#email").prop("disabled", true);
+                            $("#propostaComercial").prop("disabled", true);
+                            $("#numeroBooking").prop("disabled", true);
+                            $("#numeroBl").prop("disabled", true);
+                            $("#cep").prop("disabled", true);
+                            $("#cnpj").prop("disabled", true);
+                            $("#complemento").prop("disabled", true);
+                            $("#endereco").prop("disabled", true);
+                            $("#bairro").prop("disabled", true);
+                            $("#cidade").prop("disabled", true);
+                            $("#estado").prop("disabled", true);
+                            $("#divSalvar").fadeOut("slider");
+                            $("#codigoImportar").val(data.codigo);
 
-                        $("#hdfTipoFormulario").val('normal');
+                            $("#divCarga").fadeIn("slide");
+
+                            $("#hdfTipoFormulario").val('normal');
+
+                            $("#mensagem").text('');
+                        }
+                        else {
+                            $("#propostaComercial").addClass('is-invalid');
+                            $("#numeroBooking").addClass('is-invalid');
+                            $("#numeroBl").addClass('is-invalid');
+
+                            $("#mensagem").text(data.msg);
+                            window.scrollTo(0, 0);
+                        }
+                    },
+                    error: function (data) {
+
                     }
-                    else {
-                        $("#propostaComercial").addClass('is-invalid');
-                        $("#numeroBooking").addClass('is-invalid');
-                        $("#numeroBl").addClass('is-invalid');
-
-                        $("#mensagem").text(data.msg);
-                        window.scrollTo(0, 0);
-                    }
-                },
-                error: function (data) {
-
-                }
-            });
+                });
+            }
+        }
+        else {
+            $("#mensagem").text("Os anexos de Declaração de Importação, GARE e BL são obrigatórios.");
+            window.scrollTo(0, 0);
         }
     });
 
