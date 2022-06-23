@@ -633,6 +633,14 @@
         $(".nfJQ_" + div).hide();
         $("#hdfLinhaExcluida_" + div).val('True');
 
+        $("#valorNfeVariasNf_" + div).removeClass('is-invalid');
+
+        if ($("#hdfTipoFormulario").val() != 'dta') {
+            $("#numeroNfeVariasNf_" + div).removeClass('is-invalid');
+            $("#divArquivosVariasNf_" + div).append('1');
+        }
+
+
         var max = 0;
         var min = 0;
         $("div .variasNfJQ").each(function (index, element) {
@@ -836,6 +844,10 @@
     function ExcluirLinhaContainer(div) {
         $(".containerJQ_" + div).hide();
         $("#hdfLinhaExcluidaContainer_" + div).val('true');
+
+        $("#dataEntregaVariosContainer_" + div).removeClass('is-invalid');
+        $("#containerVariosContainer_" + div).removeClass('is-invalid');
+
 
         var maxAtivo = 0;
         var minAtivo = 0;
