@@ -293,14 +293,15 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
-        if ($("#divArquivosNfContainerNf").text() != '') {
+        var isValido = $("#FormCarga").valid();
+        if ($("#divArquivosNfContainerNf").text() != '' || $("#hdfTipoFormulario").val() == 'dta') {
             $("#mensagem").html("");
 
             if ($('#FormCarga input').hasClass('is-invalid') == false) {
                 $(".btnSalvarCargaJQ").prop("disabled", true);
                 event.preventDefault();
 
-                if ($("#FormCarga").valid() == true) {
+                if (isValido == true) {
                     $("#divContainerNf").addClass("loading");
 
                     $.ajax({
@@ -658,11 +659,14 @@
     $(".btnSalvarCargaVariasNfJQ").on("click", function (event) {
         var isAnexados = true;
 
-        $(".divArquivosVariasNfJQ").each(function (index) {
-            if ($(this).text() == '') {
-                isAnexados = false;
-            }
-        });
+        if ($("#hdfTipoFormulario").val() != 'dta') {
+            $(".divArquivosVariasNfJQ").each(function (index) {
+                if ($(this).text() == '') {
+                    isAnexados = false;
+                }
+            });
+        }
+        var isValido = $("#FormCargaVariasNf").valid();
 
         if (isAnexados == true) {
             $("#mensagem").html("");
@@ -678,7 +682,7 @@
                 var lst = $("#FormCargaVariasNf").serialize();
 
 
-                if ($("#FormCargaVariasNf").valid() == true) {
+                if (isValido == true) {
                     $("#divContainerVariasNf").addClass("loading");
 
                     $.ajax({
@@ -860,7 +864,9 @@
 
 
     $(".btnSalvarCargaVariosContainerJQ").on("click", function (event) {
-        if ($("#divArquivosNfVariosContainerNf").text() != '') {
+        var isValido = $("#FormCargaNfVariosContainer").valid();
+
+        if ($("#divArquivosNfVariosContainerNf").text() != '' || $("#hdfTipoFormulario").val() == 'dta') {
             $("#mensagem").html("");
 
             if ($('#FormCargaNfVariosContainer input').hasClass('is-invalid') == false) {
@@ -876,7 +882,7 @@
 
 
 
-                if ($("#FormCargaNfVariosContainer").valid() == true) {
+                if (isValido == true) {
 
                     $("#divNfVariosContainer").addClass("loading");
 

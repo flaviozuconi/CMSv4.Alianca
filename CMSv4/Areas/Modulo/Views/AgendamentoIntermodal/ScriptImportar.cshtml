@@ -417,10 +417,51 @@
                 $("#cidade").val(resposta.localidade);
                 $("#estado").val(resposta.uf);
 
-                $("#endereco").prop("disabled", true);
-                $("#bairro").prop("disabled", true);
-                $("#cidade").prop("disabled", true);
-                $("#estado").prop("disabled", true);
+                if ($("#endereco").val() != '') {
+                    $("#endereco").prop("disabled", true);
+                }
+                else {
+                    $("#endereco").prop("disabled", false);
+                }
+                if ($("#bairro").val() != '') {
+                    $("#bairro").prop("disabled", true);;
+                }
+                else {
+                    $("#bairro").prop("disabled", false)
+                }
+                if ($("#cidade").val() != '') {
+                    $("#cidade").prop("disabled", true);
+                }
+                else {
+                    $("#cidade").prop("disabled", false);
+                }
+                if ($("#estado").val() != '') {
+                    $("#estado").prop("disabled", true);
+                }
+                else {
+                    $("#estado").prop("disabled", false);
+                }
+
+                if (resposta.localidade === undefined) {
+                    $('.invalidCepJQ').css("position", "absolute");
+                    $('.invalidCepJQ').css("margin-top", "59px");
+                    $('#cep').attr("aria-invalid", "true");
+                    $(".invalidCepJQ").text('CEP inválido!');
+                    $(".invalidCepJQ").show();
+                    $("#cep").removeClass("valid");
+                    $("#cep").addClass("is-invalid");
+                }
+                else {
+                    $('.invalidCepJQ').css("position", "");
+                    $('.invalidCepJQ').css("margin-top", "");
+                    $(".invalidCepJQ").text('O campo é obrigatório');
+                    $(".invalidCepJQ").hide();
+                    if ($("#cep").val() != '') {
+                        $('#cep').attr("aria-invalid", "false");
+                        $("#cep").removeClass("is-invalid");
+                        $("#cep").addClass("valid");
+                    }
+                }
             }
         });
     }
