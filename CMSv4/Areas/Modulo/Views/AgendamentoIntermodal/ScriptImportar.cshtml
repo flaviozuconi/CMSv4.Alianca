@@ -58,8 +58,11 @@
 
     //CLICK NO BOTAO SALVAR IMPORTAÇÃO
     $(".btnSalvarJQ").on("click", function (event) {
+        var formValido = $("#FormAgendamento").valid();
+        $("#mensagem").html('');
 
         if ($("#hdfFileDeclaracaoImportacao").val() == "1" && $("#hdfFileGuiaArrecadacao").val() == "1" && $("#hdfFileBl").val() == "1") {
+            
 
             $(this).prop("disabled", true);
             event.preventDefault();
@@ -71,7 +74,7 @@
                 $(".invalidCepJQ").hide();
             }
 
-            if ($("#FormAgendamento").valid() == true) {
+            if (formValido == true) {
                 $(".agendamentoJQ").addClass("loading");
 
                 $.ajax({
@@ -121,7 +124,7 @@
                             $("#numeroBl").addClass('is-invalid');
 
 
-                            $("#mensagem").html('');
+                            
                             $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                             $('html, body').animate({ scrollTop: 0 }, 800);
                         }
@@ -144,11 +147,23 @@
 
     //CLICK NO BOTAO SALVAR IMPORTAÇÃO COM DTA
     $(".btnSalvarDtaJQ").on("click", function (event) {
+        var formValido = $("#FormAgendamento").valid();
+        $("#mensagem").html('');
+
         if ($("#hdfFileDeclaracaoImportacao").val() == "1" && $("#hdfFileGuiaArrecadacao").val() == "1" && $("#hdfFileBl").val() == "1") {
+            
+
             $(this).prop("disabled", true);
             event.preventDefault();
 
-            if ($("#FormAgendamento").valid() == true) {
+            if ($("#cep").val().length == 0) {
+                $(".invalidCepJQ").show();
+            }
+            else {
+                $(".invalidCepJQ").hide();
+            }
+
+            if (formValido == true) {
                 $(".agendamentoJQ").addClass("loading");
 
                 $.ajax({
@@ -195,7 +210,7 @@
                             $("#numeroBooking").addClass('is-invalid');
                             $("#numeroBl").addClass('is-invalid');
 
-                            $("#mensagem").html('');
+                            
                             $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                             $('html, body').animate({ scrollTop: 0 }, 800);
                         }
@@ -207,6 +222,11 @@
                     }
                 });
             }
+        }
+        else {
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">Os anexos de Declaração de Importação, GARE e BL são obrigatórios.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
         }
     });
 
