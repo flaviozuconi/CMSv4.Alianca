@@ -472,9 +472,18 @@
         let cnpj = $('#cnpj').val();
 
         cnpj = cnpj.replace(/[^\d]+/g, '');
-        if (cnpj == '') return false;
-        if (cnpj.length != 14)
+        if (cnpj == '') {
+            /*$("#cnpj").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>O campo é obrigatório</label><span>");*/
             return false;
+        }
+        if (cnpj.length != 14) {
+            $("#cnpj").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            return false;
+        }
         // Elimina CNPJs invalidos conhecidos
         if (cnpj == "00000000000000" ||
             cnpj == "11111111111111" ||

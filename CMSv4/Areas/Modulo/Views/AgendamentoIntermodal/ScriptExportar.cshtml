@@ -130,6 +130,9 @@
     // VALIDAR  O CAMPO PROPOSTA COMERCIAL
     $("#PropostaComercial").on("blur", function () {
 
+        $("#PropostaComercial").removeClass('is-invalid');
+        $("#existPropostaComercial").remove();
+
         $.ajax({
             type: "POST",
             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
@@ -145,9 +148,10 @@
                 else {
                     $("#mensagem").html('');
                     $("#PropostaComercial").val('');
-                    $('#existPropostaComercial').remove();
-                    $("#PropostaComercial").parent().append("<span id='existPropostaComercial'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe uma Proposta Comercial válida.</label><span>");
-                    $("#PropostaComercial-error").remove();
+                    $("#PropostaComercial").addClass('is-invalid');
+                    $("#existPropostaComercial").remove();
+                    $("#PropostaComercial").parent().append("<span id='existPropostaComercial'><label id='PropostaComercial-error' class='is-invalid' for='PropostaComercial'>Informe uma Proposta Comercial válida.</label><span>");
+                    //$("#PropostaComercial-error").remove();
                 }
             },
             error: function (data) {
@@ -158,6 +162,9 @@
 
      // VALIDAR  O CAMPO NUMERO BOOKING
     $("#NumeroBooking").on("blur", function () {
+        $("#NumeroBooking").removeClass('is-invalid');
+        $("#existNumeroBooking").remove();
+
         $.ajax({
             type: "POST",
             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
@@ -173,9 +180,10 @@
                 else {
                     $("#mensagem").html('');
                     $("#NumeroBooking").val('');
-                    $('#existNumeroBooking').remove();
+                    $("#NumeroBooking").addClass('is-invalid');
+                    $("#existNumeroBooking").remove();
                     $("#NumeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='NumeroBooking'>Informe um Número Booking válido.</label><span>");
-                    $("#NumeroBooking-error").remove();
+                    //$("#NumeroBooking-error").remove();
                 }
             },
             error: function (data) {
@@ -198,10 +206,10 @@
                     $("#mensagem").html('');
                     $("#NumeroBooking").val('');
                     $("#PropostaComercial").val('');
-                    $("#mensagem").html('<div class="alert alert-danger" role="alert">' + "O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " é inválido." + '</div>');
+                    //$("#mensagem").html('<div class="alert alert-danger" role="alert">' + "O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " é inválido." + '</div>');
 
-                    $("#NumeroBooking-error").remove();
-                    $("#PropostaComercial-error").remove();
+                    //$("#NumeroBooking-error").remove();
+                    //$("#PropostaComercial-error").remove();
                 }
             },
             error: function (data) {
@@ -282,9 +290,18 @@
         let cnpj = $(CNPJ).val();
 
         cnpj = cnpj.replace(/[^\d]+/g, '');
-        if (cnpj == '') return false;
-        if (cnpj.length != 14)
+        if (cnpj == '') {
+            /*$("#CNPJ").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>O campo é obrigatório</label><span>");*/
             return false;
+        }
+        if (cnpj.length != 14) {
+            $("#CNPJ").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
+            return false;
+        }
         // Elimina CNPJs invalidos conhecidos
         if (cnpj == "00000000000000" ||
             cnpj == "11111111111111" ||
