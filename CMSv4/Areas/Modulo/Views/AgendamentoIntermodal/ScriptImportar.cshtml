@@ -25,9 +25,11 @@
                 Email: { required: true, validEmail: true, maxlength: 200 },
                 NumeroBooking: { required: true, maxlength: 200 },
                 PropostaComercial: { required: true, maxlength: 200 },
-                NumeroBL: { required: true, maxlength:200 },
+                NumeroBL: { required: true, maxlength: 200 },
+                CNPJ: { required: true, validarCnpj: true },
                 CEP: { required: true, maxlength: 9 },
                 Endereco: { required: true, maxlength: 200 },
+                Bairro: { required: true, maxlength: 200 },
                 Cidade: { required: true, maxlength: 200 },
                 Estado: { required: true, maxlength: 2 }
             },
@@ -54,6 +56,10 @@
 
             return this.optional(element) || regex.test(String(value).toLowerCase());
         }, "Forneça um endereço de email válido.");
+
+        jQuery.validator.addMethod("validarCnpj", function (value, element) {
+            return validarCNPJ();
+        }, "Forneça um CNPJ válido.");
     });
 
     //CLICK NO BOTAO SALVAR IMPORTAÇÃO
@@ -248,7 +254,7 @@
 
     }
 
-    // VALIDAR  O CAMPO PROPOSTA COMERCIAL
+    @*// VALIDAR  O CAMPO PROPOSTA COMERCIAL
     $("#propostaComercial").on("blur", function () {
         $.ajax({
             type: "POST",
@@ -258,6 +264,7 @@
                 if (data.success == true) {
                     $('#existPropostaComercial').remove();
                     $("#propostaComercial").removeClass('is-invalid');
+                    $("#propostaComercial-error").remove();
                     if ($("#numeroBooking").val().length > 0) {
                         ValidarPropostaBooking($("#propostaComercial").val(), $("#numeroBooking").val());
                     }
@@ -290,6 +297,7 @@
                 if (data.success == true) {
                     $('#existNumeroBooking').remove();
                     $("#numeroBooking").removeClass('is-invalid');
+                    $("#numeroBooking-error").remove();
 
                     return false;
                 }
@@ -317,6 +325,7 @@
                 if (data.success == true) {
                     $('#existNumeroBl').remove();
                     $("#numeroBl").removeClass('is-invalid');
+                    $("#numeroBl-error").remove();
 
                     return false;
                 }
@@ -332,7 +341,7 @@
 
             }
         });
-    });
+    });*@
 
     function ValidarPropostaBooking(proposta, booking) {
          $.ajax({
@@ -418,24 +427,32 @@
                 $("#estado").val(resposta.uf);
 
                 if ($("#endereco").val() != '') {
+                    $("#endereco").removeClass('is-invalid');
+                    $("#endereco-error").remove();
                     $("#endereco").prop("disabled", true);
                 }
                 else {
                     $("#endereco").prop("disabled", false);
                 }
                 if ($("#bairro").val() != '') {
+                    $("#bairro").removeClass('is-invalid');
+                    $("#bairro-error").remove();
                     $("#bairro").prop("disabled", true);;
                 }
                 else {
                     $("#bairro").prop("disabled", false)
                 }
                 if ($("#cidade").val() != '') {
+                    $("#cidade").removeClass('is-invalid');
+                    $("#cidade-error").remove();
                     $("#cidade").prop("disabled", true);
                 }
                 else {
                     $("#cidade").prop("disabled", false);
                 }
                 if ($("#estado").val() != '') {
+                    $("#estado").removeClass('is-invalid');
+                    $("#estado-error").remove();
                     $("#estado").prop("disabled", true);
                 }
                 else {
@@ -479,9 +496,9 @@
             return false;
         }
         if (cnpj.length != 14) {
-            $("#cnpj").addClass('is-invalid');
+            /*$("#cnpj").addClass('is-invalid');
             $('#existCNPJ').remove();
-            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
             return false;
         }
         // Elimina CNPJs invalidos conhecidos
@@ -495,9 +512,9 @@
             cnpj == "77777777777777" ||
             cnpj == "88888888888888" ||
             cnpj == "99999999999999") {
-            $("#cnpj").addClass('is-invalid');
+            /*$("#cnpj").addClass('is-invalid');
             $('#existCNPJ').remove();
-            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
             return false;
         }
 
@@ -514,9 +531,9 @@
         }
         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
         if (resultado != digitos.charAt(0)) {
-            $("#cnpj").addClass('is-invalid');
+            /*$("#cnpj").addClass('is-invalid');
             $('#existCNPJ').remove();
-            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
             return false;
         }
 
@@ -531,11 +548,13 @@
         }
         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
         if (resultado != digitos.charAt(1)) {
-            $("#cnpj").addClass('is-invalid');
+            /*$("#cnpj").addClass('is-invalid');
             $('#existCNPJ').remove();
-            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
             return false;
         }
+
+        return true;
     }
 </script>
 

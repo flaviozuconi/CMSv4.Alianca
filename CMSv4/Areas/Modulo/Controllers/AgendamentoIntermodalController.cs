@@ -789,12 +789,12 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                     model.DataRegistro = DateTime.Now;
 
-                    var obj = CRUD.Obter(new MLGestaoInformacoesImportacao { PropostaComercial = model.PropostaComercial, NumeroBooking = model.NumeroBooking, NumeroBL = model.NumeroBL });
+                    /*var obj = CRUD.Obter(new MLGestaoInformacoesImportacao { PropostaComercial = model.PropostaComercial, NumeroBooking = model.NumeroBooking, NumeroBL = model.NumeroBL });
                     if(obj == null || string.IsNullOrEmpty(obj.PropostaComercial))
                         strMensagemErro = "Proposta comercial " + model.PropostaComercial + ", o Número Booking "+ model.NumeroBooking + " e o Número BL "+ model.NumeroBL + " não estão relacionados.";
 
                     if (string.IsNullOrEmpty(strMensagemErro))
-                    {
+                    {*/
                         model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
 
                         if (!string.IsNullOrEmpty(guid))
@@ -879,9 +879,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                         }
 
                         return Json(new { success = true, codigo = model.Codigo });
-                    }
+                    /*}
                     else
-                        return Json(new { success = false, msg = strMensagemErro, codigo = 0 });
+                        return Json(new { success = false, msg = strMensagemErro, codigo = 0 });*/
                 }
                 catch (Exception ex)
                 {

@@ -21,6 +21,8 @@ namespace CMSApp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             Rotinas.GetInstance.DisparaRotinas();
+
+            System.Globalization.CultureInfo.DefaultThreadCurrentCulture = new System.Globalization.CultureInfo("pt-BR");
         }
 
         protected void Application_BeginRequest()
