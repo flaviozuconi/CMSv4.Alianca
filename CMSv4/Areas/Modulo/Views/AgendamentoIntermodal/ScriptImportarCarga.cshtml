@@ -1,17 +1,20 @@
 ﻿@model MLAgendamentoIntermodal
 @{
     var portal = BLPortal.Atual;
+    var baseUrl = "/portal/" + portal.Diretorio + "/";
 
     var urlUploadNfe = "/cms/" + portal + "/agendamentointermodal/UploadNfe";
 }
 
-<script src="/Content/js/plugins/jquery.fileDownload/jquery.fileDownload.min.js"></script>
+<script src="@baseUrl/js/plugins/jquery.fileDownload/jquery.fileDownload.min.js"></script>
 
 <script type="text/javascript">
 
     $(document).ready(function () {
 
         InicializarCarga();
+        InicializaValorMoeda('valorNfe');
+        InicializaValorMoeda('valorNfeVariosContainer');
 
         $('#FormCarga').validate({
             rules: {
@@ -70,6 +73,48 @@
             $(this).parent().append("<span id='invalidaDataEntregaVariasNf'><label class='is-invalid' for='dataEntregaVariasNf'>Por favor entre com um valor igual ou maior que a data e hora atual</label><span>");
         }
     });
+
+
+    
+
+    function InicializaValorMoeda(campo) {
+        $("#" + campo).on("blur", function () {
+            var valor = $(this).val().replace('R$ ', '').replaceAll('.', '').replaceAll(',', '');
+
+            if (valor.length == 1) {
+                valor = '00' + valor;
+            }
+            else if (valor.length == 2) {
+                valor = '0' + valor;
+            }
+
+            var mod = (valor.length - 2) % 3;
+
+            var somenteNumeros = '';
+            for (var i = 0; i < valor.length; i++) {
+                if (valor[i] == 0 || valor[i] == 1 || valor[i] == 2 || valor[i] == 3 || valor[i] == 4 || valor[i] == 5 || valor[i] == 6 || valor[i] == 7 || valor[i] == 8 || valor[i] == 9) {
+                    if (i == valor.length - 2) {
+                        somenteNumeros += ',';
+                    }
+                    else if (i > 0 && i == mod) {
+                        somenteNumeros += '.';
+                    }
+                    else if (i > 0 && mod == 0 && i % 3 == 0) {
+                        somenteNumeros += '.';
+                    }
+                    else if (mod > 0 && (mod - i) % 3 == 0 && i + 2 < valor.length) {
+                        somenteNumeros += '.';
+                    }
+
+                    somenteNumeros += valor[i];
+                }
+            }
+
+            $(this).val('R$ ' + somenteNumeros);
+        });
+    }
+
+
 
     function IniciaValidacaoHorario(campo) {
         $("#"+ campo).on("blur", function () {
@@ -147,7 +192,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
+                '<input type="text" class="form-control" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" placeholder="R$ 9.999,99" maxlength="15" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -160,6 +205,7 @@
                 '</div>' +
                 '</div>' +
                 '</div>');
+            
         }
         else {
             $(".listVariasNfJQ").append('<div class="row item variasNfJQ nfJQ_1">' +
@@ -172,7 +218,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_1" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_1" name="LstNfs[0].ValorNfeFormatado" placeholder="R$ 9.999,99" maxlength="15" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
@@ -199,8 +245,9 @@
 
             InicializarDropzone('1');
         }
+        InicializaValorMoeda("valorNfeVariasNf_1");
         $(".btnDeleteNfJQ_1").hide();
-        $("#valorNfeVariasNf_1").maskMoney();
+        //$("#valorNfeVariasNf_1").maskMoney();
     });
 
 
@@ -571,7 +618,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" placeholder="R$ 9.999,99" maxlength="15" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
@@ -596,7 +643,7 @@
                 '<div class="col-24 col-sm-12 col-lg-6 col-xl-6">' +
                 '<div class="form-group">' +
                 '<label for="valorNfeVariasNf_' + maxTotal.toString() + '" class="form-label">Valor da NF-e</label>' +
-                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" data-thousands="." data-decimal="," data-prefix="R$ " placeholder="R$ 9.999,99" maxlength="13" />' +
+                '<input type="text" class="form-control required" id="valorNfeVariasNf_' + maxTotal.toString() + '" name="LstNfs[' + (maxTotal - 1).toString() + '].ValorNfeFormatado" placeholder="R$ 9.999,99" maxlength="15" />' +
                 '</div>' +
                 '</div>' +
                 '<div class="col-24 col-md-12 col-lg-7 col-xl-7">' +
@@ -623,7 +670,8 @@
                 '</div>');
             InicializarDropzone(maxTotal.toString());
         }
-        $("#valorNfeVariasNf_" + maxTotal.toString()).maskMoney();
+        InicializaValorMoeda("valorNfeVariasNf_" + maxTotal.toString());
+        //$("#valorNfeVariasNf_" + maxTotal.toString()).maskMoney();
 
         //$(".btnDeleteNfJQ_" + (max).toString()).hide();
     }
@@ -1074,6 +1122,8 @@
             }
         });*@
     }
+
+    
 
 </script>
 
