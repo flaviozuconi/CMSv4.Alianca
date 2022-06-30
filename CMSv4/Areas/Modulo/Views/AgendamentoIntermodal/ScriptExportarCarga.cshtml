@@ -187,8 +187,11 @@
     });
 
     $("#DataColeta").on("blur", function () {
-        if ($(this).val() <= new Date().toISOString().slice(0, 16)) {
+        if (new Date($(this).val().toISOString().slice(0, 16)) <= new Date().toISOString().slice(0, 16)) {
             $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
+        }
+        else {
+            $("#DataColeta-error").text('');
         }
     });
 
