@@ -26,6 +26,7 @@
                 Endereco: { required: true, maxlength: 200 },
                 Cidade: { required: true, maxlength: 200 },
                 Estado: { required: true, maxlength: 2 },
+                CNPJ: { required: true, maxlength: 18 },
             },
             errorClass: 'is-invalid',
             errorPlacement: function (error, element) {
@@ -70,7 +71,11 @@
         else {
             $(".invalidCepJQ").hide();
         }
-        
+
+        if ($("#CNPJ-error").text().length > 0) {
+            return false;
+        }
+
         if ($("#FormAgendamento").valid() == true && $("#NumeroBooking").val().length > 0 && $("#PropostaComercial").val().length > 0) {
             $.ajax({
                 type: "POST",
@@ -218,56 +223,83 @@
         });
     }
 
-    // BUSCA O CEP
-    $("#btnBuscaCEP").on("click", function () {
+    $("#CEP").on("blur", function () {
+        preencherEndereco();
+    });
+
+    function preencherEndereco() {
         $.ajax({
             url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
             dataType: 'json',
             success: function (resposta) {
-                if (resposta.bairro.length > 0 && resposta.localidade.length > 0 && resposta.uf.length > 0 && resposta.bairro.length > 0) {
-                    $("#Endereco").val(resposta.logradouro);
-                    $("#Bairro").val(resposta.bairro);
-                    $("#Cidade").val(resposta.localidade);
-                    $("#Estado").val(resposta.uf);
+                $("#Endereco").val(resposta.logradouro);
+                $("#Bairro").val(resposta.bairro);
+                $("#Cidade").val(resposta.localidade);
+                $("#Estado").val(resposta.uf);
 
-                    $("#Endereco").prop("disabled", true);
-                    $("#Bairro").prop("disabled", true);
-                    $("#Cidade").prop("disabled", true);
-                    $("#Estado").prop("disabled", true);
-
+                if ($("#Endereco").val() != '') {
                     $("#Endereco").removeClass('is-invalid');
-                    $("#Bairro").removeClass('is-invalid');
-                    $("#Cidade").removeClass('is-invalid');
-                    $("#Estado").removeClass('is-invalid');
-
                     $("#Endereco-error").remove();
-                    $("#Bairro-error").remove();
-                    $("#Cidade-error").remove();
-                    $("#Estado-error").remove();
+                    $("#Endereco").prop("disabled", true);
                 }
                 else {
-                    $("#Endereco").val('');
-                    $("#Bairro").val('');
-                    $("#Cidade").val('');
-                    $("#Estado").val('');
-
                     $("#Endereco").prop("disabled", false);
-                    $("#Bairro").prop("disabled", false);
-                    $("#Cidade").prop("disabled", false);
-                    $("#Estado").prop("disabled", false);
+                }
 
-                    $("#Endereco").removeClass('is-invalid');
+                if ($("#Bairro").val() != '') {
                     $("#Bairro").removeClass('is-invalid');
-                    $("#Cidade").removeClass('is-invalid');
-                    $("#Estado").removeClass('is-invalid');
-
-                    $("#Endereco-error").remove();
                     $("#Bairro-error").remove();
+                    $("#Bairro").prop("disabled", true);;
+                }
+                else {
+                    $("#Bairro").prop("disabled", false)
+                }
+
+                if ($("#Cidade").val() != '') {
+                    $("#Cidade").removeClass('is-invalid');
                     $("#Cidade-error").remove();
+                    $("#Cidade").prop("disabled", true);
+                }
+                else {
+                    $("#Cidade").prop("disabled", false);
+                }
+
+                if ($("#Estado").val() != '') {
+                    $("#Estado").removeClass('is-invalid');
                     $("#Estado-error").remove();
+                    $("#Estado").prop("disabled", true);
+                }
+                else {
+                    $("#Estado").prop("disabled", false);
+                }
+
+                if (resposta.localidade === undefined) {
+                    $('.invalidCepJQ').css("position", "absolute");
+                    $('.invalidCepJQ').css("margin-top", "59px");
+                    $('#CEP').attr("aria-invalid", "true");
+                    $(".invalidCepJQ").text('CEP inválido!');
+                    $(".invalidCepJQ").show();
+                    $("#CEP").removeClass("valid");
+                    $("#CEP").addClass("is-invalid");
+                }
+                else {
+                    $('.invalidCepJQ').css("position", "");
+                    $('.invalidCepJQ').css("margin-top", "");
+                    $(".invalidCepJQ").text('O campo é obrigatório');
+                    $(".invalidCepJQ").hide();
+                    if ($("#CEP").val() != '') {
+                        $('#CEP').attr("aria-invalid", "false");
+                        $("#CEP").removeClass("is-invalid");
+                        $("#CEP").addClass("valid");
+                    }
                 }
             }
         });
+    }
+
+    // BUSCA O CEP
+    $("#btnBuscaCEP").on("click", function () {
+        preencherEndereco();
     });
 
     // HABILITAR OS CAMPOS QUANDO O CEP É APAGADO
