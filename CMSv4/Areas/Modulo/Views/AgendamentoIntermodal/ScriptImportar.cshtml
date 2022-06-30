@@ -15,9 +15,6 @@
 <script src="@baseUrl/js/plugins/jquery.validate/jquery.validate.js"></script>
 <script src="@baseUrl/js/plugins/jquery.validate/additional-methods.min.js"></script>
 
-
-
-
 <script type="text/javascript">
     $(document).ready(function () {
         Inicializar();
@@ -28,19 +25,20 @@
                 Email: { required: true, validEmail: true, maxlength: 200 },
                 NumeroBooking: { required: true, maxlength: 200 },
                 PropostaComercial: { required: true, maxlength: 200 },
-                NumeroBL: { required: true, maxlength:200 },
+                NumeroBL: { required: true, maxlength: 200 },
+                CNPJ: { required: true, validarCnpj: true },
                 CEP: { required: true, maxlength: 9 },
                 Endereco: { required: true, maxlength: 200 },
+                Bairro: { required: true, maxlength: 200 },
                 Cidade: { required: true, maxlength: 200 },
-                Estado: { required: true, maxlength: 2 },
+                Estado: { required: true, maxlength: 2 }
             },
             errorClass: 'is-invalid',
             errorPlacement: function (error, element) {
                 switch (element.attr("name")) {
-                    case "CEP":
+                    case "cep":
                         error.appendTo(element.parents('#divCEP'));
                         break;
-
                     default:
                         error.insertAfter(element);
                         break;
@@ -58,130 +56,183 @@
 
             return this.optional(element) || regex.test(String(value).toLowerCase());
         }, "Forneça um endereço de email válido.");
+
+        jQuery.validator.addMethod("validarCnpj", function (value, element) {
+            return validarCNPJ();
+        }, "Forneça um CNPJ válido.");
     });
 
     //CLICK NO BOTAO SALVAR IMPORTAÇÃO
     $(".btnSalvarJQ").on("click", function (event) {
+        var formValido = $("#FormAgendamento").valid();
+        $("#mensagem").html('');
 
-        $(this).prop("disabled", true);
-        event.preventDefault();
+        if ($("#hdfFileDeclaracaoImportacao").val() == "1" && $("#hdfFileGuiaArrecadacao").val() == "1" && $("#hdfFileBl").val() == "1") {
+            
 
-        if ($("#FormAgendamento").valid() == true) {
-            $.ajax({
-                type: "POST",
-                url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
-                data: {
-                    Nome: $("#nome").val(),
-                    Email: $("#email").val(),
-                    PropostaComercial: $("#propostaComercial").val(),
-                    NumeroBooking: $("#numeroBooking").val(),
-                    NumeroBL: $("#numeroBl").val(),
-                    CEP: $("#cep").val(),
-                    CNPJ: $("#cnpj").val(),
-                    Endereco: $("#endereco").val(),
-                    Complemento: $("#complemento").val(),
-                    Bairro: $("#bairro").val(),
-                    Cidade: $("#cidade").val(),
-                    Estado: $("#estado").val(),
-                    guid: $("#hdfGuid").val()
-                },
-                success: function (data) {
-                    if (data.success == true) {
-                        $("#nome").prop("disabled", true);
-                        $("#email").prop("disabled", true);
-                        $("#propostaComercial").prop("disabled", true);
-                        $("#numeroBooking").prop("disabled", true);
-                        $("#numeroBl").prop("disabled", true);
-                        $("#cep").prop("disabled", true);
-                        $("#cnpj").prop("disabled", true);
-                        $("#complemento").prop("disabled", true);
-                        $("#endereco").prop("disabled", true);
-                        $("#bairro").prop("disabled", true);
-                        $("#cidade").prop("disabled", true);
-                        $("#estado").prop("disabled", true);
-                        $("#divSalvar").fadeOut("slider");
-                        $("#codigoImportar").val(data.codigo);
+            $(this).prop("disabled", true);
+            event.preventDefault();
 
-                        $("#divCarga").fadeIn("slide");
+            if ($("#cep").val().length == 0) {
+                $(".invalidCepJQ").show();
+            }
+            else {
+                $(".invalidCepJQ").hide();
+            }
 
-                        $("#hdfTipoFormulario").val('normal');
+            if (formValido == true) {
+                $(".agendamentoJQ").addClass("loading");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
+                    data: {
+                        Nome: $("#nome").val(),
+                        Email: $("#email").val(),
+                        PropostaComercial: $("#propostaComercial").val(),
+                        NumeroBooking: $("#numeroBooking").val(),
+                        NumeroBL: $("#numeroBl").val(),
+                        CEP: $("#cep").val(),
+                        CNPJ: $("#cnpj").val(),
+                        Endereco: $("#endereco").val(),
+                        Complemento: $("#complemento").val(),
+                        Bairro: $("#bairro").val(),
+                        Cidade: $("#cidade").val(),
+                        Estado: $("#estado").val(),
+                        guid: $("#hdfGuid").val()
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            $("#nome").prop("disabled", true);
+                            $("#email").prop("disabled", true);
+                            $("#propostaComercial").prop("disabled", true);
+                            $("#numeroBooking").prop("disabled", true);
+                            $("#numeroBl").prop("disabled", true);
+                            $("#cep").prop("disabled", true);
+                            $("#cnpj").prop("disabled", true);
+                            $("#complemento").prop("disabled", true);
+                            $("#endereco").prop("disabled", true);
+                            $("#bairro").prop("disabled", true);
+                            $("#cidade").prop("disabled", true);
+                            $("#estado").prop("disabled", true);
+                            $("#divSalvar").fadeOut("slider");
+                            $("#codigoImportar").val(data.codigo);
+
+                            $("#divCarga").fadeIn("slide");
+
+                            $("#hdfTipoFormulario").val('normal');
+
+                            $("#mensagem").html('');
+                        }
+                        else {
+                            $("#propostaComercial").addClass('is-invalid');
+                            $("#numeroBooking").addClass('is-invalid');
+                            $("#numeroBl").addClass('is-invalid');
+
+
+                            
+                            $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
+                            $('html, body').animate({ scrollTop: 0 }, 800);
+                        }
+
+                        $(".agendamentoJQ").removeClass("loading");
+                    },
+                    error: function (data) {
+                        $(".agendamentoJQ").removeClass("loading");
                     }
-                    else {
-                        $("#propostaComercial").addClass('is-invalid');
-                        $("#numeroBooking").addClass('is-invalid');
-                        $("#numeroBl").addClass('is-invalid');
-
-                        $("#mensagem").text(data.msg);
-                        window.scrollTo(0, 0);
-                    }
-                },
-                error: function (data) {
-
-                }
-            });
+                });
+            }
+        }
+        else {
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">Os anexos de Declaração de Importação, GARE e BL são obrigatórios.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
         }
     });
 
 
     //CLICK NO BOTAO SALVAR IMPORTAÇÃO COM DTA
     $(".btnSalvarDtaJQ").on("click", function (event) {
+        var formValido = $("#FormAgendamento").valid();
+        $("#mensagem").html('');
 
-        $(this).prop("disabled", true);
-        event.preventDefault();
+        if ($("#hdfFileDeclaracaoImportacao").val() == "1" && $("#hdfFileGuiaArrecadacao").val() == "1" && $("#hdfFileBl").val() == "1") {
+            
 
-        if ($("#FormAgendamento").valid() == true) {
-             $.ajax({
-                type: "POST",
-                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
-                 data: {
-                     Nome: $("#nome").val(),
-                     Email: $("#email").val(),
-                     PropostaComercial: $("#propostaComercial").val(),
-                     NumeroBooking: $("#numeroBooking").val(),
-                     NumeroBL: $("#numeroBl").val(),
-                     CEP: $("#cep").val(),
-                     CNPJ: $("#cnpj").val(),
-                     Endereco: $("#endereco").val(),
-                     Complemento: $("#complemento").val(),
-                     Bairro: $("#bairro").val(),
-                     Cidade: $("#cidade").val(),
-                     Estado: $("#estado").val(),
-                     guid: $("#hdfGuid").val()
-                 },
-                success: function (data) {
-                    if (data.success == true) {
-                        $("#nome").prop("disabled", true);
-                        $("#email").prop("disabled", true);
-                        $("#propostaComercial").prop("disabled", true);
-                        $("#numeroBooking").prop("disabled", true);
-                        $("#numeroBl").prop("disabled", true);
-                        $("#cep").prop("disabled", true);
-                        $("#cnpj").prop("disabled", true);
-                        $("#complemento").prop("disabled", true);
-                        $("#endereco").prop("disabled", true);
-                        $("#bairro").prop("disabled", true);
-                        $("#cidade").prop("disabled", true);
-                        $("#estado").prop("disabled", true);
-                        $("#divSalvar").fadeOut("slider");
-                        $("#codigoImportar").val(data.codigo);
+            $(this).prop("disabled", true);
+            event.preventDefault();
 
-                        $("#divCarga").fadeIn("slide");
+            if ($("#cep").val().length == 0) {
+                $(".invalidCepJQ").show();
+            }
+            else {
+                $(".invalidCepJQ").hide();
+            }
 
-                        $("#hdfTipoFormulario").val('dta');
+            if (formValido == true) {
+                $(".agendamentoJQ").addClass("loading");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacao",
+                    data: {
+                        Nome: $("#nome").val(),
+                        Email: $("#email").val(),
+                        PropostaComercial: $("#propostaComercial").val(),
+                        NumeroBooking: $("#numeroBooking").val(),
+                        NumeroBL: $("#numeroBl").val(),
+                        CEP: $("#cep").val(),
+                        CNPJ: $("#cnpj").val(),
+                        Endereco: $("#endereco").val(),
+                        Complemento: $("#complemento").val(),
+                        Bairro: $("#bairro").val(),
+                        Cidade: $("#cidade").val(),
+                        Estado: $("#estado").val(),
+                        guid: $("#hdfGuid").val()
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            $("#nome").prop("disabled", true);
+                            $("#email").prop("disabled", true);
+                            $("#propostaComercial").prop("disabled", true);
+                            $("#numeroBooking").prop("disabled", true);
+                            $("#numeroBl").prop("disabled", true);
+                            $("#cep").prop("disabled", true);
+                            $("#cnpj").prop("disabled", true);
+                            $("#complemento").prop("disabled", true);
+                            $("#endereco").prop("disabled", true);
+                            $("#bairro").prop("disabled", true);
+                            $("#cidade").prop("disabled", true);
+                            $("#estado").prop("disabled", true);
+                            $("#divSalvar").fadeOut("slider");
+                            $("#codigoImportar").val(data.codigo);
+
+                            $("#divCarga").fadeIn("slide");
+
+                            $("#hdfTipoFormulario").val('dta');
+                        }
+                        else {
+                            $("#propostaComercial").addClass('is-invalid');
+                            $("#numeroBooking").addClass('is-invalid');
+                            $("#numeroBl").addClass('is-invalid');
+
+                            
+                            $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
+                            $('html, body').animate({ scrollTop: 0 }, 800);
+                        }
+
+                        $(".agendamentoJQ").removeClass("loading");
+                    },
+                    error: function (data) {
+                        $(".agendamentoJQ").removeClass("loading");
                     }
-                    else {
-                        $("#propostaComercial").addClass('is-invalid');
-                        $("#numeroBooking").addClass('is-invalid');
-                        $("#numeroBl").addClass('is-invalid');
-
-                        $("#mensagem").text(data.msg);
-                        window.scrollTo(0, 0);
-                    }
-                },
-                error: function (data) {
-
-                }
-            });
+                });
+            }
+        }
+        else {
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">Os anexos de Declaração de Importação, GARE e BL são obrigatórios.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
         }
     });
 
@@ -199,9 +250,11 @@
         $(".sucessoJQ").hide();
         //$(".btnAgendarJQ").hide();
 
+        $(".invalidCepJQ").hide();
+
     }
 
-    // VALIDAR  O CAMPO PROPOSTA COMERCIAL
+    @*// VALIDAR  O CAMPO PROPOSTA COMERCIAL
     $("#propostaComercial").on("blur", function () {
         $.ajax({
             type: "POST",
@@ -211,6 +264,7 @@
                 if (data.success == true) {
                     $('#existPropostaComercial').remove();
                     $("#propostaComercial").removeClass('is-invalid');
+                    $("#propostaComercial-error").remove();
                     if ($("#numeroBooking").val().length > 0) {
                         ValidarPropostaBooking($("#propostaComercial").val(), $("#numeroBooking").val());
                     }
@@ -220,7 +274,7 @@
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#propostaComercial").val('');
                     $("#propostaComercial").addClass('is-invalid');
                     $('#existPropostaComercial').remove();
@@ -243,11 +297,12 @@
                 if (data.success == true) {
                     $('#existNumeroBooking').remove();
                     $("#numeroBooking").removeClass('is-invalid');
+                    $("#numeroBooking-error").remove();
 
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#numeroBooking").val('');
                     $("#numeroBooking").addClass('is-invalid');
                     $('#existNumeroBooking').remove();
@@ -270,11 +325,12 @@
                 if (data.success == true) {
                     $('#existNumeroBl').remove();
                     $("#numeroBl").removeClass('is-invalid');
+                    $("#numeroBl-error").remove();
 
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#numeroBl").val('');
                     $("#numeroBl").addClass('is-invalid');
                     $('#existNumeroBl').remove();
@@ -285,7 +341,7 @@
 
             }
         });
-    });
+    });*@
 
     function ValidarPropostaBooking(proposta, booking) {
          $.ajax({
@@ -294,13 +350,13 @@
              data: { Proposta: proposta, Booking: booking, NumeroBl: '' },
             success: function (data) {
                 if (data.success == true) {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $('#existNumeroBooking').remove();
 
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#numeroBooking").val('');
 
                     $("#numeroBooking").parent().append("<span id='existNumeroBooking'><label id='NumeroBooking-error' class='is-invalid' for='numeroBooking'>O campo Proposta Comercial: " + proposta + " e  Número Booking: " + booking + " são inválidos.</label><span>");
@@ -319,12 +375,12 @@
              data: { Proposta: proposta, Booking: '', NumeroBl: numeroBl },
             success: function (data) {
                 if (data.success == true) {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $('#existNumeroBl').remove();
                     return false;
                 }
                 else {
-                    $("#mensagem").text('');
+                    $("#mensagem").html('');
                     $("#numeroBl").val('');
 
                     $("#numeroBl").parent().append("<span id='existNumeroBl'><label id='NumeroBl-error' class='is-invalid' for='numeroBl'>O campo Proposta Comercial: " + proposta + " e  Número BL: " + numeroBl + " são inválidos.</label><span>");
@@ -370,10 +426,59 @@
                 $("#cidade").val(resposta.localidade);
                 $("#estado").val(resposta.uf);
 
-                $("#endereco").prop("disabled", true);
-                $("#bairro").prop("disabled", true);
-                $("#cidade").prop("disabled", true);
-                $("#estado").prop("disabled", true);
+                if ($("#endereco").val() != '') {
+                    $("#endereco").removeClass('is-invalid');
+                    $("#endereco-error").remove();
+                    $("#endereco").prop("disabled", true);
+                }
+                else {
+                    $("#endereco").prop("disabled", false);
+                }
+                if ($("#bairro").val() != '') {
+                    $("#bairro").removeClass('is-invalid');
+                    $("#bairro-error").remove();
+                    $("#bairro").prop("disabled", true);;
+                }
+                else {
+                    $("#bairro").prop("disabled", false)
+                }
+                if ($("#cidade").val() != '') {
+                    $("#cidade").removeClass('is-invalid');
+                    $("#cidade-error").remove();
+                    $("#cidade").prop("disabled", true);
+                }
+                else {
+                    $("#cidade").prop("disabled", false);
+                }
+                if ($("#estado").val() != '') {
+                    $("#estado").removeClass('is-invalid');
+                    $("#estado-error").remove();
+                    $("#estado").prop("disabled", true);
+                }
+                else {
+                    $("#estado").prop("disabled", false);
+                }
+
+                if (resposta.localidade === undefined) {
+                    $('.invalidCepJQ').css("position", "absolute");
+                    $('.invalidCepJQ').css("margin-top", "59px");
+                    $('#cep').attr("aria-invalid", "true");
+                    $(".invalidCepJQ").text('CEP inválido!');
+                    $(".invalidCepJQ").show();
+                    $("#cep").removeClass("valid");
+                    $("#cep").addClass("is-invalid");
+                }
+                else {
+                    $('.invalidCepJQ').css("position", "");
+                    $('.invalidCepJQ').css("margin-top", "");
+                    $(".invalidCepJQ").text('O campo é obrigatório');
+                    $(".invalidCepJQ").hide();
+                    if ($("#cep").val() != '') {
+                        $('#cep').attr("aria-invalid", "false");
+                        $("#cep").removeClass("is-invalid");
+                        $("#cep").addClass("valid");
+                    }
+                }
             }
         });
     }
@@ -384,9 +489,18 @@
         let cnpj = $('#cnpj').val();
 
         cnpj = cnpj.replace(/[^\d]+/g, '');
-        if (cnpj == '') return false;
-        if (cnpj.length != 14)
+        if (cnpj == '') {
+            /*$("#cnpj").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>O campo é obrigatório</label><span>");*/
             return false;
+        }
+        if (cnpj.length != 14) {
+            /*$("#cnpj").addClass('is-invalid');
+            $('#existCNPJ').remove();
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
+            return false;
+        }
         // Elimina CNPJs invalidos conhecidos
         if (cnpj == "00000000000000" ||
             cnpj == "11111111111111" ||
@@ -398,9 +512,9 @@
             cnpj == "77777777777777" ||
             cnpj == "88888888888888" ||
             cnpj == "99999999999999") {
-            $("#cnpj").addClass('is-invalid');
+            /*$("#cnpj").addClass('is-invalid');
             $('#existCNPJ').remove();
-            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
             return false;
         }
 
@@ -417,9 +531,9 @@
         }
         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
         if (resultado != digitos.charAt(0)) {
-            $("#cnpj").addClass('is-invalid');
+            /*$("#cnpj").addClass('is-invalid');
             $('#existCNPJ').remove();
-            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
             return false;
         }
 
@@ -434,11 +548,13 @@
         }
         resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
         if (resultado != digitos.charAt(1)) {
-            $("#cnpj").addClass('is-invalid');
+            /*$("#cnpj").addClass('is-invalid');
             $('#existCNPJ').remove();
-            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");
+            $("#cnpj").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='cnpj'>Forneça um CNPJ válido.</label><span>");*/
             return false;
         }
+
+        return true;
     }
 </script>
 

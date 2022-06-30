@@ -41,48 +41,50 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
-        $(this).prop("disabled", true);
-        event.preventDefault();
+        if ($('#FormCarga input').hasClass('is-invalid') == false) {
+            $(this).prop("disabled", true);
+            event.preventDefault();
 
 
-        if ($("#FormCarga").valid() == true) {
+            if ($("#FormCarga").valid() == true) {
 
-             $.ajax({
-                type: "POST",
-                 url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacaoCarga",
-                 data: {
-                    DataColeta: $("#DataColeta").val(),
-                    Peso: $("#Peso").val(),
-                    Equipamento: $("#Equipamento").val(),
-                    Reefer: $("#Reefer").is(':checked'),
-                    Comentario: $("#Comentario").val(),
-                    CodigoExportacao: $("#CodigoExportar").val()
-                },
-                success: function (data) {
-                    if (data.success == true) {
-                        exibirListagemCargas(data.model);
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarExportacaoCarga",
+                    data: {
+                        DataColeta: $("#DataColeta").val(),
+                        Peso: $("#Peso").val(),
+                        Equipamento: $("#Equipamento").val(),
+                        Reefer: $("#Reefer").is(':checked'),
+                        Comentario: $("#Comentario").val(),
+                        CodigoExportacao: $("#CodigoExportar").val()
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            exibirListagemCargas(data.model);
 
-                        $("#Peso").val('');
-                        $("#Comentario").val('');
-                        $("#DataColeta").val('');
-                        $("#Equipamento").val('');
-                        $("#Reefer").prop('checked', false);
-                        $(".btnAgendarJQ").fadeIn("slide");
+                            $("#Peso").val('');
+                            $("#Comentario").val('');
+                            $("#DataColeta").val('');
+                            $("#Equipamento").val('');
+                            $("#Reefer").prop('checked', false);
+                            $(".btnAgendarJQ").fadeIn("slide");
+                        }
+                        else {
+                            $("#mensagem").html('');
+                            $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
+                            $('html, body').animate({ scrollTop: 0 }, 800);
+                        }
+                    },
+                    error: function (data) {
+
                     }
-                    else {
-                        $("#mensagem").html('');
-                        $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
-                        $('html, body').animate({ scrollTop: 0 }, 800);
-                    }
-                },
-                error: function (data) {
-                   
-                }
-            });
-        }
+                });
+            }
 
-        if ($("#DataColeta").val() <= new Date().toISOString().slice(0, 16)) {
-            $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
+            if ($("#DataColeta").val() <= new Date().toISOString().slice(0, 16)) {
+                $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
+            }
         }
     });
     
@@ -100,7 +102,7 @@
                             "<td>" + model.Equipamento + reefer + "</td>" +
                             "<td>" + model.DataColetaFormatada + "</td>" +
                             "<td>" + model.Peso + " kgs" + "</td>" +
-                            "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + (model.Comentario == null ? '' : model.Comentario) + "'></span> Comentários</td>" +
+            "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + (model.Comentario == null ? '' : model.Comentario) + "'></span> <span title='" + (model.Comentario == null ? '' : model.Comentario) + "'>Comentários</span></td>" +
                             "<td><a href='#modalConfirmacao' data-toggle='modal'  onClick='excluirCarga(" + model.Codigo + ")' href='javascript:void(0)' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>" +
                         "</tr>";
 
@@ -137,7 +139,7 @@
                     $("#CodigoExcluir").val('');
                     $(".divExclusao").fadeOut("slide");
                     $('.mensagemExclusao').fadeIn("slide");
-                    $('#modalConfirmacao').modal('hide');
+                    //$('#modalConfirmacao').modal('hide');
 
                     if ($("#divRegistrosCargas tr").length == 0) {
                         $(".btnAgendarJQ").hide();
@@ -187,13 +189,24 @@
     });
 
     $("#DataColeta").on("blur", function () {
-        if (new Date($(this).val().toISOString().slice(0, 16)) <= new Date().toISOString().slice(0, 16)) {
-            $("#DataColeta-error").text('Por favor entre com um valor igual ou maior que a data e hora atual');
-        }
-        else {
-            $("#DataColeta-error").text('');
+        $('#invalidaDataColeta').remove();
+        $(this).removeClass('is-invalid');
+
+        var dataInformada = new Date($(this).val());
+        var dataAtual = new Date(getDateNow());
+
+        if (dataInformada < dataAtual) {
+            $(this).addClass('is-invalid');
+            $(this).parent().append("<span id='invalidaDataColeta'><label class='is-invalid' for='DataColeta'>Por favor entre com um valor igual ou maior que a data e hora atual</label><span>");
         }
     });
+
+    function getDateNow() {
+        let today = new Date();
+        let date = today.getFullYear() + '-' + (today.getMonth() + 1).toString().padStart(2, '0') + '-' + today.getDate().toString().padStart(2, '0');
+        let time = today.getHours().toString().padStart(2, '0') + ':' + today.getMinutes().toString().padStart(2, '0');
+        return date + 'T' + time;
+    }
 
     $(".reloadJQ").on("click", function () {
         window.location.reload();

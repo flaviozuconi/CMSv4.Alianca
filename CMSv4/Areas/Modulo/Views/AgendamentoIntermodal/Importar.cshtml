@@ -71,6 +71,7 @@
             <div class="row justify-content-center">
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
+                        <input type="hidden" id="hdfFileDeclaracaoImportacao" />
                         <label for="" class="form-label">
                             <span class="icon icon-paperclip"></span>
                             @T("Declaração de Importação")
@@ -84,6 +85,7 @@
                 </div>
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
+                        <input type="hidden" id="hdfFileGuiaArrecadacao" />
                         <label for="" class="form-label">
                             <span class="icon icon-paperclip"></span>
                             GARE <small>@T("(Guia de Arrecadação de Receitas Estaduais)")</small>
@@ -97,6 +99,7 @@
                 </div>
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
+                        <input type="hidden" id="hdfFileBl" />
                         <label for="" class="form-label">
                             <span class="icon icon-paperclip"></span>
                             BL
@@ -113,7 +116,7 @@
 
 
         <div class="form-section">
-            <h3 class="form-section__title">@T("Local de Coleta")</h3>
+            <h3 class="form-section__title">@T("Local de Entrega")</h3>
             <div class="row">
                 <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
@@ -121,42 +124,43 @@
                         <input type="text" class="form-control" required name="CNPJ" id="cnpj" onblur="validarCNPJ()" placeholder="@T("Digite o CNPJ")" value="" />
                     </div>
                 </div>
-                <div class="col-24 col-sm-10 col-md-8 col-lg-6">
+                <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
-                        <label for="cep" class="form-label">@T("CEP")</label>
+                        <label for="" class="form-label">CEP</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" required id="cep" name="CEP" placeholder="00000-000" value="" />
+                            <input type="text" id="cep" name="CEP" required class="form-control" placeholder="00000-000">
                             <div class="input-group-append">
                                 <button class="btn btn-outline" id="btnBuscaCEP" type="button">
                                     <span class="icon icon-search"></span>
                                     <span class="sr-only">@T("Pesquisar")</span>
                                 </button>
                             </div>
+                            <label id="CEP-error" class="is-invalid invalidCepJQ" for="cep">O campo é obrigatório</label>
                         </div>
                     </div>
                 </div>
                 <div class="col-24 col-md-8 col-lg-12">
                     <div class="form-group">
                         <label for="endereco" class="form-label">@T("Endereço")</label>
-                        <input type="text" class="form-control" required id="endereco" name="Endereco" />
+                        <input type="text" class="form-control" required id="endereco" placeholder="@T("Digite o Endereço")" name="Endereco" />
                     </div>
                 </div>
                 <div class="col-24 col-sm-12 col-md-8 col-lg-6">
                     <div class="form-group">
                         <label for="complemento" class="form-label">@T("Complemento")</label>
-                        <input type="text" class="form-control" id="complemento" name="Complemento" />
+                        <input type="text" class="form-control" id="complemento" placeholder="@T("Digite o Complemento")" name="Complemento" />
                     </div>
                 </div>
                 <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
                         <label for="bairro" class="form-label">@T("Bairro")</label>
-                        <input type="text" class="form-control" id="bairro" name="Bairro" />
+                        <input type="text" class="form-control" id="bairro" placeholder="@T("Digite o Bairro")" name="Bairro" />
                     </div>
                 </div>
                 <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
                     <div class="form-group">
                         <label for="cidade" class="form-label">@T("Cidade")</label>
-                        <input type="text" class="form-control" required id="cidade" name="Cidade" />
+                        <input type="text" class="form-control" required id="cidade" placeholder="@T("Digite a Cidade")" name="Cidade" />
                     </div>
                 </div>
                 <div class="col-24 col-sm-12 col-lg-8 col-xl-6">
@@ -207,7 +211,7 @@
     <script type="text/javascript">
 
         /*  FORM UPLOAD */
-        
+
         Dropzone.options.arquivoDeclaracaoImportacao = {
             url: "@urlUploadDeclaracaoImportacao",
             dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
@@ -216,7 +220,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 50,
+            maxFiles: 1,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -237,7 +241,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    //$("#fileDeclaracaoImportacao").removeClass("has-error");
+                    $("#hdfFileDeclaracaoImportacao").val("1");
                 }
             }
         };
@@ -252,7 +256,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 50,
+            maxFiles: 1,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -273,7 +277,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    //$("#fileGuiaArrecadacao").removeClass("has-error");
+                    $("#hdfFileGuiaArrecadacao").val("1");
                 }
             }
         };
@@ -287,7 +291,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 50,
+            maxFiles: 1,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -308,7 +312,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    //$("#fileBl").removeClass("has-error");
+                    $("#hdfFileBl").val("1");
                 }
             }
         };
@@ -349,7 +353,7 @@
                     $("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
                     $("#arquivoNfContainerNf").fadeOut("slider");
 
-                    //$("#fileNfContainerNf").removeClass("has-error");
+                    //$("#hdfFileBl").removeClass("has-error");
                 }
             }
         };
