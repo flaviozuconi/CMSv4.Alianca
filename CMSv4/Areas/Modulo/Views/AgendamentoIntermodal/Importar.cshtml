@@ -81,6 +81,8 @@
                                 <input type="file" name="fileDeclaracaoImportacao" id="fileDeclaracaoImportacao" />
                             </div>
                         </div>
+                        <a href="#modalDeclaracao" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> Visualizar arquivos</a>
+                        <span class="qtd-arquivos"><strong><span id="spanQtdeDeclaracao">0</span></strong> arquivos adicionados</span>
                     </div>
                 </div>
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
@@ -95,6 +97,8 @@
                                 <input type="file" name="fileGuiaArrecadacao" id="fileGuiaArrecadacao" />
                             </div>
                         </div>
+                        <a href="#modalGARE" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> Visualizar arquivos</a>
+                        <span class="qtd-arquivos"><strong><span id="spanQtdeGare">0</span></strong> arquivos adicionados</span>
                     </div>
                 </div>
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
@@ -109,6 +113,8 @@
                                 <input type="file" name="fileBl" id="fileBl" />
                             </div>
                         </div>
+                        <a href="#modalBL" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> Visualizar arquivos</a>
+                        <span class="qtd-arquivos"><strong><span id="spanQtdeBl">0</span></strong> arquivos adicionados</span>
                     </div>
                 </div>
             </div>
@@ -189,6 +195,7 @@
                 </a>
             </div>
         </div>
+
     </form>
 
 
@@ -201,6 +208,71 @@
 
 
 </div>
+
+
+<div class="modal modal-arquivos fade" id="modalDeclaracao" tabindex="-1" aria-labelledby="modalDeclaracao" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDeclaracao"><strong>Arquivos</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="divTableDeclaracao">
+                <span id="spanNenhumDeclaracao">Nenhum arquivo adicionado</span>
+                <table class="table" id="tabelaDeclaracao">
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-arquivos fade" id="modalGARE" tabindex="-1" aria-labelledby="modalGARE" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalGARE"><strong>Arquivos</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span id="spanNenhumGare">Nenhum arquivo adicionado</span>
+                <table class="table" id="tabelaGare">
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-arquivos fade" id="modalBL" tabindex="-1" aria-labelledby="modalBL" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalBL"><strong>Arquivos</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span id="spanNenhumBl">Nenhum arquivo adicionado</span>
+                <table class="table" id="tabelaBl">
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 @Html.Action("ExportarSucesso", "AgendamentoIntermodal", new { model = Model })
 
@@ -220,7 +292,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 1,
+            maxFiles: 50,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -234,12 +306,30 @@
             complete: function (file) {
                 objResponse = JSON.parse(file.xhr.response);
 
+                this.removeFile(file);
+
                 if (!objResponse.success) {
                     alert(objResponse.msg);
-                    this.removeFile(file);
+                    //this.removeFile(file);
                 }
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
+
+                    if ($("#" + objResponse.NomeLinha).length == 0) {
+                        var contador = parseInt($("#spanQtdeDeclaracao").html());
+                        $("#spanQtdeDeclaracao").html((contador + 1).toString());
+
+                        if ($("#spanQtdeDeclaracao").html() != 0) {
+                            $("#spanNenhumDeclaracao").html('');
+                        }
+
+                        var registro = "<tr id=" + objResponse.NomeLinha + ">" +
+                            "<td>" + objResponse.NomeArquivo + "</td>" +
+                            "<td><a href='javascript:ExcluirArquivoDeclaracao(\"" + objResponse.NomeArquivo + "\", \"" + objResponse.NomeLinha + "\")' class='icon icon-delete'><span class='sr-only'>Excluir</span></a></td>" +
+                            "</tr>";
+
+                        $("#tabelaDeclaracao").append(registro);
+                    }
 
                     $("#hdfFileDeclaracaoImportacao").val("1");
                 }
@@ -256,7 +346,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 1,
+            maxFiles: 50,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -270,12 +360,30 @@
             complete: function (file) {
                 objResponse = JSON.parse(file.xhr.response);
 
+                this.removeFile(file);
+
                 if (!objResponse.success) {
                     alert(objResponse.msg);
-                    this.removeFile(file);
+                    //this.removeFile(file);
                 }
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
+
+                    if ($("#" + objResponse.NomeLinha).length == 0) {
+                        var contador = parseInt($("#spanQtdeGare").html());
+                        $("#spanQtdeGare").html((contador + 1).toString());
+
+                        if ($("#spanQtdeGare").html() != 0) {
+                            $("#spanNenhumGare").html('');
+                        }
+
+                        var registro = "<tr id=" + objResponse.NomeLinha + ">" +
+                            "<td>" + objResponse.NomeArquivo + "</td>" +
+                            "<td><a href='javascript:ExcluirArquivoGare(\"" + objResponse.NomeArquivo + "\", \"" + objResponse.NomeLinha + "\")' class='icon icon-delete'><span class='sr-only'>Excluir</span></a></td>" +
+                            "</tr>";
+
+                        $("#tabelaGare").append(registro);
+                    }
 
                     $("#hdfFileGuiaArrecadacao").val("1");
                 }
@@ -291,7 +399,7 @@
             dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
             dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
             dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 1,
+            maxFiles: 50,
             parallelUploads: 1,
             paramName: "file",
             sending: function (file, xhr, formData) {
@@ -305,12 +413,30 @@
             complete: function (file) {
                 objResponse = JSON.parse(file.xhr.response);
 
+                this.removeFile(file);
+
                 if (!objResponse.success) {
                     alert(objResponse.msg);
-                    this.removeFile(file);
+                    //this.removeFile(file);
                 }
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
+
+                    if ($("#" + objResponse.NomeLinha).length == 0) {
+                        var contador = parseInt($("#spanQtdeBl").html());
+                        $("#spanQtdeBl").html((contador + 1).toString());
+
+                        if ($("#spanQtdeBl").html() != 0) {
+                            $("#spanNenhumBl").html('');
+                        }
+
+                        var registro = "<tr id=" + objResponse.NomeLinha + ">" +
+                            "<td>" + objResponse.NomeArquivo + "</td>" +
+                            "<td><a href='javascript:ExcluirArquivoBl(\"" + objResponse.NomeArquivo + "\", \"" + objResponse.NomeLinha + "\")' class='icon icon-delete'><span class='sr-only'>Excluir</span></a></td>" +
+                            "</tr>";
+
+                        $("#tabelaBl").append(registro);
+                    }
 
                     $("#hdfFileBl").val("1");
                 }

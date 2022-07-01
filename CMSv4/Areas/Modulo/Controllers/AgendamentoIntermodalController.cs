@@ -1433,7 +1433,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-        #region uploadDeclaracaoImportacao
+        #region ExcluirArquivoDeclaracao
         /// <summary>
         /// Upload
         /// </summary>        
@@ -1443,6 +1443,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         {
             try
             {
+                string nomeArquivo = "";
                 if(Request.Files.Count > 0)
                 {
                     if (string.IsNullOrEmpty(guid))
@@ -1457,12 +1458,13 @@ namespace CMSApp.Areas.Modulo.Controllers
                     foreach (string fileName in Request.Files)
                     {
                         HttpPostedFileBase file = Request.Files[fileName];
+                        nomeArquivo = file.FileName;
 
                         file.SaveAs(Path.Combine(pasta, file.FileName));
                     }
                 }
 
-                return Json(new { success = true, Guid = guid });
+                return Json(new { success = true, Guid = guid, NomeArquivo = nomeArquivo, NomeLinha = nomeArquivo.Replace(" ", "").Replace("/", "").Replace(@"\", "").Replace(".", "-") });
             }
             catch (Exception ex)
             {
@@ -1471,6 +1473,35 @@ namespace CMSApp.Areas.Modulo.Controllers
             }
         }
         #endregion
+
+        #region uploadDeclaracaoImportacao
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult ExcluirArquivoDeclaracao(string guid, string NomeArquivo)
+        {
+            try
+            {
+
+                var portal = PortalAtual.Obter;
+
+                var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoDeclaracaoTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+
+                System.IO.File.Delete(Path.Combine(pasta, NomeArquivo));
+
+                return Json(new { success = true, qtdeFiles = Directory.GetFiles(pasta).Length.ToString() });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
 
         #region uploadGuiaArrecadacao
         /// <summary>
@@ -1482,6 +1513,8 @@ namespace CMSApp.Areas.Modulo.Controllers
         {
             try
             {
+                string nomeArquivo = "";
+
                 if (Request.Files.Count > 0)
                 {
                     if (string.IsNullOrEmpty(guid))
@@ -1496,12 +1529,40 @@ namespace CMSApp.Areas.Modulo.Controllers
                     foreach (string fileName in Request.Files)
                     {
                         HttpPostedFileBase file = Request.Files[fileName];
+                        nomeArquivo = file.FileName;
 
                         file.SaveAs(Path.Combine(pasta, file.FileName));
                     }
                 }
 
-                return Json(new { success = true, Guid = guid });
+                return Json(new { success = true, Guid = guid, NomeArquivo = nomeArquivo, NomeLinha = nomeArquivo.Replace(" ", "").Replace("/", "").Replace(@"\", "").Replace(".", "-") });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region ExcluirArquivoGare
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult ExcluirArquivoGare(string guid, string NomeArquivo)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+
+                var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacaoTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+
+                System.IO.File.Delete(Path.Combine(pasta, NomeArquivo));
+
+                return Json(new { success = true, qtdeFiles = Directory.GetFiles(pasta).Length.ToString() });
             }
             catch (Exception ex)
             {
@@ -1521,6 +1582,8 @@ namespace CMSApp.Areas.Modulo.Controllers
         {
             try
             {
+                string nomeArquivo = "";
+
                 if (Request.Files.Count > 0)
                 {
                     if (string.IsNullOrEmpty(guid))
@@ -1535,12 +1598,40 @@ namespace CMSApp.Areas.Modulo.Controllers
                     foreach (string fileName in Request.Files)
                     {
                         HttpPostedFileBase file = Request.Files[fileName];
+                        nomeArquivo = file.FileName;
 
                         file.SaveAs(Path.Combine(pasta, file.FileName));
                     }
                 }
 
-                return Json(new { success = true, Guid = guid });
+                return Json(new { success = true, Guid = guid, NomeArquivo = nomeArquivo, NomeLinha = nomeArquivo.Replace(" ", "").Replace("/", "").Replace(@"\", "").Replace(".", "-") });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region ExcluirArquivoBl
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult ExcluirArquivoBl(string guid, string NomeArquivo)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+
+                var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoBlTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
+                var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+
+                System.IO.File.Delete(Path.Combine(pasta, NomeArquivo));
+
+                return Json(new { success = true, qtdeFiles = Directory.GetFiles(pasta).Length.ToString() });
             }
             catch (Exception ex)
             {

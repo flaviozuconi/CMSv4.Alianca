@@ -17,7 +17,7 @@
 
 <script type="text/javascript">
 
-    
+
 
     $(document).ready(function () {
         Inicializar();
@@ -70,8 +70,8 @@
         var formValido = $("#FormAgendamento").valid();
         $("#mensagem").html('');
 
-        if ($("#hdfFileDeclaracaoImportacao").val() == "1" && $("#hdfFileGuiaArrecadacao").val() == "1" && $("#hdfFileBl").val() == "1") {
-            
+        if ($("#spanQtdeDeclaracao").html() != "0" && $("#spanQtdeGare").html() != "0" && $("#spanQtdeBl").html() != "0") {
+
 
             $(this).prop("disabled", true);
             event.preventDefault();
@@ -133,7 +133,7 @@
                             $("#numeroBl").addClass('is-invalid');
 
 
-                            
+
                             $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                             $('html, body').animate({ scrollTop: 0 }, 800);
                         }
@@ -159,8 +159,8 @@
         var formValido = $("#FormAgendamento").valid();
         $("#mensagem").html('');
 
-        if ($("#hdfFileDeclaracaoImportacao").val() == "1" && $("#hdfFileGuiaArrecadacao").val() == "1" && $("#hdfFileBl").val() == "1") {
-            
+        if ($("#spanQtdeDeclaracao").html() != "0" && $("#spanQtdeGare").html() != "0" && $("#spanQtdeBl").html() != "0") {
+
 
             $(this).prop("disabled", true);
             event.preventDefault();
@@ -219,7 +219,7 @@
                             $("#numeroBooking").addClass('is-invalid');
                             $("#numeroBl").addClass('is-invalid');
 
-                            
+
                             $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
                             $('html, body').animate({ scrollTop: 0 }, 800);
                         }
@@ -558,6 +558,72 @@
         }
 
         return true;
+    }
+
+    function ExcluirArquivoDeclaracao(nomeArquivo, nomeLinha) {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirArquivoDeclaracao",
+            data: { guid: $("#hdfGuid").val(), NomeArquivo: nomeArquivo },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#" + nomeLinha).remove();
+
+                    $("#spanQtdeDeclaracao").html((data.qtdeFiles).toString());
+
+                    if ($("#spanQtdeDeclaracao").html() <= 0) {
+                        $("#spanNenhumDeclaracao").html('Nenhum arquivo adicionado');
+                    }
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    }
+
+    function ExcluirArquivoGare(nomeArquivo, nomeLinha) {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirArquivoGare",
+            data: { guid: $("#hdfGuid").val(), NomeArquivo: nomeArquivo },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#" + nomeLinha).remove();
+
+                    $("#spanQtdeGare").html((data.qtdeFiles).toString());
+
+                    if ($("#spanQtdeGare").html() <= 0) {
+                        $("#spanNenhumGare").html('Nenhum arquivo adicionado');
+                    }
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    }
+
+    function ExcluirArquivoBl(nomeArquivo, nomeLinha) {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirArquivoBl",
+            data: { guid: $("#hdfGuid").val(), NomeArquivo: nomeArquivo },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#" + nomeLinha).remove();
+
+                    $("#spanQtdeBl").html((data.qtdeFiles).toString());
+
+                    if ($("#spanQtdeBl").html() <= 0) {
+                        $("#spanNenhumBl").html('Nenhum arquivo adicionado');
+                    }
+                }
+            },
+            error: function (data) {
+
+            }
+        });
     }
 </script>
 
