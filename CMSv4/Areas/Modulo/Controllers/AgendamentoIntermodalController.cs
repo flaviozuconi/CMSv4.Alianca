@@ -1176,6 +1176,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                         }
                     }
 
+                    if (string.IsNullOrEmpty(model.Comentario))
+                        model.Comentario = "";
+
                     model.Sequencia = Convert.ToInt32(model.Sequencia).ToString("00");
                     model.ProximaSequencia = (Convert.ToInt32(model.Sequencia) + 1).ToString("00");
 

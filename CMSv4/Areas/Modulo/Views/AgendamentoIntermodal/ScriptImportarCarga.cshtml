@@ -421,7 +421,12 @@
             $("#divRegistrosCargas").fadeIn("slide");
         }
     });
-
+    function DesativaComentario(comentario) {
+        if (comentario == null || comentario == '') {
+            return " disabled";
+        }
+        return "";
+    }
     function exibirListagemCargas(model) {
         $("#divRegistrosCargas").fadeIn("slide");
 
@@ -431,7 +436,7 @@
                 "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
-                "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
+                "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
                 "<td>" + model.ValorNfeFormatado + "</td>";
 
             if ($("#hdfTipoFormulario").val() != 'dta') {
@@ -473,7 +478,7 @@
                 "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
-                "<td><span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
+                "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
                 "<td>";
             for (var aux = 0; aux < model.LstNfs.length; aux++)
             {
@@ -486,13 +491,15 @@
             if ($("#hdfTipoFormulario").val() != 'dta') {
                 registro += "<td>";
                 for (var aux = 0; aux < model.LstNfs.length; aux++) {
-                    registro += "NF-e " + model.LstNfs[aux].NumeroNfe;
+                    registro += "<div class='d-flex align-items-center justify-content-between'>" +
+                        "NF-e " + model.LstNfs[aux].NumeroNfe;
                     if (model.LstNfs[aux].Arquivo != '') {
                         registro += "<a href='javascript:download(\"" + model.CodigoImportacao + "\", \"" + model.LstNfs[aux].Arquivo + "\")' style='color: black;'><span class='icon icon-paperclip ml-1'></span></a>";
                     }
-                    if (aux < (model.LstNfs.length - 1)) {
+                    /*if (aux < (model.LstNfs.length - 1)) {
                         registro += "<br>";
-                    }
+                    }*/
+                    registro += "</div>"
                 }
                 registro += "</td>";
             }
@@ -1047,7 +1054,7 @@
             registro += "</td>" +
                 "<td>";
             for (var aux = 0; aux < model.LstContainer.length; aux++) {
-                registro += "<span class='icon icon-coments' data-toggle='tooltip' data-placement='top' title='" + model.LstContainer[aux].Comentario + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>Comentários</span>";
+                registro += "<span class='icon icon-coments" + DesativaComentario(model.LstContainer[aux].Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.LstContainer[aux].Comentario + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>Comentários</span>";
                 if (aux < (model.LstContainer.length - 1)) {
                     registro += "<br>";
                 }
