@@ -99,14 +99,14 @@ namespace CMSv4.Model
         [DataField("AIC_C_EQUIPAMENTO", SqlDbType.VarChar, 100)]
         public string Equipamento { get; set; }
 
-        [DataField("AIC_C_REEFER", SqlDbType.Bit)]
-        public bool? Reefer { get; set; }
-
         [DataField("AIC_C_COMENTARIO", SqlDbType.VarChar, 300)]
         public string Comentario { get; set; }
 
         [DataField("AIC_D_REGISTRO", SqlDbType.DateTime)]
         public DateTime? DataRegistro { get; set; }
+
+        [DataField("AIC_C_CHAVE", SqlDbType.VarChar, 300)]
+        public string Chave { get; set; }
 
         public string DataColetaFormatada
         {
@@ -117,6 +117,28 @@ namespace CMSv4.Model
             }
         }
 
+    }
+    #endregion  
+
+    #region MLAgendamentoIntermodalLog
+    /// <summary> 
+    /// Model da Entidade Agendamento Intermodal
+    /// </summary> 
+    [Serializable]
+    [Table("MOD_AIL_AGENDAMENTO_INTERMODAL_LOG")]
+    public class MLAgendamentoIntermodalLog
+    {
+        [DataField("AIL_N_CODIGO", SqlDbType.Decimal, 18, PrimaryKey = true, AutoNumber = true)]
+        public decimal? Codigo { get; set; }
+
+        [DataField("AIL_C_JSON", SqlDbType.VarChar, -1)]
+        public string Json { get; set; }
+
+        [DataField("AIL_C_TIPO", SqlDbType.VarChar, 100)]
+        public string Tipo { get; set; }
+
+        [DataField("AIL_D_REGISTRO", SqlDbType.DateTime)]
+        public DateTime? DataCadastro { get; set; }
     }
     #endregion  
 
@@ -152,11 +174,13 @@ namespace CMSv4.Model
     {
         public int type { get; set; }
         public string subject { get; set; }
-        public string serviceFull { get; set; }
+        public string serviceFirstLevel { get; set; }
+        public string serviceSecondLevel { get; set; }
+        public string serviceThirdLevel { get; set; }
         public string category { get; set; }
         public string urgency { get; set; }
         public string ownerTeam { get; set; }
-        public string description { get; set; }
+        public string htmlDescription { get; set; }
         public DateTime createdDate { get; set; }
         public List<Client> clients { get; set; }
         public List<Action> actions { get; set; }

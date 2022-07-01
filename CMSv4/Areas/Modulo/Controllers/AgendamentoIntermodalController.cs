@@ -269,7 +269,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 var portal = PortalAtual.Obter;
 
-                var lista = CRUD.Listar(new MLAgendamentoIntermodalCarga { CodigoExportacao = model.CodigoExportacao });
+                var lista = CRUD.Listar(new MLAgendamentoIntermodalCarga { CodigoExportacao = model.CodigoExportacao, Chave = model.Chave });
 
                 if (lista?.Count <= 50)
                 {
@@ -535,12 +535,14 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 type = 2,
                 subject = "[DMRSE-1200] Agendamento Intermodal – Tipo de operação – Booking",
-                serviceFull = "278116",
+                serviceFirstLevel = "278113",
+                serviceSecondLevel = "716763",
+                serviceThirdLevel = "716764",
                 category = "Service Request",
                 urgency = "Normal",
                 ownerTeam = "DS-CX-CI@",
                 createdDate = DateTime.Now,
-                description = Html
+                htmlDescription = Html
             };
 
             #region cliente
@@ -595,7 +597,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 customFieldId = BLConfiguracao.CodigoPropostaComercial,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
                 line = 1,
-                value = "CX.IMD - PROPOSTA COMERCIAL - " + model.PropostaComercial
+                value = model.PropostaComercial
             });
 
             objModel.customFieldValues.Add(new Customfieldvalue
@@ -603,7 +605,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 customFieldId = BLConfiguracao.CodigoBookingNumber,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
                 line = 1,
-                value = "BOOKING NUMBER - " + model.NumeroBooking
+                value = model.NumeroBooking
             });
 
             if (!string.IsNullOrEmpty(model.NumeroBL))
@@ -613,7 +615,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     customFieldId = BLConfiguracao.CodigoNumeroBl,
                     customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
                     line = 1,
-                    value = "BL number - " + model.NumeroBL
+                    value = model.NumeroBL
                 });
             }
 
@@ -622,7 +624,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 customFieldId = BLConfiguracao.CodigoLocalColeta,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
                 line = 1,
-                value = "Local de coleta - " + Endereco(model)
+                value = Endereco(model)
             });
 
             #endregion
@@ -638,6 +640,15 @@ namespace CMSApp.Areas.Modulo.Controllers
                 
                 string jsonSerialize = JsonConvert.SerializeObject(objModel);
                 var dados = Encoding.UTF8.GetBytes(jsonSerialize);
+
+                #region grava o json na nossa base
+                CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                {
+                    DataCadastro = DateTime.Now,
+                    Json = jsonSerialize,
+                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar"
+                });
+                #endregion
 
                 using (var stream = webRequest.GetRequestStream())
                 {
@@ -1600,7 +1611,6 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                 foreach (byte b in hash)
                 {
-                    // can be "x2" if you want lowercase
                     sb.Append(b.ToString("X2"));
                 }
 
