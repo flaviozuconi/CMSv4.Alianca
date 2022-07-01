@@ -542,7 +542,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                 urgency = "Normal",
                 ownerTeam = "DS-CX-CI@",
                 createdDate = DateTime.Now,
-                htmlDescription = Html
             };
 
             #region cliente
@@ -560,9 +559,9 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 type = 2,
                 origin = 19,
-                description = "Descrição da ação",
+                description = Html,
                 justification = "Justificativa",
-                createdDate = DateTime.Now
+                createdDate = DateTime.Now,
             });
             #endregion
             
@@ -573,7 +572,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 personType = 1,
                 profileType = 2,
                 businessName = "DMRSE-1200", //model.Nome,
-                email = "email@gerador.com"//model.Email
+                email = model.Email
             };
             #endregion
 
@@ -1502,7 +1501,6 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
-
         #region uploadGuiaArrecadacao
         /// <summary>
         /// Upload
@@ -1709,7 +1707,6 @@ namespace CMSApp.Areas.Modulo.Controllers
             }
         }
         #endregion
-
 
         #region DownloadFile
         /// <summary>
