@@ -315,7 +315,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    if ($("#" + objResponse.NomeLinha).length == 0) {
+                    if ($("#tabelaDeclaracao #" + objResponse.NomeLinha).length == 0) {
                         var contador = parseInt($("#spanQtdeDeclaracao").html());
                         $("#spanQtdeDeclaracao").html((contador + 1).toString());
 
@@ -369,7 +369,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    if ($("#" + objResponse.NomeLinha).length == 0) {
+                    if ($("#tabelaGare #" + objResponse.NomeLinha).length == 0) {
                         var contador = parseInt($("#spanQtdeGare").html());
                         $("#spanQtdeGare").html((contador + 1).toString());
 
@@ -422,7 +422,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    if ($("#" + objResponse.NomeLinha).length == 0) {
+                    if ($("#tabelaBl #" + objResponse.NomeLinha).length == 0) {
                         var contador = parseInt($("#spanQtdeBl").html());
                         $("#spanQtdeBl").html((contador + 1).toString());
 
