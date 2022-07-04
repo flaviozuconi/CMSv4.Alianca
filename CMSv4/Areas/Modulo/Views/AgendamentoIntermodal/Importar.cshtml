@@ -466,17 +466,19 @@
             complete: function (file) {
                 objResponse = JSON.parse(file.xhr.response);
 
+                this.removeFile(file);
+
                 if (!objResponse.success) {
                     alert(objResponse.msg);
-                    this.removeFile(file);
+                    //this.removeFile(file);
                 }
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
-                    this.removeFile(file);
+                    $("#divExclusaoContainerNf").parent().append("<a href='javascript:ExcluirArquivoNf(\"" + objResponse.nomeArquivo + "\")' id='btnExluirContainerNf' style='font-size:16px; color:#303030;'>Excluir arquivo</a>");
 
                     $("#divArquivosNfContainerNf").fadeIn("slider");
-                    $("#divArquivosNfContainerNf").append(objResponse.nomeArquivo);
+                    $("#divArquivosNfContainerNf").html(objResponse.nomeArquivo);
                     $("#arquivoNfContainerNf").fadeOut("slider");
 
                     //$("#hdfFileBl").removeClass("has-error");
@@ -507,18 +509,20 @@
             complete: function (file) {
                 objResponse = JSON.parse(file.xhr.response);
 
+                this.removeFile(file);
+
                 if (!objResponse.success) {
                     alert(objResponse.msg);
-                    this.removeFile(file);
+                    //this.removeFile(file);
                 }
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
                     $("#guidVariosContainer").val(objResponse.Guid);
 
-                    this.removeFile(file);
+                    $("#divExclusaoNfVariosContainer").parent().append("<a href='javascript:ExcluirArquivoNfVariosContainer(\"" + objResponse.nomeArquivo + "\")' id='btnExluirNfVariosContainer' style='font-size:16px; color:#303030;'>Excluir arquivo</a>");
 
                     $("#divArquivosNfVariosContainerNf").fadeIn("slider");
-                    $("#divArquivosNfVariosContainerNf").append(objResponse.nomeArquivo);
+                    $("#divArquivosNfVariosContainerNf").html(objResponse.nomeArquivo);
                     $("#arquivoNfVariosContainerNf").fadeOut("slider");
 
                     //$("#fileNfVariosContainer").removeClass("has-error");
@@ -551,18 +555,21 @@
                 complete: function (file) {
                     objResponse = JSON.parse(file.xhr.response);
 
+                    this.removeFile(file);
+
                     if (!objResponse.success) {
                         alert(objResponse.msg);
-                        this.removeFile(file);
+                        //this.removeFile(file);
                     }
                     else {
                         $("#hdfGuid").val(objResponse.Guid);
                         $("#guidVariasNf").val(objResponse.Guid);
 
-                        this.removeFile(file);
+
+                        $("#divExclusaoVariasNf_" + seq).parent().append("<a href='javascript:ExcluirArquivoVariasNf(\"" + objResponse.nomeArquivo + "\", \"" + seq + "\")' id='btnExluirVariasNf_" + seq + "' style='font-size:16px; color:#303030;'>Excluir arquivo</a>");
 
                         $("#divArquivosVariasNf_" + seq).fadeIn("slider");
-                        $("#divArquivosVariasNf_" + seq).append(objResponse.nomeArquivo);
+                        $("#divArquivosVariasNf_" + seq).html(objResponse.nomeArquivo);
                         $("#arquivoVariosNf_" + seq).fadeOut("slider");
 
                         //$("#fileNfVariosContainer").removeClass("has-error");

@@ -1685,6 +1685,37 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
+        #region ExcluirArquivoNf
+        /// <summary>
+        /// Upload
+        /// </summary>        
+        [CheckPermission(global::Permissao.Publico)]
+        [HttpPost]
+        public ActionResult ExcluirArquivoNf(string guid, string NomeArquivo, int? seq)
+        {
+            try
+            {
+                var portal = PortalAtual.Obter;
+
+                string complemento = "";
+                if (seq.HasValue && seq.Value > 0)
+                    complemento = seq.ToString() + "/";
+
+                var diretorio = (BLConfiguracao.Pastas.ModuloImportacaoNfTemp(portal.Diretorio) + "/" + guid + "/" + complemento).Replace("//", "/");
+                var pasta = HttpContextFactory.Current.Server.MapPath(diretorio);
+
+                System.IO.File.Delete(Path.Combine(pasta, NomeArquivo));
+
+                return Json(new { success = true, qtdeFiles = Directory.GetFiles(pasta).Length.ToString() });
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
         #region GetHash
         /// <summary>
         /// GetHash

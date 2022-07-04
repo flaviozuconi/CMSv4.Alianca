@@ -633,6 +633,69 @@
             }
         });
     }
+
+
+    function ExcluirArquivoNf(nomeArquivo) {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirArquivoNf",
+            data: { guid: $("#hdfGuid").val(), NomeArquivo: nomeArquivo },
+            success: function (data) {
+                if (data.success == true) {
+
+                    $("#btnExluirContainerNf").remove();
+                    $("#divArquivosNfContainerNf").html('');
+                    $("#divArquivosNfContainerNf").fadeOut("slider");
+                    
+                    $("#arquivoNfContainerNf").fadeIn("slider");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    }
+
+    function ExcluirArquivoNfVariosContainer(nomeArquivo) {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirArquivoNf",
+            data: { guid: $("#hdfGuid").val(), NomeArquivo: nomeArquivo },
+            success: function (data) {
+                if (data.success == true) {
+
+                    $("#btnExluirNfVariosContainer").remove();
+                    $("#divArquivosNfVariosContainerNf").html('');
+                    $("#divArquivosNfVariosContainerNf").fadeOut("slider");
+                    
+                    $("#arquivoNfVariosContainerNf").fadeIn("slider");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    }
+
+    function ExcluirArquivoVariasNf(nomeArquivo, sequencia) {
+        $.ajax({
+            type: "POST",
+            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ExcluirArquivoNf",
+            data: { guid: $("#hdfGuid").val(), NomeArquivo: nomeArquivo, seq: sequencia },
+            success: function (data) {
+                if (data.success == true) {
+
+                    $("#btnExluirVariasNf_" + sequencia).remove();
+                    $("#divArquivosVariasNf_" + sequencia).fadeOut("slider");
+                    $("#divArquivosVariasNf_" + sequencia).html('');
+                    $("#arquivoVariosNf_" + sequencia).fadeIn("slider");
+                }
+            },
+            error: function (data) {
+
+            }
+        });
+    }
 </script>
 
 
