@@ -98,7 +98,7 @@
 
         var registro = "<tr class=" + model.Codigo + "_excluir" + ">" +
                             "<td><span class='icon icon-box'></span></td>" +
-                            "<td>Container" + $("#Container").val() + "</td>" +
+                            "<td class='container container_" + model.Codigo + "'>Container" + $("#Container").val() + "</td>" +
                             "<td>" + model.Equipamento + reefer + "</td>" +
                             "<td>" + model.DataColetaFormatada + "</td>" +
                             "<td>" + model.Peso + " kgs" + "</td>" +
@@ -144,6 +144,15 @@
                     if ($("#divRegistrosCargas tr").length == 0) {
                         $(".btnAgendarJQ").hide();
                     }
+
+                    // ajustando os numeros dos containeres
+                    var aux = 1;
+                    $("Table tr").each(function (index, tr) {
+                        $(this).find('.container').text('Container' + aux);
+                        aux = aux + 1;
+                    });
+
+                    $("#Container").val(aux);
                 }
             },
             error: function (data) {
