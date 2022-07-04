@@ -133,7 +133,7 @@
     }
 
     // VALIDAR  O CAMPO PROPOSTA COMERCIAL
-    $("#PropostaComercial").on("blur", function () {
+    @*$("#PropostaComercial").on("blur", function () {
 
         $("#PropostaComercial").removeClass('is-invalid');
         $("#existPropostaComercial").remove();
@@ -163,10 +163,10 @@
                    
             }
         });
-    });
+    });*@
 
      // VALIDAR  O CAMPO NUMERO BOOKING
-    $("#NumeroBooking").on("blur", function () {
+    @*$("#NumeroBooking").on("blur", function () {
         $("#NumeroBooking").removeClass('is-invalid');
         $("#existNumeroBooking").remove();
 
@@ -195,9 +195,9 @@
                    
             }
         });
-    });
+    });*@
 
-    function ValidarPropostaBooking(proposta, booking) {
+    @*function ValidarPropostaBooking(proposta, booking) {
          $.ajax({
             type: "POST",
             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/ValidarCamposExportacao",
@@ -221,7 +221,7 @@
                    
             }
         });
-    }
+    }*@
 
     $("#CEP").on("blur", function () {
         preencherEndereco();
