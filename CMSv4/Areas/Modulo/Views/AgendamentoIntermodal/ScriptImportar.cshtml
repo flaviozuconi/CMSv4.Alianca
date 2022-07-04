@@ -121,6 +121,9 @@
                             $("#divSalvar").fadeOut("slider");
                             $("#codigoImportar").val(data.codigo);
 
+                            $(".btn-arquivos").remove();
+                            $(".dropExcluirJq").remove();
+
                             $("#divCarga").fadeIn("slide");
 
                             $("#hdfTipoFormulario").val('normal');
@@ -210,9 +213,14 @@
                             $("#divSalvar").fadeOut("slider");
                             $("#codigoImportar").val(data.codigo);
 
+                            $(".btn-arquivos").remove();
+                            $(".dropExcluirJq").remove();
+
                             $("#divCarga").fadeIn("slide");
 
                             $("#hdfTipoFormulario").val('dta');
+
+                            $("#mensagem").html('');
                         }
                         else {
                             $("#propostaComercial").addClass('is-invalid');
