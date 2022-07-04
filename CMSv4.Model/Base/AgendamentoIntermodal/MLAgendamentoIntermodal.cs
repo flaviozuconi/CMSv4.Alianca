@@ -172,15 +172,15 @@ namespace CMSv4.Model
     /// </summary>
     public class MLAgendamentoTicket
     {
-        public int type { get; set; }
-        public string subject { get; set; }
+        public int type                 { get; set; }
+        public string subject           { get; set; }
         public string serviceFirstLevel { get; set; }
         public string serviceSecondLevel { get; set; }
         public string serviceThirdLevel { get; set; }
-        public string category { get; set; }
-        public string urgency { get; set; }
-        public string ownerTeam { get; set; }
-        public string htmlDescription { get; set; }
+        public string category          { get; set; }
+        public string urgency           { get; set; }
+        public string ownerTeam         { get; set; }
+       
         public DateTime createdDate { get; set; }
         public List<Client> clients { get; set; }
         public List<Action> actions { get; set; }
