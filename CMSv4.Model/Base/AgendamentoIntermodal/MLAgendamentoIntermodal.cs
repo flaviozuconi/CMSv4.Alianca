@@ -184,14 +184,14 @@ namespace CMSv4.Model
         public DateTime createdDate { get; set; }
         public List<Client> clients { get; set; }
         public List<Action> actions { get; set; }
-        public List<Attachments> attachments { get; set; }
+        //public List<Attachments> attachments { get; set; }
         public Createdby createdBy { get; set; }
         public List<Customfieldvalue> customFieldValues { get; set; }
 
         public MLAgendamentoTicket()
         {
             clients = new List<Client>();
-            attachments = new List<Attachments>();
+            //attachments = new List<Attachments>();
             actions = new List<Action>();
             createdBy = new Createdby();
             customFieldValues = new List<Customfieldvalue>();
@@ -238,6 +238,8 @@ namespace CMSv4.Model
         public string description { get; set; }
         public string justification { get; set; }
         public DateTime createdDate { get; set; }
+
+        public List<Attachments> attachments { get; set; }
     }
     #endregion
 

@@ -423,7 +423,7 @@
         }
     });
     function DesativaComentario(comentario) {
-        if (comentario == null || comentario == '') {
+        if (comentario == null || comentario == '' || comentario == 'Sem comentários') {
             return " disabled";
         }
         return "";
