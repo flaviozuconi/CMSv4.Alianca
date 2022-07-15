@@ -96,9 +96,14 @@
             reefer = " <span class='icon icon-snow'></span>";
         }
 
+        var contador = "";
+        if ($("#Container").val() <= 9) {
+            contador = "0";
+        }
+
         var registro = "<tr class=" + model.Codigo + "_excluir" + ">" +
                             "<td><span class='icon icon-box'></span></td>" +
-                            "<td class='container container_" + model.Codigo + "'>Container" + $("#Container").val() + "</td>" +
+                            "<td class='container container_" + model.Codigo + "'>Container " + contador + $("#Container").val() + "</td>" +
                             "<td>" + model.Equipamento + reefer + "</td>" +
                             "<td>" + model.DataColetaFormatada + "</td>" +
                             "<td>" + model.Peso + " kgs" + "</td>" +
@@ -107,7 +112,7 @@
                         "</tr>";
 
         $(".table tbody").append(registro);
-
+        
         $("#Container").val(parseInt($("#Container").val()) + 1);
     }
 
@@ -148,7 +153,12 @@
                     // ajustando os numeros dos containeres
                     var aux = 1;
                     $("Table tr").each(function (index, tr) {
-                        $(this).find('.container').text('Container' + aux);
+                        if (index <= 8) {
+                            $(this).find('.container').text('Container 0' + aux);
+                        }
+                        else {
+                            $(this).find('.container').text('Container ' + aux);
+                        }
                         aux = aux + 1;
                     });
 
