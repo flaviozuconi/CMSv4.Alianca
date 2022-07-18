@@ -148,7 +148,7 @@ namespace CMSv4.Model
 
 
     // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-    public class Action
+    /*public class Action
     {
         public int id { get; set; }
         public int type { get; set; }
@@ -393,11 +393,11 @@ namespace CMSv4.Model
         public string cpfCnpj { get; set; }
         public string userName { get; set; }
     }
-    #endregion
+    #endregion*/
 
 
 
-    /*#region MLAgendamentoPerson
+    #region MLAgendamentoPerson
     /// <summary>
     /// MLAgendamentoPerson
     ///  persons
@@ -537,7 +537,7 @@ namespace CMSv4.Model
         public Createdby createdBy { get; set; }
         public DateTime createdDate { get; set; }
     }
-    #endregion*/
+    #endregion
 
     #endregion
 }

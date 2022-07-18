@@ -545,6 +545,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             };
 
             #region cliente
+            objModel.clients = new List<Client>();
             objModel.clients.Add(new Client
             {
                 id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
@@ -552,9 +553,10 @@ namespace CMSApp.Areas.Modulo.Controllers
                 profileType = 2,
                 businessName = "DMRSE-1200"//model.Nome
             });
-            #endregion 
-            
+            #endregion
+
             #region ação
+            objModel.actions = new List<CMSv4.Model.Action>();
             objModel.actions.Add(new CMSv4.Model.Action
             {
                 type = 2,
@@ -569,7 +571,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             #endregion
             
             #region create
-            objModel.createdBy = new CreatedBy
+            objModel.createdBy = new Createdby
             {
                 id = "461505746",//idCliente,
                 personType = 1,
@@ -597,8 +599,8 @@ namespace CMSApp.Areas.Modulo.Controllers
             #endregion 
 
             #region campos adicionais
-
-            objModel.actions[0].customFieldValues.Add(new CustomFieldValue
+            //objModel.customFieldValues = new List<CustomFieldValue>();
+            objModel.customFieldValues.Add(new Customfieldvalue
             {
                 customFieldId = BLConfiguracao.CodigoPropostaComercial,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
@@ -606,7 +608,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 value = model.PropostaComercial
             });
 
-            objModel.actions[0].customFieldValues.Add(new CustomFieldValue
+            objModel.customFieldValues.Add(new Customfieldvalue
             {
                 customFieldId = BLConfiguracao.CodigoBookingNumber,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
@@ -616,7 +618,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
             if (!string.IsNullOrEmpty(model.NumeroBL))
             {
-                objModel.actions[0].customFieldValues.Add(new CustomFieldValue
+                objModel.customFieldValues.Add(new Customfieldvalue
                 {
                     customFieldId = BLConfiguracao.CodigoNumeroBl,
                     customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
@@ -625,7 +627,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 });
             }
 
-            objModel.actions[0].customFieldValues.Add(new CustomFieldValue
+            objModel.customFieldValues.Add(new Customfieldvalue
             {
                 customFieldId = BLConfiguracao.CodigoLocalColeta,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
