@@ -569,7 +569,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             #endregion
             
             #region create
-            objModel.createdBy = new Createdby
+            objModel.createdBy = new CreatedBy
             {
                 id = "461505746",//idCliente,
                 personType = 1,
@@ -592,21 +592,13 @@ namespace CMSApp.Areas.Modulo.Controllers
                         createdBy = objModel.createdBy,
                         createdDate = DateTime.Now
                     });
-
-                    /*objModel.attachments.Add(new Attachments
-                    {
-                        fileName = item.Arquivo,
-                        path = GetHash(item.caminhoCompleto),
-                        createdBy = objModel.createdBy,
-                        createdDate = DateTime.Now
-                    });*/
                 }
             }
             #endregion 
 
             #region campos adicionais
 
-            objModel.customFieldValues.Add(new Customfieldvalue
+            objModel.actions[0].customFieldValues.Add(new CustomFieldValue
             {
                 customFieldId = BLConfiguracao.CodigoPropostaComercial,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
@@ -614,7 +606,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 value = model.PropostaComercial
             });
 
-            objModel.customFieldValues.Add(new Customfieldvalue
+            objModel.actions[0].customFieldValues.Add(new CustomFieldValue
             {
                 customFieldId = BLConfiguracao.CodigoBookingNumber,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
@@ -624,7 +616,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
             if (!string.IsNullOrEmpty(model.NumeroBL))
             {
-                objModel.customFieldValues.Add(new Customfieldvalue
+                objModel.actions[0].customFieldValues.Add(new CustomFieldValue
                 {
                     customFieldId = BLConfiguracao.CodigoNumeroBl,
                     customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
@@ -633,7 +625,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 });
             }
 
-            objModel.customFieldValues.Add(new Customfieldvalue
+            objModel.actions[0].customFieldValues.Add(new CustomFieldValue
             {
                 customFieldId = BLConfiguracao.CodigoLocalColeta,
                 customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
