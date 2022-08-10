@@ -12,6 +12,8 @@ using Newtonsoft.Json;
 using CMSv4.Model.Base.GestaoInformacoesImportacao;
 using System.Web;
 using System.Security.Cryptography;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace CMSApp.Areas.Modulo.Controllers
 {
@@ -576,18 +578,18 @@ namespace CMSApp.Areas.Modulo.Controllers
             };
             #endregion
 
-            #region attachments
-            foreach (var item in model?.lstCarga)
-            {
-                objModel.attachments.Add(new Attachments
-                {
-                    fileName = item.Arquivo,
-                    path = GetHash(item.caminhoCompleto),
-                    createdBy = objModel.createdBy,
-                    createdDate = DateTime.Now
-                });
-            }
-            #endregion 
+            //#region attachments
+            //foreach (var item in model?.lstCarga)
+            //{
+            //    objModel.attachments.Add(new Attachments
+            //    {
+            //        fileName = item.Arquivo,
+            //        path = GetHash(item.caminhoCompleto),
+            //        createdBy = objModel.createdBy,
+            //        createdDate = DateTime.Now
+            //    });
+            //}
+            //#endregion 
 
             #region campos adicionais
 
@@ -661,8 +663,11 @@ namespace CMSApp.Areas.Modulo.Controllers
                     StreamReader reader = new StreamReader(streamDados);
                     string response = reader.ReadToEnd();
 
-                    return retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
+                    retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
                 }
+
+                if (model?.lstCarga.Count > 0 && !string.IsNullOrEmpty(retorno)) SendFile(retorno, model?.lstCarga);
+
                 #endregion
             }
             catch (Exception ex)
@@ -672,6 +677,51 @@ namespace CMSApp.Areas.Modulo.Controllers
 
             return retorno;
         }
+
+        #region Send File
+        /// <summary>
+        /// Envio dos arquivos
+        /// </summary>
+        /// <param name="retorno"></param>
+        /// <param name="lstCarga"></param>
+        private void SendFile(string retorno, List<MLAgendamentoIntermodalImportacaoCarga> lstCarga)
+        {
+            var obj = JsonConvert.DeserializeObject<RetornoMovidesk>(retorno);
+
+            if (obj?.id > 0)
+            {
+                foreach (var item in lstCarga)
+                {
+                    try
+                    {
+                        string fileName = item.caminhoCompleto;
+
+                        using (HttpClient client = new HttpClient())
+                        using (MultipartFormDataContent content = new MultipartFormDataContent())
+                        using (FileStream fileStream = System.IO.File.OpenRead(fileName))
+                        using (StreamContent fileContent = new StreamContent(fileStream))
+                        {
+                            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                            {
+                                FileName = item.Arquivo
+                            };
+
+                            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+                            fileContent.Headers.Add("name", item.Arquivo);
+                            content.Add(fileContent);
+
+                            var result = client.PostAsync(BLConfiguracao.UrlIntegracaoArquivo + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + obj.id + "&actionId=1", content).Result;
+                            result.EnsureSuccessStatusCode();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ApplicationLog.ErrorLog(ex);
+                    }
+                }
+            }
+        }
+        #endregion
 
         #region Endereço
         /// <summary>
@@ -793,7 +843,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 try
                 {
-                    string strMensagemErro = "";
+                    //string strMensagemErro = "";
 
                     var portal = PortalAtual.Obter;
 
@@ -833,8 +883,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 }
                                 Directory.Delete(pastaDeclaracaoImportacaoTemp);
                             }
-
-
 
                             var diretorioGuiaArrecadacaoTemp = (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacaoTemp(portal.Diretorio) + "/" + guid + "/").Replace("//", "/");
                             var pastaGuiaArrecadacaoTemp = HttpContextFactory.Current.Server.MapPath(diretorioGuiaArrecadacaoTemp);
@@ -1402,7 +1450,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                             if (!string.IsNullOrEmpty(item.Arquivo))
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = pastaBl + item.Arquivo });
                         }
-
 
                         if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html);
 

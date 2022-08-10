@@ -288,6 +288,23 @@ namespace Framework.Utilities
 
         #endregion
 
+        #region UrlIntegracaoArquivo
+        /// <summary>
+        /// UrlIntegracaoTicket
+        /// </summary>
+        public static string UrlIntegracaoArquivo
+        {
+            get
+            {
+                if (ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Arquivo"] != null)
+                    return Convert.ToString(ConfigurationManager.AppSettings["URL.Integracao.Movidesk.Arquivo"]);
+                else
+                    return "https://api.movidesk.com/public/v1/ticketFileUpload?";
+            }
+        }
+
+        #endregion
+
         #region UrlIntegracaoTicket
         /// <summary>
         /// CodigoPropostaComercial

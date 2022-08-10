@@ -127,6 +127,16 @@ namespace CMSv4.Model
     }
     #endregion
 
+    #region RetornoMovidesk
+    /// <summary>
+    /// Rootobject
+    /// </summary>
+    public class RetornoMovidesk
+    {
+        public int id { get; set; }
+        public object protocol { get; set; }
+    }
+    #endregion
 
     #region MLAgendamentoIntermodalImportacaoCargaVariasNf
     /// <summary> 
