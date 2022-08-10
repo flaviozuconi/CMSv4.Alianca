@@ -423,11 +423,19 @@
         }
     });
     function DesativaComentario(comentario) {
-        if (comentario == null || comentario == '') {
+        if (comentario == null || comentario == '' || comentario == 'Sem comentários') {
             return " disabled";
         }
         return "";
     }
+    function TextoComentario(comentario) {
+        if (comentario == null || comentario == '' || comentario == 'Sem comentários') {
+            return "Sem comentários";
+        }
+        return "Comentários";
+    }
+
+
     function exibirListagemCargas(model) {
         $("#divRegistrosCargas").fadeIn("slide");
 
@@ -437,7 +445,7 @@
                 "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
-                "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
+                "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>" + TextoComentario(model.comentario) + "</span></td>" +
                 "<td>" + model.ValorNfeFormatado + "</td>";
 
             if ($("#hdfTipoFormulario").val() != 'dta') {
@@ -479,7 +487,7 @@
                 "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
-                "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>Comentários</span></td>" +
+                "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>" + TextoComentario(model.Comentario) + "</span></td>" +
                 "<td>";
             for (var aux = 0; aux < model.LstNfs.length; aux++)
             {
@@ -1056,7 +1064,7 @@
             registro += "</td>" +
                 "<td>";
             for (var aux = 0; aux < model.LstContainer.length; aux++) {
-                registro += "<span class='icon icon-coments" + DesativaComentario(model.LstContainer[aux].Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.LstContainer[aux].Comentario + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>Comentários</span>";
+                registro += "<span class='icon icon-coments" + DesativaComentario(model.LstContainer[aux].Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.LstContainer[aux].Comentario + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>" + TextoComentario(model.LstContainer[aux].Comentario) + "</span>";
                 if (aux < (model.LstContainer.length - 1)) {
                     registro += "<br>";
                 }

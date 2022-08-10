@@ -547,6 +547,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             };
 
             #region cliente
+            objModel.clients = new List<Client>();
             objModel.clients.Add(new Client
             {
                 id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
@@ -554,17 +555,21 @@ namespace CMSApp.Areas.Modulo.Controllers
                 profileType = 2,
                 businessName = "DMRSE-1200"//model.Nome
             });
-            #endregion 
-            
+            #endregion
+
             #region ação
+            objModel.actions = new List<CMSv4.Model.Action>();
             objModel.actions.Add(new CMSv4.Model.Action
             {
                 type = 2,
                 origin = 19,
                 description = Html,
                 justification = "Justificativa",
-                createdDate = DateTime.Now,
+                createdDate = DateTime.Now
             });
+
+
+
             #endregion
             
             #region create
@@ -592,7 +597,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             //#endregion 
 
             #region campos adicionais
-
+            //objModel.customFieldValues = new List<CustomFieldValue>();
             objModel.customFieldValues.Add(new Customfieldvalue
             {
                 customFieldId = BLConfiguracao.CodigoPropostaComercial,
@@ -1101,7 +1106,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                         model.ProximaSequencia = (Convert.ToInt32(model.Sequencia) + 1).ToString("00");
 
                         if (string.IsNullOrEmpty(model.Comentario))
-                            model.Comentario = "";
+                            model.Comentario = "Sem comentários";
 
                         if (string.IsNullOrEmpty(model.caminhoCompleto))
                         {
@@ -1189,6 +1194,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 item.Comentario = "";
                                 if (!string.IsNullOrEmpty(model.Comentario))
                                     item.Comentario = model.Comentario;
+                                else
+                                    item.Comentario = "Sem comentários";
 
                                 if (!string.IsNullOrEmpty(item.ValorNfeFormatado))
                                     item.ValorNfe = Convert.ToDecimal(item.ValorNfeFormatado.Replace("R$ ", "").Replace(".", ""));
@@ -1235,7 +1242,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     }
 
                     if (string.IsNullOrEmpty(model.Comentario))
-                        model.Comentario = "";
+                        model.Comentario = "Sem comentários";
 
                     model.Sequencia = Convert.ToInt32(model.Sequencia).ToString("00");
                     model.ProximaSequencia = (Convert.ToInt32(model.Sequencia) + 1).ToString("00");
@@ -1327,7 +1334,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 item.caminhoCompleto = destino;
 
                                 if (string.IsNullOrEmpty(item.Comentario))
-                                    item.Comentario = "";
+                                    item.Comentario = "Sem comentários";
                             }
 
                             item.ProximaSequencia = (Convert.ToInt32(item.Sequencia) + 1).ToString("00");
@@ -1413,42 +1420,42 @@ namespace CMSApp.Areas.Modulo.Controllers
 
 
                         var lstNf = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
-                        var diretorioNf = (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
-                        var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
+                        var diretorioNf = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        //var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
                         foreach(var nf in lstNf)
                         {
                             if (!string.IsNullOrEmpty(nf.Arquivo))
-                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = nf.Arquivo, caminhoCompleto = pastaNf + nf.Arquivo });
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = nf.Arquivo, caminhoCompleto = diretorioNf + nf.Arquivo });
                         }
 
 
                         var lstDeclaracaoImportacao = CRUD.Listar(new MLAgendamentoIntermodalArquivoDeclaracaoImportacao { CodigoImportacao = codigo }, portal.ConnectionString);
-                        var diretorioDeclaracao = (BLConfiguracao.Pastas.ModuloImportacaoDeclaracao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
-                        var pastaDeclaracao = HttpContextFactory.Current.Server.MapPath(diretorioDeclaracao);
+                        var diretorioDeclaracao = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoDeclaracao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        //var pastaDeclaracao = HttpContextFactory.Current.Server.MapPath(diretorioDeclaracao);
                         foreach (var item in lstDeclaracaoImportacao)
                         {
                             if (!string.IsNullOrEmpty(item.Arquivo))
-                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = pastaDeclaracao + item.Arquivo });
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioDeclaracao + item.Arquivo });
                         }
 
 
                         var lstGuia = CRUD.Listar(new MLAgendamentoIntermodalArquivoGare { CodigoImportacao = codigo }, portal.ConnectionString);
-                        var diretorioGuia = (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
-                        var pastaGuia = HttpContextFactory.Current.Server.MapPath(diretorioGuia);
+                        var diretorioGuia = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        //var pastaGuia = HttpContextFactory.Current.Server.MapPath(diretorioGuia);
                         foreach (var item in lstGuia)
                         {
                             if (!string.IsNullOrEmpty(item.Arquivo))
-                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = pastaGuia + item.Arquivo });
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioGuia + item.Arquivo });
                         }
 
 
                         var lstBl = CRUD.Listar(new MLAgendamentoIntermodalArquivoBl { CodigoImportacao = codigo }, portal.ConnectionString);
-                        var diretorioBl = (BLConfiguracao.Pastas.ModuloImportacaoBl(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
-                        var pastaBl = HttpContextFactory.Current.Server.MapPath(diretorioBl);
+                        var diretorioBl = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoBl(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
+                        //var pastaBl = HttpContextFactory.Current.Server.MapPath(diretorioBl);
                         foreach (var item in lstBl)
                         {
                             if (!string.IsNullOrEmpty(item.Arquivo))
-                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = pastaBl + item.Arquivo });
+                                model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioBl + item.Arquivo });
                         }
 
                         if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html);
@@ -1771,6 +1778,10 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// <returns></returns>
         public string GetHash(string file)
         {
+            /*var arquivoBytes = System.IO.File.ReadAllBytes(file);
+
+            return Convert.ToBase64String(arquivoBytes);*/
+
             using (SHA1Managed sha1 = new SHA1Managed())
             {
                 var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(file));
