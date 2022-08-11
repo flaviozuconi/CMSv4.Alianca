@@ -305,23 +305,6 @@ namespace Framework.Utilities
 
         #endregion
 
-        #region UrlIntegracaoAtual
-        /// <summary>
-        /// UrlIntegracaoAtual
-        /// </summary>
-        public static string UrlIntegracaoAtual
-        {
-            get
-            {
-                if (ConfigurationManager.AppSettings["URL.Integracao.Url.Atual"] != null)
-                    return Convert.ToString(ConfigurationManager.AppSettings["URL.Integracao.Url.Atual"]);
-                else
-                    return "http://localhost:55056/";
-            }
-        }
-
-        #endregion
-
         #region UrlIntegracaoTicket
         /// <summary>
         /// CodigoPropostaComercial

@@ -699,7 +699,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 {
                     try
                     {
-                        string fileName = string.Format("{0}{1}", Server.MapPath("~"), item.caminhoCompleto.Replace(BLConfiguracao.UrlIntegracaoAtual, string.Empty));
+                        string fileName = string.Format("{0}{1}", Server.MapPath("~"), item.caminhoCompleto.Replace(Request.Url.Scheme + "://" + Request.Url.Authority + "/", string.Empty));
 
                         using (HttpClient client = new HttpClient())
                         using (MultipartFormDataContent content = new MultipartFormDataContent())
