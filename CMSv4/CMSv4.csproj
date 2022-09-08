@@ -200,6 +200,7 @@
     <Compile Include="Areas\ModuloAdmin\Controllers\GestaoDeCustosPenalidadesController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\GestaoInformacoesExportacaoController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\GestaoInformacoesImportacaoController.cs" />
+    <Compile Include="Areas\ModuloAdmin\Controllers\LogIntegracaoAdminController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\ProgramacaoNavioAdminController.cs" />
     <Compile Include="Areas\ModuloAdmin\Controllers\ProgramacaoPropostaController.cs" />
     <Compile Include="Areas\CMS\Controllers\RoxyFilemanController.cs" />
@@ -2000,6 +2001,8 @@
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ScriptImportarCarga.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ImportarSucesso.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ExportarModal.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\LogIntegracaoAdmin\Index.cshtml" />
+    <Content Include="Areas\ModuloAdmin\Views\LogIntegracaoAdmin\Item.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />

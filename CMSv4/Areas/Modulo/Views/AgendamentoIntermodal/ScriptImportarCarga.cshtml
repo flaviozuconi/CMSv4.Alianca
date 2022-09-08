@@ -1064,7 +1064,7 @@
             registro += "</td>" +
                 "<td>";
             for (var aux = 0; aux < model.LstContainer.length; aux++) {
-                registro += "<span class='icon icon-coments" + DesativaComentario(model.LstContainer[aux].Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.LstContainer[aux].Comentario + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>" + TextoComentario(model.LstContainer[aux].Comentario) + "</span>";
+                registro += "<span class='icon icon-coments" + DesativaComentario(model.LstContainer[aux].Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + (model.LstContainer[aux].Comentario == null ? 'Sem comentários' : model.LstContainer[aux].Comentario) + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>" + TextoComentario(model.LstContainer[aux].Comentario) + "</span>";
                 if (aux < (model.LstContainer.length - 1)) {
                     registro += "<br>";
                 }

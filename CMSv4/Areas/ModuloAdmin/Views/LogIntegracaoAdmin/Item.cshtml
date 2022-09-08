@@ -1,7 +1,7 @@
-﻿@model MLAssuntos
+﻿@model MLAgendamentoIntermodalLog
 @{
     var portal = PortalAtual.Obter;
-    var urlLista = string.Format("/cms/{0}/Assuntos", portal.Diretorio);
+    var urlLista = string.Format("/cms/{0}/LogIntegracaoAdmin", portal.Diretorio);
 }
 
 <div class="portlet portlet-dark-blue">
@@ -9,7 +9,7 @@
         <div class="portlet-title">
             <h4>
                 <img src="~/iconpack.axd/16/page_white_code" />
-                @TAdm("Assuntos")
+                @TAdm("Log Integração")
             </h4>
         </div>
         <div class="portlet-widgets">
@@ -20,61 +20,21 @@
     </div>
     <div class="portlet-body clearfix">
         <form method="post" class="form-vertical" role="form" id="form" enctype="multipart/form-data">
-            <input type="hidden" value="@Model.Codigo" name="Codigo" />
-
-            @*Assunto*@
+            <div class="form-group col-md-6">
+                <label>@TAdm("Data Cadastro")</label>
+                <input type="text" class="form-control" maxlength="50" value="@Model.DataCadastro.Value.ToString("dd/MM/yyyy 00:00")" disabled>
+            </div>
+            <div class="form-group col-md-6">
+                <label>@TAdm("Tipo")</label>
+                <input type="text" class="form-control" value="@Model.Tipo" disabled />
+            </div>
             <div class="form-group col-md-4">
-                <label>@TAdm("Assunto")</label>
-                <input type="text" class="form-control" name="Assunto" maxlength="50" value="@Model.Assunto" autofocus>
+                <label>@TAdm("Json")</label>
+                <textarea>@Model.Json</textarea> 
             </div>
-
-            @*Class*@
-            <div class="form-group col-md-2">
-                <label>@TAdm("Class")</label> 
-                <input type="text" name="Css" class="form-control" value="@Model.Css" maxlength="50" />
-            </div>
-
-            @*URL*@
-            <div class="form-group col-md-4">
-                <label>@TAdm("URL")</label> 
-                <input type="text" name="Url" class="form-control" value="@Model.Url" maxlength="50" />
-            </div>
-
-            @*ATIVO*@
-            <div class="form-group col-md-12">
-                <input type="checkbox" name="IsAtivo" id="Ativo" value="true" @((!Model.IsAtivo.HasValue || Model.IsAtivo.Value) ? "checked" : "") /> <label for="Ativo">@TAdm("Ativo")</label>
-            </div>
-
             <div class="form-group col-md-12 text-right">
                 <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
-                @if (AdminHelper.CheckPermission(Permissao.Modificar))
-                {
-                    <input type="submit" class="btn btn-green" value="@TAdm("Salvar")" />
-                }
             </div>
-
-            @if (!ViewData.ModelState.IsValid)
-            {
-                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" });
-            }
         </form>
     </div>
 </div>
-
-@section scripts{    
-    <script type="text/javascript">
-
-        $('#form').validate({
-            rules: {
-                Assunto: { required: true, maxlength: 50 },
-                Css: { required: true, maxlength: 30 },
-                Url: { required: true, maxlength: 50 }
-            }
-        });
-
-
-        //$('.glyphicon-question-sign').popover();
-
-        @(!AdminHelper.CheckPermission(Permissao.Modificar) ? "disableForm();" : "")
-    </script>
-}
