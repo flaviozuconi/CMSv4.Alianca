@@ -14,6 +14,7 @@ using System.Web;
 using System.Security.Cryptography;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Linq;
 
 namespace CMSApp.Areas.Modulo.Controllers
 {
@@ -532,6 +533,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         private string IntegrarTicket(string idCliente, MLAgendamentoIntermodal model, string Html)
         {
             string retorno = string.Empty;
+            string jsonSerialize = string.Empty;
 
             var objModel = new MLAgendamentoTicket
             {
@@ -644,17 +646,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                 webRequest.ContentType = "application/json; charset=utf-8";
                 webRequest.Method = "POST";
                 
-                string jsonSerialize = JsonConvert.SerializeObject(objModel);
+                jsonSerialize = JsonConvert.SerializeObject(objModel);
                 var dados = Encoding.UTF8.GetBytes(jsonSerialize);
-
-                #region grava o json na nossa base
-                CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
-                {
-                    DataCadastro = DateTime.Now,
-                    Json = jsonSerialize,
-                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar"
-                });
-                #endregion
 
                 using (var stream = webRequest.GetRequestStream())
                 {
@@ -671,12 +664,33 @@ namespace CMSApp.Areas.Modulo.Controllers
                     retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
                 }
 
+                #region grava o json na nossa base
+
+                var imagens =  string.Join(",", model?.lstCarga.Select(obj => obj.caminhoCompleto));
+
+                CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                {
+                    DataCadastro = DateTime.Now,
+                    Json = jsonSerialize + (!string.IsNullOrEmpty(imagens) ? " Imagens:" + imagens : string.Empty) + (!string.IsNullOrEmpty(retorno) ? " Retorno API:" + retorno : string.Empty),
+                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar"
+                });
+                #endregion
+
                 if (model?.lstCarga.Count > 0 && !string.IsNullOrEmpty(retorno)) SendFile(retorno, model?.lstCarga);
 
                 #endregion
             }
             catch (Exception ex)
             {
+                #region grava o json na nossa base
+                CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                {
+                    DataCadastro = DateTime.Now,
+                    Json = jsonSerialize,
+                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar"
+                });
+                #endregion
+
                 ApplicationLog.ErrorLog(ex);
             }
 
