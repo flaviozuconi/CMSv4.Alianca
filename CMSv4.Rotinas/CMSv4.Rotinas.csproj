@@ -59,6 +59,7 @@
     <Compile Include="Base\RotinaBase.cs" />
     <Compile Include="Base\Rotinas.cs" />
     <Compile Include="Base\Util.cs" />
+    <Compile Include="RotinaIntegracao.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicarAgendados.cs" />
   </ItemGroup>

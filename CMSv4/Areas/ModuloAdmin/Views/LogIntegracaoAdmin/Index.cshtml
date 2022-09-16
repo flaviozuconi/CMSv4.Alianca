@@ -1,7 +1,7 @@
 ﻿@{
     var portal = PortalAtual.Obter;
     var salvo = (bool?)TempData["Salvo"] ?? false;
-    var urlEditar = string.Format("/cms/{0}/Assuntos/item", portal.Diretorio);
+    var urlEditar = string.Format("/cms/{0}/logintegracaoadmin/item", portal.Diretorio);
 }
 
 
@@ -38,7 +38,7 @@
             //DataTables Initialization
             $('#lista').dataTable(
                 {
-                    "ajax": "/cms/@portal.Diretorio/Assuntos/Listar",
+                    "ajax": "/cms/@portal.Diretorio/logintegracaoadmin/Listar",
                     "order": [[0, "desc"]],
                     "columns": [
                         @Helpers.ColunaEditar("Codigo", urlEditar, "Codigo"),

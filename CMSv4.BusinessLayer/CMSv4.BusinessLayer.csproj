@@ -187,6 +187,7 @@
     <Compile Include="Base\Listas\BLListaConteudo.cs" />
     <Compile Include="Base\LogErro\BLLogErro.cs" />
     <Compile Include="Base\LoginAdmin\BLLoginAdmin.cs" />
+    <Compile Include="Base\LogIntegracao\BLLogIntegracaoAdmin.cs" />
     <Compile Include="Base\Menu\BLMenuModulo.cs" />
     <Compile Include="Base\Multimidia\BLMultimidiaArquivo.cs" />
     <Compile Include="Base\Multimidia\BLMultimidiaCategoria.cs" />

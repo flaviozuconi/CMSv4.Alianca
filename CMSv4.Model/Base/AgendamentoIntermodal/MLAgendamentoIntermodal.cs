@@ -134,11 +134,20 @@ namespace CMSv4.Model
         [DataField("AIL_C_JSON", SqlDbType.VarChar, -1)]
         public string Json { get; set; }
 
+        [DataField("AIL_C_IMAGEM", SqlDbType.VarChar, -1)]
+        public string Imagem { get; set; }
+
+        [DataField("AIL_C_SUCESSO", SqlDbType.VarChar, -1)]
+        public string RetornoAPI { get; set; }
+
         [DataField("AIL_C_TIPO", SqlDbType.VarChar, 100)]
         public string Tipo { get; set; }
 
         [DataField("AIL_D_REGISTRO", SqlDbType.DateTime)]
         public DateTime? DataCadastro { get; set; }
+
+        [DataField("AIL_B_INTEGRADO", SqlDbType.Bit)]
+        public bool? isIntegrado { get; set; }
     }
     #endregion  
 

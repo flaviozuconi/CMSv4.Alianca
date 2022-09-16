@@ -116,13 +116,9 @@ namespace CMSv4.Model
         }
 
         public string ValorNfeFormatado { get; set; }
-
         public string Sequencia { get; set; }
         public string ProximaSequencia { get; set; }
-
         public bool IsLinhaExcluida { get; set; }
-
-
         public string caminhoCompleto { get; set; }
     }
     #endregion

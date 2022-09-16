@@ -569,9 +569,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                 justification = "Justificativa",
                 createdDate = DateTime.Now
             });
-
-
-
             #endregion
             
             #region create
@@ -664,30 +661,34 @@ namespace CMSApp.Areas.Modulo.Controllers
                     retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
                 }
 
-                #region grava o json na nossa base
+                if (model?.lstCarga.Count > 0 && !string.IsNullOrEmpty(retorno)) SendFile(retorno, model?.lstCarga);
+
+                #region Grava o json na nossa base
 
                 var imagens =  string.Join(",", model?.lstCarga.Select(obj => obj.caminhoCompleto));
 
                 CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
                 {
                     DataCadastro = DateTime.Now,
-                    Json = jsonSerialize + (!string.IsNullOrEmpty(imagens) ? " Imagens:" + imagens : string.Empty) + (!string.IsNullOrEmpty(retorno) ? " Retorno API:" + retorno : string.Empty),
-                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar"
+                    Json = jsonSerialize,
+                    Imagem = (!string.IsNullOrEmpty(imagens) ? imagens : string.Empty),
+                    RetornoAPI =  (!string.IsNullOrEmpty(retorno) ? retorno : string.Empty),
+                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar",
+                    isIntegrado = true
                 });
                 #endregion
-
-                if (model?.lstCarga.Count > 0 && !string.IsNullOrEmpty(retorno)) SendFile(retorno, model?.lstCarga);
 
                 #endregion
             }
             catch (Exception ex)
             {
-                #region grava o json na nossa base
+                #region Grava o json na nossa base
                 CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
                 {
                     DataCadastro = DateTime.Now,
                     Json = jsonSerialize,
-                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar"
+                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar",
+                    isIntegrado = false
                 });
                 #endregion
 
@@ -711,31 +712,24 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 foreach (var item in lstCarga)
                 {
-                    try
-                    {
-                        string fileName = string.Format("{0}{1}", Server.MapPath("~"), item.caminhoCompleto.Replace(Request.Url.Scheme + "://" + Request.Url.Authority + "/", string.Empty));
+                    string fileName = string.Format("{0}{1}", Server.MapPath("~"), item.caminhoCompleto.Replace(Request.Url.Scheme + "://" + Request.Url.Authority + "/", string.Empty));
 
-                        using (HttpClient client = new HttpClient())
-                        using (MultipartFormDataContent content = new MultipartFormDataContent())
-                        using (FileStream fileStream = System.IO.File.OpenRead(fileName))
-                        using (StreamContent fileContent = new StreamContent(fileStream))
+                    using (HttpClient client = new HttpClient())
+                    using (MultipartFormDataContent content = new MultipartFormDataContent())
+                    using (FileStream fileStream = System.IO.File.OpenRead(fileName))
+                    using (StreamContent fileContent = new StreamContent(fileStream))
+                    {
+                        fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
                         {
-                            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-                            {
-                                FileName = item.Arquivo
-                            };
+                            FileName = item.Arquivo
+                        };
 
-                            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-                            fileContent.Headers.Add("name", item.Arquivo);
-                            content.Add(fileContent);
+                        fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+                        fileContent.Headers.Add("name", item.Arquivo);
+                        content.Add(fileContent);
 
-                            var result = client.PostAsync(BLConfiguracao.UrlIntegracaoArquivo + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + obj.id + "&actionId=1", content).Result;
-                            result.EnsureSuccessStatusCode();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        ApplicationLog.ErrorLog(ex);
+                        var result = client.PostAsync(BLConfiguracao.UrlIntegracaoArquivo + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + obj.id + "&actionId=1", content).Result;
+                        result.EnsureSuccessStatusCode();
                     }
                 }
             }
