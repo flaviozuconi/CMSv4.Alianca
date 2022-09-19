@@ -287,7 +287,7 @@ namespace Framework.Utilities
             public const string NovaSenha = "/templates/email-usuario-nova-senha.html";
             public const string EmailCompartilhar = "/templates/email-compartilhar.html";
             public const string EmailConfirmacaoCadastro = "/templates/email-confirmacao.html";
-            
+            public const string EmailErroMovidesk = "/templates/email-erro-movidesk.html";
         }
     }
 

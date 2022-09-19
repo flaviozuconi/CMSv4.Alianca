@@ -2024,6 +2024,7 @@
     <Content Include="Content\css\pagespeed\bootstrap-custom.css.map" />
     <Content Include="Content\css\pagespeed\lighthouse.css.map" />
     <None Include="Properties\PublishProfiles\Alex Garcia.pubxml" />
+    <Content Include="Templates\email-erro-movidesk.html" />
     <Content Include="Templates\email-usuario-alterar-senha-eng.html" />
     <Content Include="Templates\email-compartilhar-pagina.html" />
     <Content Include="Templates\email-compartilhar.html" />
