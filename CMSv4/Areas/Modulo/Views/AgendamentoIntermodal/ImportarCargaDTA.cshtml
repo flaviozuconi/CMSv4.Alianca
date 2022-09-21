@@ -1,0 +1,263 @@
+﻿@model MLAgendamentoIntermodalImportacao
+@{
+    var portal = BLPortal.Atual;
+    var urlUpload = "/cms/" + portal.Diretorio + "/AgendamentoIntermodal/uploadArquivos";
+
+    var hora = DateTime.Now.Hour;
+    var minuto = DateTime.Now.Minute;
+}
+
+
+<div class="form-section" id="divCarga">
+    <h3 class="form-section__title">@T("Informações de Carga")</h3>
+    <p class="text-center">@T("Utilize os campos abaixo para registrar os containers. Indique a quantidade de containers por NF-e.")</p>
+    <div class="row justify-content-center mb-5">
+        <div class="col-24 col-md-12 col-lg-10 col-xl-8">
+            <div class="form-group">
+                <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-block" id="btnContainerNf">
+                    <span class="icon icon-plus"></span>
+                    @T("Um container com uma NF-e")
+                </a>
+            </div>
+        </div>
+        <div class="col-24 col-sm-10 col-md-8 col-lg-8">
+            <div class="form-group">
+                <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-block" id="btnContainerVariasNf">
+                    <span class="icon icon-plus"></span>
+                    @T("Um container com várias NF-e")
+                </a>
+            </div>
+        </div>
+        <div class="col-24 col-sm-10 col-md-8 col-lg-8">
+            <div class="form-group">
+                <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-block" id="btnNfVariosConteiner">
+                    <span class="icon icon-plus"></span>
+                    @T("Uma NF-e para vários containers")
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="hdfSeqContainer" value="01" />
+    <input type="hidden" id="hdfTipoFormulario" value="" />
+
+    <form id="FormCarga" class="form" enctype="multipart/form-data">
+        <div class="row justify-content-center" id="divContainerNf">
+            <div class="col-24 col-sm-12 col-xl-6">
+                <div class="form-group">
+                    <label for="dataEntrega" class="form-label">Data e hora da Entrega</label>
+                    <input type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-dd")T00:00" id="dataEntrega" name="DataEntrega" class="form-control">
+                </div>
+            </div>
+            <div class="col-24 col-sm-12 col-xl-6" id="divNfContainerNf">
+                <div class="form-group">
+                    <label for="numeroNfe" class="form-label">Número da NF-e</label>
+                    <input type="text" class="form-control" id="numeroNfe" name="NumeroNfe" placeholder="9999999" maxlength="7">
+                </div>
+            </div>
+            <div class="col-24 col-sm-12 col-xl-6">
+                <div class="form-group">
+                    <label for="valorNfe" class="form-label">Valor da NF-e</label>
+                    <input type="text" class="form-control" id="valorNfe" name="ValorNfeFormatado"  placeholder="R$ 9.999,99" maxlength="13" />
+                </div>
+            </div>
+            <div class="col-24 col-sm-12 col-xl-6">
+                <div class="form-group">
+                    <label for="container" class="form-label" id="lblContainer">Nº do Container 01</label>
+                    <input type="text" class="form-control" id="container" name="Container" placeholder="99.999.999" maxlength="10" />
+                </div>
+            </div>
+            <div class="col-24 col-md-12 col-lg-9 col-xl-6" id="divAnexoContainerNf">
+                <div class="form-group">
+                    <label for="" class="form-label">
+                        <span class="icon icon-paperclip"></span>
+                        Anexar NF-e
+                    </label>
+                    <div id="divArquivosNfContainerNf" style="border:2px dashed #dee2e6;border-radius:10px;font-size:17px;padding:20px;display:none;"></div>
+                    <div id="arquivoNfContainerNf" class="dropzone">
+                        <div class="fallback">
+                            <input type="file" name="fileNfContainerNf" id="fileNfContainerNf" />
+                        </div>
+                    </div>
+                    <div id="divExclusaoContainerNf">
+                    </div>
+                </div>
+            </div>
+            <div class="col-24 col-md-12 col-lg-15 col-xl-12">
+                <div class="form-group">
+                    <label for="comentario" class="form-label">Comentários / Referência interna</label>
+                    <textarea class="form-control" rows="4" id="comentario" name="Comentario" maxlength="300"></textarea>
+                    <span class="form-counter jqComentario">0 de 300</span>
+                </div>
+            </div>
+            <div class="col-24 col-md-12 col-lg-9 col-xl-6 d-flex align-items-end">
+                <div class="form-group">
+                    <a href="javascript:void(0)" class="btn btn-red btn-icon btn-block mb-4 btnCancelarCargaJQ" style="margin:0px!important;">
+                        <span class="icon icon-chevron-left"></span>
+                        Voltar
+                    </a>
+                    <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-block mb-4 btnSalvarCargaJQ">
+                        <span class="icon icon-plus"></span>
+                        Registrar Containers
+                    </a>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <form id="FormCargaVariasNf" class="form">
+        <input type="hidden" name="CodigoImportacao" id="codigoImportarVariasNf" value="" />
+        <input type="hidden" name="guid" id="guidVariasNf" value="" />
+        <div id="divContainerVariasNf">
+            <div class="row mt-5">
+                <div class="col-24 col-sm-12 col-xl-6">
+                    <div class="form-group">
+                        <label for="dataEntregaVariasNf" class="form-label">Data e hora da Entrega</label>
+                        <input type="datetime-local" min="@DateTime.Now.ToString("yyyy-MM-dd")T00:00" class="form-control" placeholder="" id="dataEntregaVariasNf" name="DataEntrega">
+                    </div>
+                </div>
+                <div class="col-24 col-sm-12 col-xl-6">
+                    <div class="form-group">
+                        <input type="hidden" id="hdfSeqContainerVariasNf" name="Sequencia" value="01" />
+                        <label for="container" class="form-label" id="lblContainerVariasNf">Nº do Container 01</label>
+                        <input type="text" class="form-control" placeholder="99.999.999" id="containerVariasNf" name="Container" maxlength="10">
+                    </div>
+                </div>
+                <div class="col-24 col-xl-12">
+                    <div class="form-group">
+                        <label for="comentarioVariasNf" class="form-label">Comentários / Referência interna</label>
+                        <textarea class="form-control" rows="4" id="comentarioVariasNf" name="Comentario" maxlength="300"></textarea>
+                        <span class="form-counter jqComentarioVariasNf">0 de 300</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nfe-list listVariasNfJQ">
+
+            </div>
+
+            <div class="text-center mt-5">
+                <a href="javascript:void(0)" class="btn btn-red btn-icon btn-lg btnCancelarCargaVariasNfJQ" style="width: 279px;">
+                    <span class="icon icon-chevron-left"></span>
+                    Voltar
+                </a>
+                <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-lg btnSalvarCargaVariasNfJQ">
+                    <span class="icon icon-plus"></span>
+                    Registrar Containers
+                </a>
+            </div>
+
+        </div>
+    </form>
+
+    <form class="form" id="FormCargaNfVariosContainer">
+        <input type="hidden" id="codigoImportarVariosContainer" name="CodigoImportacao" value="" />
+        <input type="hidden" id="hdfSeqContainerVariosContainer" value="01" />
+        <input type="hidden" id="guidVariosContainer" name="guid" value="" />
+        <div id="divNfVariosContainer">
+            <div class="form-section">
+                <div class="row justify-content-center">
+                    <div class="col-24 col-sm-12 col-md-8 col-lg-7 col-xl-6" id="divNfVariosContainerNf">
+                        <div class="form-group">
+                            <label for="numeroNfeVariosContainer" class="form-label">Número da NF-e</label>
+                            <input type="text" class="form-control" placeholder="9999999" name="NumeroNfe" id="numeroNfeVariosContainer" maxlength="7">
+                        </div>
+                    </div>
+                    <div class="col-24 col-sm-12 col-md-8 col-lg-7 col-xl-6">
+                        <div class="form-group">
+                            <label for="valorNfeVariosContainer" class="form-label">Valor da NF-e</label>
+                            <input type="text" class="form-control" id="valorNfeVariosContainer" name="ValorNfe" placeholder="R$ 9.999,99" maxlength="13" />
+                        </div>
+                    </div>
+                    <div class="col-24 col-md-8 col-lg-10 col-xl-8" id="divNfVariosContainerAnexo">
+                        <div class="form-group">
+                            <label for="" class="form-label">
+                                <span class="icon icon-paperclip"></span>
+                                Anexar NF-e
+                            </label>
+                            <div id="divArquivosNfVariosContainerNf" style="border:2px dashed #dee2e6;border-radius:10px;font-size:17px;padding:20px;display:none;"></div>
+                            <div id="arquivoNfVariosContainerNf" class="dropzone">
+                                <div class="fallback">
+                                    <input type="file" name="fileNfVariosContainer" id="fileNfVariosContainer" />
+                                </div>
+                            </div>
+                            <div id="divExclusaoNfVariosContainer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nfe-list listVariosContainerJQ">
+
+                </div>
+            </div>
+            <div class="text-center mt-5">
+                <a href="javascript:void(0)" class="btn btn-red btn-icon btn-lg btnCancelarCargaVariosContainerJQ" style="width: 279px;">
+                    <span class="icon icon-chevron-left"></span>
+                    Voltar
+                </a>
+                <a href="javascript:void(0)" class="btn btn-darkgray btn-icon btn-lg btnSalvarCargaVariosContainerJQ">
+                    <span class="icon icon-plus"></span>
+                    Registrar Containers
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="form-section">
+    <form class="form">
+        <div class="form-section" id="divRegistrosCargas">
+            <h3 class="form-section__title">Containers Registrados</h3>
+
+            <input type="hidden" name="LinhaExcluir" id="LinhaExcluir" value="" />
+            <input type="hidden" name="CodigoExcluir" id="CodigoExcluir" value="" />
+
+
+            <div class="table-responsive" id="divRegistrosImportarCargas">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <td>Sequência</td>
+                            <td>Container</td>
+                            <td>Data Entrega</td>
+                            <td>Comentário</td>
+                            <td>Valor</td>
+                            <td>NFe</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div class="form-group text-center">
+                <a href="javascript:void(0)" class="btn btn-red btn-lg btn-icon btnAgendarImportarJQ">
+                    <span class="icon icon-truck"></span>
+                    Agendar Entrega
+                </a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal modal-confirmacao fade divExclusao" id="modalConfirmacao" tabindex="-1" aria-labelledby="modalConfirmacao" aria-hidden="true">
+    <input type="hidden" name="CodigoExcluir" id="CodigoExcluir" value="" />
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalConfirmacao"><strong>@T("Excluir")</strong></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @T("Deseja realmente excluir o container?")
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel btnNaoExcluirJQ" data-dismiss="modal">@T("Cancelar")</button>
+                <button type="button" class="btn btn-delete btnExcluirJQ" data-dismiss="modal">@T("Excluir")</button>
+            </div>
+        </div>
+    </div>
+</div>
