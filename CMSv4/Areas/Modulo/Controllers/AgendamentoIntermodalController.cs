@@ -471,8 +471,10 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
+                var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Person" })?.Valor ?? "https://api.movidesk.com/public/v1/persons";
+
                 #region Request para inserção de pessoa
-                var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoPerson + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
+                var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
                 webRequest.ContentType = "application/json; charset=utf-8";
                 webRequest.Method = "POST";
                 
@@ -499,8 +501,10 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 try
                 {
+                    var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Person" })?.Valor ?? "https://api.movidesk.com/public/v1/persons";
+
                     #region Get para recber a pessoa
-                    var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoPerson + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=461505746"); // "&id=Agendamento_" + model.Codigo);
+                    var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=461505746"); // "&id=Agendamento_" + model.Codigo);
                     webRequest.ContentType = "application/json; charset=utf-8";
                     webRequest.Method = "GET";
 
@@ -638,8 +642,10 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
+                var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Ticket" })?.Valor ?? "https://api.movidesk.com/public/v1/tickets";
+
                 #region Request para inserção de ticket
-                var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoTicket + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
+                var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
                 webRequest.ContentType = "application/json; charset=utf-8";
                 webRequest.Method = "POST";
                 
@@ -735,7 +741,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                         fileContent.Headers.Add("name", item.Arquivo);
                         content.Add(fileContent);
 
-                        var result = client.PostAsync(BLConfiguracao.UrlIntegracaoArquivo + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + obj.id + "&actionId=1", content).Result;
+                        var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Arquivo" })?.Valor ?? "https://api.movidesk.com/public/v1/ticketFileUpload?";
+
+                        var result = client.PostAsync(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + obj.id + "&actionId=1", content).Result;
                         result.EnsureSuccessStatusCode();
                     }
                 }
@@ -844,6 +852,19 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         [CheckPermission(global::Permissao.Publico)]
         public ActionResult Importar(MLAgendamentoIntermodalImportacao model)
+        {
+            ViewData["estado"] = CRUD.Listar<MLEstado>();
+
+            return PartialView(model);
+        }
+        #endregion
+
+        #region Importar DTA
+        /// <summary>
+        ///Importar
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ImportarDTA(MLAgendamentoIntermodalImportacao model)
         {
             ViewData["estado"] = CRUD.Listar<MLEstado>();
 
@@ -1056,6 +1077,17 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         [CheckPermission(global::Permissao.Publico)]
         public ActionResult ImportarCarga(MLAgendamentoIntermodalImportacao model)
+        {
+            return PartialView(model);
+        }
+        #endregion
+         
+        #region Importar Carga DTA
+        /// <summary>
+        ///Escolher Tipo
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ImportarCargaDTA(MLAgendamentoIntermodalImportacao model)
         {
             return PartialView(model);
         }
@@ -1433,7 +1465,6 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                         model.lstCarga = new List<MLAgendamentoIntermodalImportacaoCarga>();
 
-
                         var lstNf = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
                         var diretorioNf = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
                         //var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
@@ -1442,7 +1473,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                             if (!string.IsNullOrEmpty(nf.Arquivo))
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = nf.Arquivo, caminhoCompleto = diretorioNf + nf.Arquivo });
                         }
-
 
                         var lstDeclaracaoImportacao = CRUD.Listar(new MLAgendamentoIntermodalArquivoDeclaracaoImportacao { CodigoImportacao = codigo }, portal.ConnectionString);
                         var diretorioDeclaracao = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoDeclaracao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
@@ -1453,20 +1483,18 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioDeclaracao + item.Arquivo });
                         }
 
-
                         var lstGuia = CRUD.Listar(new MLAgendamentoIntermodalArquivoGare { CodigoImportacao = codigo }, portal.ConnectionString);
                         var diretorioGuia = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
-                        //var pastaGuia = HttpContextFactory.Current.Server.MapPath(diretorioGuia);
+                       
                         foreach (var item in lstGuia)
                         {
                             if (!string.IsNullOrEmpty(item.Arquivo))
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioGuia + item.Arquivo });
                         }
 
-
                         var lstBl = CRUD.Listar(new MLAgendamentoIntermodalArquivoBl { CodigoImportacao = codigo }, portal.ConnectionString);
                         var diretorioBl = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoBl(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
-                        //var pastaBl = HttpContextFactory.Current.Server.MapPath(diretorioBl);
+
                         foreach (var item in lstBl)
                         {
                             if (!string.IsNullOrEmpty(item.Arquivo))

@@ -65,8 +65,10 @@ namespace CMSv4.BusinessLayer
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
+                var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Ticket" })?.Valor ?? "https://api.movidesk.com/public/v1/tickets";
+
                 #region Request para inserção de ticket
-                var webRequest = (HttpWebRequest)WebRequest.Create(BLConfiguracao.UrlIntegracaoTicket + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
+                var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
                 webRequest.ContentType = "application/json; charset=utf-8";
                 webRequest.Method = "POST";
 
@@ -139,7 +141,9 @@ namespace CMSv4.BusinessLayer
                             fileContent.Headers.Add("name", item);
                             content.Add(fileContent);
 
-                            var result = client.PostAsync(BLConfiguracao.UrlIntegracaoArquivo + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + obj.id + "&actionId=1", content).Result;
+                            var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Arquivo" })?.Valor ?? "https://api.movidesk.com/public/v1/ticketFileUpload?";
+
+                            var result = client.PostAsync(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + obj.id + "&actionId=1", content).Result;
                             result.EnsureSuccessStatusCode();
                         }
                     }

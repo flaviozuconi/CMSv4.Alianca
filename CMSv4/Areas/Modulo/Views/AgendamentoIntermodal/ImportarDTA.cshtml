@@ -64,38 +64,21 @@
                 </div>
             </div>
 
-
             <div class="row justify-content-center">
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
                     <div class="form-group">
                         <input type="hidden" id="hdfFileDeclaracaoImportacao" />
                         <label for="" class="form-label">
                             <span class="icon icon-paperclip"></span>
-                            @T("Declaração de Importação")
+                            @T("DTA")
                         </label>
                         <div id="arquivoDeclaracaoImportacao" class="dropzone dropExcluirJq">
                             <div class="fallback">
                                 <input type="file" name="fileDeclaracaoImportacao" id="fileDeclaracaoImportacao" />
                             </div>
                         </div>
-                        <a href="#modalDeclaracao" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> Visualizar arquivos</a>
-                        <span class="qtd-arquivos"><strong><span id="spanQtdeDeclaracao">0</span></strong> arquivos adicionados</span>
-                    </div>
-                </div>
-                <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
-                    <div class="form-group">
-                        <input type="hidden" id="hdfFileGuiaArrecadacao" />
-                        <label for="" class="form-label">
-                            <span class="icon icon-paperclip"></span>
-                            GARE <small>@T("(Guia de Arrecadação de Receitas Estaduais)")</small>
-                        </label>
-                        <div id="arquivoGuiaArrecadacao" class="dropzone dropExcluirJq">
-                            <div class="fallback">
-                                <input type="file" name="fileGuiaArrecadacao" id="fileGuiaArrecadacao" />
-                            </div>
-                        </div>
-                        <a href="#modalGARE" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> Visualizar arquivos</a>
-                        <span class="qtd-arquivos"><strong><span id="spanQtdeGare">0</span></strong> arquivos adicionados</span>
+                        <a href="#modalDeclaracao" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> @T("Visualizar arquivos")</a>
+                        <span class="qtd-arquivos"><strong><span id="spanQtdeDeclaracao">0</span></strong> @T("arquivos adicionados")</span>
                     </div>
                 </div>
                 <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
@@ -110,13 +93,12 @@
                                 <input type="file" name="fileBl" id="fileBl" />
                             </div>
                         </div>
-                        <a href="#modalBL" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> Visualizar arquivos</a>
-                        <span class="qtd-arquivos"><strong><span id="spanQtdeBl">0</span></strong> arquivos adicionados</span>
+                        <a href="#modalBL" data-toggle="modal" class="btn-arquivos"><span class="icon icon-paperclip"></span> @T("Visualizar arquivos")</a>
+                        <span class="qtd-arquivos"><strong><span id="spanQtdeBl">0</span></strong> @T("arquivos adicionados")</span>
                     </div>
                 </div>
             </div>
         </div>
-
 
         <div class="form-section">
             <h3 class="form-section__title">@T("Local de Entrega")</h3>
@@ -138,7 +120,7 @@
                                     <span class="sr-only">@T("Pesquisar")</span>
                                 </button>
                             </div>
-                            <label id="CEP-error" class="is-invalid invalidCepJQ" for="cep">O campo é obrigatório</label>
+                            <label id="CEP-error" class="is-invalid invalidCepJQ" for="cep">@T("O campo é obrigatório")</label>
                         </div>
                     </div>
                 </div>
@@ -192,57 +174,30 @@
                 </a>
             </div>
         </div>
-
     </form>
-
-
-
 
     <link href="~/Content/css/plugins/dropzone/css/dropzone.css" rel="stylesheet" />
     <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
 
-    @Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
-
-
+    @Html.Action("ImportarCargaDTA", "AgendamentoIntermodal", new { model = Model })
 </div>
-
 
 <div class="modal modal-arquivos fade" id="modalDeclaracao" tabindex="-1" aria-labelledby="modalDeclaracao" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalDeclaracao"><strong>Arquivos</strong></h5>
+                <h5 class="modal-title" id="modalDeclaracao"><strong>@T("Arquivos")</strong></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body" id="divTableDeclaracao">
-                <span id="spanNenhumDeclaracao">Nenhum arquivo adicionado</span>
+                <span id="spanNenhumDeclaracao">@T("Nenhum arquivo adicionado")</span>
                 <table class="table" id="tabelaDeclaracao">
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="modal modal-arquivos fade" id="modalGARE" tabindex="-1" aria-labelledby="modalGARE" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalGARE"><strong>Arquivos</strong></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <span id="spanNenhumGare">Nenhum arquivo adicionado</span>
-                <table class="table" id="tabelaGare">
-                </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-fechar" data-dismiss="modal">@T("Fechar")</button>
             </div>
         </div>
     </div>
@@ -251,13 +206,13 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalBL"><strong>Arquivos</strong></h5>
+                <h5 class="modal-title" id="modalBL"><strong>@T("Arquivos")</strong></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <span id="spanNenhumBl">Nenhum arquivo adicionado</span>
+                <span id="spanNenhumBl">@T("Nenhum arquivo adicionado")</span>
                 <table class="table" id="tabelaBl">
                 </table>
             </div>
@@ -268,9 +223,6 @@
     </div>
 </div>
 
-
-
-
 @Html.Action("ExportarSucesso", "AgendamentoIntermodal", new { model = Model })
 
 @{
@@ -278,9 +230,7 @@
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCarga", new { model = Model }));
 
     <script type="text/javascript">
-
         /*  FORM UPLOAD */
-
         Dropzone.options.arquivoDeclaracaoImportacao = {
             url: "@urlUploadDeclaracaoImportacao",
             dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
@@ -332,61 +282,6 @@
                 }
             }
         };
-
-
-
-        Dropzone.options.arquivoGuiaArrecadacao = {
-            url: "@urlUploadGuiaArrecadacao",
-            dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
-            dictCancelUpload: "@TAdm("Cancelar upload")",
-            dictCancelUploadConfirmation: "@TAdm("Cancelar upload")",
-            dictMaxFilesExceeded: "@TAdm("Atingiu a quantidade de uploads permitidos")",
-            dictFileTooBig: "@TAdm("Arquivo excedeu o tamanho permitido")",
-            dictFallbackMessage: "@TAdm("Seu browser não suporta Drag and Drop")",
-            maxFiles: 50,
-            parallelUploads: 1,
-            paramName: "file",
-            sending: function (file, xhr, formData) {
-                formData.append('guid', $("#hdfGuid").val());
-            },
-            accept: function (file, done) {
-                ///Definir aqui quais extensões
-                ///de arquivos a restringir
-                done();
-            },
-            complete: function (file) {
-                objResponse = JSON.parse(file.xhr.response);
-
-                this.removeFile(file);
-
-                if (!objResponse.success) {
-                    alert(objResponse.msg);
-                    //this.removeFile(file);
-                }
-                else {
-                    $("#hdfGuid").val(objResponse.Guid);
-
-                    if ($("#tabelaGare #" + objResponse.NomeLinha).length == 0) {
-                        var contador = parseInt($("#spanQtdeGare").html());
-                        $("#spanQtdeGare").html((contador + 1).toString());
-
-                        if ($("#spanQtdeGare").html() != 0) {
-                            $("#spanNenhumGare").html('');
-                        }
-
-                        var registro = "<tr id=" + objResponse.NomeLinha + ">" +
-                            "<td>" + objResponse.NomeArquivo + "</td>" +
-                            "<td><a href='javascript:ExcluirArquivoGare(\"" + objResponse.NomeArquivo + "\", \"" + objResponse.NomeLinha + "\")' class='icon icon-delete'><span class='sr-only'>Excluir</span></a></td>" +
-                            "</tr>";
-
-                        $("#tabelaGare").append(registro);
-                    }
-
-                    $("#hdfFileGuiaArrecadacao").val("1");
-                }
-            }
-        };
-
 
         Dropzone.options.arquivoBl = {
             url: "@urlUploadBL",
@@ -440,7 +335,6 @@
             }
         };
 
-
         Dropzone.options.arquivoNfContainerNf = {
             url: "@urlNfContainer",
             dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
@@ -482,7 +376,6 @@
                 }
             }
         };
-
 
         Dropzone.options.arquivoNfVariosContainerNf = {
             url: "@urlNfContainer",
@@ -574,8 +467,5 @@
                 }
             });
         }
-
-
-
     </script>
 }

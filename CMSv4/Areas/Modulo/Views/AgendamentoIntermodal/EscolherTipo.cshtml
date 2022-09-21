@@ -1,10 +1,13 @@
 ﻿@model MLModuloAgendamentoIntermodal
 
 <div class="row justify-content-center mt-5">
-    <div class="col-24 col-sm-12 col-md-10 col-lg-7 col-xl-6">
-        <a href="@Model.UrlExportacao" class="btn btn-white btn-block btn-lg mb-4">Exportação</a>
+    <div class="col-24 col-sm-8 col-md-5 col-lg-4 col-xl-6">
+        <a href="@Model.UrlExportacao" class="btn btn-white btn-block btn-lg mb-4">@T("Exportação")</a>
     </div>
-    <div class="col-24 col-sm-12 col-md-10 col-lg-7 col-xl-6">
-        <a href="@Model.UrlImportacao" class="btn btn-white btn-block btn-lg mb-4">Importação</a>
-    </div>
+    <div class="col-24 col-sm-8 col-md-5 col-lg-4 col-xl-6">
+        <a href="@Model.UrlImportacao" class="btn btn-white btn-block btn-lg mb-4">@T("Importação")</a>
+</div>
+     <div class="col-24 col-sm-8 col-md-5 col-lg-4 col-xl-6">
+         <a href="@Model.UrlImportacaoDTA" class="btn btn-white btn-block btn-lg mb-4">@T("Importação DTA")</a>
+</div>
 </div>

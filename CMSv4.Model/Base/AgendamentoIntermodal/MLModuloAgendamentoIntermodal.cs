@@ -25,6 +25,10 @@ namespace CMSv4.Model
         [DataField("AIN_C_URL_IMPORTACAO", SqlDbType.VarChar, 500)]
         public string UrlImportacao { get; set; }
 
+        [StringLength(500)]
+        [DataField("AIN_C_URL_IMPORTACAO_DTA", SqlDbType.VarChar, 500)]
+        public string UrlImportacaoDTA { get; set; }
+
         [DataField("AIN_D_REGISTRO", SqlDbType.DateTime)]
         public DateTime? DataRegistro { get; set; }
 
