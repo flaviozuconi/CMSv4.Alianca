@@ -1080,8 +1080,6 @@
             }
             registro += "<td><a href='#modalConfirmacao' data-toggle='modal' onClick='excluirCarga(\"" + nomeLinha + "\" ,\"" + codigos + "\")' class='icon icon-delete'><span class='sr-only'>Delete</span></a></td>";
 
-
-
             $(".table tbody").append(registro);
 
             $('#hdfSeqContainer').val(model.LstContainer[model.LstContainer.length - 1].ProximaSequencia);
@@ -1094,19 +1092,29 @@
         }
     }
 
-
     $(".btnAgendarImportarJQ").on("click", function () {
+        $('#modalPopupConfirmacao').modal('show');
+    });
+
+    $(".btnSimPopupConfirmacaoJQ").on("click", function (e) {
+        e.preventDefault();
+        $('#modalPopupConfirmacao').modal('show');
+        $(".btnSimPopupConfirmacaoJQ").prop('disabled', true);
+        $(".mensagemModal").text("Aguarde, estamos enviando a sua solicitação!");
+
           $.ajax({
             type: "POST",
               url: "/cms/@portal.Diretorio/AgendamentoIntermodal/IntegrarImportar",
               data: {
                   codigo: $("#codigoImportar").val(),
-                  Html: $("#divRegistrosImportarCargas").html()
+                  Html: $("#divRegistrosImportarCargas").html(),
+                  Tipo: $("#Tipo").val()
               },
             success: function (data) {
                 if (data.success == true) {
                     $(".agendamentoJQ").hide();
                     $(".sucessoJQ").fadeIn("slide");
+                    $('#modalPopupConfirmacao').modal('hide');
                 }
             },
             error: function (data) {

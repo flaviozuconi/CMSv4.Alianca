@@ -215,6 +215,18 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
+        #region Popup Confirmacao
+
+        /// <summary>
+        /// Popup Confirmacao
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult PopupConfirmacao()
+        {
+            return View();
+        }
+        #endregion
+
         #region Exportar Sucesso
         /// <summary>
         /// Exportar Sucesso
@@ -318,7 +330,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 {
                     var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
 
-                    if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html);
+                    if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html, model.Tipo);
 
                     return Json(new { success = true });
                 }
@@ -534,7 +546,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private string IntegrarTicket(string idCliente, MLAgendamentoIntermodal model, string Html)
+        private string IntegrarTicket(string idCliente, MLAgendamentoIntermodal model, string Html, string Tipo)
         {
             string retorno = string.Empty;
             string jsonSerialize = string.Empty;
@@ -679,7 +691,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     Json = jsonSerialize,
                     Imagem = (!string.IsNullOrEmpty(imagens) ? imagens : string.Empty),
                     RetornoAPI =  (!string.IsNullOrEmpty(retorno) ? retorno : string.Empty),
-                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar",
+                    Tipo = Tipo,
                     isIntegrado = true
                 });
                 #endregion
@@ -693,7 +705,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 {
                     DataCadastro = DateTime.Now,
                     Json = jsonSerialize,
-                    Tipo = model?.lstCarga.Count > 0 ? "Importar" : "Exportar",
+                    Tipo = Tipo,
                     isIntegrado = false
                 });
                 #endregion
@@ -1424,7 +1436,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         [HttpPost]
         [CheckPermission(global::Permissao.Publico)]
         [ValidateInput(false)]
-        public JsonResult IntegrarImportar(decimal codigo, string Html)
+        public JsonResult IntegrarImportar(decimal codigo, string Html, string tipo)
         {
             try
             {
@@ -1501,7 +1513,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioBl + item.Arquivo });
                         }
 
-                        if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html);
+                        if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html, tipo);
 
                         return Json(new { success = true });
                     }

@@ -16,9 +16,10 @@
     <form class="form" id="FormAgendamento">
         <div class="form-section">
             <div id="mensagem"></div>
-            
+
             <input type="hidden" name="CodigoExportar" id="CodigoExportar" value="" />
             <input type="hidden" name="Container" id="Container" value="1" />
+            <input type="hidden" name="Tipo" id="Tipo" value="Exportar" />
             <h3 class="form-section__title">@T("Informações de Contato")</h3>
             <div class="row">
                 <div class="col-24 col-md-12">
@@ -125,6 +126,7 @@
     </form>
 
     @Html.Action("ExportarCarga", "AgendamentoIntermodal", new { model = Model })
+    @Html.Action("PopupConfirmacao", "AgendamentoIntermodal", new { model = Model })
 </div>
 
 @Html.Action("ExportarModal", "AgendamentoIntermodal", new { model = Model })

@@ -2005,6 +2005,7 @@
     <Content Include="Areas\ModuloAdmin\Views\LogIntegracaoAdmin\Item.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ImportarDTA.cshtml" />
     <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\ImportarCargaDTA.cshtml" />
+    <Content Include="Areas\Modulo\Views\AgendamentoIntermodal\PopupConfirmacao.cshtml" />
     <None Include="bundleconfig.json" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\asp_net\main.ashx" />
     <Content Include="Content\js\plugins\ckeditor\plugins\fileman\conf.json" />

@@ -66,7 +66,7 @@ namespace CMSv4.Model
         public DateTime? DataRegistro { get; set; }
 
         public string NumeroBL { get; set; }
-
+        public string Tipo { get; set; }
         public List<MLAgendamentoIntermodalImportacaoCarga> lstCarga { get; set; }
 
         public MLAgendamentoIntermodal()

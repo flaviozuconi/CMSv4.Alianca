@@ -16,7 +16,7 @@
             <span class="icon icon-chevron-left"></span>
             @T("Voltar")
         </a>
-        <h2 class="box-title">@T("Importação")</h2>
+        <h2 class="box-title">@T("Importação DTA")</h2>
     </div>
 
     <form class="form" id="FormAgendamento" enctype="multipart/form-data">
@@ -24,6 +24,7 @@
         <div class="form-section">
             <div id="mensagem"></div>
             <input type="hidden" name="Codigo" id="codigoImportar" value="" />
+            <input type="hidden" name="Tipo" id="Tipo" value="ImportarDTA" />
             <h3 class="form-section__title">@T("Informações de Contato")</h3>
             <div class="row">
                 <div class="col-24 col-md-12">
@@ -65,7 +66,7 @@
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
+                <div class="col-24 col-md-12 col-lg-12 d-flex align-items-end">
                     <div class="form-group">
                         <input type="hidden" id="hdfFileDeclaracaoImportacao" />
                         <label for="" class="form-label">
@@ -81,7 +82,7 @@
                         <span class="qtd-arquivos"><strong><span id="spanQtdeDeclaracao">0</span></strong> @T("arquivos adicionados")</span>
                     </div>
                 </div>
-                <div class="col-24 col-md-12 col-lg-8 d-flex align-items-end">
+                <div class="col-24 col-md-12 col-lg-12 d-flex align-items-end">
                     <div class="form-group">
                         <input type="hidden" id="hdfFileBl" />
                         <label for="" class="form-label">
@@ -180,6 +181,8 @@
     <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
 
     @Html.Action("ImportarCargaDTA", "AgendamentoIntermodal", new { model = Model })
+
+    @Html.Action("PopupConfirmacao", "AgendamentoIntermodal", new { model = Model })
 </div>
 
 <div class="modal modal-arquivos fade" id="modalDeclaracao" tabindex="-1" aria-labelledby="modalDeclaracao" aria-hidden="true">

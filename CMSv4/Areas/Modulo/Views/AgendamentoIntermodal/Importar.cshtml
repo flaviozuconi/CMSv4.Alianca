@@ -24,6 +24,7 @@
         <div class="form-section">
             <div id="mensagem"></div>
             <input type="hidden" name="Codigo" id="codigoImportar" value="" />
+            <input type="hidden" name="Tipo" id="Tipo" value="Importar" />
             <h3 class="form-section__title">@T("Informações de Contato")</h3>
             <div class="row">
                 <div class="col-24 col-md-12">
@@ -195,34 +196,28 @@
 
     </form>
 
-
-
-
     <link href="~/Content/css/plugins/dropzone/css/dropzone.css" rel="stylesheet" />
     <script src="~/Content/js/plugins/dropzone/dropzone.js"></script>
-
     @Html.Action("ImportarCarga", "AgendamentoIntermodal", new { model = Model })
-
-
+    @Html.Action("PopupConfirmacao", "AgendamentoIntermodal", new { model = Model })
 </div>
-
 
 <div class="modal modal-arquivos fade" id="modalDeclaracao" tabindex="-1" aria-labelledby="modalDeclaracao" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalDeclaracao"><strong>Arquivos</strong></h5>
+                <h5 class="modal-title" id="modalDeclaracao"><strong>@T("Arquivos")</strong></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body" id="divTableDeclaracao">
-                <span id="spanNenhumDeclaracao">Nenhum arquivo adicionado</span>
+                <span id="spanNenhumDeclaracao">@T("Nenhum arquivo adicionado")</span>
                 <table class="table" id="tabelaDeclaracao">
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-fechar" data-dismiss="modal">@T("Fechar")</button>
             </div>
         </div>
     </div>
@@ -231,18 +226,18 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalGARE"><strong>Arquivos</strong></h5>
+                <h5 class="modal-title" id="modalGARE"><strong>@T("Arquivos")</strong></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <span id="spanNenhumGare">Nenhum arquivo adicionado</span>
+                <span id="spanNenhumGare">@T("Nenhum arquivo adicionado")</span>
                 <table class="table" id="tabelaGare">
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-fechar" data-dismiss="modal">@T("Fechar")</button>
             </div>
         </div>
     </div>
@@ -251,25 +246,22 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalBL"><strong>Arquivos</strong></h5>
+                <h5 class="modal-title" id="modalBL"><strong>@T("Arquivos")</strong></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <span id="spanNenhumBl">Nenhum arquivo adicionado</span>
+                <span id="spanNenhumBl">@T("Nenhum arquivo adicionado")</span>
                 <table class="table" id="tabelaBl">
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-fechar" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-fechar" data-dismiss="modal">@T("Fechar")</button>
             </div>
         </div>
     </div>
 </div>
-
-
-
 
 @Html.Action("ExportarSucesso", "AgendamentoIntermodal", new { model = Model })
 
@@ -278,9 +270,6 @@
     BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCarga", new { model = Model }));
 
     <script type="text/javascript">
-
-        /*  FORM UPLOAD */
-
         Dropzone.options.arquivoDeclaracaoImportacao = {
             url: "@urlUploadDeclaracaoImportacao",
             dictDefaultMessage: "@T("Arraste ou clique aqui para realizar upload de arquivos")",
