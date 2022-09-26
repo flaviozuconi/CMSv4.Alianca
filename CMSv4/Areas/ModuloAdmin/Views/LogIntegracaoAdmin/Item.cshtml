@@ -20,17 +20,21 @@
     </div>
     <div class="portlet-body clearfix">
         <form method="post" class="form-vertical" role="form" id="form" enctype="multipart/form-data">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-4">
                 <label>@TAdm("Data Cadastro")</label>
-                <input type="text" class="form-control" maxlength="50" value="@Model.DataCadastro.Value.ToString("dd/MM/yyyy 00:00")" disabled>
+                <input type="text" class="form-control" maxlength="50" value="@Model.DataCadastro.Value.ToString("dd/MM/yyyy HH:mm")" disabled>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-4">
                 <label>@TAdm("Tipo")</label>
                 <input type="text" class="form-control" value="@Model.Tipo" disabled />
             </div>
+            <div class="form-group col-md-4">
+                <label>@TAdm("Integrado")</label>
+                <input type="text" class="form-control" value="@(Model.isIntegrado == true ? "Sim" : "Não")" disabled />
+            </div>
             <div class="form-group col-md-12">
                 <label>@TAdm("Json")</label>
-                <textarea class="form-control" disabled style="height:600px">@Model.Json@Model.Imagem@Model.RetornoAPI</textarea> 
+                <textarea class="form-control" disabled style="height:600px">@Model.Json@Model.Imagem@Model.RetornoAPI</textarea>
             </div>
             <div class="form-group col-md-12 text-right">
                 <a class="btn btn-white" href="@urlLista">@TAdm("Cancelar")</a>
