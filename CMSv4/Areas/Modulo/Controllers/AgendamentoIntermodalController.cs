@@ -321,7 +321,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                     {
                         Nome = model.Nome,
                         Codigo = model.Codigo,
-                        Email = model.Email
+                        Email = model.Email,
+                        Tipo = model.Tipo
                     }, 
                     "AgendamentoExportar_"
                 );
@@ -333,6 +334,109 @@ namespace CMSApp.Areas.Modulo.Controllers
                     if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html, model.Tipo);
 
                     return Json(new { success = true });
+                }
+                else
+                {
+                    var objModel = new MLAgendamentoTicket
+                    {
+                        type = 2,
+                        subject = "[DMRSE-1200] Agendamento Intermodal – Tipo de operação – Booking",
+                        serviceFirstLevel = "278113",
+                        serviceSecondLevel = "716763",
+                        serviceThirdLevel = "716764",
+                        category = "Service Request",
+                        urgency = "Normal",
+                        ownerTeam = "DS-CX-CI@",
+                        createdDate = DateTime.Now,
+                    };
+
+                    #region cliente
+                    objModel.clients = new List<Client>();
+                    objModel.clients.Add(new Client
+                    {
+                        id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
+                        personType = 1,
+                        profileType = 2,
+                        businessName = "DMRSE-1200"//model.Nome
+                    });
+                    #endregion
+
+                    #region ação
+                    objModel.actions = new List<CMSv4.Model.Action>();
+                    objModel.actions.Add(new CMSv4.Model.Action
+                    {
+                        type = 2,
+                        origin = 19,
+                        description = html,
+                        justification = "Justificativa",
+                        createdDate = DateTime.Now
+                    });
+                    #endregion
+
+                    #region create
+                    objModel.createdBy = new Createdby
+                    {
+                        id = "461505746",//idCliente,
+                        personType = 1,
+                        profileType = 2,
+                        businessName = "DMRSE-1200", //model.Nome,
+                        email = model.Email
+                    };
+                    #endregion
+
+                    #region campos adicionais
+                    //objModel.customFieldValues = new List<CustomFieldValue>();
+                    objModel.customFieldValues.Add(new Customfieldvalue
+                    {
+                        customFieldId = BLConfiguracao.CodigoPropostaComercial,
+                        customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                        line = 1,
+                        value = model.PropostaComercial
+                    });
+
+                    objModel.customFieldValues.Add(new Customfieldvalue
+                    {
+                        customFieldId = BLConfiguracao.CodigoBookingNumber,
+                        customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                        line = 1,
+                        value = model.NumeroBooking
+                    });
+
+                    if (!string.IsNullOrEmpty(model.NumeroBL))
+                    {
+                        objModel.customFieldValues.Add(new Customfieldvalue
+                        {
+                            customFieldId = BLConfiguracao.CodigoNumeroBl,
+                            customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                            line = 1,
+                            value = model.NumeroBL
+                        });
+                    }
+
+                    objModel.customFieldValues.Add(new Customfieldvalue
+                    {
+                        customFieldId = BLConfiguracao.CodigoLocalColeta,
+                        customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                        line = 1,
+                        value = Endereco(model)
+                    });
+
+                    #endregion
+
+                    var jsonSerialize = JsonConvert.SerializeObject(objModel);
+
+                    #region Grava o json na nossa base
+                    CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                    {
+                        DataCadastro = DateTime.Now,
+                        Json = jsonSerialize,
+                        Tipo = model.Tipo,
+                        isIntegrado = false,
+                        Imagem = string.Join(",", model?.lstCarga.Select(obj => obj.caminhoCompleto)),
+                        RetornoAPI = "Error User",
+
+                    });
+                    #endregion
                 }
 
                 return Json(new { success = false });
@@ -464,6 +568,7 @@ namespace CMSApp.Areas.Modulo.Controllers
         private string IntegrarCliente(MLAgendamentoIntermodal model, string prefixo)
         {
             string retorno = string.Empty;
+            string jsonSerialize = string.Empty;
 
             var objModel = new MLAgendamentoPerson
             {
@@ -490,7 +595,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 webRequest.ContentType = "application/json; charset=utf-8";
                 webRequest.Method = "POST";
                 
-                string jsonSerialize = JsonConvert.SerializeObject(objModel);
+                jsonSerialize = JsonConvert.SerializeObject(objModel);
                 var dados = Encoding.UTF8.GetBytes(jsonSerialize);
 
                 using (var stream = webRequest.GetRequestStream())
@@ -532,6 +637,23 @@ namespace CMSApp.Areas.Modulo.Controllers
                 }
                 catch (Exception exNew)
                 {
+                    #region Grava o json na nossa base
+                    CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                    {
+                        DataCadastro = DateTime.Now,
+                        Json = jsonSerialize,
+                        Tipo = model.Tipo,
+                        isIntegrado = false
+                    });
+                    #endregion
+
+                    #region Envio de email
+                    var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
+
+                    // enviar email
+                    BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.AlterarSenhaEnUs));
+                    #endregion
+
                     ApplicationLog.ErrorLog(exNew);
                 }
             }
@@ -597,19 +719,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                 email = model.Email
             };
             #endregion
-
-            //#region attachments
-            //foreach (var item in model?.lstCarga)
-            //{
-            //    objModel.attachments.Add(new Attachments
-            //    {
-            //        fileName = item.Arquivo,
-            //        path = GetHash(item.caminhoCompleto),
-            //        createdBy = objModel.createdBy,
-            //        createdDate = DateTime.Now
-            //    });
-            //}
-            //#endregion 
 
             #region campos adicionais
             //objModel.customFieldValues = new List<CustomFieldValue>();
@@ -1442,6 +1551,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 var portal = PortalAtual.Obter;
                 var objModelImportacao = CRUD.Obter<MLAgendamentoIntermodalImportacao>(codigo, portal.ConnectionString);
+                var model = new MLAgendamentoIntermodal();
 
                 if (objModelImportacao != null && objModelImportacao.Codigo.HasValue)
                 {
@@ -1449,7 +1559,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                         {
                             Nome = objModelImportacao.Nome,
                             Codigo = objModelImportacao.Codigo,
-                            Email = objModelImportacao.Email
+                            Email = objModelImportacao.Email, 
+                            Tipo = tipo
                         },
                         "AgendamentoImportar_"
                     );
@@ -1458,7 +1569,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     {
                         var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
 
-                        var model = new MLAgendamentoIntermodal
+                        model = new MLAgendamentoIntermodal
                         {
                             Nome = objModelImportacao.Nome,
                             Email = objModelImportacao.Email,
@@ -1516,6 +1627,109 @@ namespace CMSApp.Areas.Modulo.Controllers
                         if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html, tipo);
 
                         return Json(new { success = true });
+                    }
+                    else
+                    {
+                        var objModel = new MLAgendamentoTicket
+                        {
+                            type = 2,
+                            subject = "[DMRSE-1200] Agendamento Intermodal – Tipo de operação – Booking",
+                            serviceFirstLevel = "278113",
+                            serviceSecondLevel = "716763",
+                            serviceThirdLevel = "716764",
+                            category = "Service Request",
+                            urgency = "Normal",
+                            ownerTeam = "DS-CX-CI@",
+                            createdDate = DateTime.Now,
+                        };
+
+                        #region cliente
+                        objModel.clients = new List<Client>();
+                        objModel.clients.Add(new Client
+                        {
+                            id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
+                            personType = 1,
+                            profileType = 2,
+                            businessName = "DMRSE-1200"//model.Nome
+                        });
+                        #endregion
+
+                        #region ação
+                        objModel.actions = new List<CMSv4.Model.Action>();
+                        objModel.actions.Add(new CMSv4.Model.Action
+                        {
+                            type = 2,
+                            origin = 19,
+                            description = Html,
+                            justification = "Justificativa",
+                            createdDate = DateTime.Now
+                        });
+                        #endregion
+
+                        #region create
+                        objModel.createdBy = new Createdby
+                        {
+                            id = "461505746",//idCliente,
+                            personType = 1,
+                            profileType = 2,
+                            businessName = "DMRSE-1200", //model.Nome,
+                            email = model.Email
+                        };
+                        #endregion
+
+                        #region campos adicionais
+                        //objModel.customFieldValues = new List<CustomFieldValue>();
+                        objModel.customFieldValues.Add(new Customfieldvalue
+                        {
+                            customFieldId = BLConfiguracao.CodigoPropostaComercial,
+                            customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                            line = 1,
+                            value = model.PropostaComercial
+                        });
+
+                        objModel.customFieldValues.Add(new Customfieldvalue
+                        {
+                            customFieldId = BLConfiguracao.CodigoBookingNumber,
+                            customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                            line = 1,
+                            value = model.NumeroBooking
+                        });
+
+                        if (!string.IsNullOrEmpty(objModelImportacao.NumeroBL))
+                        {
+                            objModel.customFieldValues.Add(new Customfieldvalue
+                            {
+                                customFieldId = BLConfiguracao.CodigoNumeroBl,
+                                customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                                line = 1,
+                                value = model.NumeroBL
+                            });
+                        }
+
+                        objModel.customFieldValues.Add(new Customfieldvalue
+                        {
+                            customFieldId = BLConfiguracao.CodigoLocalColeta,
+                            customFieldRuleId = BLConfiguracao.CodigoCustomFieldRule,
+                            line = 1,
+                            value = Endereco(model)
+                        });
+
+                        #endregion
+
+                        var jsonSerialize = JsonConvert.SerializeObject(objModel);
+
+                        #region Grava o json na nossa base
+                        CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                        {
+                            DataCadastro = DateTime.Now,
+                            Json = jsonSerialize,
+                            Tipo = tipo,
+                            isIntegrado = false,
+                            Imagem = string.Join(",", model?.lstCarga.Select(obj => obj.caminhoCompleto)),
+                            RetornoAPI = "Error User",
+
+                        });
+                        #endregion
                     }
                 }
 

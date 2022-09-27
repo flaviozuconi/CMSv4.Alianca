@@ -1116,6 +1116,9 @@
                     $(".sucessoJQ").fadeIn("slide");
                     $('#modalPopupConfirmacao').modal('hide');
                 }
+                else {
+                    $(".mensagemModal").text("Houve um problema na sua solicitação, por favor tentar novamente mais tarde!");
+                }
             },
             error: function (data) {
 
