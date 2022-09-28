@@ -651,7 +651,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
                     // enviar email
-                    BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.AlterarSenhaEnUs));
+                    BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk));
                     #endregion
 
                     ApplicationLog.ErrorLog(exNew);
@@ -823,7 +823,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
                 // enviar email
-                BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.AlterarSenhaEnUs));
+                BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk));
                 #endregion 
 
                 ApplicationLog.ErrorLog(ex);
