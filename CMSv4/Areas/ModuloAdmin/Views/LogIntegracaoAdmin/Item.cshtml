@@ -20,7 +20,7 @@
         <form method="post" class="form-vertical" role="form" id="form" enctype="multipart/form-data">
             <div class="form-group col-md-4">
                 <label>@TAdm("Data Cadastro")</label>
-                <input type="text" class="form-control" maxlength="50" value="@Model.DataCadastro.Value.AddHours(3).ToString("dd/MM/yyyy HH:mm")" disabled>
+                <input type="text" class="form-control" maxlength="50" value="@Model.DataCadastro.Value.AddHours(-3).ToString("dd/MM/yyyy HH:mm")" disabled>
             </div>
             <div class="form-group col-md-4">
                 <label>@TAdm("Tipo")</label>
