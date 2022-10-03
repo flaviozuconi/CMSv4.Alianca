@@ -913,6 +913,46 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
+        #region ScriptImportarDTA
+
+        /// <summary>
+        ///Script Importar DTA
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ScriptImportarDTA(MLModuloAgendamentoIntermodal model)
+        {
+            try
+            {
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
+        #region ScriptImportarCargaDTA
+
+        /// <summary>
+        /// Script Importar Carga DTA
+        /// </summary>
+        [CheckPermission(global::Permissao.Publico)]
+        public ActionResult ScriptImportarCargaDTA(MLModuloAgendamentoIntermodal model)
+        {
+            try
+            {
+                return PartialView(model);
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false, msg = ex.Message });
+            }
+        }
+        #endregion
+
         #region Script Carga
 
         /// <summary>

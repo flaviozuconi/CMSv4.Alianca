@@ -342,73 +342,58 @@
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
         var isValido = $("#FormCarga").valid();
-        if ($("#divArquivosNfContainerNf").text() != '' || $("#hdfTipoFormulario").val() == 'dta') {
-            $("#mensagem").html("");
+        $("#mensagem").html("");
 
-            if ($('#FormCarga input').hasClass('is-invalid') == false) {
-                $(".btnSalvarCargaJQ").prop("disabled", true);
-                event.preventDefault();
+        if ($('#FormCarga input').hasClass('is-invalid') == false) {
+            $(".btnSalvarCargaJQ").prop("disabled", true);
+            event.preventDefault();
 
-                if (isValido == true) {
-                    $("#divContainerNf").addClass("loading");
+            if (isValido == true) {
+                $("#divContainerNf").addClass("loading");
 
-                    $.ajax({
-                        type: "POST",
-                        url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCarga",
-                        data: {
-                            DataEntrega: $("#dataEntrega").val(),
-                            NumeroNfe: $("#numeroNfe").val(),
-                            ValorNfeFormatado: $("#valorNfe").val(),
-                            Container: $("#container").val(),
-                            Comentario: $("#comentario").val(),
-                            CodigoImportacao: $("#codigoImportar").val(),
-                            Sequencia: $("#hdfSeqContainer").val(),
-                            guid: $("#hdfGuid").val()
-                        },
-                        success: function (data) {
-                            if (data.success == true) {
-                                exibirListagemCargas(data.model);
+                $.ajax({
+                    type: "POST",
+                    url: "/cms/@portal.Diretorio/AgendamentoIntermodal/SalvarImportacaoCarga",
+                    data: {
+                        DataEntrega: $("#dataEntrega").val(),
+                        ValorNfeFormatado: $("#valorNfe").val(),
+                        Container: $("#container").val(),
+                        Comentario: $("#comentario").val(),
+                        CodigoImportacao: $("#codigoImportar").val(),
+                        Sequencia: $("#hdfSeqContainer").val(),
+                        guid: $("#hdfGuid").val()
+                    },
+                    success: function (data) {
+                        if (data.success == true) {
+                            exibirListagemCargas(data.model);
 
-                                $("#dataEntrega").val('');
-                                $("#numeroNfe").val('');
-                                $("#valorNfe").val('');
-                                $("#container").val('');
-                                //$("#extensao").val('');
-                                $("#comentario").val('');
-
-
-                                $("#btnContainerNf").removeClass("active");
-                                $("#btnContainerNf").removeClass("inactive");
-                                $("#btnContainerVariasNf").removeClass("inactive");
-                                $("#btnNfVariosConteiner").removeClass("inactive");
-
-                                $("#divContainerNf").fadeOut("slider");
-
-                                //$(".btnAgendarJQ").fadeIn("slide");
-                            }
-                            else {
-                                $("#mensagem").html('');
-                                $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
-                                $('html, body').animate({ scrollTop: 0 }, 800);
-                            }
-
-                            $(".btnSalvarCargaJQ").prop("disabled", false);
-
-                            $("#divContainerNf").removeClass("loading");
-                        },
-                        error: function (data) {
-                            $(".btnSalvarCargaJQ").prop("disabled", false);
-
-                            $("#divContainerNf").removeClass("loading");
+                            $("#dataEntrega").val('');
+                            $("#valorNfe").val('');
+                            $("#container").val('');
+                            //$("#extensao").val('');
+                            $("#comentario").val('');
+                            $("#btnContainerNf").removeClass("active");
+                            $("#btnContainerNf").removeClass("inactive");
+                            $("#btnContainerVariasNf").removeClass("inactive");
+                            $("#btnNfVariosConteiner").removeClass("inactive");
                         }
-                    });
-                }
+                        else {
+                            $("#mensagem").html('');
+                            $("#mensagem").html('<div class="alert alert-danger" role="alert">' + data.msg + '</div>');
+                            $('html, body').animate({ scrollTop: 0 }, 800);
+                        }
+
+                        $(".btnSalvarCargaJQ").prop("disabled", false);
+
+                        $("#divContainerNf").removeClass("loading");
+                    },
+                    error: function (data) {
+                        $(".btnSalvarCargaJQ").prop("disabled", false);
+
+                        $("#divContainerNf").removeClass("loading");
+                    }
+                });
             }
-        }
-        else {
-            $("#mensagem").html('');
-            $("#mensagem").html('<div class="alert alert-danger" role="alert">O anexo da NF-e é obrigatório.</div>');
-            $('html, body').animate({ scrollTop: 0 }, 800);
         }
     });
     $(".btnCancelarCargaJQ").on("click", function (event) {
@@ -438,6 +423,7 @@
 
     function exibirListagemCargas(model) {
         $("#divRegistrosCargas").fadeIn("slide");
+        $("#FormCarga").fadeIn("slide");
 
         if (model.Codigo > 0) {
 

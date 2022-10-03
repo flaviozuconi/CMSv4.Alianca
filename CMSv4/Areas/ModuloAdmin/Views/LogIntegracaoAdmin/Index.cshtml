@@ -4,7 +4,6 @@
     var urlEditar = string.Format("/cms/{0}/logintegracaoadmin/item", portal.Diretorio);
 }
 
-
 <div class="portlet portlet-dark-blue">
     <div class="portlet-heading">
         <div class="portlet-title">
@@ -24,6 +23,7 @@
                         <th style="width: 100px;">@TAdm("Codigo")</th>
                         <th>@TAdm("Data cadastro")</th>
                         <th>@TAdm("Tipo")</th>
+                        <th>@TAdm("Integrado")</th>
                     </tr>
                 </thead>
             </table>
@@ -44,6 +44,7 @@
                         @Helpers.ColunaEditar("Codigo", urlEditar, "Codigo"),
                         @Helpers.ColunaEditarDataHora("DataCadastro", urlEditar, "Codigo"),
                         @Helpers.ColunaEditar("Tipo", urlEditar, "Codigo"),
+                        @Helpers.ColunaEditarBoolean("isIntegrado", urlEditar, "Codigo", "Sim", "Não"),
                     ]
                 }
             );

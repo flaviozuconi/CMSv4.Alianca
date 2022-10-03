@@ -229,8 +229,8 @@
 @Html.Action("ExportarSucesso", "AgendamentoIntermodal", new { model = Model })
 
 @{
-    BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportar", new { model = Model }));
-    BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCarga", new { model = Model }));
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarDTA", new { model = Model }));
+    BLConteudo.AdicionarJavaScript(Html.Action("ScriptImportarCargaDTA", new { model = Model }));
 
     <script type="text/javascript">
         /*  FORM UPLOAD */
