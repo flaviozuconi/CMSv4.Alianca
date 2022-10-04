@@ -41,11 +41,18 @@ namespace CMSv4.BusinessLayer
         /// </summary>
         public static void Integrar(string schema, string authoriry)
         {
-            foreach (var model in BLLogIntegracaoAdmin.Listar())
+            try
             {
-                var retorno = IntegrarAPI(model.Json, model.Imagem, schema, authoriry);
+                foreach (var model in BLLogIntegracaoAdmin.Listar())
+                {
+                    var retorno = IntegrarAPI(model.Json, model.Imagem, schema, authoriry);
 
-                if (retorno.Contains("id")) CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = model.Codigo, isIntegrado = true, RetornoAPI = retorno });
+                    if (retorno.Contains("id")) CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = model.Codigo, isIntegrado = true, RetornoAPI = retorno });
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
             }
         }
         #endregion
