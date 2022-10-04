@@ -70,6 +70,7 @@ namespace CMSv4.BusinessLayer
 
             try
             {
+
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
                 var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Ticket" })?.Valor ?? "https://api.movidesk.com/public/v1/tickets";
@@ -106,7 +107,7 @@ namespace CMSv4.BusinessLayer
                 var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
                 // enviar email
-                BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.AlterarSenhaEnUs));
+                BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk));
                 #endregion
 
                 ApplicationLog.ErrorLog(ex);
