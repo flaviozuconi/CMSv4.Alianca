@@ -103,13 +103,6 @@ namespace CMSv4.BusinessLayer
             }
             catch (Exception ex)
             {
-                #region Envio de email
-                var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
-
-                // enviar email
-                BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk));
-                #endregion
-
                 ApplicationLog.ErrorLog(ex);
             }
 
