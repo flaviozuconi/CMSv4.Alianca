@@ -183,6 +183,9 @@ namespace CMSApp.Areas.Modulo.Controllers
         [CheckPermission(global::Permissao.Publico)]
         public ActionResult EscolherTipo(MLModuloAgendamentoIntermodal model)
         {
+            ApplicationLog.Log("integracao 1");
+            CMSv4.BusinessLayer.BLLogIntegracaoAdmin.Integrar("http", "localhost:55056");
+            ApplicationLog.Log("integracao 2");
             return PartialView(model);
         }
         #endregion
