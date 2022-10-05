@@ -260,6 +260,14 @@
         $('#invalidaDataColeta').remove();
         $(this).removeClass('is-invalid');
 
+        if ($("#DataColeta").val().length != 16) {
+            $(this).addClass('is-invalid');
+            $(this).parent().append("<span id='invalidaDataEntrega'><label class='is-invalid' for='dataEntrega'>Campo informado incorretamente!</label><span>");
+
+            $("#DataColeta").val('');
+            return;
+        }
+
         var dataInformada = new Date($(this).val());
         var dataAtual = new Date(getDateNow());
 

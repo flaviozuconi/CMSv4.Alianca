@@ -52,6 +52,14 @@
         $('#invalidaDataEntrega').remove();
         $(this).removeClass('is-invalid');
 
+        if ($("#dataEntrega").val().length != 16) {
+            $(this).addClass('is-invalid');
+            $(this).parent().append("<span id='invalidaDataEntrega'><label class='is-invalid' for='dataEntrega'>Campo informado incorretamente!</label><span>");
+
+            $("#dataEntrega").val('');
+            return;
+        }
+
         var dataInformada = new Date($(this).val());
         var dataAtual = new Date(getDateNow());
 

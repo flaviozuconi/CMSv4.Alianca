@@ -49,8 +49,17 @@
     });
 
     $("#dataEntrega").on("blur", function () {
+
         $('#invalidaDataEntrega').remove();
         $(this).removeClass('is-invalid');
+
+        if ($("#dataEntrega").val().length != 16) {
+            $(this).addClass('is-invalid');
+            $(this).parent().append("<span id='invalidaDataEntrega'><label class='is-invalid' for='dataEntrega'>Campo informado incorretamente!</label><span>");
+
+            $("#dataEntrega").val('');
+            return;
+        }
 
         var dataInformada = new Date($(this).val());
         var dataAtual = new Date(getDateNow());
@@ -185,7 +194,7 @@
 
         $("#guidVariasNf").val($("#hdfGuid").val());
 
-        var teste = "1";
+        var valor = "1";
         $(".listVariasNfJQ").empty();
         if ($("#hdfTipoFormulario").val() == 'dta') {
             $(".listVariasNfJQ").append('<div class="row item variasNfJQ nfJQ_1">' +
@@ -196,8 +205,8 @@
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
-                '<a href="javascript:ExcluirLinhaNf(' + teste + ')" class="icon icon-delete btnDeleteNfJQ_1"></a>' +
-                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + teste + '" value="False" />' +
+                '<a href="javascript:ExcluirLinhaNf(' + valor + ')" class="icon icon-delete btnDeleteNfJQ_1"></a>' +
+                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + valor + '" value="False" />' +
                 '</div>' +
                 '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
                 '<div class="form-group">' +
@@ -234,8 +243,8 @@
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
-                '<a href = "javascript:ExcluirLinhaNf(' + teste + ')" class= "icon icon-delete btnDeleteNfJQ_1"></a>' +
-                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + teste + '" value="False" />' +
+                '<a href = "javascript:ExcluirLinhaNf(' + valor + ')" class= "icon icon-delete btnDeleteNfJQ_1"></a>' +
+                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + valor + '" value="False" />' +
                 '</div>' +
                 '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
                 '<div class="form-group">' +
@@ -338,9 +347,9 @@
         $(".mensagemExclusao").hide();
     }
 
-
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
+
         var isValido = $("#FormCarga").valid();
         $("#mensagem").html("");
 
@@ -435,7 +444,6 @@
                 "<td>" + model.ValorNfeFormatado + "</td>";
 
             if ($("#hdfTipoFormulario").val() != 'dta') {
-                registro += "<td><div class='d-flex align-items-center justify-content-between'>NF-e " + model.NumeroNfe;
                 if (model.Arquivo != '') {
                     registro += "<a href='javascript:download(\"" + model.CodigoImportacao + "\", \"" + model.Arquivo + "\")' style='color: black;'><span class='icon icon-paperclip ml-1'></span></a>";
                 }
