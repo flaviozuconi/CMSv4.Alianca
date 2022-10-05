@@ -220,42 +220,6 @@
         });
     });
 
-    $(".btnSimPopupConfirmacaoJQ").on("click", function (e) {
-        e.preventDefault();
-        $('#modalPopupConfirmacao').modal('show');
-
-          $.ajax({
-            type: "POST",
-            url: "/cms/@portal.Diretorio/AgendamentoIntermodal/Integrar",
-              data: {
-                  Codigo: $("#CodigoExportar").val(),
-                  Nome: $("#Nome").val(),
-                  Email: $("#Email").val(),
-                  PropostaComercial: $("#PropostaComercial").val(),
-                  NumeroBooking: $("#NumeroBooking").val(),
-                  CEP: $("#CEP").val(),
-                  CNPJ: $("#CNPJ").val(),
-                  Endereco: $("#Endereco").val(),
-                  Complemento: $("#Complemento").val(),
-                  Bairro: $("#Bairro").val(),
-                  Cidade: $("#Cidade").val(),
-                  Estado: $("#Estado").val(),
-                  Html: $("#divRegistrosCargas").html(),
-                  Tipo: $("#Tipo").val()
-              },
-            success: function (data) {
-                if (data.success == true) {
-                    $(".agendamentoJQ").hide();
-                    $(".sucessoJQ").fadeIn("slide");
-                    $('#modalPopupConfirmacao').modal('hide');
-                }
-            },
-            error: function (data) {
-
-            }
-        });
-    });
-
     $("#DataColeta").on("blur", function () {
         $('#invalidaDataColeta').remove();
         $(this).removeClass('is-invalid');
