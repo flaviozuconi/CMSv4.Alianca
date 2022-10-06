@@ -228,11 +228,9 @@ namespace CMSApp.Areas.Modulo.Controllers
             try
             {
                 ApplicationLog.Log("integr 1");
-
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
                 var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Ticket" })?.Valor ?? "https://api.movidesk.com/public/v1/tickets";
-
                 ApplicationLog.Log("integr 2");
 
                 #region Request para inserção de ticket
@@ -241,21 +239,20 @@ namespace CMSApp.Areas.Modulo.Controllers
                 webRequest.Method = "POST";
 
                 ApplicationLog.Log("integr 3");
-
+                //jsonSerialize = JsonConvert.SerializeObject(objModel);
                 var dados = Encoding.UTF8.GetBytes(json);
 
+                ApplicationLog.Log("integr 4");
                 using (var stream = webRequest.GetRequestStream())
                 {
                     stream.Write(dados, 0, dados.Length);
                     stream.Close();
                 }
 
-                ApplicationLog.Log("integr 4");
-
+                ApplicationLog.Log("integr 5");
                 using (var resposta = webRequest.GetResponse())
                 {
-                    ApplicationLog.Log("integr 5");
-
+                    ApplicationLog.Log("integr 6");
                     var streamDados = resposta.GetResponseStream();
                     StreamReader reader = new StreamReader(streamDados);
                     string response = reader.ReadToEnd();
@@ -263,15 +260,13 @@ namespace CMSApp.Areas.Modulo.Controllers
                     retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
                 }
 
-                ApplicationLog.Log("integr 5.1");
-
                 if (!string.IsNullOrEmpty(caminho) && !string.IsNullOrEmpty(retorno)) SendFile(retorno, caminho, schema, authoriry);
 
                 #endregion
             }
             catch (Exception ex)
             {
-                ApplicationLog.Log("integr 6");
+                ApplicationLog.Log("integr 7");
                 ApplicationLog.ErrorLog(ex);
             }
 
