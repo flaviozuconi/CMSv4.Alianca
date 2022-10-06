@@ -45,9 +45,7 @@ namespace CMSv4.BusinessLayer
             {
                 foreach (var model in BLLogIntegracaoAdmin.Listar())
                 {
-                    var retorno = IntegrarAPI(model.Json, model.Imagem, schema, authoriry);
-
-                    if (retorno.Contains("id")) CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = model.Codigo, isIntegrado = true, RetornoAPI = retorno });
+                    IntegrarAPI(model.Json, model.Imagem, schema, authoriry, model.Codigo);
                 }
             }
             catch (Exception ex)
@@ -64,7 +62,7 @@ namespace CMSv4.BusinessLayer
         /// <param name="objModel"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static string IntegrarAPI(string json, string caminho, string schema, string authoriry)
+        public static void IntegrarAPI(string json, string caminho, string schema, string authoriry, decimal? codigo)
         {
             string retorno = string.Empty;
 
@@ -117,8 +115,10 @@ namespace CMSv4.BusinessLayer
                 ApplicationLog.Log("6");
                 ApplicationLog.ErrorLog(ex);
             }
+            
+            if (retorno.Contains("id")) CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = codigo, isIntegrado = true, RetornoAPI = retorno });
 
-            return retorno;
+            return;
         }
         #endregion
 
