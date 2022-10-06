@@ -45,7 +45,9 @@ namespace CMSv4.BusinessLayer
             {
                 foreach (var model in BLLogIntegracaoAdmin.Listar())
                 {
-                    IntegrarAPI(model.Json, model.Imagem, schema, authoriry, model.Codigo);
+                    var retorno = IntegrarAPI(model.Json, model.Imagem, schema, authoriry);
+
+                    if (retorno.Contains("id")) CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = model.Codigo, isIntegrado = true, RetornoAPI = retorno });
                 }
             }
             catch (Exception ex)
@@ -62,26 +64,20 @@ namespace CMSv4.BusinessLayer
         /// <param name="objModel"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        public static void IntegrarAPI(string json, string caminho, string schema, string authoriry, decimal? codigo)
+        public static string IntegrarAPI(string json, string caminho, string schema, string authoriry)
         {
             string retorno = string.Empty;
 
             try
             {
-                ApplicationLog.Log("1");
-
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
 
                 var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Ticket" })?.Valor ?? "https://api.movidesk.com/public/v1/tickets";
-
-                ApplicationLog.Log("2");
 
                 #region Request para inserção de ticket
                 var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
                 webRequest.ContentType = "application/json; charset=utf-8";
                 webRequest.Method = "POST";
-
-                ApplicationLog.Log("3");
 
                 var dados = Encoding.UTF8.GetBytes(json);
 
@@ -91,12 +87,8 @@ namespace CMSv4.BusinessLayer
                     stream.Close();
                 }
 
-                ApplicationLog.Log("4");
-
                 using (var resposta = webRequest.GetResponse())
                 {
-                    ApplicationLog.Log("5");
-
                     var streamDados = resposta.GetResponseStream();
                     StreamReader reader = new StreamReader(streamDados);
                     string response = reader.ReadToEnd();
@@ -104,21 +96,16 @@ namespace CMSv4.BusinessLayer
                     retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
                 }
 
-                ApplicationLog.Log("5.1");
-
                 if (!string.IsNullOrEmpty(caminho) && !string.IsNullOrEmpty(retorno)) SendFile(retorno, caminho, schema, authoriry);
 
                 #endregion
             }
             catch (Exception ex)
             {
-                ApplicationLog.Log("6");
                 ApplicationLog.ErrorLog(ex);
             }
-            
-            if (retorno.Contains("id")) CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = codigo, isIntegrado = true, RetornoAPI = retorno });
 
-            return;
+            return  retorno;
         }
         #endregion
 
