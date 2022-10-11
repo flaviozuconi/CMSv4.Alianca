@@ -369,6 +369,7 @@
                 else {
                     $("#hdfGuid").val(objResponse.Guid);
 
+                    $("#divExclusaoContainerNf").parent().append("");
                     $("#divExclusaoContainerNf").parent().append("<a href='javascript:ExcluirArquivoNf(\"" + objResponse.nomeArquivo + "\")' id='btnExluirContainerNf' style='font-size:16px; color:#303030;'>Excluir arquivo</a>");
 
                     $("#divArquivosNfContainerNf").fadeIn("slider");

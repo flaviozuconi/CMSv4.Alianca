@@ -344,6 +344,7 @@
         $("#divRegistrosCargas").fadeOut("slider");
 
         $(".mensagemExclusao").hide();
+        $("#btnExluirContainerNf").remove();
     }
 
 
@@ -356,6 +357,13 @@
             if ($('#FormCarga input').hasClass('is-invalid') == false) {
                 $(".btnSalvarCargaJQ").prop("disabled", true);
                 event.preventDefault();
+
+                if ($("#valorNfe").val() == "R$ " || $("#valorNfe").val() == "R$ 0,00") {
+                    $("#mensagem").html('');
+                    $("#mensagem").html('<div class="alert alert-danger" role="alert">O Valor da NF-e está incorreto.</div>');
+                    $('html, body').animate({ scrollTop: 0 }, 800);
+                    return;
+                }
 
                 if (isValido == true) {
                     $("#divContainerNf").addClass("loading");
@@ -1102,6 +1110,10 @@
 
     $(".btnAgendarImportarJQ").on("click", function () {
         $('#modalPopupConfirmacao').modal('show');
+
+        // monta o HTML da popup
+        $(".gridJQ").html($("#divRegistrosImportarCargas").html());
+        $(".gridJQ .icon-delete").remove();
     });
 
     $(".btnSimPopupConfirmacaoJQ").on("click", function (e) {

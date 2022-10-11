@@ -650,7 +650,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                     var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
                     // enviar email
-                    BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk));
+                    BLEmail.Enviar("Erro na integracação do movidesk", email, 
+                        BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
+                        );
                     #endregion
 
                     ApplicationLog.ErrorLog(exNew);
@@ -822,7 +824,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
                 // enviar email
-                BLEmail.Enviar("Erro na integracação do movidesk", email, BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk));
+                BLEmail.Enviar("Erro na integracação do movidesk", email,
+                     BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
+                    );
                 #endregion 
 
                 ApplicationLog.ErrorLog(ex);
@@ -1313,16 +1317,18 @@ namespace CMSApp.Areas.Modulo.Controllers
                         model.ProximaSequencia = (Convert.ToInt32(model.Sequencia) + 1).ToString("00");
 
                         if (string.IsNullOrEmpty(model.Comentario))
-                            model.Comentario = "Sem comentários";
+                            model.Comentario = @T("Sem comentários");
 
                         if (string.IsNullOrEmpty(model.caminhoCompleto))
                         {
-                            model.Arquivo = "";
-                            model.caminhoCompleto = "";
+                            model.Arquivo = string.Empty;
+                            model.caminhoCompleto = string.Empty;
                         }
+
+                        return Json(new { success = true, model = model });
                     }
 
-                    return Json(new { success = true, model = model });
+                    return Json(new { success = false, model = model, msg = string.Format(@T("O container {0} já  foi registrado!"), model.Container)});
                 }
                 else
                     model.Codigo = 0;
