@@ -1274,7 +1274,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 if (lista?.Count <= 50)
                 {
                     //Impedir duplicidade
-                    var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container, NumeroNfe = model.NumeroNfe });
+                    var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container });
 
                     if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
                     {
@@ -1397,7 +1397,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                         if (!item.IsLinhaExcluida)
                         {
                             //Impedir duplicidade
-                            var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container, NumeroNfe = item.NumeroNfe });
+                            var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container });
 
                             if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
                             {

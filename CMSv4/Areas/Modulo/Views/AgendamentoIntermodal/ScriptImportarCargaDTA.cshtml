@@ -360,7 +360,7 @@
 
             if ($("#valorNfe").val() == "R$ " || $("#valorNfe").val() == "R$ 0,00") {
                 $("#mensagem").html('');
-                $("#mensagem").html('<div class="alert alert-danger" role="alert">O Valor da NF-e está incorreto.</div>');
+                $("#mensagem").html('<div class="alert alert-danger" role="alert">O campo Valor da Carga está incorreto.</div>');
                 $('html, body').animate({ scrollTop: 0 }, 800);
                 return;
             }
@@ -1095,6 +1095,8 @@
 
     $(".btnAgendarImportarJQ").on("click", function () {
         $('#modalPopupConfirmacao').modal('show');
+        $(".btnSimPopupConfirmacaoJQ").show();
+        $(".mensagemModal").hide();
 
         // monta o HTML da popup
         $(".gridJQ").html($("#divRegistrosImportarCargas").html());
@@ -1104,8 +1106,10 @@
     $(".btnSimPopupConfirmacaoJQ").on("click", function (e) {
         e.preventDefault();
         $('#modalPopupConfirmacao').modal('show');
-        $(".btnSimPopupConfirmacaoJQ").prop('disabled', true);
-        $(".mensagemModal").text("Aguarde, estamos enviando a sua solicitação!");
+
+        $(".btnSimPopupConfirmacaoJQ").hide();
+        $(".mensagemModal").html("<span class='alert alert-success' style='width:100%; float:left;'>Aguarde, estamos enviando a sua solicitação!</span>");
+        $(".mensagemModal").fadeIn("slide");
 
           $.ajax({
             type: "POST",
@@ -1122,7 +1126,7 @@
                     $('#modalPopupConfirmacao').modal('hide');
                 }
                 else {
-                    $(".mensagemModal").text("Houve um problema na sua solicitação, por favor tentar novamente mais tarde!");
+                    $(".mensagemModal").html("<span class='alert alert-danger' style='width:100%; float:left;'>Houve um problema na sua solicitação, por favor tentar novamente mais tarde!</span>");
                 }
             },
             error: function (data) {

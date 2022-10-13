@@ -154,15 +154,15 @@
                     var aux = 1;
                     $("Table tr").each(function (index, tr) {
                         if (index <= 8) {
-                            $(this).find('.container').text('Container 0' + aux);
+                            $(this).find('.container').text('Container 0' + (aux - 1));
                         }
                         else {
-                            $(this).find('.container').text('Container ' + aux);
+                            $(this).find('.container').text('Container ' + (aux - 1));
                         }
                         aux = aux + 1;
                     });
 
-                    $("#Container").val(aux);
+                    $("#Container").val(aux -1);
                 }
             },
             error: function (data) {
@@ -178,6 +178,8 @@
 
     $(".btnAgendarJQ").on("click", function () {
         $('#modalPopupConfirmacao').modal('show');
+        $(".btnSimPopupConfirmacaoJQ").show();
+        $(".mensagemModal").hide();
 
         // monta o HTML da popup
         $(".gridJQ").html($("#divRegistrosCargas").html());
@@ -187,8 +189,10 @@
     $(".btnSimPopupConfirmacaoJQ").on("click", function (e) {
         e.preventDefault();
         $('#modalPopupConfirmacao').modal('show');
-        $(".btnSimPopupConfirmacaoJQ").prop('disabled', true);
-        $(".mensagemModal").text("Aguarde, estamos enviando a sua solicitação!");
+
+        $(".btnSimPopupConfirmacaoJQ").hide();
+        $(".mensagemModal").html("<span class='alert alert-success' style='width:100%; float:left;'>Aguarde, estamos enviando a sua solicitação!</span>");
+        $(".mensagemModal").fadeIn("slide");
 
           $.ajax({
             type: "POST",
@@ -216,7 +220,7 @@
                     $('#modalPopupConfirmacao').modal('hide');
                 }
                 else {
-                    $(".mensagemModal").text("Houve um problema na sua solicitação, por favor tentar novamente mais tarde!");
+                    $(".mensagemModal").html("<span class='alert alert-danger' style='width:100%; float:left;'>Houve um problema na sua solicitação, por favor tentar novamente mais tarde!</span>");
                 }
             },
             error: function (data) {
