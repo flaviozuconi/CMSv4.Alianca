@@ -491,7 +491,8 @@
         $("#divRegistrosCargas").fadeIn("slide");
 
         if (model.LstNfs.length > 0) {
-            var codigos = ""; var codigosExclusao = "";
+            var codigos = "";
+            var codigosExclusao = "";
 
             for (var aux = 0; aux < model.LstNfs.length; aux++) {
                 if (model.LstNfs[aux].IsLinhaExcluida == false) {
@@ -1050,17 +1051,19 @@
 
         if (model.LstContainer.length > 0) {
             var codigos = "";
+            var codigosExclusao = "";
             var nomeLinha = "";
 
             for (var aux = 0; aux < model.LstContainer.length; aux++) {
                 if (model.LstContainer[aux].IsLinhaExcluida == false) {
                     codigos += model.LstContainer[aux].Codigo + ",";
                     nomeLinha += model.LstContainer[aux].Sequencia + "-";
+                    codigosExclusao += model.LstContainer[aux].Codigo;
                 }
             }
 
 
-            var registro = "<tr class='" + nomeLinha + "_excluir'>" +
+            var registro = "<tr class='" + nomeLinha + "_excluir'  id='excluir_" + codigosExclusao + "' >" +
                 "<td><span class='icon icon-box'></span></td>" +
                 "<td>";
             for (var aux = 0; aux < model.LstContainer.length; aux++) {
