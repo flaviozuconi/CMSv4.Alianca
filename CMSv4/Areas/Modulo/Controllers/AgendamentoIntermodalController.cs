@@ -1387,6 +1387,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var portal = PortalAtual.Obter;
 
                 var lista = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao });
+                var isContainer = false;
 
                 if (lista?.Count + model.LstNfs.Count <= 50)
                 {
@@ -1399,8 +1400,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                             //Impedir duplicidade
                             var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container });
 
-                            if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
+                            if (listaDuplicidade == null || (listaDuplicidade.Count <= 0 || isContainer))
                             {
+                                isContainer = true;
                                 item.CodigoImportacao = model.CodigoImportacao;
                                 item.DataEntrega = model.DataEntrega;
                                 item.Container = model.Container;
@@ -1414,7 +1416,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                                     item.ValorNfe = Convert.ToDecimal(item.ValorNfeFormatado.Replace("R$ ", "").Replace(".", ""));
                                 item.DataRegistro = DateTime.Now;
 
-                                
                                 if (!string.IsNullOrEmpty(model.guid))
                                 {
                                     var diretorioNfTemp = (BLConfiguracao.Pastas.ModuloImportacaoNfTemp(portal.Diretorio) + "/" + model.guid + "/" + seq + "/").Replace("//", "/");
@@ -1451,7 +1452,11 @@ namespace CMSApp.Areas.Modulo.Controllers
                                     item.caminhoCompleto = "";
                                 }
                             }
-                        }
+                            else
+                            {
+                                return Json(new { success = false, msg = @T("O container informado já foi utilizado.") });
+                            }
+                        }                       
                     }
 
                     if (string.IsNullOrEmpty(model.Comentario))
@@ -1501,7 +1506,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                         if (!item.IsLinhaExcluida)
                         {
                             //Impedir duplicidade
-                            var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = item.Container, NumeroNfe = model.NumeroNfe });
+                            var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = item.Container });
 
                             if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
                             {

@@ -444,7 +444,7 @@
 
         if (model.Codigo > 0) {
 
-            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'>" +
+            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'  id='excluir_" + model.Codigo + "'>" +
                 "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
@@ -485,8 +485,8 @@
                 }
             }
 
-            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'>" +
-                "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
+            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'  id='excluir_" + codigos + "'>" +
+                "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + codigos + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
                 "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>" + TextoComentario(model.Comentario) + "</span></td>" +
@@ -570,7 +570,7 @@
             data: { Codigos: $("#CodigoExcluir").val() },
             success: function (data) {
                 if (data.success == true) {
-                    var linha = "." + $("#LinhaExcluir").val() + "_excluir";
+                    var linha = "#excluir_" + $("#CodigoExcluir").val();
                     //$(linha).fadeOut("slide");
                     $(linha).remove();
                     $("#LinhaExcluir").val('');

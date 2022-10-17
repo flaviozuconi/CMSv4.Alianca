@@ -193,7 +193,7 @@
 
         $("#guidVariasNf").val($("#hdfGuid").val());
 
-        var teste = "1";
+        var valor = "1";
         $(".listVariasNfJQ").empty();
         if ($("#hdfTipoFormulario").val() == 'dta') {
             $(".listVariasNfJQ").append('<div class="row item variasNfJQ nfJQ_1">' +
@@ -204,8 +204,8 @@
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
-                '<a href="javascript:ExcluirLinhaNf(' + teste + ')" class="icon icon-delete btnDeleteNfJQ_1"></a>' +
-                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + teste + '" value="False" />' +
+                '<a href="javascript:ExcluirLinhaNf(' + valor + ')" class="icon icon-delete btnDeleteNfJQ_1"></a>' +
+                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + valor + '" value="False" />' +
                 '</div>' +
                 '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
                 '<div class="form-group">' +
@@ -242,8 +242,8 @@
                 '</div>' +
                 '</div>' +
                 '<div class="col-1 p-0">' +
-                '<a href = "javascript:ExcluirLinhaNf(' + teste + ')" class= "icon icon-delete btnDeleteNfJQ_1"></a>' +
-                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + teste + '" value="False" />' +
+                '<a href = "javascript:ExcluirLinhaNf(' + valor + ')" class= "icon icon-delete btnDeleteNfJQ_1"></a>' +
+                '<input type="hidden" name="LstNfs[0].IsLinhaExcluida" id="hdfLinhaExcluida_' + valor + '" value="False" />' +
                 '</div>' +
                 '<div class="col-24 col-md-11 col-lg-4 col-xl-4 d-flex align-items-center">' +
                 '<div class="form-group">' +
@@ -457,7 +457,7 @@
 
         if (model.Codigo > 0) {
 
-            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'>" +
+            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir' id='excluir_" + model.Codigo + "'>" +
                 "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
@@ -491,16 +491,17 @@
         $("#divRegistrosCargas").fadeIn("slide");
 
         if (model.LstNfs.length > 0) {
-            var codigos = "";
+            var codigos = ""; var codigosExclusao = "";
 
             for (var aux = 0; aux < model.LstNfs.length; aux++) {
                 if (model.LstNfs[aux].IsLinhaExcluida == false) {
                     codigos += model.LstNfs[aux].Codigo + ",";
+                    codigosExclusao += model.LstNfs[aux].Codigo;
                 }
             }
 
-            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir'>" +
-                "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + model.Codigo + "'>Container " + model.Sequencia + "</span></td>" +
+            var registro = "<tr class='" + $("#hdfSeqContainer").val() + "_excluir' id='excluir_" + codigosExclusao + "'>" +
+                "<td><span class='icon icon-box'></span></td><td><span class='sequenciaJQ' id='sequenciaJQ_" + codigos + "'>Container " + model.Sequencia + "</span></td>" +
                 "<td>" + model.Container + "</td>" +
                 "<td>" + model.DataEntregaFormatada + "</td>" +
                 "<td><span class='icon icon-coments" + DesativaComentario(model.Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + model.Comentario + "'></span> <span title='" + model.Comentario + "'>" + TextoComentario(model.Comentario) + "</span></td>" +
@@ -553,7 +554,6 @@
                 aux = "0" + seq.toString();
             }
 
-            console.log(element.id);
             $("#" + element.id).html('Container ' + aux);
 
             seq += 1;
@@ -584,8 +584,16 @@
             data: { Codigos: $("#CodigoExcluir").val() },
             success: function (data) {
                 if (data.success == true) {
-                    var linha = "." + $("#LinhaExcluir").val() + "_excluir";
-                    //$(linha).fadeOut("slide");
+
+                    var codigo = "";
+
+                    var arr = $("#CodigoExcluir").val().split(',');
+
+                    $.each(arr, function (index, value) {
+                        codigo += value;
+                    });
+
+                    var linha = "#excluir_" + codigo;
                     $(linha).remove();
                     $("#LinhaExcluir").val('');
                     $("#CodigoExcluir").val('');
