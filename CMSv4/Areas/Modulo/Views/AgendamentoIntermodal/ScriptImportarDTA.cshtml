@@ -62,6 +62,11 @@
 
     //CLICK NO BOTAO SALVAR IMPORTAÇÃO
     $(".btnSalvarJQ").on("click", function (event) {
+
+        if ($("#existCNPJ").text().length > 0 || $("#existCNPJ").text().length > 0 || $("#CEP-error").text().length > 0 && $("#CEP-error").is(':visible') == true) {
+            return false;
+        }
+
         var formValido = $("#FormAgendamento").valid();
         $("#mensagem").html('');
 
@@ -422,6 +427,7 @@
     });
 
     function preencherEndereco() {
+        $(".agendamentoJQ").addClass("loading");
         $.ajax({
             url: '@urlCep1' + $("#cep").val().replace('-', '') + '@urlCep2',
             dataType: 'json',
@@ -484,10 +490,14 @@
                         $("#cep").addClass("valid");
                     }
                 }
+
+                $(".agendamentoJQ").removeClass("loading");
+            },
+            error: function (data) {
+                $(".agendamentoJQ").removeClass("loading");
             }
         });
     }
-
 
     // VALIDAR CNPJ
     function validarCNPJ() {

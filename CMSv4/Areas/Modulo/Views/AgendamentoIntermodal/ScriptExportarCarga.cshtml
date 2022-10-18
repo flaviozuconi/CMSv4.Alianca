@@ -231,6 +231,7 @@
     $("#DataColeta").on("blur", function () {
         $('#invalidaDataColeta').remove();
         $(this).removeClass('is-invalid');
+        $("#invalidaDataEntrega").remove();
 
         if ($("#DataColeta").val().length != 16) {
             $(this).addClass('is-invalid');

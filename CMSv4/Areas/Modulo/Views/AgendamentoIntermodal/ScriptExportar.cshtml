@@ -56,7 +56,6 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarJQ").on("click", function (event) {
-
         if ($("#NumeroBooking").val().length > 0) 
 
         $("#NumeroBooking-error").remove();
@@ -65,6 +64,10 @@
         $(this).prop("disabled", true);
         event.preventDefault();
 
+        if ($("#existCNPJ").text().length > 0 || $("#existCNPJ").text().length > 0 || $("#CEP-error").text().length > 0 && $("#CEP-error").is(':visible') == true) {
+            return false;
+        }
+
         if ($("#CEP").val().length == 0) {
             $(".invalidCepJQ").show();
         }
@@ -72,29 +75,6 @@
             $(".invalidCepJQ").hide();
         }
 
-        let cnpj = $(CNPJ).val();
-
-        cnpj = cnpj.replace(/[^\d]+/g, '');
-        // Elimina CNPJs invalidos conhecidos
-        if (cnpj == "00000000000000" ||
-            cnpj == "11111111111111" ||
-            cnpj == "22222222222222" ||
-            cnpj == "33333333333333" ||
-            cnpj == "44444444444444" ||
-            cnpj == "55555555555555" ||
-            cnpj == "66666666666666" ||
-            cnpj == "77777777777777" ||
-            cnpj == "88888888888888" ||
-            cnpj == "99999999999999") {
-            $("#CNPJ").addClass('is-invalid');
-            $('#existCNPJ').remove();
-            $("#CNPJ").parent().append("<span id='existCNPJ'><label id='CNPJ-error' class='is-invalid' for='CNPJ'>Forneça um CNPJ válido.</label><span>");
-            return false;
-        }
-
-        if ($("#CNPJ-error").text().length > 0) {
-            return false;
-        }
 
         if ($("#FormAgendamento").valid() == true && $("#NumeroBooking").val().length > 0 && $("#PropostaComercial").val().length > 0) {
             $.ajax({
@@ -249,6 +229,7 @@
     });
 
     function preencherEndereco() {
+
         $.ajax({
             url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
             dataType: 'json',
@@ -314,6 +295,10 @@
                         $("#CEP").addClass("valid");
                     }
                 }
+                $(".agendamentoJQ").removeClass("loading");
+            },
+            error: function (data) {
+                $(".agendamentoJQ").removeClass("loading");
             }
         });
     }
