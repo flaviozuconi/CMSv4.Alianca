@@ -437,6 +437,17 @@
         return "Comentários";
     }
 
+    $(".btnNaoPopupConfirmacaoJQ").on("click", function () {
+        $(".gridJQ .table").remove();
+    });
+
+    $('.close').on("click", function () {
+        $(".gridJQ .table").remove();
+    });
+
+    $('#modalPopupConfirmacao').on("click", function () {
+        $(".gridJQ .table").remove();
+    });
 
     function exibirListagemCargas(model) {
         $("#divRegistrosCargas").fadeIn("slide");

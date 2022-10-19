@@ -56,6 +56,14 @@
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarJQ").on("click", function (event) {
+
+        if ($("#CEP").val().length != 9) {
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">Cep inválido.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
+            return;
+        }
+
         if ($("#NumeroBooking").val().length > 0) 
 
         $("#NumeroBooking-error").remove();

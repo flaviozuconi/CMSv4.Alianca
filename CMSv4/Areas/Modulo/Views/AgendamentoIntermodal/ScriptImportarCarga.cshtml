@@ -122,8 +122,6 @@
         });
     }
 
-
-
     function IniciaValidacaoHorario(campo) {
         $("#"+ campo).on("blur", function () {
             $('#invalida' + campo).remove();
@@ -259,8 +257,6 @@
         //$("#valorNfeVariasNf_1").maskMoney();
     });
 
-
-
     $("#btnNfVariosConteiner").on("click", function (event) {
         InicializarCarga();
 
@@ -349,7 +345,6 @@
         $("#btnExluirNfVariosContainer").remove();
         
     }
-
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarCargaJQ").on("click", function (event) {
@@ -567,13 +562,18 @@
             aux = "0" + seq.toString();
         }
 
-        $("#hdfSeqContainer").val(aux);
 
         $('#lblContainer').html("");
         $('#lblContainer').html("Nº do Container " + aux)
 
         $('#lblContainerVariasNf').html("");
         $('#lblContainerVariasNf').html("Nº do Container " + aux);
+
+        var valor = parseInt($("#hdfSeqContainer").val()) - 1;
+        if (valor < 10) {
+            valor = "0" + valor.toString();
+        }
+        $("#hdfSeqContainer").val(valor);
     }
 
     function excluirCarga(linha, codigo) {
@@ -621,8 +621,6 @@
         $(".divExclusao").fadeOut("slide");
         $("#CodigoExcluir").val('');
     });
-
-
 
     function AddLinhaNf() {
         var maxAtivo = 0;
@@ -721,7 +719,6 @@
         //$(".btnDeleteNfJQ_" + (max).toString()).hide();
     }
 
-
     function ExcluirLinhaNf(div) {
         $(".nfJQ_" + div).hide();
         $("#hdfLinhaExcluida_" + div).val('True');
@@ -732,7 +729,6 @@
             $("#numeroNfeVariasNf_" + div).removeClass('is-invalid');
             $("#divArquivosVariasNf_" + div).append('1');
         }
-
 
         var max = 0;
         var min = 0;
@@ -1129,11 +1125,22 @@
         }
     }
 
+    $(".btnNaoPopupConfirmacaoJQ").on("click", function () {
+        $(".gridJQ .table").remove();
+    });
+
+    $('.close').on("click", function () {
+        $(".gridJQ .table").remove();
+    });
+
+    $('#modalPopupConfirmacao').on("click", function () {
+        $(".gridJQ .table").remove();
+    });
+
     $(".btnAgendarImportarJQ").on("click", function () {
         $('#modalPopupConfirmacao').modal('show');
         $(".btnSimPopupConfirmacaoJQ").show();
         $(".mensagemModal").hide();
-
 
         // monta o HTML da popup
         $(".gridJQ").html($("#divRegistrosImportarCargas").html());

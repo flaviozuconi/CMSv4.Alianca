@@ -67,6 +67,13 @@
             return false;
         }
 
+        if ($("#cep").val().length != 9) {
+            $("#mensagem").html('');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">Cep inválido.</div>');
+            $('html, body').animate({ scrollTop: 0 }, 800);
+            return;
+        }
+
         var formValido = $("#FormAgendamento").valid();
         $("#mensagem").html('');
 
