@@ -542,6 +542,26 @@
         }
     }
 
+    function reorganizarSeqContainerCriando() {
+        var seq = 1;
+        var aux = "0" + seq.toString();
+
+        $(".variosContainerJQ").each(function (index, element) {
+            if ($(this).is(':visible')) {
+
+                if (seq < 10) {
+                    aux = "0" + seq.toString();
+                }
+
+                $(this).find('.icon-box').parent().html('<big class="icon icon-box mr-2"></big> Container ' + aux);
+                $(this).find('input[type=hidden]').val(aux);
+                $(this).find('.labelJQ').text('Nº do Container ' + aux);
+                seq += 1;
+            }
+        });
+
+    }
+
     function reorganizarSeqContainer() {
         var seq = 1;
         var aux = "0" + seq.toString();
@@ -898,7 +918,7 @@
             '</div>' +
             '<div class="col-24 col-sm-12 col-lg-9 col-xl-5">' +
             '<div class="form-group">' +
-            '<label for="containerVariosContainer_' + maxTotal.toString() + '" class="form-label">Nº do Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
+            '<label for="containerVariosContainer_' + maxTotal.toString() + '" class="form-label labelJQ">Nº do Container ' + $('#hdfSeqContainerVariosContainer').val() + '</label>' +
             '<input type="text" class="form-control required" placeholder="99.999.999" id="containerVariosContainer_' + maxTotal.toString() + '" name="LstContainer[' + (maxTotal - 1).toString() + '].Container" maxlength="10">' +
             '</div>' +
             '</div>' +
@@ -968,6 +988,8 @@
         }
 
         $('#hdfSeqContainerVariosContainer').val(seq);
+
+        reorganizarSeqContainerCriando();
     }
 
 
