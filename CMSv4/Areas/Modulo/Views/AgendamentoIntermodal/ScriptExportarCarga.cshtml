@@ -45,6 +45,13 @@
             $(this).prop("disabled", true);
             event.preventDefault();
 
+            $("#mensagem").html('');
+            if ($("#Peso").val().indexOf('.') != -1) {
+                $("#mensagem").html('<div class="alert alert-danger" role="alert">O campo Peso foi informado incorretamente com vírgula (,) ou ponto (.).</div>');
+                $('html, body').animate({ scrollTop: 0 }, 800);
+                return;
+            }
+
 
             if ($("#FormCarga").valid() == true) {
 

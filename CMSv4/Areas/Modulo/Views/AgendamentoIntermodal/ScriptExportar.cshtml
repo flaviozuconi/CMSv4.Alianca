@@ -57,9 +57,9 @@
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
     $(".btnSalvarJQ").on("click", function (event) {
 
+        $("#mensagem").html('');
         if ($("#CEP").val().length != 9) {
-            $("#mensagem").html('');
-            $("#mensagem").html('<div class="alert alert-danger" role="alert">Cep inválido.</div>');
+            $("#mensagem").html('<div class="alert alert-danger" role="alert">CEP inválido.</div>');
             $('html, body').animate({ scrollTop: 0 }, 800);
             return;
         }
@@ -237,6 +237,8 @@
     });
 
     function preencherEndereco() {
+
+        $("#mensagem").html('');
 
         $.ajax({
             url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
