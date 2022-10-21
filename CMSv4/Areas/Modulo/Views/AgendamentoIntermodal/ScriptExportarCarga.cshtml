@@ -194,6 +194,12 @@
         $(".mensagemModal").html("<span class='alert alert-success' style='width:100%; float:left;'>Aguarde, estamos enviando a sua solicitação!</span>");
         $(".mensagemModal").fadeIn("slide");
 
+        $('#divRegistrosCargas .table > tbody > tr').each(function () {
+            var texto = ($(this).find('.icon-coments').attr("title"));
+
+            $(this).find('.icon-coments').parent().text(texto);
+        });
+
           $.ajax({
             type: "POST",
             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/Integrar",

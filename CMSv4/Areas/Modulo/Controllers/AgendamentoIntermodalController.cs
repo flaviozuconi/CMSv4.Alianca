@@ -569,6 +569,8 @@ namespace CMSApp.Areas.Modulo.Controllers
             string retorno = string.Empty;
             string jsonSerialize = string.Empty;
 
+            var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Person" })?.Valor ?? "https://api.movidesk.com/public/v1/persons";
+
             var objModel = new MLAgendamentoPerson
             {
                 id = "461505746", //prefixo + model.Codigo,
@@ -586,8 +588,6 @@ namespace CMSApp.Areas.Modulo.Controllers
             try
             {
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
-
-                var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Person" })?.Valor ?? "https://api.movidesk.com/public/v1/persons";
 
                 #region Request para inserção de pessoa
                 var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&returnAllProperties=false");
@@ -617,8 +617,6 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 try
                 {
-                    var url = CRUD.Obter(new MLConfiguracao { Chave = "URL.Integracao.Movidesk.Person" })?.Valor ?? "https://api.movidesk.com/public/v1/persons";
-
                     #region Get para recber a pessoa
                     var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=461505746"); // "&id=Agendamento_" + model.Codigo);
                     webRequest.ContentType = "application/json; charset=utf-8";
