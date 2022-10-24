@@ -186,6 +186,50 @@ namespace CMSApp.Areas.Modulo.Controllers
         }
         #endregion
 
+        // CEP
+
+        #region BuscarCep
+        /// <summary>
+        /// Buscar CEP
+        /// </summary>
+        /// <param name="CEP"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [CheckPermission(global::Permissao.Publico)]
+        public JsonResult BuscarCep(string Cep)
+        {
+            var objCep = new MLCep();
+            var url = "https://viacep.com.br/ws/{0}/json";
+
+            try
+            {
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+
+                var request = (HttpWebRequest)WebRequest.Create(string.Format(url, Cep));
+
+                var data = Encoding.ASCII.GetBytes("");
+
+                request.Method = "GET";
+                request.ContentType = "application/json";
+                request.ContentLength = data.Length;
+
+                var response = (HttpWebResponse)request.GetResponse();
+
+                objCep = JsonConvert.DeserializeObject<MLCep>(new StreamReader(response.GetResponseStream()).ReadToEnd());
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                return Json(new { success = false });
+            }
+
+            if(objCep.uf == null) return Json(new { success = false });
+
+            return Json(new { success = true, localidade = objCep.localidade, bairro = objCep.bairro, logradouro = objCep.logradouro, uf = objCep.uf });
+        }
+
+        #endregion
+
         // EXPORTAR
 
         #region Exportar

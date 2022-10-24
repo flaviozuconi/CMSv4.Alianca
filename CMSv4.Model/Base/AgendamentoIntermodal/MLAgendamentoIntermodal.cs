@@ -549,4 +549,17 @@ namespace CMSv4.Model
     #endregion
 
     #endregion
+
+    #region CEP
+    /// <summary>
+    /// ML CEp
+    /// </summary>
+    public class MLCep
+    {
+        public string logradouro;
+        public string bairro;
+        public string localidade;
+        public string uf;
+    }
+    #endregion
 }

@@ -2,9 +2,6 @@
 @{
     var baseUrl = "/portal/" + BLPortal.Atual.Diretorio + "/";
     var portal = BLPortal.Atual;
-
-    var urlCep1 = "https://viacep.com.br/ws/";
-    var urlCep2 = "/json";
 }
 
 <script src="@baseUrl/js/jquery.min.js"></script>
@@ -95,11 +92,11 @@
                     NumeroBooking: $("#NumeroBooking").val(),
                     CEP: $("#CEP").val(),
                     CNPJ: $("#CNPJ").val(),
-                    Endereco: $("#Endereco").val(),
-                    Complemento: $("#Complemento").val(),
-                    Bairro: $("#Bairro").val(),
-                    Cidade: $("#Cidade").val(),
-                    Estado: $("#Estado").val(),
+                    Endereco: $("#endereco").val(),
+                    Complemento: $("#complemento").val(),
+                    Bairro: $("#bairro").val(),
+                    Cidade: $("#cidade").val(),
+                    Estado: $("#estado").val(),
                     Tipo: $("#Tipo").val()
                 },
                 success: function (data) {
@@ -111,10 +108,10 @@
                         $("#CEP").prop("disabled", true);
                         $("#CNPJ").prop("disabled", true);
                         $("#Complemento").prop("disabled", true);
-                        $("#Endereco").prop("disabled", true);
-                        $("#Bairro").prop("disabled", true);
-                        $("#Cidade").prop("disabled", true);
-                        $("#Estado").prop("disabled", true);
+                        $("#endereco").prop("disabled", true);
+                        $("#bairro").prop("disabled", true);
+                        $("#cidade").prop("disabled", true);
+                        $("#estado").prop("disabled", true);
                         $("#divSalvar").fadeOut("slider");
                         $("#CodigoExportar").val(data.codigo);
 
@@ -236,81 +233,89 @@
         preencherEndereco();
     });
 
-    function preencherEndereco() {
+   function preencherEndereco() {
+        $(".agendamentoJQ").addClass("loading");
+         $.ajax({
+            type: "POST",
+             url: "/cms/@portal.Diretorio/AgendamentoIntermodal/BuscarCep",
+             data: { Cep: $("#CEP").val().replace('-', '') },
+            success: function (data) {
+                if (data.success == true) {
+                    $("#endereco").val(data.logradouro);
+                    $("#bairro").val(data.bairro);
+                    $("#cidade").val(data.localidade);
+                    $("#estado").val(data.uf);
 
-        $("#mensagem").html('');
-
-        $.ajax({
-            url: '@urlCep1' + $("#CEP").val().replace('-', '') + '@urlCep2',
-            dataType: 'json',
-            success: function (resposta) {
-                $("#Endereco").val(resposta.logradouro);
-                $("#Bairro").val(resposta.bairro);
-                $("#Cidade").val(resposta.localidade);
-                $("#Estado").val(resposta.uf);
-
-                if ($("#Endereco").val() != '') {
-                    $("#Endereco").removeClass('is-invalid');
-                    $("#Endereco-error").remove();
-                    $("#Endereco").prop("disabled", true);
+                    if ($("#endereco").val() != '') {
+                        $("#endereco").removeClass('is-invalid');
+                        $("#endereco-error").remove();
+                        $("#endereco").prop("disabled", true);
+                    }
+                    else {
+                        $("#endereco").prop("disabled", false);
+                    }
+                    if ($("#bairro").val() != '') {
+                        $("#bairro").removeClass('is-invalid');
+                        $("#bairro-error").remove();
+                        $("#bairro").prop("disabled", true);;
+                    }
+                    else {
+                        $("#bairro").prop("disabled", false)
+                    }
+                    if ($("#cidade").val() != '') {
+                        $("#cidade").removeClass('is-invalid');
+                        $("#cidade-error").remove();
+                        $("#cidade").prop("disabled", true);
+                    }
+                    else {
+                        $("#cidade").prop("disabled", false);
+                    }
+                    if ($("#estado").val() != '') {
+                        $("#estado").removeClass('is-invalid');
+                        $("#estado-error").remove();
+                        $("#estado").prop("disabled", true);
+                    }
+                    else {
+                        $("#estado").prop("disabled", false);
+                    }
+                                        
+                    $(".agendamentoJQ").removeClass("loading");
                 }
                 else {
-                    $("#Endereco").prop("disabled", false);
-                }
+                    $(".agendamentoJQ").removeClass("loading");
 
-                if ($("#Bairro").val() != '') {
-                    $("#Bairro").removeClass('is-invalid');
-                    $("#Bairro-error").remove();
-                    $("#Bairro").prop("disabled", true);;
-                }
-                else {
-                    $("#Bairro").prop("disabled", false)
-                }
+                    $("#endereco").val('');
+                    $("#bairro").val('');
+                    $("#cidade").val('');
+                    $("#estado").val('');
 
-                if ($("#Cidade").val() != '') {
-                    $("#Cidade").removeClass('is-invalid');
-                    $("#Cidade-error").remove();
-                    $("#Cidade").prop("disabled", true);
-                }
-                else {
-                    $("#Cidade").prop("disabled", false);
-                }
-
-                if ($("#Estado").val() != '') {
-                    $("#Estado").removeClass('is-invalid');
-                    $("#Estado-error").remove();
-                    $("#Estado").prop("disabled", true);
-                }
-                else {
-                    $("#Estado").prop("disabled", false);
-                }
-
-                if (resposta.localidade === undefined) {
-                    $('.invalidCepJQ').css("position", "absolute");
-                    $('.invalidCepJQ').css("margin-top", "59px");
-                    $('#CEP').attr("aria-invalid", "true");
-                    $(".invalidCepJQ").text('CEP inválido!');
-                    $(".invalidCepJQ").show();
-                    $("#CEP").removeClass("valid");
-                    $("#CEP").addClass("is-invalid");
-                }
-                else {
-                    $('.invalidCepJQ').css("position", "");
-                    $('.invalidCepJQ').css("margin-top", "");
-                    $(".invalidCepJQ").text('O campo é obrigatório');
-                    $(".invalidCepJQ").hide();
-                    if ($("#CEP").val() != '') {
-                        $('#CEP').attr("aria-invalid", "false");
-                        $("#CEP").removeClass("is-invalid");
-                        $("#CEP").addClass("valid");
+                    if (data.localidade === undefined) {
+                        $('.invalidCepJQ').css("position", "absolute");
+                        $('.invalidCepJQ').css("margin-top", "59px");
+                        $('#cep').attr("aria-invalid", "true");
+                        $(".invalidCepJQ").text('CEP inválido!');
+                        $(".invalidCepJQ").show();
+                        $("#cep").removeClass("valid");
+                        $("#cep").addClass("is-invalid");
+                    }
+                    else {
+                        $('.invalidCepJQ').css("position", "");
+                        $('.invalidCepJQ').css("margin-top", "");
+                        $(".invalidCepJQ").text('O campo é obrigatório');
+                        $(".invalidCepJQ").hide();
+                        if ($("#cep").val() != '') {
+                            $('#cep').attr("aria-invalid", "false");
+                            $("#cep").removeClass("is-invalid");
+                            $("#cep").addClass("valid");
+                        }
                     }
                 }
-                $(".agendamentoJQ").removeClass("loading");
+
             },
-            error: function (data) {
-                $(".agendamentoJQ").removeClass("loading");
-            }
-        });
+             error: function (data) {
+                 $(".agendamentoJQ").removeClass("loading");
+             }
+        })
     }
 
     // BUSCA O CEP
@@ -321,15 +326,15 @@
     // HABILITAR OS CAMPOS QUANDO O CEP É APAGADO
     $("#CEP").keyup(function () {
         if ($(this).val().length == 0) {
-            $("#Endereco").prop("disabled", false);
-            $("#Bairro").prop("disabled", false);
-            $("#Cidade").prop("disabled", false);
-            $("#Estado").prop("disabled", false);
+            $("#endereco").prop("disabled", false);
+            $("#bairro").prop("disabled", false);
+            $("#cidade").prop("disabled", false);
+            $("#estado").prop("disabled", false);
 
-            $("#Endereco").val('');
-            $("#Bairro").val('');
-            $("#Cidade").val('');
-            $("#Estado").val('');
+            $("#endereco").val('');
+            $("#bairro").val('');
+            $("#cidade").val('');
+            $("#estado").val('');
         }
     });
 

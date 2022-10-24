@@ -1117,7 +1117,7 @@
                 }
             }
             registro += "</td>" +
-                "<td>";
+                "<td class='contadorJQ'>";
             for (var aux = 0; aux < model.LstContainer.length; aux++) {
                 registro += "<span class='icon icon-coments" + DesativaComentario(model.LstContainer[aux].Comentario) + "' data-toggle='tooltip' data-placement='top' title='" + (model.LstContainer[aux].Comentario == null ? 'Sem comentários' : model.LstContainer[aux].Comentario) + "'></span> <span title='" + model.LstContainer[aux].Comentario + "'>" + TextoComentario(model.LstContainer[aux].Comentario) + "</span>";
                 if (aux < (model.LstContainer.length - 1)) {
@@ -1177,10 +1177,28 @@
         $(".mensagemModal").html("<span class='alert alert-success' style='width:100%; float:left;'>Aguarde, estamos enviando a sua solicitação!</span>");
         $(".mensagemModal").fadeIn("slide");
 
+        //$('#divRegistrosImportarCargas .table > tbody > tr').each(function () {
+        //    var texto = ($(this).find('.icon-coments').attr("title"));
+
+        //    $(this).find('.icon-coments').parent().text(texto);
+        //});
+
+
         $('#divRegistrosImportarCargas .table > tbody > tr').each(function () {
             var texto = ($(this).find('.icon-coments').attr("title"));
 
-            $(this).find('.icon-coments').parent().text(texto);
+            var textoAtual = '';
+            $(this).find('.contadorJQ .icon-coments').each(function () {
+                var texto = ($(this).attr("title"));
+                textoAtual = textoAtual + texto + ',';
+            });
+
+            if (textoAtual != '') {
+                $(this).find('.icon-coments').parent().text(textoAtual.substring(0, textoAtual.length - 1));
+            }
+            else {
+                $(this).find('.icon-coments').parent().text(texto);
+            }
         });
 
           $.ajax({
