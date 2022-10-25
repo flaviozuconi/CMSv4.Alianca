@@ -1137,14 +1137,14 @@
                   Tipo: $("#Tipo").val()
               },
             success: function (data) {
-                if (data.success == true) {
+                //if (data.success == true) {
                     $(".agendamentoJQ").hide();
                     $(".sucessoJQ").fadeIn("slide");
                     $('#modalPopupConfirmacao').modal('hide');
-                }
-                else {
-                    $(".mensagemModal").html("<span class='alert alert-danger' style='width:100%; float:left;'>Houve um problema no envio da sua solicitação, por favor, tente novamente mais tarde.</span>");
-                }
+                //}
+                //else {
+                //    $(".mensagemModal").html("<span class='alert alert-danger' style='width:100%; float:left;'>Houve um problema no envio da sua solicitação, por favor, tente novamente mais tarde.</span>");
+                //}
             },
             error: function (data) {
 

@@ -343,7 +343,17 @@
         $("#btnExluirContainerNf").remove();
 
         $("#btnExluirNfVariosContainer").remove();
-        
+
+        var contador = 1;
+        $('.sequenciaJQ').each(function () {
+            contador = contador + 1;
+        });
+
+        if (contador < 10) {
+            contador = "0" + contador.toString();
+        }
+
+        $("#hdfSeqContainer").val(contador);
     }
 
     // CLICK NO BOTAO SALVAR EXPORTAÇAO
@@ -543,20 +553,27 @@
     }
 
     function reorganizarSeqContainerCriando() {
-        var seq = 1;
-        var aux = "0" + seq.toString();
 
+        var contador = 1;
+        $('.sequenciaJQ').each(function () {
+            contador = contador + 1;
+        });
+
+        var aux = contador;
         $(".variosContainerJQ").each(function (index, element) {
             if ($(this).is(':visible')) {
 
-                if (seq < 10) {
-                    aux = "0" + seq.toString();
+                if (contador < 10) {
+                    aux = "0" + contador.toString();
+                }
+                else {
+                    aux = contador.toString();
                 }
 
                 $(this).find('.icon-box').parent().html('<big class="icon icon-box mr-2"></big> Container ' + aux);
                 $(this).find('input[type=hidden]').val(aux);
                 $(this).find('.labelJQ').text('Nº do Container ' + aux);
-                seq += 1;
+                contador += 1;
             }
         });
 
@@ -565,6 +582,7 @@
     function reorganizarSeqContainer() {
         var seq = 1;
         var aux = "0" + seq.toString();
+        var isSequencia = false;
 
         $(".sequenciaJQ").each(function (index, element) {
 
@@ -576,7 +594,12 @@
             $("#" + element.id).html('Container ' + aux);
 
             seq += 1;
+            isSequencia = true;
         });
+
+        if (isSequencia == false) {
+            $("#hdfSeqContainer").val(2)
+        };
 
         if (seq < 10) {
             aux = "0" + seq.toString();
@@ -630,9 +653,12 @@
                     reorganizarSeqContainer();
 
                 }
+                else {
+                    $(this).parent().parent().remove();
+                }
             },
             error: function (data) {
-
+                $("#excluir_" + $("#CodigoExcluir").val()).remove();
             }
         });
     });
@@ -872,7 +898,7 @@
 
         $("div .variosContainerJQ").each(function (index, element) {
             var item = parseInt(element.className.split('_')[1]);
-            if ($("#hdfLinhaExcluidaContainer_" + item).val() == 'false') {
+            if ($("#hdfLinhaExcluidaContainer_" + item).val() != 'undefined') {
                 if (minAtivo > item || minAtivo == 0) {
                     minAtivo = item;
                 }
@@ -893,6 +919,7 @@
 
         $(".btnDeleteContainerJQ_" + maxAtivo.toString()).show();
         $(".btnAdicionarContainerJQ_" + maxAtivo.toString()).hide();
+        $(".btnDeleteContainerJQ_" + maxAtivo.toString()).hide();
 
         var seq = (parseInt($('#hdfSeqContainerVariosContainer').val()) + 1).toString();
         if (seq.length < 2) {
@@ -979,7 +1006,11 @@
             $(".btnDeleteContainerJQ_" + maxAtivo.toString()).hide();
         }
 
+        if (maxAtivo == 0) { maxAtivo = div - 1; }
+
+
         $(".btnAdicionarContainerJQ_" + maxAtivo.toString()).show();
+        $(".btnDeleteContainerJQ_" + maxAtivo.toString()).show();
 
         var seq = (parseInt($('#hdfSeqContainerVariosContainer').val()) - 1);
 
@@ -991,7 +1022,6 @@
 
         reorganizarSeqContainerCriando();
     }
-
 
     $(".btnSalvarCargaVariosContainerJQ").on("click", function (event) {
         var isValido = $("#FormCargaNfVariosContainer").valid();
@@ -1007,10 +1037,7 @@
                 $("#hdfSeqContainer").val($("#hdfSeqContainerVariosContainer").val());
                 $("#guidVariosContainer").val($("#hdfGuid").val());
 
-
                 var lst = $("#FormCargaNfVariosContainer").serialize();
-
-
 
                 if (isValido == true) {
 
@@ -1156,7 +1183,7 @@
     });
 
     $('#modalPopupConfirmacao').on("click", function () {
-        $(".gridJQ .table").remove();
+        return false;
     });
 
     $(".btnAgendarImportarJQ").on("click", function () {
@@ -1176,6 +1203,7 @@
         $(".btnSimPopupConfirmacaoJQ").hide();
         $(".mensagemModal").html("<span class='alert alert-success' style='width:100%; float:left;'>Aguarde, estamos enviando a sua solicitação!</span>");
         $(".mensagemModal").fadeIn("slide");
+        //$(".mensagemPadraoJQ").hide();
 
         //$('#divRegistrosImportarCargas .table > tbody > tr').each(function () {
         //    var texto = ($(this).find('.icon-coments').attr("title"));
@@ -1183,18 +1211,17 @@
         //    $(this).find('.icon-coments').parent().text(texto);
         //});
 
-
         $('#divRegistrosImportarCargas .table > tbody > tr').each(function () {
             var texto = ($(this).find('.icon-coments').attr("title"));
 
             var textoAtual = '';
             $(this).find('.contadorJQ .icon-coments').each(function () {
                 var texto = ($(this).attr("title"));
-                textoAtual = textoAtual + texto + ',';
+                textoAtual = textoAtual + texto + '<br>';
             });
 
             if (textoAtual != '') {
-                $(this).find('.icon-coments').parent().text(textoAtual.substring(0, textoAtual.length - 1));
+                $(this).find('.icon-coments').parent().html(textoAtual.substring(0, textoAtual.length - 1));
             }
             else {
                 $(this).find('.icon-coments').parent().text(texto);
@@ -1210,18 +1237,19 @@
                   Tipo: $("#Tipo").val()
               },
             success: function (data) {
-                if (data.success == true) {
+                //if (data.success == true) {
                     $(".agendamentoJQ").hide();
                     $(".sucessoJQ").fadeIn("slide");
                     $('#modalPopupConfirmacao').modal('hide');
-                }
-                else {
-                    // monta o HTML da popup
-                    $(".gridJQ").html($("#divRegistrosImportarCargas").html());
-                    $(".gridJQ .icon-delete").remove();
+                //}
+                //else {
+                //    // monta o HTML da popup
+                //    $(".gridJQ").html($("#divRegistrosImportarCargas").html());
+                //    $(".gridJQ .icon-delete").remove();
 
-                    $(".mensagemModal").html("<span class='alert alert-danger' style='width:100%; float:left;'>Houve um problema no envio da sua solicitação, por favor, tente novamente mais tarde.</span>");
-                }
+                //    //$(".mensagemPadraoJQ").show();
+                //    $(".mensagemModal").html("<span class='alert alert-danger' style='width:100%; float:left;'>Houve um problema no envio da sua solicitação, por favor, tente novamente mais tarde.</span>");
+                //}
             },
             error: function (data) {
 

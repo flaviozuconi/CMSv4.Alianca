@@ -18,8 +18,9 @@ namespace VM2.Rotinas
         {
             var Scheme = CRUD.Obter(new MLConfiguracao { Chave = "UrlScheme" })?.Valor ?? "http";
             var Authoriry = CRUD.Obter(new MLConfiguracao { Chave = "UrlAuthority" })?.Valor ?? "localhost:55056";
+            var modeloEmail = CRUD.Obter(new MLConfiguracao { Chave = "Email.Moveidesk" })?.Valor;
 
-            BLLogIntegracaoAdmin.Integrar(Scheme, Authoriry);
+            BLLogIntegracaoAdmin.Integrar(Scheme, Authoriry, modeloEmail);
         }
     }
 }

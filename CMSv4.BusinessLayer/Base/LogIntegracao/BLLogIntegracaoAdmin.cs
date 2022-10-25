@@ -39,19 +39,50 @@ namespace CMSv4.BusinessLayer
         /// <summary>
         /// Integrar 
         /// </summary>
-        public static void Integrar(string schema, string authoriry)
+        public static void Integrar(string schema, string authoriry, string modeloEmail)
         {
+            string emailErro = string.Empty;
+
             try
             {
                 foreach (var model in BLLogIntegracaoAdmin.Listar())
                 {
+                    var obj = JsonConvert.DeserializeObject<MLAgendamentoTicket>(model.Json);
+                    emailErro = obj?.createdBy.email ?? string.Empty;
+
                     var retorno = IntegrarAPI(model.Json, model.Imagem, schema, authoriry);
 
-                    if (retorno.Contains("id")) CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = model.Codigo, isIntegrado = true, RetornoAPI = retorno });
+                    if (retorno.Contains("id"))
+                        CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = model.Codigo, isIntegrado = true, RetornoAPI = retorno });
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(emailErro))
+                        {
+                            #region Envio de email
+                            var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
+
+                            // enviar email
+                            BLEmail.Enviar("Erro na integracação do movidesk", email,
+                                 modeloEmail.Replace("[[link-site]]", string.Format("{0}://{1}", schema, authoriry))
+                                 .Replace("[[email]]", string.IsNullOrEmpty(emailErro) ? string.Empty : " - E-mail: " + emailErro)
+                                );
+                            #endregion
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
+                #region Envio de email
+                var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
+
+                // enviar email
+                BLEmail.Enviar("Erro na integracação do movidesk", email,
+                     modeloEmail.Replace("[[link-site]]", string.Format("{0}://{1}", schema, authoriry))
+                    .Replace("[[email]]", string.IsNullOrEmpty(emailErro) ? string.Empty : " - E-mail: " + emailErro)
+                    );
+                #endregion 
+
                 ApplicationLog.ErrorLog(ex);
             }
         }
