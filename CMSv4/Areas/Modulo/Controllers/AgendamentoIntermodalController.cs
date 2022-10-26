@@ -694,6 +694,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     // enviar email
                     BLEmail.Enviar("Erro na integracação do movidesk", email, 
                         BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
+                        .Replace("[[email]]", string.Empty)
                         );
                     #endregion
 
