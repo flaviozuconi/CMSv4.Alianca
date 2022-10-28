@@ -688,15 +688,15 @@ namespace CMSApp.Areas.Modulo.Controllers
                     });
                     #endregion
 
-                    #region Envio de email
-                    var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
+                    //#region Envio de email
+                    //var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
-                    // enviar email
-                    BLEmail.Enviar("Erro na integracação do movidesk", email, 
-                        BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
-                        .Replace("[[email]]", string.Empty)
-                        );
-                    #endregion
+                    //// enviar email
+                    //BLEmail.Enviar("Erro na integracação do movidesk", email, 
+                    //    BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
+                    //    .Replace("[[email]]", string.Empty)
+                    //    );
+                    //#endregion
 
                     ApplicationLog.ErrorLog(exNew);
                 }
@@ -863,15 +863,15 @@ namespace CMSApp.Areas.Modulo.Controllers
                 });
                 #endregion
 
-                #region Envio de email
-                var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
+                //#region Envio de email
+                //var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
-                // enviar email
-                BLEmail.Enviar("Erro na integracação do movidesk", email,
-                     BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
-                     .Replace("[[email]]", string.IsNullOrEmpty(model.Email) ? string.Empty : " - E-mail: " + model.Email)
-                    );
-                #endregion 
+                //// enviar email
+                //BLEmail.Enviar("Erro na integracação do movidesk", email,
+                //     BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
+                //     .Replace("[[email]]", string.IsNullOrEmpty(model.Email) ? string.Empty : " - E-mail: " + model.Email)
+                //    );
+                //#endregion 
 
                 ApplicationLog.ErrorLog(ex);
             }

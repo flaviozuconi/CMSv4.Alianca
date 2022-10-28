@@ -42,6 +42,7 @@ namespace CMSv4.BusinessLayer
         public static void Integrar(string schema, string authoriry, string modeloEmail)
         {
             string emailErro = string.Empty;
+            string json = string.Empty;
 
             try
             {
@@ -49,6 +50,7 @@ namespace CMSv4.BusinessLayer
                 {
                     var obj = JsonConvert.DeserializeObject<MLAgendamentoTicket>(model.Json);
                     emailErro = obj?.createdBy.email ?? string.Empty;
+                    json = model.Json;
 
                     var retorno = IntegrarAPI(model.Json, model.Imagem, schema, authoriry);
 
@@ -65,6 +67,7 @@ namespace CMSv4.BusinessLayer
                             BLEmail.Enviar("Erro na integracação do movidesk", email,
                                  modeloEmail.Replace("[[link-site]]", string.Format("{0}://{1}", schema, authoriry))
                                  .Replace("[[email]]", string.IsNullOrEmpty(emailErro) ? string.Empty : " - E-mail: " + emailErro)
+                                 .Replace("[[json]]", string.IsNullOrEmpty(json) ? string.Empty : "HTML: " + json.Replace("\\n", string.Empty))
                                 );
                             #endregion
                         }
@@ -80,6 +83,7 @@ namespace CMSv4.BusinessLayer
                 BLEmail.Enviar("Erro na integracação do movidesk", email,
                      modeloEmail.Replace("[[link-site]]", string.Format("{0}://{1}", schema, authoriry))
                     .Replace("[[email]]", string.IsNullOrEmpty(emailErro) ? string.Empty : " - E-mail: " + emailErro)
+                    .Replace("[[json]]", string.IsNullOrEmpty(json) ? string.Empty : "HTML: " + json.Replace("\\n", string.Empty))
                     );
                 #endregion 
 
