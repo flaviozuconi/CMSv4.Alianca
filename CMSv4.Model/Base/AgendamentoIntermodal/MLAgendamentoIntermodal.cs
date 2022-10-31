@@ -148,6 +148,9 @@ namespace CMSv4.Model
 
         [DataField("AIL_B_INTEGRADO", SqlDbType.Bit)]
         public bool? isIntegrado { get; set; }
+
+        [DataField("AIL_B_INTEGRADO_SEGUNDA_TENTATIVA", SqlDbType.Bit)]
+        public bool? isIntegradoSegundaTentativa { get; set; }
     }
     #endregion  
 

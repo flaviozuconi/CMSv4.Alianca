@@ -43,6 +43,7 @@ namespace CMSv4.BusinessLayer
         {
             string emailErro = string.Empty;
             string json = string.Empty;
+            decimal? codigo = null;
 
             try
             {
@@ -51,6 +52,7 @@ namespace CMSv4.BusinessLayer
                     var obj = JsonConvert.DeserializeObject<MLAgendamentoTicket>(model.Json);
                     emailErro = obj?.createdBy.email ?? string.Empty;
                     json = model.Json;
+                    codigo = model.Codigo;
 
                     var retorno = IntegrarAPI(model.Json, model.Imagem, schema, authoriry);
 
@@ -70,22 +72,33 @@ namespace CMSv4.BusinessLayer
                                  .Replace("[[json]]", string.IsNullOrEmpty(json) ? string.Empty : "HTML: " + json.Replace("\\n", string.Empty))
                                 );
                             #endregion
+
+                            CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = model.Codigo, isIntegradoSegundaTentativa = true });
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                #region Envio de email
-                var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
+                try
+                {
+                    #region Envio de email
+                    var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
 
-                // enviar email
-                BLEmail.Enviar("Erro na integracação do movidesk", email,
-                     modeloEmail.Replace("[[link-site]]", string.Format("{0}://{1}", schema, authoriry))
-                    .Replace("[[email]]", string.IsNullOrEmpty(emailErro) ? string.Empty : " - E-mail: " + emailErro)
-                    .Replace("[[json]]", string.IsNullOrEmpty(json) ? string.Empty : "HTML: " + json.Replace("\\n", string.Empty))
-                    );
-                #endregion 
+                    // enviar email
+                    BLEmail.Enviar("Erro na integracação do movidesk", email,
+                         modeloEmail.Replace("[[link-site]]", string.Format("{0}://{1}", schema, authoriry))
+                        .Replace("[[email]]", string.IsNullOrEmpty(emailErro) ? string.Empty : " - E-mail: " + emailErro)
+                        .Replace("[[json]]", string.IsNullOrEmpty(json) ? string.Empty : "HTML: " + json.Replace("\\n", string.Empty))
+                        );
+                    #endregion
+
+                    CRUD.SalvarParcial(new MLAgendamentoIntermodalLog { Codigo = codigo, isIntegradoSegundaTentativa = true });
+                }
+                catch (Exception ex1)
+                {
+
+                }
 
                 ApplicationLog.ErrorLog(ex);
             }
