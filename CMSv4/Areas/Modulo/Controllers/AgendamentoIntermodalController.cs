@@ -1721,10 +1721,10 @@ namespace CMSApp.Areas.Modulo.Controllers
                         objModel.clients = new List<Client>();
                         objModel.clients.Add(new Client
                         {
-                            id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
+                            id = "AgendamentoImportar_" + model.Codigo, 
                             personType = 1,
                             profileType = 2,
-                            businessName = "DMRSE-1200"//model.Nome
+                            businessName = model.Nome
                         });
                         #endregion
 
@@ -1743,10 +1743,10 @@ namespace CMSApp.Areas.Modulo.Controllers
                         #region create
                         objModel.createdBy = new Createdby
                         {
-                            id = "461505746",//idCliente,
+                            id = "AgendamentoImportar_" + model.Codigo,
                             personType = 1,
                             profileType = 2,
-                            businessName = "DMRSE-1200", //model.Nome,
+                            businessName =  model.Nome,
                             email = model.Email
                         };
                         #endregion
