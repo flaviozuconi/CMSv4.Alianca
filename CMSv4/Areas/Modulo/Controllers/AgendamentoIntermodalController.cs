@@ -397,10 +397,10 @@ namespace CMSApp.Areas.Modulo.Controllers
                     objModel.clients = new List<Client>();
                     objModel.clients.Add(new Client
                     {
-                        id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
+                        id = "Agendamento_" + model.Codigo, 
                         personType = 1,
                         profileType = 2,
-                        businessName = "DMRSE-1200"//model.Nome
+                        businessName = model.Nome
                     });
                     #endregion
 
@@ -419,10 +419,10 @@ namespace CMSApp.Areas.Modulo.Controllers
                     #region create
                     objModel.createdBy = new Createdby
                     {
-                        id = "461505746",//idCliente,
+                        id = model.Codigo.ToString(),
                         personType = 1,
                         profileType = 2,
-                        businessName = "DMRSE-1200", //model.Nome,
+                        businessName = model.Nome,
                         email = model.Email
                     };
                     #endregion
@@ -617,16 +617,16 @@ namespace CMSApp.Areas.Modulo.Controllers
 
             var objModel = new MLAgendamentoPerson
             {
-                id = "461505746", //prefixo + model.Codigo,
+                id = prefixo + model.Codigo.ToString(),
                 codRefAdditional = string.Empty,
                 isActive = true,
                 personType = 1,
                 profileType = 2,
                 accessProfile = "Clients",
-                businessName = "DMRSE-1200", // model.Nome,
-                corporateName = "DMRSE-1200", // model.Nome,
+                businessName = model.Nome,
+                corporateName =  model.Nome,
                 cpfCnpj = string.Empty,
-                userName = "email@gerador.com" //model.Email
+                userName = model.Email
             };
 
             try
@@ -688,16 +688,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                     });
                     #endregion
 
-                    //#region Envio de email
-                    //var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
-
-                    //// enviar email
-                    //BLEmail.Enviar("Erro na integracação do movidesk", email, 
-                    //    BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
-                    //    .Replace("[[email]]", string.Empty)
-                    //    );
-                    //#endregion
-
                     ApplicationLog.ErrorLog(exNew);
                 }
             }
@@ -734,10 +724,10 @@ namespace CMSApp.Areas.Modulo.Controllers
             objModel.clients = new List<Client>();
             objModel.clients.Add(new Client
             {
-                id = "461505746",   //idCliente       (rcastanho)--Estava assim: //cliente, "Agendamento_" + modelCliente.Codigo, 
+                id = idCliente,
                 personType = 1,
                 profileType = 2,
-                businessName = "DMRSE-1200"//model.Nome
+                businessName = model.Nome
             });
             #endregion
 
@@ -756,10 +746,10 @@ namespace CMSApp.Areas.Modulo.Controllers
             #region create
             objModel.createdBy = new Createdby
             {
-                id = "461505746",//idCliente,
+                id = idCliente,
                 personType = 1,
                 profileType = 2,
-                businessName = "DMRSE-1200", //model.Nome,
+                businessName = model.Nome,
                 email = model.Email
             };
             #endregion
@@ -862,16 +852,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                     isIntegrado = false
                 });
                 #endregion
-
-                //#region Envio de email
-                //var email = CRUD.Obter(new MLConfiguracao { Chave = "Email-Integracao-Movidesk" })?.Valor ?? "william.silva@vm2.com.br";
-
-                //// enviar email
-                //BLEmail.Enviar("Erro na integracação do movidesk", email,
-                //     BLEmail.ObterModelo(BLEmail.ModelosPadrao.EmailErroMovidesk).Replace("[[link-site]]", string.Format("{0}://{1}", Request.Url.Scheme, Request.Url.Authority))
-                //     .Replace("[[email]]", string.IsNullOrEmpty(model.Email) ? string.Empty : " - E-mail: " + model.Email)
-                //    );
-                //#endregion 
 
                 ApplicationLog.ErrorLog(ex);
             }
