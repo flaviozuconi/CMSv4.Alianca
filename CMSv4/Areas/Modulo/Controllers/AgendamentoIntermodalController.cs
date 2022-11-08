@@ -15,6 +15,8 @@ using System.Security.Cryptography;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Linq;
+using Framework.DataLayer;
+using System.Data.SqlClient;
 
 namespace CMSApp.Areas.Modulo.Controllers
 {
@@ -678,17 +680,44 @@ namespace CMSApp.Areas.Modulo.Controllers
                 }
                 catch (Exception exNew)
                 {
-                    #region Grava o json na nossa base
-                    CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                    try
                     {
-                        DataCadastro = DateTime.Now,
-                        Json = jsonSerialize,
-                        Tipo = model.Tipo,
-                        isIntegrado = false
-                    });
-                    #endregion
+                        string prefixoCodigo = null;
+                        if (prefixo.Equals("AgendamentoImportar_"))
+                            prefixoCodigo = "AgendamentoExportar_" + CRUD.Obter<MLAgendamentoIntermodal>(new MLAgendamentoIntermodal { Nome = model.Nome, Email = model.Email })?.Codigo;
+                        else
+                            prefixoCodigo = "AgendamentoImportar_" +  CRUD.Obter<MLAgendamentoIntermodalImportacao>(new MLAgendamentoIntermodalImportacao { Nome = model.Nome, Email = model.Email })?.Codigo;
 
-                    ApplicationLog.ErrorLog(exNew);
+                        #region Get para recber a pessoa
+                        var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + prefixoCodigo); // "&id=461505746");
+                        webRequest.ContentType = "application/json; charset=utf-8";
+                        webRequest.Method = "GET";
+
+                        using (var resposta = webRequest.GetResponse())
+                        {
+                            var streamDados = resposta.GetResponseStream();
+                            StreamReader reader = new StreamReader(streamDados);
+                            string response = reader.ReadToEnd();
+
+                            return retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
+                        }
+                        #endregion
+                    }
+                    catch (Exception exNew1)
+                    {
+                        #region Grava o json na nossa base
+                        CRUD.Salvar<MLAgendamentoIntermodalLog>(new MLAgendamentoIntermodalLog
+                        {
+                            DataCadastro = DateTime.Now,
+                            Json = jsonSerialize,
+                            Tipo = model.Tipo,
+                            isIntegrado = false
+                        });
+                        #endregion
+
+                        ApplicationLog.ErrorLog(exNew1);
+                    }
+                   
                 }
             }
 
@@ -1619,6 +1648,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var portal = PortalAtual.Obter;
                 var objModelImportacao = CRUD.Obter<MLAgendamentoIntermodalImportacao>(codigo, portal.ConnectionString);
                 var model = new MLAgendamentoIntermodal();
+
+                Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIIC_AGENDAMENTO_INTERMODAL_IMPORTACAO_CARGA SET AIIC_C_CONTAINER = 'XXX' WHERE AIIC_AII_N_CODIGO =" + codigo));
 
                 if (objModelImportacao != null && objModelImportacao.Codigo.HasValue)
                 {
