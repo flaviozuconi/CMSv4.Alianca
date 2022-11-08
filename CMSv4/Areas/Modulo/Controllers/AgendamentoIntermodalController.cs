@@ -385,7 +385,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     var objModel = new MLAgendamentoTicket
                     {
                         type = 2,
-                        subject = "[DMRSE-1200] Agendamento Intermodal – Tipo de operação – Booking",
+                        subject = "[DMRSE-1200] Agendamento Intermodal – Exportar – " + model.NumeroBooking + " ",
                         serviceFirstLevel = "278113",
                         serviceSecondLevel = "716763",
                         serviceThirdLevel = "716764",
@@ -1649,8 +1649,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var objModelImportacao = CRUD.Obter<MLAgendamentoIntermodalImportacao>(codigo, portal.ConnectionString);
                 var model = new MLAgendamentoIntermodal();
 
-                Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIIC_AGENDAMENTO_INTERMODAL_IMPORTACAO_CARGA SET AIIC_C_CONTAINER = 'XXX' WHERE AIIC_AII_N_CODIGO =" + codigo));
-
                 if (objModelImportacao != null && objModelImportacao.Codigo.HasValue)
                 {
                     var cliente = IntegrarCliente(new MLAgendamentoIntermodal
@@ -1686,7 +1684,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                         model.lstCarga = new List<MLAgendamentoIntermodalImportacaoCarga>();
 
-                        var lstNf = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var lstNf = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = codigo }, portal.ConnectionString).FindAll(obj => obj.isIntegrado == null);
                         var diretorioNf = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoNf(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
                         //var pastaNf = HttpContextFactory.Current.Server.MapPath(diretorioNf);
                         foreach(var nf in lstNf)
@@ -1695,7 +1693,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = nf.Arquivo, caminhoCompleto = diretorioNf + nf.Arquivo });
                         }
 
-                        var lstDeclaracaoImportacao = CRUD.Listar(new MLAgendamentoIntermodalArquivoDeclaracaoImportacao { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var lstDeclaracaoImportacao = CRUD.Listar(new MLAgendamentoIntermodalArquivoDeclaracaoImportacao { CodigoImportacao = codigo }, portal.ConnectionString).FindAll(obj => obj.isIntegrado == null); ;
                         var diretorioDeclaracao = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoDeclaracao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
                         //var pastaDeclaracao = HttpContextFactory.Current.Server.MapPath(diretorioDeclaracao);
                         foreach (var item in lstDeclaracaoImportacao)
@@ -1704,7 +1702,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioDeclaracao + item.Arquivo });
                         }
 
-                        var lstGuia = CRUD.Listar(new MLAgendamentoIntermodalArquivoGare { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var lstGuia = CRUD.Listar(new MLAgendamentoIntermodalArquivoGare { CodigoImportacao = codigo }, portal.ConnectionString).FindAll(obj => obj.isIntegrado == null);
                         var diretorioGuia = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoGuiaArrecadacao(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
                        
                         foreach (var item in lstGuia)
@@ -1713,7 +1711,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioGuia + item.Arquivo });
                         }
 
-                        var lstBl = CRUD.Listar(new MLAgendamentoIntermodalArquivoBl { CodigoImportacao = codigo }, portal.ConnectionString);
+                        var lstBl = CRUD.Listar(new MLAgendamentoIntermodalArquivoBl { CodigoImportacao = codigo }, portal.ConnectionString).FindAll(obj => obj.isIntegrado == null);
                         var diretorioBl = Request.Url.Scheme + "://" + Request.Url.Authority + (BLConfiguracao.Pastas.ModuloImportacaoBl(portal.Diretorio, codigo.ToString()) + "/").Replace("//", "/");
 
                         foreach (var item in lstBl)
@@ -1724,6 +1722,11 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                         if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html, tipo);
 
+                        Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIIC_AGENDAMENTO_INTERMODAL_IMPORTACAO_CARGA SET AIIC_B_INTEGRADO = 1 WHERE AIIC_AII_N_CODIGO =" + codigo));
+                        Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIDI_ARQUIVO_IMPORTACAO_DECLARACAO_IMPORTACAO SET AIDI_B_INTEGRADO = 1 WHERE AIDI_AII_N_CODIGO =" + codigo));
+                        Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIBL_ARQUIVO_IMPORTACAO_BL SET AIBL_B_INTEGRADO = 1 WHERE AIBL_AII_N_CODIGO =" + codigo));
+                        Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIGE_ARQUIVO_IMPORTACAO_GARE SET AIGE_B_INTEGRADO = 1 WHERE AIGE_AII_N_CODIGO =" + codigo));
+
                         return Json(new { success = true });
                     }
                     else
@@ -1731,7 +1734,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                         var objModel = new MLAgendamentoTicket
                         {
                             type = 2,
-                            subject = "[DMRSE-1200] Agendamento Intermodal – Tipo de operação – Booking",
+                            subject = "[DMRSE-1200] Agendamento Intermodal –" + tipo + " – " + model.NumeroBooking + " ",
                             serviceFirstLevel = "278113",
                             serviceSecondLevel = "716763",
                             serviceThirdLevel = "716764",

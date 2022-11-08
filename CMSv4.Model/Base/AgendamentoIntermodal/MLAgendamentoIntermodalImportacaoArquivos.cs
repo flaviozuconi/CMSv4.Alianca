@@ -24,6 +24,9 @@ namespace CMSv4.Model
         [StringLength(500)]
         [DataField("AIDI_C_ARQUIVO", SqlDbType.VarChar, 500)]
         public string Arquivo { get; set; }
+
+        [DataField("AIDI_B_INTEGRADO", SqlDbType.Bit)]
+        public bool? isIntegrado { get; set; }
     }
     #endregion
 
@@ -44,6 +47,9 @@ namespace CMSv4.Model
         [StringLength(500)]
         [DataField("AIGE_C_ARQUIVO", SqlDbType.VarChar, 500)]
         public string Arquivo { get; set; }
+
+        [DataField("AIGE_B_INTEGRADO", SqlDbType.Bit)]
+        public bool? isIntegrado { get; set; }
     }
     #endregion
 
@@ -64,6 +70,9 @@ namespace CMSv4.Model
         [StringLength(500)]
         [DataField("AIBL_C_ARQUIVO", SqlDbType.VarChar, 500)]
         public string Arquivo { get; set; }
+
+        [DataField("AIBL_B_INTEGRADO", SqlDbType.Bit)]
+        public bool? isIntegrado { get; set; }
     }
     #endregion
 

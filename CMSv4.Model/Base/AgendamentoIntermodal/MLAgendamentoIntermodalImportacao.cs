@@ -106,6 +106,9 @@ namespace CMSv4.Model
         [DataField("AIIC_D_REGISTRO", SqlDbType.DateTime)]
         public DateTime? DataRegistro { get; set; }
 
+        [DataField("AIIC_B_INTEGRADO", SqlDbType.Bit)]
+        public bool? isIntegrado { get; set; }
+
         public string DataEntregaFormatada
         {
             get
