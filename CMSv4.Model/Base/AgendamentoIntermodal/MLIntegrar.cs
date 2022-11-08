@@ -30,9 +30,9 @@ namespace CMSv4.Model
         public object classification { get; set; }
         public string cultureId { get; set; }
         public string timeZoneId { get; set; }
-        public DateTime createdDate { get; set; }
+        public DateTime? createdDate { get; set; }
         public string createdBy { get; set; }
-        public DateTime changedDate { get; set; }
+        public DateTime? changedDate { get; set; }
         public string changedBy { get; set; }
         public object observations { get; set; }
         public object authenticateOn { get; set; }

@@ -662,7 +662,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 try
                 {
                     #region Get para recber a pessoa
-                    var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=461505746"); // "&id=Agendamento_" + model.Codigo);
+                    var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + prefixo + model.Codigo); // "&id=461505746");
                     webRequest.ContentType = "application/json; charset=utf-8";
                     webRequest.Method = "GET";
 
@@ -710,7 +710,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             var objModel = new MLAgendamentoTicket
             {
                 type = 2,
-                subject = "[DMRSE-1200] Agendamento Intermodal – Tipo de operação – Booking",
+                subject = "[DMRSE-1200] Agendamento Intermodal – " + Tipo + " – " + model.NumeroBooking + " ",
                 serviceFirstLevel = "278113",
                 serviceSecondLevel = "716763",
                 serviceThirdLevel = "716764",
@@ -1072,19 +1072,15 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 try
                 {
-                    //string strMensagemErro = "";
-
                     var portal = PortalAtual.Obter;
-
                     model.DataRegistro = DateTime.Now;
 
-                    /*var obj = CRUD.Obter(new MLGestaoInformacoesImportacao { PropostaComercial = model.PropostaComercial, NumeroBooking = model.NumeroBooking, NumeroBL = model.NumeroBL });
-                    if(obj == null || string.IsNullOrEmpty(obj.PropostaComercial))
-                        strMensagemErro = "Proposta comercial " + model.PropostaComercial + ", o Número Booking "+ model.NumeroBooking + " e o Número BL "+ model.NumeroBL + " não estão relacionados.";
+                    var obj = CRUD.Obter(new MLAgendamentoIntermodalImportacao { Nome = model.Nome, Email = model.Email });
 
-                    if (string.IsNullOrEmpty(strMensagemErro))
-                    {*/
+                    if (obj == null || !obj.Codigo.HasValue)
                         model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
+                    else
+                        model.Codigo = obj.Codigo;
 
                         if (!string.IsNullOrEmpty(guid))
                         {
@@ -1166,9 +1162,6 @@ namespace CMSApp.Areas.Modulo.Controllers
                         }
 
                         return Json(new { success = true, codigo = model.Codigo });
-                    /*}
-                    else
-                        return Json(new { success = false, msg = strMensagemErro, codigo = 0 });*/
                 }
                 catch (Exception ex)
                 {
