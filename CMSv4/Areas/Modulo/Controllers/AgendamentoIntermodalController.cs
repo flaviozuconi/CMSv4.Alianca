@@ -1834,6 +1834,11 @@ namespace CMSApp.Areas.Modulo.Controllers
                     }
                 }
 
+                Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIIC_AGENDAMENTO_INTERMODAL_IMPORTACAO_CARGA SET AIIC_B_INTEGRADO = 1 WHERE AIIC_AII_N_CODIGO =" + codigo));
+                Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIDI_ARQUIVO_IMPORTACAO_DECLARACAO_IMPORTACAO SET AIDI_B_INTEGRADO = 1 WHERE AIDI_AII_N_CODIGO =" + codigo));
+                Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIBL_ARQUIVO_IMPORTACAO_BL SET AIBL_B_INTEGRADO = 1 WHERE AIBL_AII_N_CODIGO =" + codigo));
+                Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIGE_ARQUIVO_IMPORTACAO_GARE SET AIGE_B_INTEGRADO = 1 WHERE AIGE_AII_N_CODIGO =" + codigo));
+
                 return Json(new { success = false });
             }
             catch (Exception ex)
