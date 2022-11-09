@@ -1320,7 +1320,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 if (lista?.Count <= 50)
                 {
                     //Impedir duplicidade
-                    var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container });
+                    var listaDuplicidade = CRUD.Listar(new MLAgendamentoIntermodalImportacaoCarga { CodigoImportacao = model.CodigoImportacao, Container = model.Container }).FindAll(obj => obj.isIntegrado == null);
 
                     if (listaDuplicidade == null || listaDuplicidade.Count <= 0)
                     {
