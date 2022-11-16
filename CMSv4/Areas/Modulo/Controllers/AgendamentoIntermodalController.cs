@@ -393,6 +393,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                         urgency = "Normal",
                         ownerTeam = "DS-CX-CI@",
                         createdDate = DateTime.Now,
+                        serviceFull = new List<string> { "Serviço nível 1", "Serviço nível 2", "Serviço nível 3" },
+                        serviceFirstLevelId = "278113"
                     };
 
                     #region cliente
@@ -747,6 +749,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                 urgency = "Normal",
                 ownerTeam = "DS-CX-CI@",
                 createdDate = DateTime.Now,
+                serviceFull = new List<string> { "Serviço nível 1", "Serviço nível 2", "Serviço nível 3" },
+                serviceFirstLevelId = "278113"
             };
 
             #region cliente
@@ -1742,6 +1746,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                             urgency = "Normal",
                             ownerTeam = "DS-CX-CI@",
                             createdDate = DateTime.Now,
+                            serviceFull = new List<string> { "Serviço nível 1", "Serviço nível 2", "Serviço nível 3" },
+                            serviceFirstLevelId = "278113"
                         };
 
                         #region cliente
