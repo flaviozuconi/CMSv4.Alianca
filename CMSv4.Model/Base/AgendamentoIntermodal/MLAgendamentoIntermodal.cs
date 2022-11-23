@@ -437,11 +437,7 @@ namespace CMSv4.Model
     {
         public int type                 { get; set; }
         public string subject           { get; set; }
-        public List<string> serviceFull { get; set; }
         public string serviceFirstLevelId { get; set; }
-        public string serviceFirstLevel { get; set; }
-        public string serviceSecondLevel { get; set; }
-        public string serviceThirdLevel { get; set; }
         public string category          { get; set; }
         public string urgency           { get; set; }
         public string ownerTeam         { get; set; }

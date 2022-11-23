@@ -386,15 +386,11 @@ namespace CMSApp.Areas.Modulo.Controllers
                     {
                         type = 2,
                         subject = "[DMRSE-1200] Agendamento Intermodal – Exportar – " + model.NumeroBooking + " ",
-                        serviceFirstLevel = "278113",
-                        serviceSecondLevel = "716763",
-                        serviceThirdLevel = "716764",
                         category = "Service Request",
                         urgency = "Normal",
                         ownerTeam = "DS-CX-CI@",
                         createdDate = DateTime.Now,
-                        serviceFull = new List<string> { "Serviço nível 1", "Serviço nível 2", "Serviço nível 3" },
-                        serviceFirstLevelId = "278113"
+                        serviceFirstLevelId = "716764"
                     };
 
                     #region cliente
@@ -742,15 +738,11 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 type = 2,
                 subject = "[DMRSE-1200] Agendamento Intermodal – " + Tipo + " – " + model.NumeroBooking + " ",
-                serviceFirstLevel = "278113",
-                serviceSecondLevel = "716763",
-                serviceThirdLevel = "716764",
                 category = "Service Request",
                 urgency = "Normal",
                 ownerTeam = "DS-CX-CI@",
                 createdDate = DateTime.Now,
-                serviceFull = new List<string> { "Serviço nível 1", "Serviço nível 2", "Serviço nível 3" },
-                serviceFirstLevelId = "278113"
+                serviceFirstLevelId = "716764"
             };
 
             #region cliente
@@ -1739,15 +1731,11 @@ namespace CMSApp.Areas.Modulo.Controllers
                         {
                             type = 2,
                             subject = "[DMRSE-1200] Agendamento Intermodal –" + tipo + " – " + model.NumeroBooking + " ",
-                            serviceFirstLevel = "278113",
-                            serviceSecondLevel = "716763",
-                            serviceThirdLevel = "716764",
                             category = "Service Request",
                             urgency = "Normal",
                             ownerTeam = "DS-CX-CI@",
                             createdDate = DateTime.Now,
-                            serviceFull = new List<string> { "Serviço nível 1", "Serviço nível 2", "Serviço nível 3" },
-                            serviceFirstLevelId = "278113"
+                            serviceFirstLevelId = "716764"
                         };
 
                         #region cliente
