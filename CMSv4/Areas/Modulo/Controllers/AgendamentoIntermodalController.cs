@@ -299,7 +299,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                     model.DataRegistro = DateTime.Now;
 
-                    var  obj = CRUD.Obter(new MLAgendamentoIntermodal { Nome = model.Nome, Email = model.Email });
+                    var  obj = CRUD.Obter(new MLAgendamentoIntermodal { Email = model.Email });
 
                     if(obj == null || !obj.Codigo.HasValue) model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
 
@@ -682,9 +682,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                     {
                         string prefixoCodigo = null;
                         if (prefixo.Equals("AgendamentoImportar_"))
-                            prefixoCodigo = "AgendamentoExportar_" + CRUD.Obter<MLAgendamentoIntermodal>(new MLAgendamentoIntermodal { Nome = model.Nome, Email = model.Email })?.Codigo;
+                            prefixoCodigo = "AgendamentoExportar_" + CRUD.Obter<MLAgendamentoIntermodal>(new MLAgendamentoIntermodal { Email = model.Email })?.Codigo;
                         else
-                            prefixoCodigo = "AgendamentoImportar_" +  CRUD.Obter<MLAgendamentoIntermodalImportacao>(new MLAgendamentoIntermodalImportacao { Nome = model.Nome, Email = model.Email })?.Codigo;
+                            prefixoCodigo = "AgendamentoImportar_" +  CRUD.Obter<MLAgendamentoIntermodalImportacao>(new MLAgendamentoIntermodalImportacao { Email = model.Email })?.Codigo;
 
                         #region Get para recber a pessoa
                         var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + prefixoCodigo); // "&id=461505746");
@@ -1100,7 +1100,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     var portal = PortalAtual.Obter;
                     model.DataRegistro = DateTime.Now;
 
-                    var obj = CRUD.Obter(new MLAgendamentoIntermodalImportacao { Nome = model.Nome, Email = model.Email });
+                    var obj = CRUD.Obter(new MLAgendamentoIntermodalImportacao {  Email = model.Email });
 
                     if (obj == null || !obj.Codigo.HasValue)
                         model.Codigo = CRUD.Salvar(model, portal.ConnectionString);
