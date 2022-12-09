@@ -2,9 +2,6 @@
 @{ 
     var baseUrl = "/portal/" + BLPortal.Atual.Diretorio + "/";
     var portal = BLPortal.Atual;
-
-    var urlCep1 = "https://viacep.com.br/ws/";
-    var urlCep2 = "/json/unicode/";
 }
 
 <script src="@baseUrl/js/plugins/jquery.mask/jquery.mask.min.js"></script>
@@ -60,13 +57,14 @@
 
     $("#btnBuscaCEP").click(function () {
         $.ajax({
-            url: '@urlCep1' + $("#CEP").val() + '@urlCep2',
-            dataType: 'json',
-            success: function (resposta) {
-                $("#Endereco").val(resposta.logradouro);
-                $("#Bairro").val(resposta.bairro);
-                $("#Cidade").val(resposta.localidade);
-                $("#Estado").val(resposta.uf);
+            type: "POST",
+            url: "/cms/@portal.Diretorio/TakeOrPay/BuscarCep",
+            data: { Cep: $("#CEP").val().replace('-', '') },
+            success: function (data) {
+                $("#Endereco").val(data.logradouro);
+                $("#Bairro").val(data.bairro);
+                $("#Cidade").val(data.localidade);
+                $("#Estado").val(data.uf);
             }
         });
     });
