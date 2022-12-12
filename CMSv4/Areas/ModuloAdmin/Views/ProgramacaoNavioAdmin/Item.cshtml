@@ -45,7 +45,7 @@
                 @*Destino*@
                 <div class="form-group col-md-4">
                     <label>@TAdm("Destino")</label>
-                    <input type="text" name="Destino" id="Destino" class="form-control" value="@Model.Destino" maxlength="150" />
+                    <input type="text" name="Destino" class="form-control" value="@Model.Destino" maxlength="150" />
                 </div>
 
                 @*ChegadaPrevisto*@
@@ -249,7 +249,7 @@
     <script type="text/javascript">
         $(document).ready(function ($) {
             preencher();
-       
+
             $('#SaidaPrevisto').datetimepicker({
                 timepicker: false, mask: true, format: 'd/m/Y', scrollMonth: true, scrollTime: true, scrollInput: false
             });
@@ -305,10 +305,57 @@
 
         $('#form').validate({
             rules: {
-                Origem: { required: true, maxlength: 150 },
+                Origem: {
+                    required: true,
+                    maxlength: 150,
+                    remote: {
+                        url: "@urlLista/IsValidOrigemDestino",
+                        type: "POST",
+                        data: {
+                            Codigo: function () {
+                                return $("input[name=Codigo]").val();
+                            },
+                            Origem: function () {
+                                return $("input[name=Origem]").val();
+                            },
+                            Destino: function () {
+                                return $("input[name=Destino]").val();
+                            }
+                        }
+                    }
+                },
                 NavioViagem: { required: true, maxlength: 150 },
-                Destino: { required: true, maxlength: 150},
+                Destino: {
+                    required: true,
+                    maxlength: 150,
+                    remote: {
+                        url: "@urlLista/IsValidOrigemDestino",
+                        type: "POST",
+                        data: {
+                            Codigo: function () {
+                                return $("input[name=Codigo]").val();
+                            },
+                            Origem: function () {
+                                return $("input[name=Origem]").val();
+                            },
+                            Destino: function () {
+                                return $("input[name=Destino]").val();
+                            }
+                        }
+                    }
+                },
                 Deadline: { required: true, checarDeadline:true }
+            },
+            messages: {
+                Origem: {
+                    remote: "@TAdm("Origem e destino já cadastrados.")",
+                },
+                Destino: {
+                    remote: "@TAdm("Origem e destino já cadastrados.")",
+                }
+            },
+            errorPlacement: function (error, element) {
+                    error.insertAfter(element);
             }
         });
 

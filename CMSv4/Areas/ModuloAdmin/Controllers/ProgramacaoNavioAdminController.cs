@@ -43,6 +43,26 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         }
         #endregion
 
+        #region IsValidOrigemDestino
+        /// <summary>
+        /// Verifica se a Origem e Destiuno são únicos
+        /// </summary>
+        /// <param name="Codigo"></param>
+        /// <param name="Origem"></param>
+        /// <param name="Destino"></param>
+        /// <returns></returns>
+        [CheckPermission(global::Permissao.Modificar)]
+        public JsonResult IsValidOrigemDestino(decimal? Codigo, string Origem, string Destino)
+        {
+            if (Origem.Length == 0 || Destino.Length == 0)
+                return Json(true);
+
+            var list = CRUD.Listar(new MLProgramacaoNavio { Origem = Origem, Destino = Destino }).FindAll(x => x.Codigo != Codigo && x.Origem == Origem && x.Destino == Destino);
+
+            return Json(list.Count == 0);
+        }
+        #endregion
+
         #region Importar
         /// <summary>
         /// Importa os dados oriundos da planilha de programação navio
@@ -165,6 +185,8 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
                     Database.ExecuteNonQuery(new SqlCommand("DELETE FROM MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS"));
                 }
 
+                var query = string.Empty;
+
                 foreach (var item in lista)
                 {
                     item.Usuario = importacao.Usuario;
@@ -183,8 +205,83 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
                     item.ChegadaTransbordoPrevisto4 = Add3Horas(item.ChegadaTransbordoPrevisto4);
                     item.ChegadaTransbordoRealizado4 = Add3Horas(item.ChegadaTransbordoRealizado4);
 
-                    new BLCRUD<MLProgramacaoNavio>().Salvar(item);
+                    query += $@" IF (EXISTS (SELECT 1 FROM MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS WHERE PRN_C_ORIGEM = '{item.Origem}' AND PRN_C_DESTINO = '{item.Destino}'))
+                        BEGIN
+	                        UPDATE MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS
+							SET
+							PRN_C_ORIGEM='{item.Origem}'
+							,PRN_D_SAIDA_PREVISTO='{item.SaidaPrevisto?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_D_SAIDA_REALIZADO='{item.SaidaRealizado?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_C_DESTINO='{item.Destino}'
+							,PRN_D_CHEGADA_PREVISTO='{item.ChegadaPrevisto?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_D_CHEGADA_REALIZADO='{item.ChegadaRealizado?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_C_NAVIO_VIAGEM='{item.NavioViagem}'
+							,PRN_C_TRANSIT_TIME='{item.TransitTime}'
+							,PRN_D_DEADLINE='{item.Deadline?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_C_NAVIO_TRANSBORDO_1='{item.NavioTransbordo1}'
+							,PRN_C_PORTO_TRANSBORDO_1='{item.PortoTransbordo1}'
+							,PRN_C_TRANSIT_TIME_TRANSBORDO_1='{item.TransitTimeTransbordo1}'
+							,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_1='{item.ChegadaTransbordoPrevisto1?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_1='{item.ChegadaTransbordoRealizado1?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_C_NAVIO_TRANSBORDO_2='{item.NavioTransbordo2}'
+							,PRN_C_PORTO_TRANSBORDO_2='{item.PortoTransbordo2}'
+							,PRN_C_TRANSIT_TIME_TRANSBORDO_2='{item.TransitTimeTransbordo2}'
+							,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_2='{item.ChegadaTransbordoPrevisto2?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_2='{item.ChegadaTransbordoRealizado2?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_C_NAVIO_TRANSBORDO_3='{item.NavioTransbordo3}'
+							,PRN_C_PORTO_TRANSBORDO_3='{item.PortoTransbordo3}'
+							,PRN_C_TRANSIT_TIME_TRANSBORDO_3='{item.TransitTimeTransbordo3}'
+							,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_3='{item.ChegadaTransbordoPrevisto3?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_3='{item.ChegadaTransbordoRealizado3?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_C_NAVIO_TRANSBORDO_4='{item.NavioTransbordo4}'
+							,PRN_C_PORTO_TRANSBORDO_4='{item.PortoTransbordo4}'
+							,PRN_C_TRANSIT_TIME_TRANSBORDO_4='{item.TransitTimeTransbordo4}'
+							,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_4='{item.ChegadaTransbordoPrevisto4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_4='{item.ChegadaTransbordoRealizado4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+							,PRN_C_USUARIO_IMPORTACAO='{item.Usuario}'
+							,PRN_D_DATA_IMPORTACAO='{item.DataImportacao}'
+							WHERE PRN_C_ORIGEM = '{item.Origem}' AND PRN_C_DESTINO = '{item.Destino}';
+                        END
+                        ELSE
+                        BEGIN
+                            INSERT INTO MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS
+								(PRN_C_ORIGEM,PRN_D_SAIDA_PREVISTO,PRN_D_SAIDA_REALIZADO,PRN_C_DESTINO,PRN_D_CHEGADA_PREVISTO,PRN_D_CHEGADA_REALIZADO,PRN_C_NAVIO_VIAGEM,PRN_C_TRANSIT_TIME,PRN_D_DEADLINE,PRN_C_NAVIO_TRANSBORDO_1,PRN_C_PORTO_TRANSBORDO_1,PRN_C_TRANSIT_TIME_TRANSBORDO_1,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_1,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_1,PRN_C_NAVIO_TRANSBORDO_2,PRN_C_PORTO_TRANSBORDO_2,PRN_C_TRANSIT_TIME_TRANSBORDO_2,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_2,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_2,PRN_C_NAVIO_TRANSBORDO_3,PRN_C_PORTO_TRANSBORDO_3,PRN_C_TRANSIT_TIME_TRANSBORDO_3,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_3,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_3,PRN_C_NAVIO_TRANSBORDO_4,PRN_C_PORTO_TRANSBORDO_4,PRN_C_TRANSIT_TIME_TRANSBORDO_4,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_4,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_4,PRN_C_USUARIO_IMPORTACAO,PRN_D_DATA_IMPORTACAO)
+							VALUES
+								('{item.Origem}',
+                                '{item.SaidaPrevisto?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.SaidaRealizado?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.Destino}',
+                                '{item.ChegadaPrevisto?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.ChegadaRealizado?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.NavioViagem}',
+                                '{item.TransitTime}',
+                                '{item.Deadline?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.NavioTransbordo1}',
+                                '{item.PortoTransbordo1}',
+                                '{item.TransitTimeTransbordo1}',
+                                '{item.ChegadaTransbordoPrevisto1?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.ChegadaTransbordoRealizado1?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.NavioTransbordo2}',
+                                '{item.PortoTransbordo2}',
+                                '{item.TransitTimeTransbordo2}',
+                                '{item.ChegadaTransbordoPrevisto2?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.ChegadaTransbordoRealizado2?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.NavioTransbordo3}',
+                                '{item.PortoTransbordo3}',
+                                '{item.TransitTimeTransbordo3}',
+                                '{item.ChegadaTransbordoPrevisto3?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.ChegadaTransbordoRealizado3?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.NavioTransbordo4}',
+                                '{item.PortoTransbordo4}',
+                                '{item.TransitTimeTransbordo4}',
+                                '{item.ChegadaTransbordoPrevisto4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.ChegadaTransbordoRealizado4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
+                                '{item.Usuario}',
+                                '{item.DataImportacao}');
+                        END".Replace("''", "NULL");
                 }
+
+                Database.ExecuteNonQuery(new SqlCommand(query));
 
                 importacao.Sucesso = true;
                 importacao.Finalizado = true;
