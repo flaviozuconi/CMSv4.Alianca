@@ -36,6 +36,21 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             model.DataImportacao = DateTime.Now;
 
             SetCodigoPortal(model);
+
+            model.SaidaPrevisto = Add3Horas(model.SaidaPrevisto);
+            model.SaidaRealizado = Add3Horas(model.SaidaRealizado);
+            model.ChegadaPrevisto = Add3Horas(model.ChegadaPrevisto);
+            model.ChegadaRealizado = Add3Horas(model.ChegadaRealizado);
+            model.Deadline = Add3Horas(model.Deadline);
+            model.ChegadaTransbordoPrevisto1 = Add3Horas(model.ChegadaTransbordoPrevisto1);
+            model.ChegadaTransbordoRealizado1 = Add3Horas(model.ChegadaTransbordoRealizado1);
+            model.ChegadaTransbordoPrevisto2 = Add3Horas(model.ChegadaTransbordoPrevisto2);
+            model.ChegadaTransbordoRealizado2 = Add3Horas(model.ChegadaTransbordoRealizado2);
+            model.ChegadaTransbordoPrevisto3 = Add3Horas(model.ChegadaTransbordoPrevisto3);
+            model.ChegadaTransbordoRealizado3 = Add3Horas(model.ChegadaTransbordoRealizado3);
+            model.ChegadaTransbordoPrevisto4 = Add3Horas(model.ChegadaTransbordoPrevisto4);
+            model.ChegadaTransbordoRealizado4 = Add3Horas(model.ChegadaTransbordoRealizado4);
+
             TempData["Salvo"] = CRUD.Salvar<MLProgramacaoNavio>(model) > 0;
 
             return RedirectToAction("Index");
