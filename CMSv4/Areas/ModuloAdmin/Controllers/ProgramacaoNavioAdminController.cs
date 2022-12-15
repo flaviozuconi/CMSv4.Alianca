@@ -254,7 +254,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 							,PRN_D_CHEGADA_TRANSBORDO_PREVISTO_4='{item.ChegadaTransbordoPrevisto4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
 							,PRN_D_CHEGADA_TRANSBORDO_REALIZADO_4='{item.ChegadaTransbordoRealizado4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
 							,PRN_C_USUARIO_IMPORTACAO='{item.Usuario}'
-							,PRN_D_DATA_IMPORTACAO='{item.DataImportacao}'
+							,PRN_D_DATA_IMPORTACAO='{item.DataImportacao?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
 							WHERE PRN_C_ORIGEM = '{item.Origem}' AND PRN_C_DESTINO = '{item.Destino}';
                         END
                         ELSE
@@ -292,7 +292,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
                                 '{item.ChegadaTransbordoPrevisto4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
                                 '{item.ChegadaTransbordoRealizado4?.ToString("yyyy-MM-dd HH:mm:ss.fff")}',
                                 '{item.Usuario}',
-                                '{item.DataImportacao}');
+                                '{item.DataImportacao?.ToString("yyyy-MM-dd HH:mm:ss.fff")}');
                         END".Replace("''", "NULL");
                 }
 
