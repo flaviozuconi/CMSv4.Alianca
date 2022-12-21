@@ -385,7 +385,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     var objModel = new MLAgendamentoTicket
                     {
                         type = 2,
-                        subject = "[DMRSE-1200] Agendamento Intermodal – Exportar – " + model.NumeroBooking + " ",
+                        subject = "Agendamento Intermodal – Exportar – " + model.NumeroBooking + " ",
                         category = "Service Request",
                         urgency = "Normal",
                         ownerTeam = "DS-CX-CI@",
@@ -737,7 +737,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             var objModel = new MLAgendamentoTicket
             {
                 type = 2,
-                subject = "[DMRSE-1200] Agendamento Intermodal – " + Tipo + " – " + model.NumeroBooking + " ",
+                subject = "Agendamento Intermodal – " + Tipo + " – " + model.NumeroBooking + " ",
                 category = "Service Request",
                 urgency = "Normal",
                 ownerTeam = "DS-CX-CI@",
@@ -1730,7 +1730,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                         var objModel = new MLAgendamentoTicket
                         {
                             type = 2,
-                            subject = "[DMRSE-1200] Agendamento Intermodal –" + tipo + " – " + model.NumeroBooking + " ",
+                            subject = "Agendamento Intermodal –" + tipo + " – " + model.NumeroBooking + " ",
                             category = "Service Request",
                             urgency = "Normal",
                             ownerTeam = "DS-CX-CI@",
