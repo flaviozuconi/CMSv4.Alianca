@@ -90,14 +90,23 @@
 
         $('#form').validate({
             rules: {
-                POD: { required: true, maxlength: 100 },
+                POD: {
+                    required: true,
+                    maxlength: 100,
+                    remote: {
+                        url: "@urlLista/isvalid",
+                        type: "post",
+                        loadingPanel: false,
+                        data: { id: "@Model.Codigo" }
+                    }
+                },
                 TarifaAdicional: { required: true, maxlength: 30 },
                 ValorTarifa: { required: true, maxlength: 50 },
                 Penalidade: { required: true, maxlength: 50 },
-                ValorPenalidade: { required: true, maxlength: 50 }, 
+                ValorPenalidade: { required: true, maxlength: 50 },
                 Usuario: { required: true, maxlength: 50 }
             }
-        });     
+        });
 
     </script>
 }
