@@ -66,4 +66,8 @@ namespace CMSv4.Model
         public bool isGetMethod { get; set; }
     }
 
+    public class MLIntegrarRetorno
+    {
+        public string id { get; set; }
+    }
 }

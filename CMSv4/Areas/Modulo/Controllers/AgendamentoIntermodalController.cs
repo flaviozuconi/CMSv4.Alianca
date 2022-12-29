@@ -374,7 +374,7 @@ namespace CMSApp.Areas.Modulo.Controllers
 
                 if (!string.IsNullOrEmpty(cliente))
                 {
-                    var objRetorno = JsonConvert.DeserializeObject<MLIntegrar>(cliente);
+                    var objRetorno = JsonConvert.DeserializeObject<MLIntegrarRetorno>(cliente);
 
                     if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html, model.Tipo);
 
@@ -680,14 +680,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                 {
                     try
                     {
-                        string prefixoCodigo = null;
-                        if (prefixo.Equals("AgendamentoImportar_"))
-                            prefixoCodigo = "AgendamentoExportar_" + CRUD.Obter<MLAgendamentoIntermodal>(new MLAgendamentoIntermodal { Email = model.Email })?.Codigo;
-                        else
-                            prefixoCodigo = "AgendamentoImportar_" +  CRUD.Obter<MLAgendamentoIntermodalImportacao>(new MLAgendamentoIntermodalImportacao { Email = model.Email })?.Codigo;
-
                         #region Get para recber a pessoa
-                        var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&id=" + prefixoCodigo); // "&id=461505746");
+                        var webRequest = (HttpWebRequest)WebRequest.Create(url + "?token=" + BLConfiguracao.UrlIntegracaoToken + "&$filter=username eq '" + model.Email + "' &select=id"); // "&id=461505746");
                         webRequest.ContentType = "application/json; charset=utf-8";
                         webRequest.Method = "GET";
 
@@ -695,9 +689,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                         {
                             var streamDados = resposta.GetResponseStream();
                             StreamReader reader = new StreamReader(streamDados);
-                            string response = reader.ReadToEnd();
-
-                            return retorno = Newtonsoft.Json.Linq.JToken.Parse(response).ToString();
+                            return retorno = reader.ReadToEnd().Replace("[", string.Empty).Replace("]", string.Empty);
                         }
                         #endregion
                     }
