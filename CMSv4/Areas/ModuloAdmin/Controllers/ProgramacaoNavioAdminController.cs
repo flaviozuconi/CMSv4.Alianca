@@ -67,12 +67,12 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         /// <param name="Destino"></param>
         /// <returns></returns>
         [CheckPermission(global::Permissao.Modificar)]
-        public JsonResult IsValidOrigemDestino(decimal? Codigo, string Origem, string Destino)
+        public JsonResult IsValidOrigemDestino(decimal? Codigo, string Origem, string Destino, string NavioViagem)
         {
-            if (Origem.Length == 0 || Destino.Length == 0)
+            if (Origem.Length == 0 || Destino.Length == 0 || NavioViagem.Length == 0)
                 return Json(true);
 
-            var list = CRUD.Listar(new MLProgramacaoNavio { Origem = Origem, Destino = Destino }).FindAll(x => x.Codigo != Codigo && x.Origem == Origem && x.Destino == Destino);
+            var list = CRUD.Listar(new MLProgramacaoNavio { Origem = Origem, Destino = Destino, NavioViagem = NavioViagem }).FindAll(x => x.Codigo != Codigo && x.Origem == Origem && x.Destino == Destino && x.NavioViagem == NavioViagem);
 
             return Json(list.Count == 0);
         }
@@ -220,7 +220,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
                     item.ChegadaTransbordoPrevisto4 = Add3Horas(item.ChegadaTransbordoPrevisto4);
                     item.ChegadaTransbordoRealizado4 = Add3Horas(item.ChegadaTransbordoRealizado4);
 
-                    query += $@" IF (EXISTS (SELECT 1 FROM MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS WHERE PRN_C_ORIGEM = '{item.Origem}' AND PRN_C_DESTINO = '{item.Destino}'))
+                    query += $@" IF (EXISTS (SELECT 1 FROM MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS WHERE PRN_C_ORIGEM = '{item.Origem}' AND PRN_C_DESTINO = '{item.Destino}' AND PRN_C_NAVIO_VIAGEM = '{item.NavioViagem}'))
                         BEGIN
 	                        UPDATE MOD_TKP_TAKE_OR_PAY_PROGRAMACAO_NAVIOS
 							SET

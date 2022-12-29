@@ -320,11 +320,35 @@
                             },
                             Destino: function () {
                                 return $("input[name=Destino]").val();
+                            },
+                            NavioViagem: function () {
+                                return $("input[name=NavioViagem]").val();
                             }
                         }
                     }
                 },
-                NavioViagem: { required: true, maxlength: 150 },
+                NavioViagem: {
+                    required: true,
+                    maxlength: 150,
+                    remote: {
+                        url: "@urlLista/IsValidOrigemDestino",
+                        type: "POST",
+                        data: {
+                            Codigo: function () {
+                                return $("input[name=Codigo]").val();
+                            },
+                            Origem: function () {
+                                return $("input[name=Origem]").val();
+                            },
+                            Destino: function () {
+                                return $("input[name=Destino]").val();
+                            },
+                            NavioViagem: function () {
+                                return $("input[name=NavioViagem]").val();
+                            }
+                        }
+                    }
+                },
                 Destino: {
                     required: true,
                     maxlength: 150,
@@ -340,6 +364,9 @@
                             },
                             Destino: function () {
                                 return $("input[name=Destino]").val();
+                            },
+                            NavioViagem: function () {
+                                return $("input[name=NavioViagem]").val();
                             }
                         }
                     }
