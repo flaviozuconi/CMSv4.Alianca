@@ -387,10 +387,12 @@ namespace CMSApp.Areas.Modulo.Controllers
             {
                 var retorno = new List<string> { "<option value=\"\">Selecione</option>" };
 
+                var lista = BLTakeOrPay.ListarNavioViagem();
+
                 if (isTipoReserva == true)
-                    retorno.AddRange(CRUD.Listar(new MLProgramacaoNavio()).Select(x => $"<option value=\"{x.NavioViagem?.Split('/')[0]}\">{x.NavioViagem?.Split('/')[0]}</option>").Distinct());
+                    retorno.AddRange(lista.Select(x => $"<option value=\"{x.NavioViagem?.Split('/')[0]}\">{x.NavioViagem?.Split('/')[0]}</option>").Distinct());
                 else
-                    retorno.AddRange(CRUD.Listar(new MLProgramacaoNavio()).Select(x => $"<option value=\"{x.NavioViagem}\">{x.NavioViagem}</option>").Distinct());
+                    retorno.AddRange(lista.Select(x => $"<option value=\"{x.NavioViagem}\">{x.NavioViagem}</option>").Distinct());
 
                 return new JsonResult() { Data = new { Sucess = true, autocomplete = retorno } };
             }

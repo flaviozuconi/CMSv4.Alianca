@@ -183,13 +183,39 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
                     Database.ExecuteNonQuery(new SqlCommand("TRUNCATE TABLE MOD_GCP_GESTAO_CUSTO_PENALIDADE"));
                 }
 
+                var query = string.Empty;
                 foreach (var item in lista)
                 {
                     item.Usuario = importacao.Usuario;                
                     item.DataAtualizacao = DateTime.Now;
 
-                    new BLCRUD<MLGestaoDeCustosPenalidades>().Salvar(item);
+                    query += $@" IF (EXISTS (SELECT 1 FROM [dbo].[MOD_GCP_GESTAO_CUSTO_PENALIDADE] WHERE [GCP_C_POD] = '{item.POD}'))
+                                BEGIN
+                                UPDATE [dbo].[MOD_GCP_GESTAO_CUSTO_PENALIDADE]
+                                    SET [GCP_C_TARIFA_ADICIONAL] = '{item.TarifaAdicional.ToString().Replace(".", "").Replace(",", ".")}'
+                                        ,[GCP_C_VALOR_TARIFA_ADICIONAL] = '{item.ValorTarifa}'
+                                        ,[GCP_C_PENALIDADE_ALIANCA] = '{item.Penalidade.ToString().Replace(".", "").Replace(",", ".")}'
+                                        ,[GCP_C_VALOR_PENALIDADE_ALIANCA] = '{item.ValorPenalidade}'
+                                        ,[GCP_D_DATA_ATUALIZACAO] = '{item.DataAtualizacao?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+                                        ,[GCP_C_USUARIO] = '{item.Usuario}'
+                                    WHERE [GCP_C_POD] = '{item.POD}'
+                                END
+                                ELSE
+                                BEGIN
+                                INSERT INTO [dbo].[MOD_GCP_GESTAO_CUSTO_PENALIDADE]
+                                            ([GCP_C_POD],[GCP_C_TARIFA_ADICIONAL],[GCP_C_VALOR_TARIFA_ADICIONAL],[GCP_C_PENALIDADE_ALIANCA],[GCP_C_VALOR_PENALIDADE_ALIANCA],[GCP_D_DATA_ATUALIZACAO],[GCP_C_USUARIO])
+                                        VALUES
+                                            ('{item.POD}'
+                                            ,'{item.TarifaAdicional.ToString().Replace(".", "").Replace(",", ".")}'
+                                            ,'{item.ValorTarifa}'
+                                            ,'{item.Penalidade.ToString().Replace(".", "").Replace(",", ".")}'
+                                            ,'{item.ValorPenalidade}'
+                                            ,'{item.DataAtualizacao?.ToString("yyyy-MM-dd HH:mm:ss.fff")}'
+                                            ,'{item.Usuario}')
+                                END".Replace("''", "NULL");
                 }
+
+                Database.ExecuteNonQuery(new SqlCommand(query));
 
                 importacao.Sucesso = true;
                 importacao.Finalizado = true;
@@ -254,6 +280,24 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
 
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region IsValid
+        /// <summary>
+        /// Verifica se o POD não ficará duplicado ao salvar
+        /// </summary>
+        [CheckPermission(global::Permissao.Modificar)]
+        public JsonResult IsValid(decimal? id, string POD)
+        {
+            if (!String.IsNullOrEmpty(POD))
+            {
+                var model = CRUD.Obter(new MLGestaoDeCustosPenalidades { POD = POD });
+                if ((id.HasValue && model != null && model.Codigo.Value != id.Value) || (!id.HasValue && model != null && model.Codigo.HasValue))
+                    return Json(string.Format(T("Não pode ser inserido '{0}'. POD já existente."), POD));
+            }
+
+            return Json(true);
         }
         #endregion
     }

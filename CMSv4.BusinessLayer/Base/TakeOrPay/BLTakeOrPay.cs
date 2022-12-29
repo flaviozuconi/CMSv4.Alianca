@@ -212,6 +212,37 @@ namespace CMSv4.BusinessLayer
         }
         #endregion
 
+        #region ListarNavioViagem
+        /// <summary>
+        /// Obter Navios
+        /// </summary>
+        /// <returns></returns>
+        public static List<MLProgramacaoNavio> ListarNavioViagem()
+        {
+            try
+            {
+                var retorno = new List<MLProgramacaoNavio>();
+
+                using (var command = Database.NewCommand("USP_MOD_L_TAKE_OR_PAY_LISTAR_NAVIO_VIAGEM"))
+                {
+                    // Execucao
+                    var dataSet = Database.ExecuteDataSet(command);
+
+                    // Grupos Pagina
+                    if (dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows.Count > 0)
+                        retorno = Database.FillList<MLProgramacaoNavio>(dataSet.Tables[0]);
+
+                    return retorno;
+                }
+            }
+            catch (Exception ex)
+            {
+                ApplicationLog.ErrorLog(ex);
+                throw;
+            }
+        }
+        #endregion
+
         #region ObterNavios
         /// <summary>
         /// Obter Navios

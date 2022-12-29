@@ -429,6 +429,16 @@
         $("#NavioViagem").change(function () {
             if (!$("#ReservarEspaco1").prop("checked"))
                 AtualizarDeadline();
+
+            AtualizaSelectsNavioViagem()
+        });
+
+        $("#NavioViagemOp2").change(function () {
+            AtualizaSelectsNavioViagem()
+        });
+
+        $("#NavioViagemOp3").change(function () {
+            AtualizaSelectsNavioViagem()
         });
 
         $("#btnAdicionar").click(function () {
@@ -910,27 +920,55 @@
         });
 
         function CarregarValorAdicional(PortoDestino) {
-        if ($("#PortoDestino").val() != null && $("#PortoDestino").val() != "") {
-            $.ajax({
-                type: "POST",
-                url: "@Portal.UrlCms(portal)/TakeOrPay/CarregarValorAdicional",
-                data:
-                {
-                    "PortoDestino": $("#PortoDestino").val()
-                },
-                success: function (data) {
-                    if (data.Sucess == true) {
-                        $('#ValorAdicional').html('R$ ' + data.Valor)
-                    }
-                    else {
+            if ($("#PortoDestino").val() != null && $("#PortoDestino").val() != "") {
+                $.ajax({
+                    type: "POST",
+                    url: "@Portal.UrlCms(portal)/TakeOrPay/CarregarValorAdicional",
+                    data:
+                    {
+                        "PortoDestino": $("#PortoDestino").val()
+                    },
+                    success: function (data) {
+                        if (data.Sucess == true) {
+                            $('#ValorAdicional').html('R$ ' + data.Valor)
+                        }
+                        else {
+                            ErroGenerico();
+                        }
+                    },
+                    error: function (data) {
                         ErroGenerico();
                     }
-                },
-                error: function (data) {
-                    ErroGenerico();
-                }
-            });
+                });
+            }   
         }
-    }
+
+        function AtualizaSelectsNavioViagem() {
+            $("#NavioViagem option").prop('disabled', false)
+            $("#NavioViagemOp2 option").prop('disabled', false)
+            $("#NavioViagemOp3 option").prop('disabled', false)
+
+            let NavioViagem = $("#NavioViagem").val()
+            if (NavioViagem != undefined && NavioViagem.length > 0) {
+                $("#NavioViagemOp2 option[value='" + NavioViagem + "']").prop('disabled', true)
+                $("#NavioViagemOp3 option[value='" + NavioViagem + "']").prop('disabled', true)
+            }
+
+            let NavioViagemOp2 = $("#NavioViagemOp2").val()
+            if (NavioViagemOp2 != undefined && NavioViagemOp2.length > 0) {
+                $("#NavioViagem option[value='" + NavioViagemOp2 + "']").prop('disabled', true)
+                $("#NavioViagemOp3 option[value='" + NavioViagemOp2 + "']").prop('disabled', true)
+            }
+
+            let NavioViagemOp3 = $("#NavioViagemOp3").val()
+            if (NavioViagemOp3 != undefined && NavioViagemOp3.length > 0) {
+                $("#NavioViagem option[value='" + NavioViagemOp3 + "']").prop('disabled', true)
+                $("#NavioViagemOp2 option[value='" + NavioViagemOp3 + "']").prop('disabled', true)
+            }
+
+            $('#NavioViagem').select2();
+            $('#NavioViagemOp2').select2();
+            $('#NavioViagemOp3').select2();
+        }
     </script>
 }
