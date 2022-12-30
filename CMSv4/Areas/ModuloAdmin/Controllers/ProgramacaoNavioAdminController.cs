@@ -72,7 +72,7 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
             if (Origem.Length == 0 || Destino.Length == 0 || NavioViagem.Length == 0)
                 return Json(true);
 
-            var list = CRUD.Listar(new MLProgramacaoNavio { Origem = Origem, Destino = Destino, NavioViagem = NavioViagem }).FindAll(x => x.Codigo != Codigo && x.Origem == Origem && x.Destino == Destino && x.NavioViagem == NavioViagem);
+            var list = CRUD.Listar(new MLProgramacaoNavio { Origem = Origem.Trim(), Destino = Destino.Trim(), NavioViagem = NavioViagem.Trim() }).FindAll(x => x.Codigo != Codigo && x.Origem.Trim().ToLower() == Origem.Trim().ToLower() && x.Destino.Trim().ToLower() == Destino.Trim().ToLower() && x.NavioViagem.Trim().ToLower() == NavioViagem.Trim().ToLower());
 
             return Json(list.Count == 0);
         }
