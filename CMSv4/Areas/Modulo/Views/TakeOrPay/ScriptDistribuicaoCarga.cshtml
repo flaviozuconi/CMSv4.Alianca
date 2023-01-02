@@ -375,9 +375,9 @@
     }
 
     function LimparCampos() {
-        $('#NavioViagem').val(null).trigger('change');
-        $('#NavioViagemOp2').val(null).trigger('change');
-        $('#NavioViagemOp3').val(null).trigger('change');
+        $('#NavioViagem').val(null).select2();
+        $('#NavioViagemOp2').val(null).select2();
+        $('#NavioViagemOp3').val(null).select2();
 
         $("#Container1").removeClass("active")
         $("#Container2").removeClass("active")

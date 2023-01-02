@@ -1291,7 +1291,7 @@ namespace CMSv4.BusinessLayer
             if (list == null || list.Count == 0)
                 return retorno;
 
-            retorno.AddRange(list.Select(x => $"<option value=\"{x}\">{x}</option>").Distinct());
+            retorno.AddRange(list.Select(x => $"<option value=\"{x}\">{x}</option>").Distinct(StringComparer.CurrentCultureIgnoreCase));
 
             return retorno;
         }

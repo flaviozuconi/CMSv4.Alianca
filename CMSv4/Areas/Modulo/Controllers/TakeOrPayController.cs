@@ -390,9 +390,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var lista = BLTakeOrPay.ListarNavioViagem();
 
                 if (isTipoReserva == true)
-                    retorno.AddRange(lista.Select(x => $"<option value=\"{x.NavioViagem?.Split('/')[0]}\">{x.NavioViagem?.Split('/')[0]}</option>").Distinct());
+                    retorno.AddRange(lista.Select(x => $"<option value=\"{x.NavioViagem?.Split('/')[0].Trim()}\">{x.NavioViagem?.Split('/')[0].Trim()}</option>").Distinct(StringComparer.CurrentCultureIgnoreCase));
                 else
-                    retorno.AddRange(lista.Select(x => $"<option value=\"{x.NavioViagem}\">{x.NavioViagem}</option>").Distinct());
+                    retorno.AddRange(lista.Select(x => $"<option value=\"{x.NavioViagem.Trim()}\">{x.NavioViagem.Trim()}</option>").Distinct(StringComparer.CurrentCultureIgnoreCase));
 
                 return new JsonResult() { Data = new { Sucess = true, autocomplete = retorno } };
             }
@@ -416,8 +416,8 @@ namespace CMSApp.Areas.Modulo.Controllers
             try
             {
                 var list = CRUD.Listar(new MLProgramacaoNavio());
-                var portoOrigem = BLTakeOrPay.FormarOption(list.Select(x => x.Origem)?.ToList());
-                var portoDestino = BLTakeOrPay.FormarOption(list.Select(x => x.Destino)?.ToList());
+                var portoOrigem = BLTakeOrPay.FormarOption(list.Select(x => x.Origem.Trim())?.ToList());
+                var portoDestino = BLTakeOrPay.FormarOption(list.Select(x => x.Destino.Trim())?.ToList());
                 
                 return new JsonResult() { Data = new { Sucess = true, PortoOrigem = portoOrigem, PortoDestino = portoDestino } };
             }
@@ -437,9 +437,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var portoDestino = new List<string>();
 
                 if(string.IsNullOrEmpty(PortoOrigem))
-                    portoDestino = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio())?.Select(x => x.Destino).ToList());
+                    portoDestino = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio())?.Select(x => x.Destino.Trim()).ToList());
                 else
-                    portoDestino = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio { Origem = PortoOrigem })?.Select(x => x.Destino).ToList());
+                    portoDestino = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio { Origem = PortoOrigem })?.Select(x => x.Destino.Trim()).ToList());
 
                 return new JsonResult() { Data = new { Sucess = true, PortoDestino = portoDestino } };
             }
@@ -459,9 +459,9 @@ namespace CMSApp.Areas.Modulo.Controllers
                 var portoOrigem = new List<string>();
 
                 if (string.IsNullOrEmpty(PortoDestino))
-                    portoOrigem = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio())?.Select(x => x.Origem).ToList());
+                    portoOrigem = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio())?.Select(x => x.Origem.Trim()).ToList());
                 else
-                    portoOrigem = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio { Destino = PortoDestino })?.Select(x => x.Origem).ToList());
+                    portoOrigem = BLTakeOrPay.FormarOption(CRUD.Listar(new MLProgramacaoNavio { Destino = PortoDestino })?.Select(x => x.Origem.Trim()).ToList());
 
                 return new JsonResult() { Data = new { Sucess = true, PortoOrigem = portoOrigem } };
             }
