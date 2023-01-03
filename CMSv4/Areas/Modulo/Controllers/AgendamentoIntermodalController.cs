@@ -376,7 +376,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 {
                     var objRetorno = JsonConvert.DeserializeObject<MLIntegrarRetorno>(cliente);
 
-                    if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html, model.Tipo);
+                    if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, html, model.Tipo == "Exportar" ? "Exportação" : model.Tipo);
 
                     return Json(new { success = true });
                 }
@@ -385,7 +385,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                     var objModel = new MLAgendamentoTicket
                     {
                         type = 2,
-                        subject = "Agendamento Intermodal – Exportar – " + model.NumeroBooking + " ",
+                        subject = "Agendamento Intermodal – Exportação – " + model.NumeroBooking + " ",
                         category = "Service Request",
                         urgency = "Normal",
                         ownerTeam = "DS-CX-CI@",
@@ -1644,8 +1644,8 @@ namespace CMSApp.Areas.Modulo.Controllers
                             Nome = objModelImportacao.Nome,
                             Codigo = objModelImportacao.Codigo,
                             Email = objModelImportacao.Email, 
-                            Tipo = tipo
-                        },
+                            Tipo = tipo == "Importar" ? "Importação" : "Importação DTA"
+                    },
                         "AgendamentoImportar_"
                     );
 
@@ -1708,7 +1708,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                                 model.lstCarga.Add(new MLAgendamentoIntermodalImportacaoCarga { Arquivo = item.Arquivo, caminhoCompleto = diretorioBl + item.Arquivo });
                         }
 
-                        if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html, tipo);
+                        if (!string.IsNullOrEmpty(objRetorno.id)) IntegrarTicket(objRetorno.id, model, Html, tipo == "Importar" ? "Importação" : "Importação DTA");
 
                         Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIIC_AGENDAMENTO_INTERMODAL_IMPORTACAO_CARGA SET AIIC_B_INTEGRADO = 1 WHERE AIIC_AII_N_CODIGO =" + codigo));
                         Database.ExecuteNonQuery(new SqlCommand("UPDATE MOD_AIDI_ARQUIVO_IMPORTACAO_DECLARACAO_IMPORTACAO SET AIDI_B_INTEGRADO = 1 WHERE AIDI_AII_N_CODIGO =" + codigo));
