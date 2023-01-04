@@ -246,7 +246,7 @@ namespace CMSv4.BusinessLayer
 
                 if (ImagemCapa != null)
                 {
-                    model.Imagem = ".png";
+                    model.Imagem = Path.GetExtension(ImagemCapa.FileName);//".png";
 
                     diretorio = string.Concat(BLConfiguracao.Pastas.ModuloListas(portal.Diretorio), "/", model.Codigo, "/");
 

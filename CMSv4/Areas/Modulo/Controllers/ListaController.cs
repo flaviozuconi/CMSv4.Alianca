@@ -879,7 +879,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             }
 
             if (String.IsNullOrWhiteSpace(seo.Titulo))
-                seo.Titulo = conteudo.Titulo;
+                seo.Titulo = seo.Ogtotitle ?? conteudo.Titulo;
 
             if (String.IsNullOrWhiteSpace(seo.Url))
                 seo.Url = Request.Url.ToString();
@@ -895,6 +895,7 @@ namespace CMSApp.Areas.Modulo.Controllers
             #endregion
 
             BLConteudo.AdicionarSeo(seo);
+            BLConteudo.AdicionarTitleAoHead(seo.Titulo);
 
             if (conteudo.CodigoIdioma.HasValue && model.CodigoLista.HasValue && !String.IsNullOrWhiteSpace(conteudo.Tags))
                 conteudo.Relacionados =
