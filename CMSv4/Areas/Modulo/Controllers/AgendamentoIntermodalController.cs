@@ -390,7 +390,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                         urgency = "Normal",
                         ownerTeam = "DS-CX-CI@",
                         createdDate = DateTime.Now,
-                        serviceFirstLevelId = "716764"
+                        serviceFirstLevelId = "716767"
                     };
 
                     #region cliente
@@ -734,7 +734,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                 urgency = "Normal",
                 ownerTeam = "DS-CX-CI@",
                 createdDate = DateTime.Now,
-                serviceFirstLevelId = "716764"
+                serviceFirstLevelId = "716767"
             };
 
             #region cliente
@@ -1727,7 +1727,7 @@ namespace CMSApp.Areas.Modulo.Controllers
                             urgency = "Normal",
                             ownerTeam = "DS-CX-CI@",
                             createdDate = DateTime.Now,
-                            serviceFirstLevelId = "716764"
+                            serviceFirstLevelId = "716767"
                         };
 
                         #region cliente
