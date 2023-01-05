@@ -101,7 +101,7 @@ namespace Framework.Utilities
                 if (destinatarios == null || destinatarios.Count == 0) return false;
 
                 var mensagem = new MailMessage();
-                var smtp = new SmtpClient();                
+                var smtp = new SmtpClient();
 
                 #region SmtpClient
                 var _default = useDefaultConfigFrom ?? BLConfiguracao.Obter<string>("SMTP.DEFAULT", "VM2");
@@ -109,7 +109,7 @@ namespace Framework.Utilities
                 var host = BLConfiguracao.Obter<string>(string.Format("SMTP.{0}.HOST", _default), "smtp.vm2.com.br");
                 var port = BLConfiguracao.Obter<int>(string.Format("SMTP.{0}.PORT", _default), 587);
                 var credentialsUsername = BLEncriptacao.DesencriptarAes(BLConfiguracao.Obter<string>(string.Format("SMTP.{0}.CREDENTIALS.USERNAME", _default), "JHqwvXE3mYQKycOK62jd75Ivlgz6qxbEi9JAGTaI+P4="));
-                var credentialsPassword = BLEncriptacao.DesencriptarAes(BLConfiguracao.Obter<string>(string.Format("SMTP.{0}.CREDENTIALS.PASSWORD", _default), "EJXYKfOUkdU25NisEQJmFg=="));                                
+                var credentialsPassword = BLEncriptacao.DesencriptarAes(BLConfiguracao.Obter<string>(string.Format("SMTP.{0}.CREDENTIALS.PASSWORD", _default), "FVo3ks6caEOxFgq7NMtzkw=="));                                
                 var defaultCredentials = BLConfiguracao.Obter<bool>(string.Format("SMTP.{0}.DEFAULTCREDENTIALS", _default), false);
 
                 mensagem.From = new MailAddress(from);
