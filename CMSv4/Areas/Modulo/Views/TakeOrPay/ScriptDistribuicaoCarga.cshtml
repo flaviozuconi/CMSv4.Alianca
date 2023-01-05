@@ -360,7 +360,7 @@
                 data: dados,
                 success: function (data) {
                     if (data.Sucess == true) {
-                        $('#tabelaContainer').append('<tr id="tr-' + data.Codigo + '"><td><strong>' + Unidades + '</strong> unidades <br></td><td><strong>Container ' + TipoContainer + '</strong></td><td>de <strong>' + PortoOrigem + '</strong> para <strong>' + PortoDestino + '</strong></td><td>R$ <strong>' + CustoAdicional + '</strong></td><td><a href="javascript:ExcluirTabelaContainer(' + data.Codigo + ')" class="icon icon-trash"></a></td></tr>');
+                        $('#tabelaContainer').append('<tr id="tr-' + data.Codigo + '"><td><strong>' + Unidades + '</strong> unidades <br></td><td><strong>' + TamanhoContainer + ' Container '  + TipoContainer + '</strong></td><td>de <strong>' + PortoOrigem + '</strong> para <strong>' + PortoDestino + '</strong></td><td>R$ <strong>' + CustoAdicional + '</strong></td><td><a href="javascript:ExcluirTabelaContainer(' + data.Codigo + ')" class="icon icon-trash"></a></td></tr>');
 
                         LimparCampos();
                     }

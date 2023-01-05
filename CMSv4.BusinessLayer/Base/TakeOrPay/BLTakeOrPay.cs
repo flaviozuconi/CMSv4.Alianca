@@ -1176,9 +1176,9 @@ namespace CMSv4.BusinessLayer
 
                     // Preenche os campos dinâmicos do termo
                     termos = termos.Replace("[[NomeCliente]]", nomeCliente)
-                        .Replace("[[CNPJ]]", modelEmbarqueCerto.isBID.GetValueOrDefault(false) ? modelEmbarqueCerto.CNPJ : Convert.ToUInt64(proposta?.CNPJ).ToString(@"00\.000\.000\/0000\-00") ?? modelEmbarqueCerto.CNPJ)
+                        .Replace("[[CNPJ]]", modelEmbarqueCerto.isBID.GetValueOrDefault(false) ? modelEmbarqueCerto.CNPJ : proposta.CNPJ)
                         .Replace("[[EnderecoCompleto]]", $"{modelEmbarqueCerto.Logadouro}, {modelEmbarqueCerto.Bairro} - {modelEmbarqueCerto.Cidade}/{modelEmbarqueCerto.Estado} {modelEmbarqueCerto.CEP}")
-                        .Replace("[[NomeNavio]]", modelEmbarqueCerto.IsSemanal.GetValueOrDefault(false) && modelEmbarqueCerto.ReservarEspaco.GetValueOrDefault(false) ? BLConfiguracao.Pastas.ModuloTakeOrPayNomeNavio() : listaContainers[0].NavioViagem)
+                        .Replace("[[NomeNavio]]", modelEmbarqueCerto.IsSemanal.GetValueOrDefault(false) && modelEmbarqueCerto.ReservarEspaco.GetValueOrDefault(false) ? BLConfiguracao.Pastas.ModuloTakeOrPayNomeNavio() : (!string.IsNullOrEmpty(listaContainers[0].NavioViagem) ? listaContainers[0].NavioViagem : ""))
                         .Replace("[[TotalUnidades]]", listaContainers.Sum(x => x.Unidades).ToString())
                         .Replace("[[Portos]]", portos)
                         .Replace("[[ValorAdicional]]", valorAdicional.TrimEnd().TrimEnd(';'))
