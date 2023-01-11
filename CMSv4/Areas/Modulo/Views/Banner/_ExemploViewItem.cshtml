@@ -1,0 +1,40 @@
+﻿@model MLBannerArquivoPublico
+@{
+    var portal = BLPortal.Atual;
+    var caminho = string.Format("/portal/{0}/arquivos/banner/{1}/", portal.Diretorio, Model.CodigoBanner);
+    var _url = (!string.IsNullOrEmpty(Model.Url) ? Portal.ResolveUrl(Model.Url, portal) : "#");
+    Model.ImagemMobile = Model.ImagemMobile ?? Model.Imagem;
+    Model.ImagemTablet = Model.ImagemTablet ?? Model.Imagem;
+    var data_src = _url;
+    var complemento = "";
+    var css = string.IsNullOrEmpty(Model.CssClass1) ? "" : Model.CssClass1;
+    var target = Model.Target;
+    if (css.Equals("item-video") || css.Equals("item-mpquatro"))
+    {
+        _url = "#modalMedia";
+        complemento = "data-toggle=modal";
+        css = Model.CssClass1;
+        target = "_self";
+
+    }
+}
+
+<a href="@_url" data-src="@data_src" target="@target" class="item @css" @complemento>
+    <picture>
+        <!--[if IE 9]><video style="display: none;"><![endif]-->
+        <source srcset="@string.Format("{0}/{1}",caminho,Model.ImagemMobile)" media="(max-width: 767px)">
+        <source srcset="@string.Format("{0}/{1}",caminho,Model.ImagemTablet)" media="(max-width: 991px)">
+        <!--[if IE 9]></video><![endif]-->
+        <img srcset="@string.Format("{0}/{1}",caminho,Model.Imagem)" alt="@Model.Titulo">
+    </picture>
+    @if (!string.IsNullOrEmpty(Model.Texto))
+    {
+
+        <div class="item-txt">
+            @*<h2 class="item-title">@Html.Raw(item.Titulo)</h2>*@
+            @*<p>@Html.Raw(item.)</p>*@
+            @Html.Raw(Model.Texto)
+        </div>
+
+    }
+</a>

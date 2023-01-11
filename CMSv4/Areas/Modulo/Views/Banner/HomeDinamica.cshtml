@@ -1,0 +1,19 @@
+﻿@model MLModuloBanner
+@{
+    var portal = BLPortal.Atual;
+    List<MLBannerArquivoPublico> lstArquivos = (List<MLBannerArquivoPublico>)ViewData["lstArquivos"] ?? new List<MLBannerArquivoPublico>();
+    var caminho = string.Format("/portal/{0}/arquivos/banner/{1}/", portal.Diretorio, Model.CodigoBanner);
+
+}
+<!-- mod-banner -->
+<div class="owl-principal">
+    <div class="owl-carousel">
+        <!-- Wrapper for slides -->
+
+        @foreach (var item in lstArquivos)
+        {
+            Html.RenderPartial(item.View ?? "_ExemploViewItem", item);
+        }
+    </div>
+</div>
+
