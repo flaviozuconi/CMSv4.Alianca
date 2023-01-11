@@ -11,6 +11,7 @@
     var urlRenderizarArquivo = "/cms/" + portal.Diretorio + "/banneradmin/renderizararquivo";
     var urlUpload = "/cms/" + portal.Diretorio + "/banneradmin/uploadgaleria";
     var urlOrdem = "/cms/" + portal.Diretorio + "/banneradmin/ordenar";
+    var views = CRUD.Listar<MLBannerView>(new MLBannerView { CodigoPortal = portal.Codigo });
 }
 
 <div class="portlet portlet-dark-blue">
@@ -135,7 +136,7 @@
                     <label>@TAdm("Término")</label>
                     <input type="text" class="form-control data DataTermino" name="DataTermino" id="DataTermino" maxlength="16">
                 </div>
-                <div class="form-group col-md-12 jq-tipo-imagem">
+                <div class="form-group col-md-12 jq-tipo-imagem" hidden>
                     <label>@TAdm("Hover")</label>
                     <select id="CodigoBannerHover" name="CodigoBannerHover" class="form-control jq-select-banner" data-value="Codigo">
                         <option selected value="">@TAdm("Selecione")</option>
@@ -163,6 +164,18 @@
                         {
                             <option value="@Model.ListaArquivos[i].Imagem">@Model.ListaArquivos[i].MontarNomeImagem</option>
                         }
+                    </select>
+                </div>
+                <div class="form-group col-md-12 jq-tipo-imagem">
+                    <label>@TAdm("Template")</label>
+                    <select id="View" name="View" class="form-control jq-select-banner" data-value="View">
+                        <option selected value="">@TAdm("Selecione")</option>
+                        @foreach (var item in views)
+                        {
+                            <option value="@item.View">@item.Nome</option>
+
+                        }
+                      
                     </select>
                 </div>
                 <div class="form-group col-md-6 jq-tipo-imagem">
@@ -626,6 +639,7 @@
                 $('#formModalEdicao').find("select[name=CodigoBannerHover]").val(data.model.CodigoBannerHover);
                 $('#formModalEdicao').find("select[name=ImagemMobile]").val(data.model.ImagemMobile);
                 $('#formModalEdicao').find("select[name=ImagemTablet]").val(data.model.ImagemTablet);
+                $('#formModalEdicao').find("select[name=View]").val(data.model.View);
 
                 if (data.model.Ativo != null && data.model.Ativo) {
                     $('#formModalEdicao').find("input[name=Ativo]").prop("checked", true);

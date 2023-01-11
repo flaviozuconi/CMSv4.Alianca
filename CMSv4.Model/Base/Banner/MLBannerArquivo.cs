@@ -94,6 +94,9 @@ namespace CMSv4.Model
         public string CssClass1 { get; set; }
         #endregion
 
+        [DataField("BAA_C_VIEW", SqlDbType.VarChar, 250)]
+        public string View { get; set; }
+
         public enum Tipo
         {
             ArquivoItem = 1,

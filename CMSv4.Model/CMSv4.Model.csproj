@@ -97,6 +97,7 @@
     <Compile Include="Base\Assuntos\MLAssuntosXPaginas.cs" />
     <Compile Include="Base\Banner\MLBanner.cs" />
     <Compile Include="Base\Banner\MLBannerArquivo.cs" />
+    <Compile Include="Base\Banner\MLBannerView.cs" />
     <Compile Include="Base\Banner\MLModuloBanner.cs" />
     <Compile Include="Base\Busca\MLBusca.cs" />
     <Compile Include="Base\Busca\MLBuscaResultado.cs" />

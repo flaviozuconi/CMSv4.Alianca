@@ -4,10 +4,11 @@
     Layout = null;
     var portal = PortalAtual.Obter;
     var diretorio = Convert.ToString(ViewData["diretorioGaleria"]);
-}
+   
+    }
 
-@foreach (MLBannerArquivo item in Model)
-{
+    @foreach (MLBannerArquivo item in Model)
+    {
     <li class="form-group col-sm-4 banner-imagem-item" data-codigo="@item.Codigo">
 
         @if (!item.CodigoTipo.HasValue || item.CodigoTipo == (int)MLBannerArquivo.Tipo.ArquivoItem)
