@@ -242,5 +242,23 @@ namespace CMSApp.Areas.ModuloAdmin.Controllers
         }
 
         #endregion
+
+        #region Relatorios
+        [CheckPermission(global::Permissao.Visualizar)]
+        public ActionResult Relatorios()
+        {
+            return View(CRUD.Listar<MLFaleConoscoRelatorios>(new MLFaleConoscoRelatorios { CodigoPortal = PortalAtual.Codigo }, PortalAtual.ConnectionString));
+        }
+
+        [HttpGet, CheckPermission(global::Permissao.Visualizar)]
+        public FileResult ExportarDinamico(decimal codigo)
+        {
+            var model = CRUD.Obter<MLFaleConoscoRelatorios>(codigo, BLPortal.Atual.ConnectionString);
+
+            var relatorio = BLFaleConoscoRelatorios.GerarExcel(model.View, PortalAtual.Obter);
+
+            return File(relatorio.ToArray(), "text/csv", string.Format("{0}-{1}.xlsx", model.NomeArquivo, DateTime.Now.ToString("dd-MM-yyyy")));
+        }
+        #endregion
     }
 }

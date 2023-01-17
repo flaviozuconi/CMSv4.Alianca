@@ -170,6 +170,7 @@
     <Compile Include="Base\FaleConosco\BLFaleConoscoFormulario.cs" />
     <Compile Include="Base\FaleConosco\BLFaleConoscoModeloEmail.cs" />
     <Compile Include="Base\FaleConosco\BLFaleConoscoPadrao.cs" />
+    <Compile Include="Base\FaleConosco\BLFaleConoscoRelatorios.cs" />
     <Compile Include="Base\Faq\BLFaq.cs" />
     <Compile Include="Base\File.cs" />
     <Compile Include="Base\Funcionalidade\BLFuncionalidade.cs" />

@@ -871,6 +871,7 @@ namespace CMSv4.BusinessLayer
 
                 if (!string.IsNullOrEmpty(seo.Description))
                 {
+                    AdicionarMetaAoHead("name", "description", seo.Description);
                     AdicionarMetaAoHead("itemprop", "description", seo.Description);
                     AdicionarMetaAoHead("description", seo.Description);
                 }
@@ -1196,6 +1197,9 @@ namespace CMSv4.BusinessLayer
 
             if (meta.Contains("name=\"twitter:url\""))
                 return "name=\"twitter:url\"";
+
+            if (meta.Contains("name=\"description\""))
+                return "name=\"description\"";
 
             //if (meta.Contains("rel=\"canonical\""))
             //    return "rel=\"canonical\"";

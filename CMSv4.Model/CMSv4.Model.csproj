@@ -140,6 +140,7 @@
     <Compile Include="Base\FaleConosco\MLFaleConoscoModelo.cs" />
     <Compile Include="Base\FaleConosco\MLFaleConoscoModeloEmail.cs" />
     <Compile Include="Base\FaleConosco\MLFaleConoscoPadrao.cs" />
+    <Compile Include="Base\FaleConosco\MLFaleConoscoRelatorios.cs" />
     <Compile Include="Base\FaleConosco\MLModuloFaleConosco.cs" />
     <Compile Include="Base\FaleConosco\MLModuloFaleConoscoHistorico.cs" />
     <Compile Include="Base\Faq\MLFaq.cs" />

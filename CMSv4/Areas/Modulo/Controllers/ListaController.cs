@@ -885,8 +885,14 @@ namespace CMSApp.Areas.Modulo.Controllers
                 seo.Url = Request.Url.ToString();
 
             if (String.IsNullOrWhiteSpace(seo.Description))
-                seo.Description = conteudo.Chamada ?? conteudo.Titulo;
-
+            {
+                if (!string.IsNullOrEmpty(seo.Ogdescription))
+                    seo.Description = seo.Ogdescription;
+                else if(!string.IsNullOrEmpty(conteudo.Chamada))
+                    seo.Description = conteudo.Chamada;
+                else
+                    seo.Description = conteudo.Titulo;
+            }
             if (String.IsNullOrWhiteSpace(seo.Tags))
                 seo.Tags = conteudo.Tags;
 
