@@ -57,7 +57,7 @@
       <HintPath>..\packages\Humanizer.Core.2.7.2\lib\netstandard2.0\Humanizer.dll</HintPath>
     </Reference>
     <Reference Include="IconPack">
-      <HintPath>..\packages\IconPack\IconPack.dll</HintPath>
+      <HintPath>..\CMSv4.Externos\IconPack\IconPack.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
